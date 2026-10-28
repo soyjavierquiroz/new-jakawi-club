@@ -1,0 +1,49 @@
+http:
+  routers:
+    jakawi-club-http:
+      rule: "Host(`jakawi.club`) || Host(`www.jakawi.club`)"
+      entryPoints:
+        - web
+      middlewares:
+        - jakawi-club-apex
+        - jakawi-club-https
+      service: jakawi-club
+
+    jakawi-club-https:
+      rule: "Host(`jakawi.club`)"
+      entryPoints:
+        - websecure
+      service: jakawi-club
+      tls:
+        certResolver: letsencrypt
+        domains:
+          - main: jakawi.club
+            sans:
+              - www.jakawi.club
+
+    jakawi-club-www-https:
+      rule: "Host(`www.jakawi.club`)"
+      entryPoints:
+        - websecure
+      middlewares:
+        - jakawi-club-apex
+      service: jakawi-club
+      # The main router obtains one certificate covering both hostnames.
+      tls: {}
+
+  middlewares:
+    jakawi-club-apex:
+      redirectRegex:
+        regex: "^https?://www\\.jakawi\\.club(?::[0-9]+)?/(.*)"
+        replacement: "https://jakawi.club/${1}"
+        permanent: true
+    jakawi-club-https:
+      redirectScheme:
+        scheme: https
+        permanent: true
+
+  services:
+    jakawi-club:
+      loadBalancer:
+        servers:
+          - url: "http://jakawi-club-web:80"

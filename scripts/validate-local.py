@@ -102,7 +102,10 @@ for container in inspected:
     assert container['HostConfig']['RestartPolicy']['Name'] == 'unless-stopped'
     assert container['HostConfig']['Memory'] > 0
     networks = sorted(container['NetworkSettings']['Networks'])
-    assert all(network in ['jakawi-club-private','jakawi-club-egress'] for network in networks)
+    allowed_networks = ['jakawi-club-private', 'jakawi-club-egress']
+    if name == 'jakawi-club-web':
+        allowed_networks.append('web')
+    assert all(network in allowed_networks for network in networks)
     ports = container['NetworkSettings']['Ports']
     bindings = [binding for values in ports.values() if values for binding in values]
     if name == 'jakawi-club-web':

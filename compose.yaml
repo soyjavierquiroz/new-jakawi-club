@@ -57,6 +57,7 @@ services:
     networks:
       - private
       - egress
+      - traefik
     depends_on:
       app:
         condition: service_healthy
@@ -130,6 +131,9 @@ networks:
     internal: true
   egress:
     name: jakawi-club-egress
+    external: true
+  traefik:
+    name: web
     external: true
 
 secrets:

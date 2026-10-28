@@ -1,0 +1,148 @@
+{
+  "validated_at": "2026-10-28T00:53:42.779238-04:00",
+  "dns": {
+    "1.1.1.1/jakawi.club": [
+      "167.71.107.80"
+    ],
+    "1.1.1.1/www.jakawi.club": [
+      "167.71.107.80"
+    ],
+    "8.8.8.8/jakawi.club": [
+      "167.71.107.80"
+    ],
+    "8.8.8.8/www.jakawi.club": [
+      "167.71.107.80"
+    ]
+  },
+  "http": {
+    "https://jakawi.club/": {
+      "status": 200,
+      "assets_use_https": true
+    },
+    "https://jakawi.club/up": {
+      "status": 200
+    },
+    "http://127.0.0.1:18082/": {
+      "status": 200
+    },
+    "https://www.jakawi.club/": {
+      "status": 301,
+      "location": "https://jakawi.club/"
+    },
+    "http://jakawi.club/": {
+      "status": 301,
+      "location": "https://jakawi.club/"
+    },
+    "http://www.jakawi.club/": {
+      "status": 301,
+      "location": "https://jakawi.club/"
+    },
+    "https://www.jakawi.club/up?check=publication": {
+      "status": 301,
+      "location": "https://jakawi.club/up?check=publication"
+    }
+  },
+  "tls": {
+    "jakawi.club": {
+      "valid_chain_and_hostname": true,
+      "issuer": {
+        "countryName": "US",
+        "organizationName": "Let's Encrypt",
+        "commonName": "YE2"
+      },
+      "not_before": "Oct 28 03:54:22 2026 GMT",
+      "not_after": "Jan 26 03:54:21 2027 GMT",
+      "dns_names": [
+        "jakawi.club",
+        "www.jakawi.club"
+      ],
+      "sha256_fingerprint": "42d3cab7b41fe114e91eac87d99e191e0a07231a529398f072cfa01d9925d22a"
+    },
+    "www.jakawi.club": {
+      "valid_chain_and_hostname": true,
+      "issuer": {
+        "countryName": "US",
+        "organizationName": "Let's Encrypt",
+        "commonName": "YE2"
+      },
+      "not_before": "Oct 28 03:54:22 2026 GMT",
+      "not_after": "Jan 26 03:54:21 2027 GMT",
+      "dns_names": [
+        "jakawi.club",
+        "www.jakawi.club"
+      ],
+      "sha256_fingerprint": "42d3cab7b41fe114e91eac87d99e191e0a07231a529398f072cfa01d9925d22a"
+    }
+  },
+  "inertia_http": 200,
+  "assets": {
+    "assets/app-dvtT45f9.js": {
+      "status": 200,
+      "content_type": "application/javascript; charset=utf-8"
+    },
+    "assets/app-Z-V-md5s.css": {
+      "status": 200,
+      "content_type": "text/css"
+    },
+    "assets/Welcome-D8Jd6bAH.js": {
+      "status": 200,
+      "content_type": "application/javascript; charset=utf-8"
+    }
+  },
+  "laravel": {
+    "environment": "production",
+    "debug": false,
+    "url": "https://jakawi.club",
+    "secure_session_cookie": true,
+    "mail": "log"
+  },
+  "containers": {
+    "jakawi-club-app": {
+      "running": true,
+      "health": "healthy",
+      "networks": [
+        "jakawi-club-egress",
+        "jakawi-club-private"
+      ],
+      "ports": {
+        "9000/tcp": null
+      }
+    },
+    "jakawi-club-web": {
+      "running": true,
+      "health": "healthy",
+      "networks": [
+        "jakawi-club-egress",
+        "jakawi-club-private",
+        "web"
+      ],
+      "ports": {
+        "80/tcp": [
+          {
+            "HostIp": "127.0.0.1",
+            "HostPort": "18082"
+          }
+        ]
+      }
+    },
+    "jakawi-club-db": {
+      "running": true,
+      "health": "healthy",
+      "networks": [
+        "jakawi-club-private"
+      ],
+      "ports": {
+        "5432/tcp": null
+      }
+    }
+  },
+  "traefik_backend_reachable": true,
+  "dedicated_dynamic_file_matches_repository": true,
+  "protected_baseline": {
+    "foreign_containers_unchanged": 40,
+    "app_and_db_lifecycle_and_networks_unchanged": true,
+    "existing_traefik_files_unchanged": 19,
+    "project_credentials_unchanged": true
+  },
+  "jakawi_com_up": 200
+}

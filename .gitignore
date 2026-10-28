@@ -5,6 +5,9 @@ artifacts/base-tecnica/baseline.json
 artifacts/base-tecnica/*.log
 artifacts/base-tecnica/http-*
 app/bootstrap/cache/*.php
+artifacts/https-publication/baseline.json
+artifacts/https-publication/*.log
+artifacts/https-publication/http-*
 app/storage/**
 !app/storage/**/
 !app/storage/**/.gitignore
