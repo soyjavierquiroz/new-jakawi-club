@@ -45,3 +45,4 @@ credentials.json
 /artifacts/identity/official-links.json
 /artifacts/conversion/baseline.json
 /artifacts/conversion/LIVE.json
+/artifacts/vsl/LIVE.json

@@ -1,5 +1,7 @@
 # Landing responsive de conversión — jakawi.club
 
+Actualización posterior: el Short oficial `P42gDOTL6Ys` se configura mediante el mecanismo local, conservando esta composición. El marco sigue siendo 3:4 y se añade encuadre interno 9:16 sin recorte. El estado actual del video, comprobación real y rollback se documentan en [la publicación VSL](../vsl/REPORT.md). Este informe conserva la evidencia de la entrega responsive previa a esa publicación.
+
 Baseline verificado antes de editar: `228659790c781ca9ec6dd1570e3f69809c96fb3f`. Git limpio, HEAD = origin/main = remoto, archivos Git montados en PHP y hashes de assets HTTPS coincidentes. El sello anterior tenía referencias de contenedores obsoletas; se conservó en el rollback y se capturó una nueva referencia antes de modificar código. La landing VSL, formulario internacional y motor YouTube ya existían efectivamente en LIVE y se reutilizaron.
 
 ## Resultado

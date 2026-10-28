@@ -18,6 +18,8 @@ def php(source):
     return json.loads(cmd(['docker', 'compose', 'exec', '-T', '--user', 'www-data', 'app', 'php'], input=source))
 
 baseline = json.loads((ROOT / 'artifacts/conversion/baseline.json').read_text())
+video_deployment = baseline.get('video_deployment', {})
+expected_video_url = video_deployment.get('approved_video_url')
 sha = cmd(['git', 'rev-parse', 'HEAD']).strip()
 origin = cmd(['git', 'rev-parse', 'origin/main']).strip()
 remote = cmd(['git', 'ls-remote', 'origin', 'refs/heads/main']).split()[0]
@@ -46,6 +48,7 @@ for entry in manifest.values():
         assert 'https://jakawi.club/build/' + entry['file'] in html
 page = json.loads(re.search(r'<script\b[^>]*data-page="app"[^>]*>([\s\S]*?)</script>', html)[1])
 assert page['component'] == 'Welcome' and page['props']['launch']['registration_open'] is False
+assert page['props']['launch']['video_url'] == expected_video_url
 asset_names = {name for entry in manifest.values() for name in [entry['file'], *entry.get('css', []), *entry.get('assets', [])]}
 asset_hashes = {}
 for asset in sorted(asset_names):
@@ -85,6 +88,12 @@ for path, digest in baseline['protected_files'].items():
     assert sha256(Path(path).read_bytes()).hexdigest() == digest
 for path, digest in baseline['credential_hashes'].items():
     assert sha256(Path(path).read_bytes()).hexdigest() == digest
+if expected_video_url:
+    env_lines = Path('/srv/sites/jakawi.club/secrets/app.env').read_bytes().splitlines(keepends=True)
+    protected_env = b''.join(line for line in env_lines if not line.startswith(b'JAKAWI_VIDEO_URL='))
+    assert sha256(protected_env).hexdigest() == video_deployment['other_env_settings_sha256']
+    assert video_deployment['app_id_before'] != video_deployment['app_id_after']
+    assert baseline['containers']['jakawi-club-app']['id'] == video_deployment['app_id_after']
 ref = Path('/root/jakawi-build-v1/repository')
 h = sha256()
 for name in subprocess.check_output(['git', '-C', str(ref), 'ls-files', '-z']).split(b'\0'):
@@ -103,7 +112,7 @@ echo json_encode([
  'analytics_columns' => Illuminate\Support\Facades\Schema::getColumnListing('marketing_event_totals'),
 ]);
 ''')
-assert settings['debug'] is False and settings['registration_open'] is False and settings['video_url'] is None
+assert settings['debug'] is False and settings['registration_open'] is False and settings['video_url'] == expected_video_url
 assert settings['users'] == baseline['live_users']
 assert settings['analytics_columns'] == ['day', 'event', 'placement', 'total']
 visual = json.loads((ROOT / 'artifacts/conversion/visual-validation.json').read_text())
@@ -113,11 +122,18 @@ assert {check['width'] for check in visual['checks'] if check['name'] == 'landin
 for check in visual['checks']:
     if check['name'] == 'landing':
         assert not check['overflow'] and abs(check['frameRatio'] - 3 / 4) < .02
-backend = (ROOT / 'artifacts/conversion/backend-tests.txt').read_text()
+build_evidence = ROOT / ('artifacts/vsl' if expected_video_url else 'artifacts/conversion')
+backend = (build_evidence / 'backend-tests.txt').read_text()
 assert '"passed": 73' in backend
-unit = json.loads((ROOT / 'artifacts/conversion/unit-tests.txt').read_text())
+unit = json.loads((build_evidence / 'unit-tests.txt').read_text())
 assert unit['passed'] == 34
-assert '✓ built' in (ROOT / 'artifacts/conversion/frontend-build.txt').read_text()
+assert '✓ built' in (build_evidence / 'frontend-build.txt').read_text()
+if expected_video_url:
+    assert visual['configured_video_url'] == expected_video_url
+    assert {check['width'] for check in visual['real_playback']} == {390, 1440}
+    assert all(check['provider_fixture_absent'] and check['iframe_source_matches'] for check in visual['real_playback'])
+playback_verified = bool(expected_video_url) and all(check['verified_playback'] for check in visual.get('real_playback', []))
+provider_error_codes = sorted({code for check in visual.get('real_playback', []) for code in check.get('provider_error_codes', [])})
 report = {
  'verified_at': datetime.now(ZoneInfo('America/La_Paz')).isoformat(),
  'baseline_sha': baseline['git_sha'], 'git_sha': sha, 'origin_main_sha': origin, 'remote_main_sha': remote,
@@ -133,9 +149,18 @@ report = {
  'responsive_groups_passed': len(visual['checks']), 'viewports': [390, 768, 1024, 1440],
  'hero': 'two columns from 1024px; one 3:4 player; vertically centered desktop copy',
  'mobile_sticky': 'form visibility, keyboard viewport, focus, dialogs and active player checked',
- 'video_live': 'disabled pending approved YouTube URL; API lifecycle verified with isolated browser fixtures',
+ 'video_live': expected_video_url or 'disabled pending approved YouTube URL; API lifecycle verified with isolated browser fixtures',
+ 'video_source_aspect': '9:16' if expected_video_url else None,
+ 'real_video_playback': visual.get('real_playback', []),
+ 'video_playback_verified': playback_verified,
+ 'video_provider_error_codes': provider_error_codes,
+ 'video_deployment_status': 'playback_verified' if playback_verified else 'configured; provider rejected embedded playback' if provider_error_codes else 'not verified',
+ 'approved_env_change': 'only JAKAWI_VIDEO_URL' if expected_video_url else None,
+ 'app_recreated_for_environment': bool(video_deployment.get('app_id_after')),
 }
 (ROOT / 'artifacts/conversion/LIVE.json').write_text(json.dumps(report, indent=2, ensure_ascii=False) + '\n')
 # Keep the IDE's existing LIVE entrypoint current; both seal files stay outside Git.
 (ROOT / 'artifacts/identity/LIVE.json').write_text(json.dumps(report, indent=2, ensure_ascii=False) + '\n')
-print(json.dumps({key: report[key] for key in ['verified_at', 'git_sha', 'working_tree_clean', 'mounted_git_blobs_match', 'served_assets_match', 'health', 'public_registration', 'live_user_records_unchanged', 'automatic_foreign_restart_counter_increases']}, indent=2))
+if expected_video_url:
+    (ROOT / 'artifacts/vsl/LIVE.json').write_text(json.dumps(report, indent=2, ensure_ascii=False) + '\n')
+print(json.dumps({key: report[key] for key in ['verified_at', 'git_sha', 'working_tree_clean', 'mounted_git_blobs_match', 'served_assets_match', 'health', 'public_registration', 'live_user_records_unchanged', 'automatic_foreign_restart_counter_increases', 'video_live', 'video_playback_verified', 'video_provider_error_codes', 'video_deployment_status']}, indent=2))

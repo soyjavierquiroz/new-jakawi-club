@@ -1,0 +1,18 @@
+{
+  "checked_at": "2026-10-28T18:57:29.607393-04:00",
+  "video_url": "https://www.youtube.com/watch?v=P42gDOTL6Ys",
+  "video_id": "P42gDOTL6Ys",
+  "oembed": {
+    "http": 200,
+    "title": "padel",
+    "author_name": "Javier Quiroz TV",
+    "provider_name": "YouTube"
+  },
+  "watch": {
+    "http": 200,
+    "playability": {
+      "status": "LOGIN_REQUIRED",
+      "reason": "Sign in to confirm you’re not a bot"
+    }
+  }
+}

@@ -9,7 +9,7 @@
       "frameWidth": 358,
       "fieldsetDisabled": true,
       "country": "+591⌄",
-      "videoState": "unavailable",
+      "videoState": "poster",
       "youtube": false,
       "formCount": 1,
       "targets": [
@@ -59,7 +59,24 @@
       "name": "lazy-vsl-real-event-contract-controls-error",
       "width": 390,
       "passed": true,
-      "provider": "browser API fixture; no approved LIVE video"
+      "source_geometry": {
+        "ratio": 0.5624732914762828,
+        "safe": true,
+        "frame": {
+          "width": 358,
+          "height": 477.328125,
+          "top": 293.75,
+          "bottom": 771.078125
+        },
+        "iframe": {
+          "width": 267.359375,
+          "height": 475.328125,
+          "top": 294.7421875,
+          "bottom": 770.0703125
+        },
+        "aspect": "9:16"
+      },
+      "provider": "browser API fixture; real playback checked separately when configured"
     },
     {
       "name": "landing",
@@ -70,7 +87,7 @@
       "frameWidth": 416,
       "fieldsetDisabled": true,
       "country": "+591⌄",
-      "videoState": "unavailable",
+      "videoState": "poster",
       "youtube": false,
       "formCount": 1,
       "targets": [
@@ -114,7 +131,24 @@
       "name": "lazy-vsl-real-event-contract-controls-error",
       "width": 768,
       "passed": true,
-      "provider": "browser API fixture; no approved LIVE video"
+      "source_geometry": {
+        "ratio": 0.5624823296579021,
+        "safe": true,
+        "frame": {
+          "width": 416,
+          "height": 554.65625,
+          "top": 265.5,
+          "bottom": 820.15625
+        },
+        "iframe": {
+          "width": 310.859375,
+          "height": 552.65625,
+          "top": 266.5,
+          "bottom": 819.15625
+        },
+        "aspect": "9:16"
+      },
+      "provider": "browser API fixture; real playback checked separately when configured"
     },
     {
       "name": "landing",
@@ -125,7 +159,7 @@
       "frameWidth": 416,
       "fieldsetDisabled": true,
       "country": "+591⌄",
-      "videoState": "unavailable",
+      "videoState": "poster",
       "youtube": false,
       "formCount": 1,
       "targets": [
@@ -169,7 +203,24 @@
       "name": "lazy-vsl-real-event-contract-controls-error",
       "width": 1024,
       "passed": true,
-      "provider": "browser API fixture; no approved LIVE video"
+      "source_geometry": {
+        "ratio": 0.5624823296579021,
+        "safe": true,
+        "frame": {
+          "width": 416,
+          "height": 554.65625,
+          "top": 129,
+          "bottom": 683.65625
+        },
+        "iframe": {
+          "width": 310.859375,
+          "height": 552.65625,
+          "top": 130,
+          "bottom": 682.65625
+        },
+        "aspect": "9:16"
+      },
+      "provider": "browser API fixture; real playback checked separately when configured"
     },
     {
       "name": "landing",
@@ -180,7 +231,7 @@
       "frameWidth": 416,
       "fieldsetDisabled": true,
       "country": "+591⌄",
-      "videoState": "unavailable",
+      "videoState": "poster",
       "youtube": false,
       "formCount": 1,
       "targets": [
@@ -224,18 +275,119 @@
       "name": "lazy-vsl-real-event-contract-controls-error",
       "width": 1440,
       "passed": true,
-      "provider": "browser API fixture; no approved LIVE video"
+      "source_geometry": {
+        "ratio": 0.5624823296579021,
+        "safe": true,
+        "frame": {
+          "width": 416,
+          "height": 554.65625,
+          "top": 129,
+          "bottom": 683.65625
+        },
+        "iframe": {
+          "width": 310.859375,
+          "height": 552.65625,
+          "top": 130,
+          "bottom": 682.65625
+        },
+        "aspect": "9:16"
+      },
+      "provider": "browser API fixture; real playback checked separately when configured"
     },
     {
       "name": "short-desktop-breakpoint-motion-focus",
       "passed": true
     }
   ],
+  "configured_video_id": "P42gDOTL6Ys",
+  "configured_video_url": "https://www.youtube.com/watch?v=P42gDOTL6Ys",
+  "real_playback": [
+    {
+      "width": 390,
+      "video_id": "P42gDOTL6Ys",
+      "source": "https://www.youtube.com/watch?v=P42gDOTL6Ys",
+      "state": "error",
+      "verified_playback": false,
+      "provider_fixture_absent": true,
+      "provider_error_codes": [
+        150
+      ],
+      "iframe_source_matches": true,
+      "geometry": {
+        "frameRatio": 0.7500081835739304,
+        "sourceRatio": 0.5624732914762828,
+        "contained": true
+      },
+      "media": {
+        "before": {
+          "currentTime": 0,
+          "duration": 8,
+          "state": -1,
+          "paused": true,
+          "video_id": "P42gDOTL6Ys"
+        },
+        "after": {
+          "currentTime": 0,
+          "duration": 8,
+          "state": -1,
+          "paused": true,
+          "video_id": "P42gDOTL6Ys"
+        }
+      },
+      "limitation": "Real provider did not produce advancing playback in this server Chromium session; see provider error codes and screenshot."
+    },
+    {
+      "width": 1440,
+      "video_id": "P42gDOTL6Ys",
+      "source": "https://www.youtube.com/watch?v=P42gDOTL6Ys",
+      "state": "error",
+      "verified_playback": false,
+      "provider_fixture_absent": true,
+      "provider_error_codes": [
+        150
+      ],
+      "iframe_source_matches": true,
+      "geometry": {
+        "frameRatio": 0.7500140853005803,
+        "sourceRatio": 0.5624823296579021,
+        "contained": true
+      },
+      "media": {
+        "before": {
+          "currentTime": 0,
+          "duration": 8,
+          "state": -1,
+          "paused": true,
+          "video_id": "P42gDOTL6Ys"
+        },
+        "after": {
+          "currentTime": 0,
+          "duration": 8,
+          "state": -1,
+          "paused": true,
+          "video_id": "P42gDOTL6Ys"
+        }
+      },
+      "limitation": "Real provider did not produce advancing playback in this server Chromium session; see provider error codes and screenshot."
+    }
+  ],
+  "real_provider_failures": [
+    {
+      "type": "Fetch",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "type": "Fetch",
+      "error": "net::ERR_ABORTED"
+    }
+  ],
   "browser_api_fixtures": true,
   "no_live_test_accounts": true,
   "live_registration_closed": true,
   "api_loading_error_retry": true,
+  "missing_video_state_verified": true,
   "metrics_vocabulary_verified": true,
   "runtime_errors": [],
-  "failed_assets": []
+  "failed_assets": [],
+  "real_probe_rerun_separately": true
 }

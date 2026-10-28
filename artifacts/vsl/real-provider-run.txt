@@ -1,0 +1,7 @@
+Check /
+Browser request failed Fetch net::ERR_ABORTED
+Real video 390 state: error advancing playback: false
+Check /
+Browser request failed Fetch net::ERR_ABORTED
+Real video 1440 state: error advancing playback: false
+Real provider probes complete; prior responsive checks retained.

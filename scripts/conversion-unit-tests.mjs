@@ -46,5 +46,5 @@ try {
     const { normalizePhone } = await compile('forms/phone.ts', 'phone', code => code.replaceAll("'libphonenumber-js/max'", "'/workspace/node_modules/libphonenumber-js/max/index.js'"));
     for (const [country, number, expected] of [['BO', '70000000', '+59170000000'], ['BO', '+591 (700) 000-00', '+59170000000'], ['ES', '612 345 678', '+34612345678'], ['US', '2133734253', '+12133734253'], ['PE', '987654321', '+51987654321']]) check(normalizePhone(number, country) === expected, `E.164 normalization ${country}`);
     for (const [country, number] of [['BO', '+34612345678'], ['BO', '12'], ['BO', 'Llama al 70000000'], ['ES', '+59170000000'], ['BO', '+59170000000123456'], ['BO', '70000000 ext 2']]) check(normalizePhone(number, country) === '', 'Invalid/mismatched country and extensions are rejected without auto-switch');
-    console.log(JSON.stringify({ passed: checks, engine: 'official YouTube-only adapter', phone: 'libphonenumber-js/max', live_video_playback: 'pending approved content' }, null, 2));
+    console.log(JSON.stringify({ passed: checks, engine: 'official YouTube-only adapter', phone: 'libphonenumber-js/max', live_video_playback: 'not evaluated by unit tests; see browser evidence' }, null, 2));
 } finally { await rm(tmp, { recursive: true, force: true }); }

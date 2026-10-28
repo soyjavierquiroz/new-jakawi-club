@@ -1,0 +1,6 @@
+{
+  "passed": 34,
+  "engine": "official YouTube-only adapter",
+  "phone": "libphonenumber-js/max",
+  "live_video_playback": "not evaluated by unit tests; see browser evidence"
+}

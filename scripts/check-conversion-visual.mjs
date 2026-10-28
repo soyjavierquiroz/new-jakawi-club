@@ -6,6 +6,7 @@ import assert from 'node:assert/strict';
 import { lookup } from 'node:dns/promises';
 
 const output = '/evidence';
+const providerOnly = process.argv.includes('--real-provider-only');
 await mkdir(output, { recursive: true });
 const reference = await readFile('/workspace/resources/css/jakawi-theme.css', 'utf8');
 const token = name => reference.match(new RegExp(`--${name}:\\s*(#[a-fA-F0-9]+);`))[1].toLowerCase();
@@ -31,6 +32,8 @@ try {
     const events = new Map();
     const runtimeErrors = [];
     const failedAssets = [];
+    const providerFailures = [];
+    let checkingRealVideo = false;
     const call = (method, params = {}) => new Promise((resolve, reject) => {
         const id = ++sequence;
         const timer = setTimeout(() => { pending.delete(id); reject(new Error(`CDP timeout: ${method}`)); }, 20000);
@@ -56,11 +59,15 @@ try {
         return response.result.value;
     };
     on('Runtime.exceptionThrown', event => runtimeErrors.push(event.exceptionDetails.text));
-    on('Network.loadingFailed', event => console.log('Browser request failed', event.type, event.errorText));
+    on('Network.loadingFailed', event => { console.log('Browser request failed', event.type, event.errorText); if (checkingRealVideo) providerFailures.push({ type: event.type, error: event.errorText }); });
     on('Network.responseReceived', ({ response, type }) => {
-        if (response.status >= 400 && ['Script', 'Stylesheet', 'Font', 'Image'].includes(type)) failedAssets.push({ url: response.url, status: response.status });
+        if (response.status >= 400 && ['Script', 'Stylesheet', 'Font', 'Image'].includes(type)) {
+            if (response.url.startsWith('https://jakawi.club/')) failedAssets.push({ url: response.url, status: response.status });
+            else if (checkingRealVideo) providerFailures.push({ host: new URL(response.url).hostname, status: response.status, type });
+        }
     });
     await call('Page.enable'); await call('Runtime.enable'); await call('Network.enable');
+    await call('Network.setCacheDisabled', { cacheDisabled: true });
     await call('Page.bringToFront');
     await call('Emulation.setFocusEmulationEnabled', { enabled: true });
     await call('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: 'reduce' }] });
@@ -70,14 +77,16 @@ try {
     const original = JSON.parse(html.match(pattern)[2]);
     const launch = original.props.launch;
     assert.equal(launch.registration_open, false);
-    assert.equal(launch.video_url, null);
+    const approvedVideoId = launch.video_url?.match(/^https:\/\/www\.youtube\.com\/watch\?v=([\w-]{11})$/)?.[1] ?? null;
+    assert(!launch.video_url || approvedVideoId, 'Configured source is a canonical YouTube URL');
     assert.equal(launch.video_poster, null);
     const metrics = [], submissions = [], apiRequests = [];
     let heldSubmission;
     const fixtures = {
         registration: { ...launch, registration_open: true },
-        video: { ...launch, video_url: 'https://www.youtube.com/watch?v=M7lc1UVf-VE' },
-        'video-error': { ...launch, video_url: 'https://www.youtube.com/watch?v=M7lc1UVf-VE' },
+        video: { ...launch, video_url: launch.video_url ?? 'https://www.youtube.com/watch?v=M7lc1UVf-VE' },
+        'video-error': { ...launch, video_url: launch.video_url ?? 'https://www.youtube.com/watch?v=M7lc1UVf-VE' },
+        'no-video': { ...launch, video_url: null },
     };
     const apiFixture = `window.__vslPlays=0;window.YT={Player:class{constructor(mount,options){window.__vslOptions=options;this.muted=true;this.time=0;const iframe=document.createElement('iframe');iframe.src='about:blank';mount.replaceWith(iframe);window.__vslPlayer=this;setTimeout(()=>options.events.onReady({target:this}),30);}playVideo(){window.__vslPlays++;}pauseVideo(){window.__vslOptions.events.onStateChange({data:2});}seekTo(t){this.time=t;}mute(){this.muted=true;}unMute(){this.muted=false;}isMuted(){return this.muted;}getVolume(){return 100;}setVolume(){}getCurrentTime(){return this.time;}getDuration(){return 90;}destroy(){document.querySelector('.vsl-host iframe')?.remove();}}};window.onYouTubeIframeAPIReady?.();`;
     on('Fetch.requestPaused', async event => {
@@ -135,6 +144,7 @@ try {
         await writeFile(`${output}/${name}.png`, Buffer.from(data, 'base64'));
     };
     const checks = [];
+    if (!providerOnly) {
     for (const width of [390, 768, 1024, 1440]) {
         await call('Emulation.setDeviceMetricsOverride', { width, height: 900, deviceScaleFactor: 1, mobile: width === 390 });
         await navigate('/');
@@ -144,7 +154,7 @@ try {
             return { overflow:document.documentElement.scrollWidth>innerWidth, h1:document.querySelector('h1').textContent, frameRatio:frame.width/frame.height, frameWidth:frame.width, fieldsetDisabled:document.querySelector('#registro fieldset').disabled, country:document.querySelector('.phone-country').textContent, videoState:document.querySelector('[data-vsl-state]').dataset.vslState, youtube:!!document.querySelector('iframe,script[src*="youtube"]'), formCount:document.querySelectorAll('#registro form').length, targets:[...document.querySelectorAll('[data-marketing-cta]')].map(a=>a.hash), coral:getComputedStyle(document.querySelector('.btn-primary')).backgroundColor, bodyFont:getComputedStyle(document.body).fontFamily, inputFont:getComputedStyle(document.querySelector('#phone')).fontFamily, brokenImages:[...document.images].filter(i=>i.getClientRects().length && i.getBoundingClientRect().top<innerHeight && i.getBoundingClientRect().bottom>0 && (!i.complete||!i.naturalWidth)).length, reduced:matchMedia('(prefers-reduced-motion: reduce)').matches, scroll:css.scrollBehavior, spinnerAnimation:getComputedStyle(document.querySelector('.vsl-frame')).animationName };
         })()`);
         assert(!result.overflow); assert(Math.abs(result.frameRatio - 3 / 4) < .02); assert(result.frameWidth > 300 && result.frameWidth <= 416);
-        assert(result.fieldsetDisabled); assert(result.country.includes('+591')); assert.equal(result.videoState, 'unavailable'); assert(!result.youtube);
+        assert(result.fieldsetDisabled); assert(result.country.includes('+591')); assert.equal(result.videoState, approvedVideoId ? 'poster' : 'unavailable'); assert(!result.youtube);
         assert.equal(result.formCount, 1); assert(result.targets.every(target => target === '#registro')); assert.equal(result.coral, rgb('brand'));
         assert(result.bodyFont.includes('Montserrat')); assert(result.inputFont.includes('Instrument Sans')); assert.equal(result.brokenImages, 0); assert(result.reduced); assert.equal(result.scroll, 'auto');
         assert(result.h1.includes('Tu ciudad tiene'));
@@ -246,8 +256,9 @@ try {
         const startsBefore = metrics.filter(event => event.event === 'video_start').length;
         await evaluate(`window.__vslOptions.events.onStateChange({data:1})`);
         await until(`document.querySelector('[data-vsl-state]').dataset.vslState === 'playing'`, 'Provider playing event drives UI');
-        const sourceFrame = await evaluate(`(()=>{const f=document.querySelector('.vsl-frame').getBoundingClientRect(),i=document.querySelector('.vsl-host iframe').getBoundingClientRect();return {ratio:i.width/i.height,safe:i.top>=f.top&&i.bottom<=f.bottom&&i.left>=f.left&&i.right<=f.right};})()`);
-        assert(Math.abs(sourceFrame.ratio-16/9)<.02 && sourceFrame.safe, 'Horizontal source fits safely inside the vertical presentation');
+        const sourceFrame = await evaluate(`(()=>{const f=document.querySelector('.vsl-frame').getBoundingClientRect(),i=document.querySelector('.vsl-host iframe').getBoundingClientRect();return {ratio:i.width/i.height,safe:i.top>=f.top&&i.bottom<=f.bottom&&i.left>=f.left&&i.right<=f.right,frame:{width:f.width,height:f.height,top:f.top,bottom:f.bottom},iframe:{width:i.width,height:i.height,top:i.top,bottom:i.bottom},aspect:document.querySelector('[data-vsl-state]').dataset.vslSourceAspect};})()`);
+        console.log('Source frame geometry', width, JSON.stringify(sourceFrame));
+        assert(Math.abs(sourceFrame.ratio-9/16)<.02 && sourceFrame.safe, 'Short source fits safely inside the 3:4 presentation');
         if (width === 390) await until(`document.querySelector('.mobile-sticky-cta').hidden`, 'Active visible VSL suppresses sticky');
         for (let i = 0; metrics.filter(event => event.event === 'video_start').length === startsBefore && i < 50; i++) await pause(75);
         assert(metrics.filter(event => event.event === 'video_start').length > startsBefore);
@@ -268,7 +279,7 @@ try {
         await evaluate(`window.__vslOptions.events.onError({data:150})`);
         await until(`!!document.querySelector('.vsl-error[role="alert"]')`, 'Video failure feedback and retry');
         if (width !== 768) await screenshot(`video-error-${width}`);
-        checks.push({ name: 'lazy-vsl-real-event-contract-controls-error', width, passed: true, provider: 'browser API fixture; no approved LIVE video' });
+        checks.push({ name: 'lazy-vsl-real-event-contract-controls-error', width, passed: true, source_geometry: sourceFrame, provider: 'browser API fixture; real playback checked separately when configured' });
     }
     // A short desktop viewport must scroll naturally; responsive changes reuse one player.
     await call('Emulation.setDeviceMetricsOverride', { width: 1024, height: 600, deviceScaleFactor: 1, mobile: false });
@@ -297,11 +308,61 @@ try {
     await evaluate(`document.querySelector('.vsl-play').click()`);
     await until(`document.querySelector('[data-vsl-state]').dataset.vslState === 'error'`, 'API load failure is recoverable');
     assert(await evaluate(`document.querySelector('.vsl-play').textContent.includes('Intentar de nuevo')`));
-    assert(metrics.some(event => event.event === 'landing_visit')); assert(metrics.some(event => event.event === 'cta_click'));
+    await navigate('/__conversion/no-video');
+    assert(await evaluate(`document.querySelector('[data-vsl-state]').dataset.vslState==='unavailable' && !document.querySelector('.vsl-play, iframe, script[src*="youtube"]')`), 'Missing source remains honest and never loads YouTube');
+    }
+
+    // Remove the provider fixture and click the actual deployed player. A datacenter
+    // refusal is recorded as a limitation, never treated as successful playback.
+    const realPlayback = [];
+    if (approvedVideoId) {
+        await call('Fetch.disable');
+        await call('Network.clearBrowserCache');
+        await call('Fetch.enable', { patterns: [
+            { urlPattern: 'https://jakawi.club/registro', requestStage: 'Request' },
+            { urlPattern: 'https://jakawi.club/medicion', requestStage: 'Request' },
+        ] });
+        checkingRealVideo = true;
+        for (const width of [390, 1440]) {
+            await call('Emulation.setDeviceMetricsOverride', { width, height: 900, deviceScaleFactor: 1, mobile: width === 390 });
+            await navigate('/');
+            assert(await evaluate(`document.querySelector('[data-vsl-state]').dataset.vslState==='poster' && !document.querySelector('iframe,script[src*="youtube"]')`), 'Real provider also waits for a click');
+            // Observe the native API; no provider or playback responses are mocked.
+            await evaluate(`window.__realProviderErrors=[];window.onYouTubeIframeAPIReady=()=>{const NativePlayer=window.YT.Player;window.YT.Player=function(element,options){const onError=options.events.onError;options.events.onError=event=>{window.__realProviderErrors.push(event.data);onError(event)};const player=new NativePlayer(element,options);window.__realProviderPlayer=player;return player;};}`);
+            const button = await evaluate(`(()=>{const r=document.querySelector('.vsl-play').getBoundingClientRect();return {x:r.x+r.width/2,y:r.y+r.height/2};})()`);
+            await call('Input.dispatchMouseEvent', { type: 'mousePressed', button: 'left', clickCount: 1, ...button });
+            await call('Input.dispatchMouseEvent', { type: 'mouseReleased', button: 'left', clickCount: 1, ...button });
+            let state;
+            for (let i=0;i<120;i++) {
+                state = await evaluate(`document.querySelector('[data-vsl-state]').dataset.vslState`);
+                if (['playing','error','blocked'].includes(state)) break;
+                await pause(250);
+            }
+            let media = null;
+            assert(await evaluate(`!window.__vslOptions && !window.__vslPlayer`), 'Real playback never reuses a cached provider fixture');
+            const iframeSource = await evaluate(`document.querySelector('.vsl-host iframe')?.getAttribute('src') ?? null`);
+            if (await evaluate(`!!window.__realProviderPlayer?.getCurrentTime`)) {
+                const expression = `(()=>{const p=window.__realProviderPlayer;return {currentTime:p.getCurrentTime(),duration:p.getDuration(),state:p.getPlayerState(),paused:p.getPlayerState()!==1,video_id:p.getVideoData()?.video_id};})()`;
+                const first = await evaluate(expression);
+                await pause(1500);
+                const second = await evaluate(expression);
+                media = { before:first, after:second };
+            }
+            const verified = state==='playing' && Number.isFinite(media?.before?.currentTime) && !!media?.after && !media.after.paused && media.after.currentTime>media.before.currentTime;
+            const geometry = await evaluate(`(()=>{const f=document.querySelector('.vsl-frame').getBoundingClientRect(),i=document.querySelector('.vsl-host iframe')?.getBoundingClientRect();return {frameRatio:f.width/f.height,sourceRatio:i?i.width/i.height:null,contained:!!i&&i.top>=f.top&&i.bottom<=f.bottom&&i.left>=f.left&&i.right<=f.right};})()`);
+            const providerErrors = await evaluate(`window.__realProviderErrors`);
+            realPlayback.push({ width, video_id:approvedVideoId, source:launch.video_url, state, verified_playback:verified, provider_fixture_absent:true, provider_error_codes:providerErrors, iframe_source_matches:iframeSource ? new URL(iframeSource).pathname===('/embed/'+approvedVideoId) : false, geometry, media, limitation:verified?null:'Real provider did not produce advancing playback in this server Chromium session; see provider error codes and screenshot.' });
+            await screenshot(`real-video-${width}`, true);
+            console.log('Real video', width, 'state:',state,'advancing playback:',verified);
+        }
+        checkingRealVideo = false;
+    }
+    assert(metrics.some(event => event.event === 'landing_visit')); if (!providerOnly) assert(metrics.some(event => event.event === 'cta_click'));
     assert(!metrics.some(event => event.event === 'registration_completed'), 'Conversion never originates from a browser click');
     assert.deepEqual(runtimeErrors, []); assert.deepEqual(failedAssets, []);
-    await writeFile(`${output}/visual-validation.json`, JSON.stringify({ checks, browser_api_fixtures: true, no_live_test_accounts: true, live_registration_closed: true, api_loading_error_retry: true, metrics_vocabulary_verified: true, runtime_errors: runtimeErrors, failed_assets: failedAssets }, null, 2) + '\n');
-    console.log(`${checks.length} grouped responsive checks passed: geometry, sticky, keyboard/search/country/E.164/form states and VSL lifecycle; 390, 768, 1024, 1440 px.`);
+    const prior = providerOnly ? JSON.parse(await readFile(`${output}/visual-validation.json`, 'utf8')) : {};
+    await writeFile(`${output}/visual-validation.json`, JSON.stringify({ ...prior, checks:providerOnly?prior.checks:checks, configured_video_id: approvedVideoId, configured_video_url: launch.video_url, real_playback: realPlayback, real_provider_failures: providerFailures, browser_api_fixtures: true, no_live_test_accounts: true, live_registration_closed: true, api_loading_error_retry: true, missing_video_state_verified: true, metrics_vocabulary_verified: true, runtime_errors: [...(prior.runtime_errors ?? []),...runtimeErrors], failed_assets: [...(prior.failed_assets ?? []),...failedAssets], real_probe_rerun_separately:providerOnly }, null, 2) + '\n');
+    console.log(providerOnly ? 'Real provider probes complete; prior responsive checks retained.' : `${checks.length} grouped responsive checks passed: geometry, sticky, keyboard/search/country/E.164/form states and VSL lifecycle; 390, 768, 1024, 1440 px.`);
 } catch (error) {
     console.error(browserMessages.find(message => message.includes('FATAL')) || 'Browser check failed; see assertion below.');
     throw error;

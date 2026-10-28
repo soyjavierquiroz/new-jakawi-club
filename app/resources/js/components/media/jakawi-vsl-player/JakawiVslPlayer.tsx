@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { createYoutubeEngine, parseYoutubeId } from './youtube-engine';
 import { initialPlaybackState, type VslEvent, type YoutubeEngine } from './types';
 
-type Props = { url: string | null; poster?: string | null; aspectRatio?: '3:4' | '16:9'; sourceAspectRatio?: '3:4' | '16:9'; onEvent?: (event: VslEvent) => void };
+type Props = { url: string | null; poster?: string | null; aspectRatio?: '3:4' | '16:9'; sourceAspectRatio?: '9:16' | '3:4' | '16:9'; onEvent?: (event: VslEvent) => void };
 
 export function JakawiVslPlayer({ url, poster, aspectRatio = '16:9', sourceAspectRatio = '16:9', onEvent }: Props) {
     const host = useRef<HTMLDivElement>(null);

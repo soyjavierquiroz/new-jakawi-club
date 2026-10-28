@@ -98,7 +98,7 @@ try {
     check($legacy->email === 'legacy@example.test' && $legacy->uuid && $legacy->referral_code && $legacy->activated_at, 'migración compatible con usuarios existentes');
 
     Notification::fake();
-    config(['jakawi.registration_open' => false, 'jakawi.transactional_mail_ready' => false]);
+    config(['jakawi.registration_open' => false, 'jakawi.transactional_mail_ready' => false, 'jakawi.video_url' => null, 'jakawi.video_poster' => null]);
     $landing = payload(http('GET', '/', [], true));
     check($landing['component'] === 'Welcome' && $landing['props']['launch']['video_url'] === null && $landing['props']['launch']['video_poster'] === null, 'landing sin contenido de video inventado');
     check(http('POST', '/medicion', ['event' => 'landing_visit', 'placement' => 'landing'])->getStatusCode() === 204, 'analítica local acepta visita');
