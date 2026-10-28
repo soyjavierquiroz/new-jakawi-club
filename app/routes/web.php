@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\WelcomeController;
+use App\Http\Controllers\MarketingEventController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ReferralController;
@@ -9,6 +10,7 @@ use App\Http\Middleware\RegistrationOpen;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', WelcomeController::class)->name('home');
+Route::post('/medicion', MarketingEventController::class)->middleware('throttle:30,1')->name('marketing.event');
 Route::inertia('/privacidad', 'Privacy')->name('privacy');
 Route::get('/r/{code}', [ReferralController::class, 'show'])->middleware('throttle:referral')->name('referral');
 Route::post('/preferencias', [ReferralController::class, 'preferences'])->middleware('throttle:30,1')->name('preferences');
