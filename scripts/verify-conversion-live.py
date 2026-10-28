@@ -5,6 +5,7 @@ from hashlib import sha1, sha256
 from pathlib import Path
 from zoneinfo import ZoneInfo
 import json
+import re
 import subprocess
 import urllib.request
 
@@ -37,6 +38,14 @@ assert mounted == files
 
 manifest_path = ROOT / 'app/public/build/manifest.json'
 manifest = json.loads(manifest_path.read_text())
+with urllib.request.urlopen('https://jakawi.club/', timeout=20) as response:
+    html = response.read().decode()
+    assert response.status == 200
+for entry in manifest.values():
+    if entry.get('isEntry'):
+        assert 'https://jakawi.club/build/' + entry['file'] in html
+page = json.loads(re.search(r'<script\b[^>]*data-page="app"[^>]*>([\s\S]*?)</script>', html)[1])
+assert page['component'] == 'Welcome' and page['props']['launch']['registration_open'] is False
 asset_names = {name for entry in manifest.values() for name in [entry['file'], *entry.get('css', []), *entry.get('assets', [])]}
 asset_hashes = {}
 for asset in sorted(asset_names):
@@ -99,7 +108,11 @@ assert settings['users'] == baseline['live_users']
 assert settings['analytics_columns'] == ['day', 'event', 'placement', 'total']
 visual = json.loads((ROOT / 'artifacts/conversion/visual-validation.json').read_text())
 assert visual['runtime_errors'] == [] and visual['failed_assets'] == []
-assert len(visual['checks']) == 9
+assert len(visual['checks']) == 14
+assert {check['width'] for check in visual['checks'] if check['name'] == 'landing'} == {390, 768, 1024, 1440}
+for check in visual['checks']:
+    if check['name'] == 'landing':
+        assert not check['overflow'] and abs(check['frameRatio'] - 3 / 4) < .02
 backend = (ROOT / 'artifacts/conversion/backend-tests.txt').read_text()
 assert '"passed": 73' in backend
 unit = json.loads((ROOT / 'artifacts/conversion/unit-tests.txt').read_text())
@@ -117,7 +130,9 @@ report = {
  'traefik_files_unchanged': len(baseline['protected_files']), 'official_repository_unchanged': True,
  'live_user_records_unchanged': True, 'credentials_unchanged': True, 'public_registration': 'closed', 'debug': False,
  'typecheck': 'passed', 'vite_build': 'passed', 'focused_backend_tests_passed': 73, 'focused_unit_tests_passed': unit['passed'],
- 'responsive_groups_passed': len(visual['checks']), 'viewports': [390, 768, 1440],
+ 'responsive_groups_passed': len(visual['checks']), 'viewports': [390, 768, 1024, 1440],
+ 'hero': 'two columns from 1024px; one 3:4 player; vertically centered desktop copy',
+ 'mobile_sticky': 'form visibility, keyboard viewport, focus, dialogs and active player checked',
  'video_live': 'disabled pending approved YouTube URL; API lifecycle verified with isolated browser fixtures',
 }
 (ROOT / 'artifacts/conversion/LIVE.json').write_text(json.dumps(report, indent=2, ensure_ascii=False) + '\n')

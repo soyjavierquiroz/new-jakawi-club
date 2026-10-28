@@ -1,5 +1,5 @@
 {
-  "validated_at": "2026-10-28T10:47:09.236687-04:00",
+  "validated_at": "2026-10-28T18:34:46.116286-04:00",
   "dns": {
     "1.1.1.1/jakawi.club": [
       "167.71.107.80"
@@ -107,7 +107,7 @@
   },
   "inertia_http": 200,
   "assets": {
-    "assets/UI-DRNnvjpF.js": {
+    "assets/UI-DRMsKpVq.js": {
       "status": 200,
       "content_type": "application/javascript; charset=utf-8"
     },
@@ -143,31 +143,31 @@
       "status": 200,
       "content_type": "font/woff2"
     },
-    "assets/app-PlVnrfVG.js": {
+    "assets/app-C_11kKWy.js": {
       "status": 200,
       "content_type": "application/javascript; charset=utf-8"
     },
-    "assets/app-Dzh5O--Y.css": {
+    "assets/app-BxKEv2pT.css": {
       "status": 200,
       "content_type": "text/css"
     },
-    "assets/Auth-rnlNPiCV.js": {
+    "assets/Auth-Bs1lygXS.js": {
       "status": 200,
       "content_type": "application/javascript; charset=utf-8"
     },
-    "assets/Dashboard-CnGEjkuz.js": {
+    "assets/Dashboard-DAIY3gpw.js": {
       "status": 200,
       "content_type": "application/javascript; charset=utf-8"
     },
-    "assets/Privacy-F5007IuO.js": {
+    "assets/Privacy-BBYkQH3n.js": {
       "status": 200,
       "content_type": "application/javascript; charset=utf-8"
     },
-    "assets/Registered-CyOJIPac.js": {
+    "assets/Registered-BlCMZTaX.js": {
       "status": 200,
       "content_type": "application/javascript; charset=utf-8"
     },
-    "assets/Welcome-gSShlcoE.js": {
+    "assets/Welcome-DFApDaNx.js": {
       "status": 200,
       "content_type": "application/javascript; charset=utf-8"
     }
@@ -225,14 +225,7 @@
   "dedicated_dynamic_file_matches_repository": true,
   "protected_baseline": {
     "foreign_container_ids_and_networks_unchanged": 40,
-    "automatic_foreign_restarts_observed": [
-      {
-        "name": "jakawi-worker-1",
-        "before": 11,
-        "after": 12,
-        "started_at": "2026-10-28T14:32:35.159703601Z"
-      }
-    ],
+    "automatic_foreign_restarts_observed": [],
     "app_and_db_ids_and_networks_unchanged": true,
     "db_lifecycle_unchanged": true,
     "app_restart_allowed_for_opcache_deployment": true,

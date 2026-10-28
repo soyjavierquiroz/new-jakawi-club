@@ -1,6 +1,7 @@
 Check /
 Browser request failed Fetch net::ERR_ABORTED
 Browser request failed Fetch net::ERR_ABORTED
+Check /#registro
 Check /__conversion/registration
 Browser request failed Fetch net::ERR_ABORTED
 Check /__conversion/video
@@ -20,9 +21,20 @@ Browser request failed Fetch net::ERR_ABORTED
 Check /__conversion/registration
 Browser request failed Fetch net::ERR_ABORTED
 Check /__conversion/video
+Browser request failed Fetch net::ERR_ABORTED
+Browser request failed Fetch net::ERR_ABORTED
+Check /
+Browser request failed Fetch net::ERR_ABORTED
+Browser request failed Fetch net::ERR_ABORTED
+Check /__conversion/registration
+Browser request failed Fetch net::ERR_ABORTED
+Check /__conversion/video
+Browser request failed Fetch net::ERR_ABORTED
+Browser request failed Fetch net::ERR_ABORTED
+Check /
 Browser request failed Fetch net::ERR_ABORTED
 Browser request failed Fetch net::ERR_ABORTED
 Check /__conversion/video-error
 Browser request failed Fetch net::ERR_ABORTED
 Browser request failed Script net::ERR_CONNECTION_FAILED
-9 grouped responsive checks passed: landing, keyboard/search/country/E.164/form states and VSL lifecycle; 390, 768, 1440 px.
+14 grouped responsive checks passed: geometry, sticky, keyboard/search/country/E.164/form states and VSL lifecycle; 390, 768, 1024, 1440 px.

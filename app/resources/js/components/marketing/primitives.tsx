@@ -2,22 +2,25 @@
 import type { ReactNode } from 'react';
 import { Arrow } from '../UI';
 import { trackMarketing } from './analytics';
+import { focusRegistration } from './registration-navigation';
 
 export function MarketingCTA({ location, children = 'QUIERO SER PARTE', className = '' }: { location: 'hero' | 'benefits' | 'final'; children?: ReactNode; className?: string }) {
-    return <a href="#registro" className={`btn btn-primary ${className}`} data-marketing-cta={location} onClick={() => trackMarketing('cta_click', location)}>{children}<Arrow /></a>;
+    return <a href="#registro" className={`btn btn-primary ${className}`} data-marketing-cta={location} onClick={event => { if (focusRegistration('registro', event)) trackMarketing('cta_click', location); }}>{children}<Arrow /></a>;
 }
 
 export function MarketingHero({ children, open }: { children: ReactNode; open: boolean }) {
     return <section className="conversion-hero shell" aria-labelledby="hero-title">
-        <div className="mx-auto max-w-4xl text-center">
-            <p className="eyebrow hero-eyebrow"><span aria-hidden="true" className="size-2 rounded-chip bg-brand" /> COCHABAMBA · ESTO RECIÉN EMPIEZA</p>
-            <h1 id="hero-title" className="conversion-title mt-6">Tu ciudad tiene<br className="hidden sm:block" /> <span className="hero-emphasis">mucho más</span> para vivir.</h1>
-            <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-text-secondary">Estamos preparando JAKAWI, una nueva forma de descubrir experiencias, lugares y oportunidades para disfrutar más de Cochabamba.</p>
-            <p className="mt-5 text-xs font-extrabold tracking-widest">JAKAWI — VIVE MÁS. GASTA MENOS.</p>
-            <MarketingCTA location="hero" className="mt-7" />
+        <div className="hero-heading">
+            <p className="eyebrow hero-eyebrow"><span aria-hidden="true" className="size-2 rounded-chip bg-brand" /> COCHABAMBA / PRELANZAMIENTO</p>
+            <h1 id="hero-title" className="conversion-title">Tu ciudad tiene <span className="hero-emphasis">mucho más</span> para vivir.</h1>
+        </div>
+        <div id="presentacion" className="hero-media">{children}</div>
+        <div className="hero-copy">
+            <p className="text-base leading-relaxed text-text-secondary sm:text-lg">Estamos preparando JAKAWI, una nueva forma de descubrir experiencias, lugares y oportunidades para disfrutar más de Cochabamba.</p>
+            <p className="mt-4 text-xs font-extrabold tracking-widest">JAKAWI — VIVE MÁS. GASTA MENOS.</p>
+            <MarketingCTA location="hero" className="mt-5" />
             <p className="mt-3 text-xs text-text-muted">{open ? 'Registro gratuito en esta etapa.' : 'Estamos preparando la apertura. Los registros aún están cerrados.'}</p>
         </div>
-        <div id="presentacion" className="mx-auto mt-9 max-w-4xl sm:mt-12">{children}</div>
     </section>;
 }
 

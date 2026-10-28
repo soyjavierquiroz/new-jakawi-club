@@ -4,9 +4,9 @@ import { useEffect, useRef, useState } from 'react';
 import { createYoutubeEngine, parseYoutubeId } from './youtube-engine';
 import { initialPlaybackState, type VslEvent, type YoutubeEngine } from './types';
 
-type Props = { url: string | null; poster?: string | null; onEvent?: (event: VslEvent) => void };
+type Props = { url: string | null; poster?: string | null; aspectRatio?: '3:4' | '16:9'; sourceAspectRatio?: '3:4' | '16:9'; onEvent?: (event: VslEvent) => void };
 
-export function JakawiVslPlayer({ url, poster, onEvent }: Props) {
+export function JakawiVslPlayer({ url, poster, aspectRatio = '16:9', sourceAspectRatio = '16:9', onEvent }: Props) {
     const host = useRef<HTMLDivElement>(null);
     const region = useRef<HTMLDivElement>(null);
     const engine = useRef<YoutubeEngine | null>(null);
@@ -51,7 +51,7 @@ export function JakawiVslPlayer({ url, poster, onEvent }: Props) {
         if (!started || failed) setAttempt(value => value + 1);
         else engine.current?.play();
     }
-    return <div ref={region} className="vsl-player" data-vsl-mode="vsl" data-vsl-state={!valid ? 'unavailable' : started ? state.status : 'poster'} role="region" aria-label="Presentación de JAKAWI">
+    return <div ref={region} className="vsl-player" data-vsl-mode="vsl" data-vsl-aspect={aspectRatio} data-vsl-source-aspect={sourceAspectRatio} data-vsl-state={!valid ? 'unavailable' : started ? state.status : 'poster'} role="region" aria-label="Presentación de JAKAWI">
         <div className="vsl-frame" aria-busy={busy}>
             <div ref={host} className="vsl-host" />
             {(!started || !state.hasPlayed || failed || state.status === 'ended') && <div className="vsl-cover">

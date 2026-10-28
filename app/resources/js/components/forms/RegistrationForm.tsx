@@ -20,9 +20,9 @@ export function RegistrationForm({ open, referralCode }: { open: boolean; referr
         form.transform(data => ({ ...data, phone: phoneValue.current, referral_code: referralCode || '' }));
         form.post('/registro', { preserveScroll: true, onError: errors => { errorFocus.current = Object.keys(errors)[0] || null; } });
     }
-    return <div className="rounded-card border border-border bg-surface p-6 shadow-editorial sm:p-9">
+    return <div id="registro" tabIndex={-1} role="region" aria-labelledby="registration-form-title" className="registration-form rounded-card border border-border bg-surface p-6 shadow-editorial sm:p-9">
         <Flash />
-        <div className="mb-6 flex flex-wrap items-center justify-between gap-3"><h3 className="text-xl font-bold">Tu lugar en JAKAWI</h3><span className="rounded-chip bg-background px-3 py-1.5 text-[10px] font-semibold">{open ? 'REGISTROS ABIERTOS' : 'PRÓXIMAMENTE'}</span></div>
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-3"><h3 id="registration-form-title" className="text-xl font-bold">Tu lugar en JAKAWI</h3><span className="rounded-chip bg-background px-3 py-1.5 text-[10px] font-semibold">{open ? 'REGISTROS ABIERTOS' : 'PRÓXIMAMENTE'}</span></div>
         {!open && <div className="message mb-6" role="status"><strong className="block">Estamos preparando la apertura.</strong>Los registros todavía están cerrados. Este formulario se habilitará aquí cuando estemos listos.</div>}
         {referralCode && <p className="mb-5 text-sm text-text-secondary">Llegaste con una invitación JAKAWI.</p>}
         <form onSubmit={submit}>

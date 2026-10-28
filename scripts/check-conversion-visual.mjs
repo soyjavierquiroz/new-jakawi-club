@@ -130,12 +130,12 @@ try {
         await evaluate(`(()=>{const input=document.querySelector(${JSON.stringify(selector)});input.focus();input.select();})()`);
         await call('Input.insertText', { text: value });
     };
-    const screenshot = async name => {
-        const { data } = await call('Page.captureScreenshot', { format: 'png', captureBeyondViewport: true });
+    const screenshot = async (name, viewportOnly = false) => {
+        const { data } = await call('Page.captureScreenshot', { format: 'png', captureBeyondViewport: !viewportOnly });
         await writeFile(`${output}/${name}.png`, Buffer.from(data, 'base64'));
     };
     const checks = [];
-    for (const width of [390, 768, 1440]) {
+    for (const width of [390, 768, 1024, 1440]) {
         await call('Emulation.setDeviceMetricsOverride', { width, height: 900, deviceScaleFactor: 1, mobile: width === 390 });
         await navigate('/');
         const result = await evaluate(`(()=>{
@@ -143,18 +143,60 @@ try {
             const css=getComputedStyle(document.documentElement);
             return { overflow:document.documentElement.scrollWidth>innerWidth, h1:document.querySelector('h1').textContent, frameRatio:frame.width/frame.height, frameWidth:frame.width, fieldsetDisabled:document.querySelector('#registro fieldset').disabled, country:document.querySelector('.phone-country').textContent, videoState:document.querySelector('[data-vsl-state]').dataset.vslState, youtube:!!document.querySelector('iframe,script[src*="youtube"]'), formCount:document.querySelectorAll('#registro form').length, targets:[...document.querySelectorAll('[data-marketing-cta]')].map(a=>a.hash), coral:getComputedStyle(document.querySelector('.btn-primary')).backgroundColor, bodyFont:getComputedStyle(document.body).fontFamily, inputFont:getComputedStyle(document.querySelector('#phone')).fontFamily, brokenImages:[...document.images].filter(i=>i.getClientRects().length && i.getBoundingClientRect().top<innerHeight && i.getBoundingClientRect().bottom>0 && (!i.complete||!i.naturalWidth)).length, reduced:matchMedia('(prefers-reduced-motion: reduce)').matches, scroll:css.scrollBehavior, spinnerAnimation:getComputedStyle(document.querySelector('.vsl-frame')).animationName };
         })()`);
-        assert(!result.overflow); assert(Math.abs(result.frameRatio - 16 / 9) < .02); assert(result.frameWidth > 300);
+        assert(!result.overflow); assert(Math.abs(result.frameRatio - 3 / 4) < .02); assert(result.frameWidth > 300 && result.frameWidth <= 416);
         assert(result.fieldsetDisabled); assert(result.country.includes('+591')); assert.equal(result.videoState, 'unavailable'); assert(!result.youtube);
         assert.equal(result.formCount, 1); assert(result.targets.every(target => target === '#registro')); assert.equal(result.coral, rgb('brand'));
         assert(result.bodyFont.includes('Montserrat')); assert(result.inputFont.includes('Instrument Sans')); assert.equal(result.brokenImages, 0); assert(result.reduced); assert.equal(result.scroll, 'auto');
         assert(result.h1.includes('Tu ciudad tiene'));
         assert(await evaluate(`document.querySelector('.phone-country img').getAttribute('src') === '/marketing/flags/BO.svg'`));
+        const geometry = await evaluate(`(()=>{
+            const heading=document.querySelector('.hero-heading'),copy=document.querySelector('.hero-copy'),media=document.querySelector('.hero-media');
+            const h=heading.getBoundingClientRect(),c=copy.getBoundingClientRect(),m=media.getBoundingClientRect();
+            return { headingBottom:h.bottom, mediaTop:m.top, mediaBottom:m.bottom, copyTop:c.top, centerOffset:Math.abs((h.top+c.bottom)/2-(m.top+m.bottom)/2), align:getComputedStyle(heading).textAlign, mediaLeft:m.left, headingRight:h.right, players:document.querySelectorAll('.vsl-player').length, titleOverflow:document.querySelector('h1').scrollWidth>document.querySelector('h1').clientWidth, fieldHeights:[...document.querySelectorAll('#registro .input, #registro .phone-country')].filter(el=>el.getClientRects().length).map(el=>el.getBoundingClientRect().height), videoTop:m.top };
+        })()`);
+        assert.equal(geometry.players, 1); assert(!geometry.titleOverflow); assert(geometry.fieldHeights.every(h=>h>=48));
+        if (width >= 1024) { assert.equal(geometry.align, 'left'); assert(geometry.headingRight < geometry.mediaLeft); assert(geometry.centerOffset < 2, 'Desktop copy is vertically centered against the player'); }
+        else { assert.equal(geometry.align, 'center'); assert(geometry.headingBottom <= geometry.mediaTop && geometry.mediaBottom <= geometry.copyTop); assert(geometry.videoTop < 360, 'Video follows the title without excessive empty space'); }
+        if (width === 390) await until(`!document.querySelector('.mobile-sticky-cta').hidden`, 'Mobile sticky appears outside the form');
+        else assert(await evaluate(`getComputedStyle(document.querySelector('.mobile-sticky-cta')).display==='none'`), 'No desktop/tablet sticky');
+        result.geometry = geometry;
         checks.push({ name: 'landing', width, ...result });
-        if (width !== 768) await screenshot(`landing-${width}`);
-        await evaluate(`document.querySelector('[data-marketing-cta="hero"]').click()`);
+        await screenshot(`landing-${width}`);
+        if (width === 390 || width === 1440) await screenshot(`hero-${width}`, true);
+        const clickTarget = width === 390 ? 'sticky' : 'hero';
+        await evaluate(`document.querySelector('[data-marketing-cta="${clickTarget}"]').click()`);
         await until(`location.hash === '#registro'`, 'CTA points to the only registration form');
+        assert(await evaluate(`document.activeElement.id==='registro' && document.activeElement.getBoundingClientRect().top>=0`), 'Anchor focuses the real form, including when registration is closed');
+        if (width === 390) {
+            await until(`document.querySelector('.mobile-sticky-cta').hidden`, 'Sticky hides when the form is visible');
+            await screenshot('registration-390');
+            await evaluate(`scrollTo({top:0,behavior:'instant'})`);
+            await until(`!document.querySelector('.mobile-sticky-cta').hidden`, 'Sticky returns after leaving the form');
+            await evaluate(`Object.defineProperty(visualViewport,'height',{configurable:true,value:innerHeight-300});visualViewport.dispatchEvent(new Event('resize'))`);
+            await until(`document.querySelector('.mobile-sticky-cta').hidden`, 'Sticky hides for keyboard viewport shrink');
+            await evaluate(`delete visualViewport.height;visualViewport.dispatchEvent(new Event('resize'))`);
+            await until(`!document.querySelector('.mobile-sticky-cta').hidden`, 'Sticky returns when keyboard closes');
+            await evaluate(`document.querySelector('dialog').showModal();scrollTo({top:0,behavior:'instant'})`);
+            await until(`document.querySelector('.mobile-sticky-cta').hidden`, 'Open modal suppresses the sticky');
+            await evaluate(`document.querySelector('dialog').close();document.activeElement.blur();scrollTo({top:0,behavior:'instant'})`);
+            await until(`!document.querySelector('.mobile-sticky-cta').hidden`, 'Sticky returns after modal closes');
+            await evaluate(`scrollTo({top:document.documentElement.scrollHeight,behavior:'instant'})`);
+            await until(`!document.querySelector('.mobile-sticky-cta').hidden`, 'Sticky remains available after the form');
+            assert(await evaluate(`document.querySelector('footer').getBoundingClientRect().bottom<=document.querySelector('.mobile-sticky-cta').getBoundingClientRect().top`), 'Compensating space keeps the entire footer above the fixed CTA');
+            await screenshot('footer-sticky-390');
+            await navigate('/#registro');
+            await until(`document.querySelector('#registro').getBoundingClientRect().top<innerHeight && document.querySelector('.mobile-sticky-cta').hidden`, 'Direct registration deep link never shows an overlapping sticky');
+            checks.push({ name: 'sticky-form-keyboard-dialog-deeplink-footer', width, passed: true, keyboard: 'VisualViewport resize fixture; physical keyboard check pending' });
+        }
         await until(`document.querySelector('.phone-country img').complete && document.querySelector('.phone-country img').naturalWidth > 0`, 'Local Bolivia flag loads when the form is visible');
         await navigate('/__conversion/registration');
+        if (width === 390) {
+            await until(`!document.querySelector('.mobile-sticky-cta').hidden`, 'Open-form browser fixture starts with sticky');
+            await evaluate(`document.querySelector('#name').focus({preventScroll:true})`);
+            await until(`document.querySelector('.mobile-sticky-cta').hidden`, 'Editing a field hides sticky before keyboard resize');
+            await evaluate(`document.activeElement.blur()`);
+            await until(`!document.querySelector('.mobile-sticky-cta').hidden`, 'Sticky returns after leaving the input');
+        }
         await evaluate(`document.querySelector('.phone-country').click()`);
         assert(await evaluate(`document.querySelector('dialog').open && document.activeElement.id === 'country-search'`));
         await fill('#country-search', 'espana');
@@ -204,15 +246,53 @@ try {
         const startsBefore = metrics.filter(event => event.event === 'video_start').length;
         await evaluate(`window.__vslOptions.events.onStateChange({data:1})`);
         await until(`document.querySelector('[data-vsl-state]').dataset.vslState === 'playing'`, 'Provider playing event drives UI');
+        const sourceFrame = await evaluate(`(()=>{const f=document.querySelector('.vsl-frame').getBoundingClientRect(),i=document.querySelector('.vsl-host iframe').getBoundingClientRect();return {ratio:i.width/i.height,safe:i.top>=f.top&&i.bottom<=f.bottom&&i.left>=f.left&&i.right<=f.right};})()`);
+        assert(Math.abs(sourceFrame.ratio-16/9)<.02 && sourceFrame.safe, 'Horizontal source fits safely inside the vertical presentation');
+        if (width === 390) await until(`document.querySelector('.mobile-sticky-cta').hidden`, 'Active visible VSL suppresses sticky');
         for (let i = 0; metrics.filter(event => event.event === 'video_start').length === startsBefore && i < 50; i++) await pause(75);
         assert(metrics.filter(event => event.event === 'video_start').length > startsBefore);
         await evaluate(`document.querySelector('.vsl-controls button').click()`);
         await until(`document.querySelector('[data-vsl-state]').dataset.vslState === 'paused'`, 'VSL pause control');
+        if (width === 390) {
+            assert(await evaluate(`document.querySelector('.mobile-sticky-cta').hidden`), 'Paused player keeps controls unobstructed');
+            await evaluate(`scrollTo({top:document.documentElement.scrollHeight,behavior:'instant'})`);
+            await until(`!document.querySelector('.mobile-sticky-cta').hidden`, 'Sticky returns once the active player leaves the viewport');
+            const fullscreen = await call('Runtime.evaluate', { expression: `document.querySelector('.vsl-player').requestFullscreen().then(()=>true)`, userGesture: true, awaitPromise: true, returnByValue: true });
+            assert(!fullscreen.exceptionDetails, 'Player can enter fullscreen');
+            await until(`!!document.fullscreenElement && document.querySelector('.mobile-sticky-cta').hidden`, 'Fullscreen suppresses the sticky');
+            assert(await evaluate(`(()=>{const f=document.querySelector('.vsl-frame').getBoundingClientRect();return f.top>=0&&f.bottom<=innerHeight&&Math.abs(f.width/f.height-3/4)<.02;})()`), 'Vertical fullscreen frame fits safely');
+            await screenshot('video-fullscreen-390', true);
+            await evaluate(`document.exitFullscreen()`);
+            await until(`!document.fullscreenElement`, 'Fullscreen exits normally');
+        }
         await evaluate(`window.__vslOptions.events.onError({data:150})`);
         await until(`!!document.querySelector('.vsl-error[role="alert"]')`, 'Video failure feedback and retry');
         if (width !== 768) await screenshot(`video-error-${width}`);
         checks.push({ name: 'lazy-vsl-real-event-contract-controls-error', width, passed: true, provider: 'browser API fixture; no approved LIVE video' });
     }
+    // A short desktop viewport must scroll naturally; responsive changes reuse one player.
+    await call('Emulation.setDeviceMetricsOverride', { width: 1024, height: 600, deviceScaleFactor: 1, mobile: false });
+    await navigate('/');
+    assert(await evaluate(`(()=>{const hero=document.querySelector('.conversion-hero'),f=document.querySelector('.vsl-frame').getBoundingClientRect(),c=document.querySelector('.hero-copy').getBoundingClientRect();return document.documentElement.scrollWidth<=innerWidth&&getComputedStyle(hero).overflowY==='visible'&&document.documentElement.scrollHeight>innerHeight&&c.bottom>c.top&&f.height>400;})()`), 'Short desktop viewport does not crop the hero');
+    await screenshot('landing-1024-short');
+    await call('Emulation.setDeviceMetricsOverride', { width: 390, height: 740, deviceScaleFactor: 1, mobile: true });
+    await until(`document.querySelector('.mobile-sticky-cta').hidden`, 'Short mobile viewport keeps the fixed CTA off the video frame');
+    await screenshot('hero-390-short', true);
+    await call('Emulation.setDeviceMetricsOverride', { width: 390, height: 844, deviceScaleFactor: 1, mobile: true });
+    await evaluate(`scrollTo({top:document.querySelector('#como-funciona').offsetTop,behavior:'instant'})`);
+    await until(`!document.querySelector('.mobile-sticky-cta').hidden`, 'Crossing to mobile enables sticky');
+    await call('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: 'no-preference' }] });
+    assert(await evaluate(`getComputedStyle(document.documentElement).scrollBehavior==='smooth'`));
+    await evaluate(`document.querySelector('[data-marketing-cta="sticky"]').click()`);
+    await until(`document.activeElement.id==='registro' && Math.abs(document.querySelector('#registro').getBoundingClientRect().top-48)<3`, 'Smooth navigation arrives at the focused form without a second jump');
+    await until(`document.querySelector('.mobile-sticky-cta').hidden`, 'Form arrival suppresses sticky with normal motion');
+    await call('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: 'reduce' }] });
+    await evaluate(`document.activeElement.blur();scrollTo({top:document.querySelector('#como-funciona').offsetTop,behavior:'instant'})`);
+    await until(`!document.querySelector('.mobile-sticky-cta').hidden`, 'Sticky returns with reduced motion');
+    await evaluate(`document.querySelector('[data-marketing-cta="sticky"]').focus()`);
+    assert(await evaluate(`(()=>{const s=getComputedStyle(document.activeElement);return s.outlineStyle!=='none'&&parseFloat(s.outlineWidth)>=2;})()`), 'Keyboard focus has a visible outline');
+    await screenshot('sticky-focus-390');
+    checks.push({ name: 'short-desktop-breakpoint-motion-focus', passed: true });
     await navigate('/__conversion/video-error');
     await evaluate(`document.querySelector('.vsl-play').click()`);
     await until(`document.querySelector('[data-vsl-state]').dataset.vslState === 'error'`, 'API load failure is recoverable');
@@ -221,7 +301,7 @@ try {
     assert(!metrics.some(event => event.event === 'registration_completed'), 'Conversion never originates from a browser click');
     assert.deepEqual(runtimeErrors, []); assert.deepEqual(failedAssets, []);
     await writeFile(`${output}/visual-validation.json`, JSON.stringify({ checks, browser_api_fixtures: true, no_live_test_accounts: true, live_registration_closed: true, api_loading_error_retry: true, metrics_vocabulary_verified: true, runtime_errors: runtimeErrors, failed_assets: failedAssets }, null, 2) + '\n');
-    console.log(`${checks.length} grouped responsive checks passed: landing, keyboard/search/country/E.164/form states and VSL lifecycle; 390, 768, 1440 px.`);
+    console.log(`${checks.length} grouped responsive checks passed: geometry, sticky, keyboard/search/country/E.164/form states and VSL lifecycle; 390, 768, 1024, 1440 px.`);
 } catch (error) {
     console.error(browserMessages.find(message => message.includes('FATAL')) || 'Browser check failed; see assertion below.');
     throw error;

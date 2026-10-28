@@ -1,10 +1,10 @@
 {
-  "validated_at": "2026-10-28T10:47:04.829584-04:00",
+  "validated_at": "2026-10-28T18:34:42.320911-04:00",
   "compose_valid": true,
   "local_http": 200,
   "inertia_http": 200,
   "assets": {
-    "assets/UI-DRNnvjpF.js": 200,
+    "assets/UI-DRMsKpVq.js": 200,
     "assets/instrument-sans-400-normal-DRC__1Mx.woff2": 200,
     "assets/instrument-sans-500-normal-Dk9ku72i.woff2": 200,
     "assets/instrument-sans-600-normal-B7fBEWYG.woff2": 200,
@@ -13,13 +13,13 @@
     "assets/montserrat-600-normal-UVxSCcoG.woff2": 200,
     "assets/montserrat-700-normal-BdjcYUrC.woff2": 200,
     "assets/montserrat-800-normal-axpkC1rd.woff2": 200,
-    "assets/app-PlVnrfVG.js": 200,
-    "assets/app-Dzh5O--Y.css": 200,
-    "assets/Auth-rnlNPiCV.js": 200,
-    "assets/Dashboard-CnGEjkuz.js": 200,
-    "assets/Privacy-F5007IuO.js": 200,
-    "assets/Registered-CyOJIPac.js": 200,
-    "assets/Welcome-gSShlcoE.js": 200
+    "assets/app-C_11kKWy.js": 200,
+    "assets/app-BxKEv2pT.css": 200,
+    "assets/Auth-Bs1lygXS.js": 200,
+    "assets/Dashboard-DAIY3gpw.js": 200,
+    "assets/Privacy-BBYkQH3n.js": 200,
+    "assets/Registered-BlCMZTaX.js": 200,
+    "assets/Welcome-DFApDaNx.js": 200
   },
   "app": {
     "php": "8.4.27",
@@ -104,13 +104,6 @@
   "protected_baseline": {
     "container_ids_unchanged": 43,
     "infrastructure_files_unchanged": 21,
-    "automatic_foreign_restarts_observed": [
-      {
-        "name": "jakawi-worker-1",
-        "before": 11,
-        "after": 12,
-        "started_at": "2026-10-28T14:32:35.159703601Z"
-      }
-    ]
+    "automatic_foreign_restarts_observed": []
   }
 }

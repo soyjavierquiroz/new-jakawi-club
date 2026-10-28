@@ -5,7 +5,7 @@
       "width": 390,
       "overflow": false,
       "h1": "Tu ciudad tiene mucho más para vivir.",
-      "frameRatio": 1.7777777777777777,
+      "frameRatio": 0.7500081835739304,
       "frameWidth": 358,
       "fieldsetDisabled": true,
       "country": "+591⌄",
@@ -14,6 +14,7 @@
       "formCount": 1,
       "targets": [
         "#registro",
+        "#registro",
         "#registro"
       ],
       "coral": "rgb(255, 90, 79)",
@@ -22,7 +23,32 @@
       "brokenImages": 0,
       "reduced": true,
       "scroll": "auto",
-      "spinnerAnimation": "none"
+      "spinnerAnimation": "none",
+      "geometry": {
+        "headingBottom": 269.75,
+        "mediaTop": 293.75,
+        "mediaBottom": 823.078125,
+        "copyTop": 847.078125,
+        "centerOffset": 46.625,
+        "align": "center",
+        "mediaLeft": 16,
+        "headingRight": 374,
+        "players": 1,
+        "titleOverflow": false,
+        "fieldHeights": [
+          50,
+          50,
+          50,
+          50
+        ],
+        "videoTop": 293.75
+      }
+    },
+    {
+      "name": "sticky-form-keyboard-dialog-deeplink-footer",
+      "width": 390,
+      "passed": true,
+      "keyboard": "VisualViewport resize fixture; physical keyboard check pending"
     },
     {
       "name": "phone-country-search-keyboard-e164-form-error",
@@ -40,14 +66,15 @@
       "width": 768,
       "overflow": false,
       "h1": "Tu ciudad tiene mucho más para vivir.",
-      "frameRatio": 1.7777777777777777,
-      "frameWidth": 720,
+      "frameRatio": 0.7500140853005803,
+      "frameWidth": 416,
       "fieldsetDisabled": true,
       "country": "+591⌄",
       "videoState": "unavailable",
       "youtube": false,
       "formCount": 1,
       "targets": [
+        "#registro",
         "#registro",
         "#registro"
       ],
@@ -57,7 +84,26 @@
       "brokenImages": 0,
       "reduced": true,
       "scroll": "auto",
-      "spinnerAnimation": "none"
+      "spinnerAnimation": "none",
+      "geometry": {
+        "headingBottom": 241.5,
+        "mediaTop": 265.5,
+        "mediaBottom": 872.15625,
+        "copyTop": 896.15625,
+        "centerOffset": 50.625,
+        "align": "center",
+        "mediaLeft": 176,
+        "headingRight": 704,
+        "players": 1,
+        "titleOverflow": false,
+        "fieldHeights": [
+          50,
+          50,
+          50,
+          50
+        ],
+        "videoTop": 265.5
+      }
     },
     {
       "name": "phone-country-search-keyboard-e164-form-error",
@@ -72,17 +118,18 @@
     },
     {
       "name": "landing",
-      "width": 1440,
+      "width": 1024,
       "overflow": false,
       "h1": "Tu ciudad tiene mucho más para vivir.",
-      "frameRatio": 1.7777777777777777,
-      "frameWidth": 896,
+      "frameRatio": 0.7500140853005803,
+      "frameWidth": 416,
       "fieldsetDisabled": true,
       "country": "+591⌄",
       "videoState": "unavailable",
       "youtube": false,
       "formCount": 1,
       "targets": [
+        "#registro",
         "#registro",
         "#registro"
       ],
@@ -92,7 +139,81 @@
       "brokenImages": 0,
       "reduced": true,
       "scroll": "auto",
-      "spinnerAnimation": "none"
+      "spinnerAnimation": "none",
+      "geometry": {
+        "headingBottom": 406.328125,
+        "mediaTop": 129,
+        "mediaBottom": 735.65625,
+        "copyTop": 406.328125,
+        "centerOffset": 0,
+        "align": "left",
+        "mediaLeft": 575.984375,
+        "headingRight": 511.25,
+        "players": 1,
+        "titleOverflow": false,
+        "fieldHeights": [
+          50,
+          50,
+          50,
+          50
+        ],
+        "videoTop": 129
+      }
+    },
+    {
+      "name": "phone-country-search-keyboard-e164-form-error",
+      "width": 1024,
+      "passed": true
+    },
+    {
+      "name": "lazy-vsl-real-event-contract-controls-error",
+      "width": 1024,
+      "passed": true,
+      "provider": "browser API fixture; no approved LIVE video"
+    },
+    {
+      "name": "landing",
+      "width": 1440,
+      "overflow": false,
+      "h1": "Tu ciudad tiene mucho más para vivir.",
+      "frameRatio": 0.7500140853005803,
+      "frameWidth": 416,
+      "fieldsetDisabled": true,
+      "country": "+591⌄",
+      "videoState": "unavailable",
+      "youtube": false,
+      "formCount": 1,
+      "targets": [
+        "#registro",
+        "#registro",
+        "#registro"
+      ],
+      "coral": "rgb(255, 90, 79)",
+      "bodyFont": "Montserrat, ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+      "inputFont": "\"Instrument Sans\", ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+      "brokenImages": 0,
+      "reduced": true,
+      "scroll": "auto",
+      "spinnerAnimation": "none",
+      "geometry": {
+        "headingBottom": 427.515625,
+        "mediaTop": 129,
+        "mediaBottom": 735.65625,
+        "copyTop": 427.515625,
+        "centerOffset": 0,
+        "align": "left",
+        "mediaLeft": 847.984375,
+        "headingRight": 723.71875,
+        "players": 1,
+        "titleOverflow": false,
+        "fieldHeights": [
+          50,
+          50,
+          50,
+          50
+        ],
+        "videoTop": 129
+      }
     },
     {
       "name": "phone-country-search-keyboard-e164-form-error",
@@ -104,6 +225,10 @@
       "width": 1440,
       "passed": true,
       "provider": "browser API fixture; no approved LIVE video"
+    },
+    {
+      "name": "short-desktop-breakpoint-motion-focus",
+      "passed": true
     }
   ],
   "browser_api_fixtures": true,

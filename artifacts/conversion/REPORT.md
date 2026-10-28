@@ -1,5 +1,7 @@
 # Landing de conversión JAKAWI
 
+Este documento conserva el informe de la integración inicial. La composición responsive, geometría 3:4, CTA móvil y validaciones actuales se describen en [el informe responsive](../responsive/REPORT.md). Los archivos de evidencia de este directorio se actualizan con esa validación.
+
 Implementada y desplegada exclusivamente en `jakawi.club`, sobre el baseline `b4527e06012ddd1e9de769b21282a232fb9a0a99`. Registro público cerrado. No se modificaron DNS, Traefik, otros proyectos, datos reales de usuarios ni credenciales.
 
 ## Componentes y archivos
