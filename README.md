@@ -99,6 +99,12 @@ El código se monta en solo lectura. Después de cambios de código y de regener
 
 Límites de RAM: PHP-FPM 256 MiB, Nginx 48 MiB y PostgreSQL 192 MiB; total 496 MiB. FPM utiliza como máximo dos workers bajo demanda. Los logs de Laravel rotan diariamente durante siete días; los logs Docker están limitados a 2 × 5 MiB por servicio. Pendiente operativo de la base técnica: definir backup externo de PostgreSQL/storage y rotación de los logs de Nginx.
 
-Informes: [base técnica](artifacts/base-tecnica/REPORT.md) y [publicación HTTPS](artifacts/https-publication/REPORT.md). Esta fase publica únicamente la portada existente; no implementa registro, referidos, membresías ni pagos.
+El MVP de captación incluye landing, registro sin contraseña inicial, activación/verificación de correo, login/logout, recuperación, perfil, enlaces de referido permanentes, atribución del primer referente y dashboard de membresía gratuita. La bienvenida previa a verificar correo es genérica para no revelar cuentas existentes; tras activar muestra el enlace personal. No incluye compras, comisiones ni liquidaciones.
+
+**El registro público permanece cerrado.** La apertura exige `JAKAWI_REGISTRATION_OPEN=true`, `JAKAWI_TRANSACTIONAL_MAIL_READY=true` y un SMTP real aprobado. Con `MAIL_MAILER=log` no se puede abrir ni se escriben notificaciones de acceso en logs. Video, evento y WhatsApp se configuran desde Laravel y permanecen vacíos hasta disponer de contenido aprobado.
+
+Pruebas focalizadas sin dependencias PHP de desarrollo: `bash scripts/test-mvp.sh`. Usa PostgreSQL en un esquema temporal aislado, sesiones de prueba y notificaciones simuladas; no crea usuarios LIVE. TypeScript y build secuenciales: `bash scripts/build-frontend.sh`. Las dependencias no cambiaron y no necesitan reinstalarse.
+
+Informes: [MVP](artifacts/mvp/REPORT.md), [operación y apertura](artifacts/mvp/OPERACION.md), [rollback del MVP](artifacts/mvp/ROLLBACK.md), [base técnica](artifacts/base-tecnica/REPORT.md) y [publicación HTTPS inicial](artifacts/https-publication/REPORT.md). El rollback del MVP conserva datos y la migración aditiva; no utiliza el rollback de publicación HTTPS.
 
 Referencias de integración: [Laravel 13](https://laravel.com/docs/13.x/releases), [Inertia 3](https://inertiajs.com/docs/v3/installation/server-side-setup), [Vite](https://vite.dev/guide/).

@@ -1,5 +1,5 @@
 {
-  "validated_at": "2026-10-28T00:53:42.779238-04:00",
+  "validated_at": "2026-10-28T01:52:41.158616-04:00",
   "dns": {
     "1.1.1.1/jakawi.club": [
       "167.71.107.80"
@@ -40,6 +40,24 @@
     "https://www.jakawi.club/up?check=publication": {
       "status": 301,
       "location": "https://jakawi.club/up?check=publication"
+    },
+    "https://jakawi.club/login": {
+      "status": 200
+    },
+    "https://jakawi.club/recuperar-password": {
+      "status": 200
+    },
+    "https://jakawi.club/privacidad": {
+      "status": 200
+    },
+    "https://jakawi.club/dashboard": {
+      "status": 302,
+      "guest_redirect": true
+    },
+    "https://jakawi.club/registro": {
+      "status": 403,
+      "valid_csrf": true,
+      "registration_closed": true
     }
   },
   "tls": {
@@ -76,15 +94,35 @@
   },
   "inertia_http": 200,
   "assets": {
-    "assets/app-dvtT45f9.js": {
+    "assets/UI-CTbpeYxB.js": {
       "status": 200,
       "content_type": "application/javascript; charset=utf-8"
     },
-    "assets/app-Z-V-md5s.css": {
+    "assets/app-CwLwojVN.js": {
+      "status": 200,
+      "content_type": "application/javascript; charset=utf-8"
+    },
+    "assets/app-TtcChAtT.css": {
       "status": 200,
       "content_type": "text/css"
     },
-    "assets/Welcome-D8Jd6bAH.js": {
+    "assets/Auth-DSiz28jM.js": {
+      "status": 200,
+      "content_type": "application/javascript; charset=utf-8"
+    },
+    "assets/Dashboard-C6peDWGz.js": {
+      "status": 200,
+      "content_type": "application/javascript; charset=utf-8"
+    },
+    "assets/Privacy-H5V0xDWc.js": {
+      "status": 200,
+      "content_type": "application/javascript; charset=utf-8"
+    },
+    "assets/Registered-BAmvIeMK.js": {
+      "status": 200,
+      "content_type": "application/javascript; charset=utf-8"
+    },
+    "assets/Welcome-DTwwvuwC.js": {
       "status": 200,
       "content_type": "application/javascript; charset=utf-8"
     }
@@ -94,7 +132,9 @@
     "debug": false,
     "url": "https://jakawi.club",
     "secure_session_cookie": true,
-    "mail": "log"
+    "mail": "log",
+    "registration_open": false,
+    "transactional_mail_ready": false
   },
   "containers": {
     "jakawi-club-app": {
@@ -140,7 +180,9 @@
   "dedicated_dynamic_file_matches_repository": true,
   "protected_baseline": {
     "foreign_containers_unchanged": 40,
-    "app_and_db_lifecycle_and_networks_unchanged": true,
+    "app_and_db_ids_and_networks_unchanged": true,
+    "db_lifecycle_unchanged": true,
+    "app_restart_allowed_for_opcache_deployment": true,
     "existing_traefik_files_unchanged": 19,
     "project_credentials_unchanged": true
   },

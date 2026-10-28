@@ -1,0 +1,40 @@
+import { Link, usePage } from '@inertiajs/react';
+import { useRef, useState, type ReactNode } from 'react';
+import type { Launch } from '../types';
+
+export function Arrow() {
+    return <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6" /></svg>;
+}
+export function Header() {
+    const { signed_in } = usePage<{ signed_in: boolean }>().props;
+    return <header className="site-header"><div className="shell flex min-h-22 items-center justify-between gap-5"><Link href="/" aria-label="JAKAWI, inicio" className="wordmark">JAKAWI<span className="text-lime">.</span></Link><nav aria-label="Navegación principal" className="flex items-center gap-5 text-sm font-semibold sm:gap-9"><a className="hidden text-white/70 hover:text-white md:block" href="/#como-funciona">La comunidad</a><a className="hidden text-white/70 hover:text-white sm:block" href="/#en-vivo">En vivo</a><Link className="nav-access" href={signed_in ? '/dashboard' : '/login'}>{signed_in ? 'Mi cuenta' : 'Ingresar'} <Arrow /></Link></nav></div></header>;
+}
+export function Footer() {
+    return <footer className="border-t border-ink/10 bg-paper"><div className="shell flex flex-col justify-between gap-6 py-10 text-sm sm:flex-row sm:items-center"><div><Link href="/" className="wordmark text-ink">JAKAWI.</Link><p className="mt-2 text-ink/60">VIVE MÁS. GASTA MENOS.</p></div><div className="flex flex-wrap gap-6"><Link href="/privacidad">Privacidad y cookies</Link><Link href="/login">Mi cuenta</Link><span className="text-ink/50">jakawi.club</span></div></div></footer>;
+}
+export function Flash() {
+    const { status } = usePage<{ status?: string }>().props;
+    return status ? <div role="status" className="mb-6 rounded-xl border border-ink/15 bg-lime/25 px-5 py-4 text-sm leading-relaxed">{status}</div> : null;
+}
+export function ErrorText({ children, id }: { children?: string; id?: string }) {
+    return children ? <p id={id} role="alert" className="mt-2 text-sm text-red-800">{children}</p> : null;
+}
+export function ReferralLink({ url }: { url: string }) {
+    const [message, setMessage] = useState('');
+    const input = useRef<HTMLInputElement>(null);
+    async function copy() {
+        try { await navigator.clipboard.writeText(url); setMessage('¡Enlace copiado!'); }
+        catch { input.current?.select(); setMessage('Selecciona y copia el enlace.'); }
+    }
+    return <div><label htmlFor="personal-link" className="mb-3 block text-sm font-semibold">Tu enlace personal</label><div className="flex flex-col gap-3 sm:flex-row"><input ref={input} id="personal-link" readOnly value={url} className="input min-w-0 flex-1 font-mono text-sm" onFocus={(e) => e.target.select()} /><button type="button" className="btn btn-dark shrink-0" onClick={() => void copy()}>Copiar enlace <Arrow /></button></div><p role="status" className="mt-2 min-h-5 text-sm text-ink/65">{message || 'Compártelo con las personas que quieras invitar.'}</p></div>;
+}
+export function EventCard({ launch }: { launch: Launch }) {
+    const event = launch.event;
+    return <div><p className="eyebrow">PRÓXIMO ENCUENTRO</p><h3 className="mt-4 text-2xl font-semibold tracking-tight">{event?.title || 'Lo que viene, en primera fila.'}</h3>{event ? <><p className="mt-4 text-ink/65"><time dateTime={event.starts_at}>{new Intl.DateTimeFormat('es-BO', { dateStyle: 'long', timeStyle: 'short', timeZone: 'America/La_Paz' }).format(new Date(event.starts_at))} (Bolivia)</time></p>{event.zoom_url && <a className="btn btn-dark mt-6" href={event.zoom_url} target="_blank" rel="noopener noreferrer">Entrar al encuentro <Arrow /></a>}</> : <p className="mt-4 leading-relaxed text-ink/65">Estamos preparando nuestro próximo lanzamiento en vivo. Aquí encontrarás la fecha y los detalles cuando estén confirmados.</p>}</div>;
+}
+export function Community({ launch }: { launch: Launch }) {
+    return <div><p className="eyebrow">SIGAMOS EN CONTACTO</p><h3 className="mt-4 text-2xl font-semibold tracking-tight">La conversación continúa.</h3><p className="mt-4 leading-relaxed text-ink/65">Un espacio para acompañar el lanzamiento de JAKAWI y conocer las novedades.</p>{launch.whatsapp_url ? <a href={launch.whatsapp_url} target="_blank" rel="noopener noreferrer" className="btn btn-dark mt-6">Unirme a WhatsApp <Arrow /></a> : <p className="mt-6 inline-flex rounded-full border border-ink/15 px-4 py-2 text-xs font-semibold">Comunidad de WhatsApp · Próximamente</p>}</div>;
+}
+export function PageFrame({ children, narrow = false }: { children: ReactNode; narrow?: boolean }) {
+    return <><Header /><main className={`shell py-12 sm:py-20 ${narrow ? 'max-w-2xl!' : ''}`}><Flash />{children}</main><Footer /></>;
+}

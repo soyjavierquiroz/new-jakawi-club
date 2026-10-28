@@ -48,8 +48,8 @@ status, payload = get('http://127.0.0.1:18082/', **{
 })
 page = json.loads(payload)
 assert status == 200 and page['component'] == 'Welcome'
-assert page['props']['heading'] == 'JAKAWI Launch Engine'
-assert page['props']['message'] == 'Próximamente en jakawi.club'
+assert page['props']['launch']['registration_open'] is False
+assert page['props']['launch']['event'] is None
 assets = json.loads((ROOT / 'app/public/build/manifest.json').read_text())
 asset_checks = {}
 for entry in assets.values():
@@ -90,7 +90,8 @@ assert not any(app[key] for key in ['db_superuser','db_create_database','db_crea
 assert app['connection'] == 'pgsql' and app['mail'] == 'log'
 assert all(app[key] == 'database' for key in ['cache','queue','session'])
 assert app['database_cache_roundtrip'] and app['sessions_written'] and app['independent_key_valid']
-assert len(app['migrations']) == 3
+assert len(app['migrations']) == 4
+assert '2026_10_28_000001_extend_users_for_launch' in app['migrations']
 
 names = ['jakawi-club-app', 'jakawi-club-web', 'jakawi-club-db']
 inspected = json.loads(command(['docker','inspect',*names]))
@@ -123,6 +124,8 @@ assert len(private['Containers']) == 3
 
 protected = None
 baseline_path = ROOT / 'artifacts/base-tecnica/baseline.json'
+if (ROOT / 'artifacts/mvp/baseline.json').exists():
+    baseline_path = ROOT / 'artifacts/mvp/baseline.json'
 if baseline_path.exists():
     baseline = json.loads(baseline_path.read_text())
     old = json.loads(command(['docker','inspect',*baseline['containers']]))
@@ -130,7 +133,8 @@ if baseline_path.exists():
         name = container['Name'].lstrip('/')
         before = baseline['containers'][name]
         assert container['Id'] == before['id'], f'{name}: ID changed'
-        assert container['State']['StartedAt'] == before['started_at'], f'{name}: start time changed'
+        if name != 'jakawi-club-app':
+            assert container['State']['StartedAt'] == before['started_at'], f'{name}: start time changed'
         assert container['RestartCount'] == before['restart_count'], f'{name}: restarted'
         assert container['State']['Running'], f'{name}: stopped'
         if before['health'] == 'healthy':

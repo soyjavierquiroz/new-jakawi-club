@@ -4,6 +4,7 @@ from datetime import datetime
 from hashlib import sha256
 from html.parser import HTMLParser
 import json
+import http.cookiejar
 from pathlib import Path
 import re
 import socket
@@ -11,6 +12,7 @@ import ssl
 import subprocess
 import urllib.error
 import urllib.request
+from urllib.parse import unquote
 from zoneinfo import ZoneInfo
 
 ROOT = Path('/opt/sites/jakawi.club')
@@ -111,8 +113,32 @@ code, _, payload = get('https://jakawi.club/', {
 })
 page = json.loads(payload)
 assert code == 200 and page['component'] == 'Welcome'
-assert page['props']['heading'] == 'JAKAWI Launch Engine'
-assert page['props']['message'] == 'Próximamente en jakawi.club'
+assert page['props']['launch']['registration_open'] is False
+assert page['props']['launch']['event'] is None
+
+# Focused MVP checks: no test account is submitted to the public application.
+for path in ['/login', '/recuperar-password', '/privacidad']:
+    code, _, content = get('https://jakawi.club' + path)
+    assert code == 200 and 'id="app"' in content
+    checks['https://jakawi.club' + path] = {'status': code}
+code, headers, _ = get('https://jakawi.club/dashboard')
+assert code == 302 and headers.get('Location') == 'https://jakawi.club/login'
+checks['https://jakawi.club/dashboard'] = {'status': code, 'guest_redirect': True}
+jar = http.cookiejar.CookieJar()
+browser = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(jar), NoRedirect())
+with browser.open('https://jakawi.club/', timeout=15) as response:
+    response.read()
+xsrf = next(cookie.value for cookie in jar if cookie.name == 'XSRF-TOKEN')
+registration_request = urllib.request.Request('https://jakawi.club/registro', data=b'{}', headers={
+    'Accept': 'application/json', 'Content-Type': 'application/json', 'X-XSRF-TOKEN': unquote(xsrf),
+})
+try:
+    response = browser.open(registration_request, timeout=15)
+except urllib.error.HTTPError as error:
+    response = error
+with response:
+    assert response.status == 403
+checks['https://jakawi.club/registro'] = {'status': 403, 'valid_csrf': True, 'registration_closed': True}
 
 manifest = json.loads((ROOT / 'app/public/build/manifest.json').read_text())
 assets = {}
@@ -133,11 +159,14 @@ echo json_encode([
  'environment' => app()->environment(), 'debug' => config('app.debug'),
  'url' => config('app.url'), 'secure_session_cookie' => config('session.secure'),
  'mail' => config('mail.default'),
+ 'registration_open' => App\Support\LaunchSettings::registrationOpen(),
+ 'transactional_mail_ready' => App\Support\LaunchSettings::mailReady(),
 ]);
 '''
 config = json.loads(command(['docker', 'compose', 'exec', '-T', '--user', 'www-data', 'app', 'php'], input=php))
 assert config == {'environment': 'production', 'debug': False, 'url': 'https://jakawi.club',
-                  'secure_session_cookie': True, 'mail': 'log'}, config
+                  'secure_session_cookie': True, 'mail': 'log', 'registration_open': False,
+                  'transactional_mail_ready': False}, config
 
 containers = {}
 inspected = json.loads(command(['docker', 'inspect', 'jakawi-club-app', 'jakawi-club-web', 'jakawi-club-db']))
@@ -166,6 +195,8 @@ assert source.read_bytes() == installed.read_bytes()
 
 protected = None
 baseline_path = ROOT / 'artifacts/https-publication/baseline.json'
+if (ROOT / 'artifacts/mvp/baseline.json').exists():
+    baseline_path = ROOT / 'artifacts/mvp/baseline.json'
 if baseline_path.exists():
     baseline = json.loads(baseline_path.read_text())
     old = json.loads(command(['docker', 'inspect', *baseline['containers']]))
@@ -175,7 +206,8 @@ if baseline_path.exists():
             continue
         before = baseline['containers'][name]
         assert container['Id'] == before['id'], f'{name}: recreated'
-        assert container['State']['StartedAt'] == before['started_at'], f'{name}: restarted'
+        if name != 'jakawi-club-app':
+            assert container['State']['StartedAt'] == before['started_at'], f'{name}: restarted'
         assert container['RestartCount'] == before['restart_count'], f'{name}: restart count changed'
         assert sorted(container['NetworkSettings']['Networks']) == before['networks'], f'{name}: networks changed'
         assert container['State']['Running'], f'{name}: stopped'
@@ -187,7 +219,9 @@ if baseline_path.exists():
         assert sha256(Path(file).read_bytes()).hexdigest() == digest, 'Project credentials changed'
     protected = {
         'foreign_containers_unchanged': sum(not name.startswith('jakawi-club-') for name in baseline['containers']),
-        'app_and_db_lifecycle_and_networks_unchanged': True,
+        'app_and_db_ids_and_networks_unchanged': True,
+        'db_lifecycle_unchanged': True,
+        'app_restart_allowed_for_opcache_deployment': True,
         'existing_traefik_files_unchanged': len(baseline['traefik_files']),
         'project_credentials_unchanged': True,
     }

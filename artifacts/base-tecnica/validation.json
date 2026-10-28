@@ -1,12 +1,17 @@
 {
-  "validated_at": "2026-10-28T00:23:21.639074-04:00",
+  "validated_at": "2026-10-28T01:52:38.702493-04:00",
   "compose_valid": true,
   "local_http": 200,
   "inertia_http": 200,
   "assets": {
-    "assets/app-dvtT45f9.js": 200,
-    "assets/app-Z-V-md5s.css": 200,
-    "assets/Welcome-D8Jd6bAH.js": 200
+    "assets/UI-CTbpeYxB.js": 200,
+    "assets/app-CwLwojVN.js": 200,
+    "assets/app-TtcChAtT.css": 200,
+    "assets/Auth-DSiz28jM.js": 200,
+    "assets/Dashboard-C6peDWGz.js": 200,
+    "assets/Privacy-H5V0xDWc.js": 200,
+    "assets/Registered-BAmvIeMK.js": 200,
+    "assets/Welcome-DTwwvuwC.js": 200
   },
   "app": {
     "php": "8.4.27",
@@ -33,7 +38,8 @@
     "migrations": [
       "0001_01_01_000000_create_users_table",
       "0001_01_01_000001_create_cache_table",
-      "0001_01_01_000002_create_jobs_table"
+      "0001_01_01_000002_create_jobs_table",
+      "2026_10_28_000001_extend_users_for_launch"
     ],
     "sessions_written": true,
     "postgres": "16.15"
@@ -59,7 +65,8 @@
       "restart_count": 0,
       "networks": [
         "jakawi-club-egress",
-        "jakawi-club-private"
+        "jakawi-club-private",
+        "web"
       ],
       "ports": {
         "80/tcp": [
@@ -86,7 +93,7 @@
   "private_network_internal": true,
   "jakawi_com_up": 200,
   "protected_baseline": {
-    "existing_containers_unchanged": 40,
+    "existing_containers_unchanged": 43,
     "infrastructure_files_unchanged": 44
   }
 }
