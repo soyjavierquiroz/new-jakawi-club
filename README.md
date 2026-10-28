@@ -4,6 +4,7 @@ Aplicación Laravel independiente publicada en **https://jakawi.club** mediante 
 
 - Código y Git: `/opt/sites/jakawi.club/`; aplicación Laravel en `app/`.
 - Persistencia exclusiva: `/srv/sites/jakawi.club/`.
+- Stack: Laravel 13, PHP 8.4, Inertia 3, React 19, TypeScript, Tailwind 4 y PostgreSQL 16.
 - Compose y recursos: proyecto `jakawi-club`; contenedores `jakawi-club-app`, `jakawi-club-web`, `jakawi-club-db`.
 - HTTP de validación: `http://127.0.0.1:18082` en el servidor.
 - PostgreSQL solo participa en la red interna `jakawi-club-private` y no publica puertos.
@@ -68,6 +69,21 @@ El archivo dinámico define `jakawi-club-https` para el dominio principal, `jaka
 Solo se recreó `jakawi-club-web`. PHP-FPM recibió una recarga gradual de sus procesos para aplicar trusted proxies; su contenedor y PostgreSQL no se reiniciaron ni recrearon. No se ejecutaron migraciones ni builds en esta publicación. No se editó configuración global ni ningún router previo; no se manipuló el almacenamiento ACME.
 
 Rollback preparado y no ejecutado: [procedimiento corto](artifacts/https-publication/ROLLBACK.md). Retira únicamente el archivo dinámico exclusivo y la conexión de Nginx a la red compartida; mantiene el acceso local, datos y credenciales. Nunca reiniciar Traefik ni borrar certificados para este rollback.
+
+## Flujo de Git y despliegue
+
+Repositorio oficial: `git@github.com:soyjavierquiroz/new-jakawi-club.git`. La rama principal es `main`; conservar su historial y publicar sin push forzado. Antes de trabajar, comprobar `git status` y sincronizar con `git pull --ff-only origin main`. Revisar el diff, seleccionar los archivos necesarios y crear commits pequeños:
+
+```bash
+git diff
+git add -p
+git commit -m "Describe el cambio"
+git push origin main
+```
+
+Git versiona código, configuración sin secretos y documentación. El estado LIVE incluye además los assets generados, cachés, contenedores, base de datos, archivos persistentes y secretos de `/srv/sites/jakawi.club/`, que nunca deben copiarse a Git. Un push no ejecuta un despliegue ni acredita el estado LIVE. Como `app/` se monta desde esta copia del servidor, editar o actualizar sus archivos puede afectar a lo servido.
+
+El despliegue es manual y requiere una petición explícita: revisar el commit objetivo, aplicar únicamente los pasos operativos existentes que correspondan al cambio y validar con `python3 scripts/validate-local.py`; usar `python3 scripts/validate-public.py` para comprobar HTTPS. Conectar GitHub no requiere ejecutar instalaciones, builds, migraciones ni reinicios.
 
 ## Operación
 

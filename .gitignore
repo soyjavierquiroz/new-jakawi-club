@@ -11,3 +11,29 @@ artifacts/https-publication/http-*
 app/storage/**
 !app/storage/**/
 !app/storage/**/.gitignore
+
+# Credenciales y copias locales de la persistencia externa.
+secrets/
+auth.json
+credentials.json
+*.pem
+*.key
+*.p12
+*.pfx
+/srv/
+/postgres/
+/pgdata/
+/storage/
+/bootstrap-cache/
+/nginx-logs/
+*.dump
+*.sql.gz
+*.sqlite*
+
+# Logs y temporales; los builds de Laravel se excluyen en app/.gitignore.
+*.log
+*.tmp
+*.swp
+*~
+/tmp/
+/temp/
