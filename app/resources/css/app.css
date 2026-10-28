@@ -1,0 +1,18 @@
+@import 'tailwindcss';
+
+@source '../js/**/*.tsx';
+@source '../views/**/*.blade.php';
+
+@theme {
+    --font-sans: ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
+}
+
+html {
+    color-scheme: dark;
+    background: #0b2026;
+}
+
+body {
+    margin: 0;
+    font-family: var(--font-sans);
+}

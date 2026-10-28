@@ -1,0 +1,10 @@
+.env
+.env.*
+!.env.example
+artifacts/base-tecnica/baseline.json
+artifacts/base-tecnica/*.log
+artifacts/base-tecnica/http-*
+app/bootstrap/cache/*.php
+app/storage/**
+!app/storage/**/
+!app/storage/**/.gitignore
