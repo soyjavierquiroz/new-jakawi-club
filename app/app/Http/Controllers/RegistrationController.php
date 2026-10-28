@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\RegistrationRequest;
 use App\Models\User;
 use App\Services\AccountMail;
+use App\Services\MarketingAnalytics;
 use App\Services\ReferralAttribution;
 use App\Support\LaunchSettings;
 use Illuminate\Database\UniqueConstraintViolationException;
@@ -16,13 +17,13 @@ use Inertia\Response;
 
 class RegistrationController extends Controller
 {
-    public function store(RegistrationRequest $request, ReferralAttribution $referrals, AccountMail $mail): RedirectResponse
+    public function store(RegistrationRequest $request, ReferralAttribution $referrals, AccountMail $mail, MarketingAnalytics $analytics): RedirectResponse
     {
         $data = $request->validated();
         $referrer = $referrals->current($request, $data['referral_code'] ?? null);
         $created = false;
         try {
-            DB::transaction(function () use ($data, $referrer, &$created): void {
+            DB::transaction(function () use ($data, $referrer, $analytics, &$created): void {
                 if (User::where('email', $data['email'])->exists()) {
                     return;
                 }
@@ -35,6 +36,8 @@ class RegistrationController extends Controller
                 $user->privacy_accepted_at = now();
                 $user->privacy_version = config('jakawi.privacy_version');
                 $user->save();
+                // Confirmed server-side, in the same transaction as the new account.
+                $analytics->record('registration_completed', 'form');
                 $created = true;
             }, 3);
         } catch (UniqueConstraintViolationException $exception) {

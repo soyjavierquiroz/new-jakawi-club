@@ -99,8 +99,35 @@ try {
 
     Notification::fake();
     config(['jakawi.registration_open' => false, 'jakawi.transactional_mail_ready' => false]);
+    $landing = payload(http('GET', '/', [], true));
+    check($landing['component'] === 'Welcome' && $landing['props']['launch']['video_url'] === null && $landing['props']['launch']['video_poster'] === null, 'landing sin contenido de video inventado');
+    check(http('POST', '/medicion', ['event' => 'landing_visit', 'placement' => 'landing'])->getStatusCode() === 204, 'analítica local acepta visita');
+    http('POST', '/medicion', ['event' => 'landing_visit', 'placement' => 'landing']);
+    check((int) DB::table('marketing_event_totals')->where('event', 'landing_visit')->sum('total') === 1, 'visitas deduplicadas por sesión y día');
+    foreach (['hero', 'final'] as $placement) {
+        http('POST', '/medicion', ['event' => 'cta_click', 'placement' => $placement]);
+        http('POST', '/medicion', ['event' => 'cta_click', 'placement' => $placement]);
+    }
+    check((int) DB::table('marketing_event_totals')->where('event', 'cta_click')->sum('total') === 2, 'CTA deduplicado por ubicación');
+    check(http('POST', '/medicion', ['event' => 'registration_completed', 'placement' => 'form'])->getStatusCode() === 422, 'cliente no puede confirmar registro');
+    check(http('POST', '/medicion', ['event' => 'landing_visit', 'placement' => 'hero'])->getStatusCode() === 422, 'analítica rechaza combinación inválida');
+    check(http('POST', '/medicion', ['event' => 'video_start', 'placement' => 'video'])->getStatusCode() === 422, 'sin video aprobado no hay evento de inicio');
+    foreach (['https://youtu.be/M7lc1UVf-VE', 'https://www.youtube.com/watch?v=M7lc1UVf-VE', 'https://www.youtube-nocookie.com/embed/M7lc1UVf-VE'] as $url) {
+        check(LaunchSettings::youtubeUrl($url) === 'https://www.youtube.com/watch?v=M7lc1UVf-VE', 'configuración YouTube permitida y normalizada');
+    }
+    foreach (['https://youtube.com.evil.test/watch?v=M7lc1UVf-VE', 'https://evil.test/video', 'javascript:alert(1)', 'https://user@youtube.com/watch?v=M7lc1UVf-VE', 'https://youtube.com:444/watch?v=M7lc1UVf-VE', 'https://youtube.com/watch?v[]=M7lc1UVf-VE'] as $url) {
+        check(LaunchSettings::youtubeUrl($url) === null, 'configuración rechaza fuente no aprobada');
+    }
+    check(LaunchSettings::videoPoster('https://evil.test/poster.jpg') === null && LaunchSettings::videoPoster('/marketing/../secret.jpg') === null && LaunchSettings::videoPoster('/marketing/missing.jpg') === null, 'poster debe ser archivo local existente');
+    config(['jakawi.video_url' => 'https://youtu.be/M7lc1UVf-VE']);
+    http('POST', '/medicion', ['event' => 'video_start', 'placement' => 'video']);
+    http('POST', '/medicion', ['event' => 'video_start', 'placement' => 'video']);
+    check((int) DB::table('marketing_event_totals')->where('event', 'video_start')->sum('total') === 1, 'inicio de video deduplicado frente a reanudaciones');
+    config(['jakawi.video_url' => null]);
+    check(Illuminate\Support\Facades\Schema::getColumnListing('marketing_event_totals') === ['day', 'event', 'placement', 'total'], 'analítica almacena solo agregados sin datos personales');
     $before = User::count();
     check(http('POST', '/registro', registration('closed@example.test'))->getStatusCode() === 403 && User::count() === $before, 'registro público cerrado');
+    check(DB::table('marketing_event_totals')->where('event', 'registration_completed')->doesntExist(), 'registro cerrado no produce conversión');
     config(['jakawi.registration_open' => true, 'jakawi.transactional_mail_ready' => true, 'mail.default' => 'log']);
     check(! LaunchSettings::registrationOpen() && http('POST', '/registro', registration('log@example.test'))->getStatusCode() === 403, 'correo log impide apertura incluso con banderas activas');
     http('POST', '/recuperar-password', ['email' => $legacy->email]);
@@ -110,6 +137,10 @@ try {
     check(LaunchSettings::registrationOpen(), 'apertura exige SMTP y habilitación explícita');
     check(http('POST', '/registro', registration('invalid@example.test', ['privacy' => false]))->getStatusCode() === 422, 'consentimiento obligatorio');
     check(http('POST', '/registro', registration('invalid@example.test', ['phone' => '70000000']))->getStatusCode() === 422, 'validación de teléfono internacional');
+    foreach (['+5917', '+59170000000123456', '+59170000000 ext 2', '+00000000000'] as $phone) {
+        app('cache')->flush();
+        check(http('POST', '/registro', registration('invalid@example.test', ['phone' => $phone]))->getStatusCode() === 422, 'backend conserva validación E.164 estricta');
+    }
     app('cache')->flush();
 
     $first = User::create(['name' => 'Referente Uno', 'email' => 'first@example.test', 'phone' => '+59170000001']);
@@ -132,6 +163,7 @@ try {
     $new = User::where('email', 'new@example.test')->first();
     check($response->isRedirect() && $new && $new->name === 'Persona Prueba' && $new->phone === '+59170000000' && $new->password === null && $new->privacy_accepted_at && $new->uuid, 'registro normalizado sin contraseña con UUID y consentimiento');
     check($new->referred_by_id === $first->id && $first->invitees()->count() === 1, 'atribución transaccional conserva el original frente al campo oculto');
+    check((int) DB::table('marketing_event_totals')->where('event', 'registration_completed')->sum('total') === 1, 'registro confirmado en backend cuenta una conversión');
     $receipt = payload(http('GET', '/bienvenida', [], true));
     check($receipt['props']['referral_url'] === null && ! isset($receipt['props']['email']), 'bienvenida temporal no revela datos antes de verificar correo');
     $activation = Notification::sent($new, ActivateAccount::class)->first();
@@ -145,6 +177,7 @@ try {
     $duplicateReceipt = payload(http('GET', '/bienvenida', [], true));
     check(User::count() === $count && $duplicate->headers->get('Location') === $response->headers->get('Location') && $receipt['props'] === $duplicateReceipt['props'], 'email duplicado: respuesta indistinguible, sin cuenta ni atribución nuevas');
     check($new->fresh()->referred_by_id === $first->id, 'registro repetido conserva referente original');
+    check((int) DB::table('marketing_event_totals')->where('event', 'registration_completed')->sum('total') === 1, 'email repetido no duplica conversión');
     freshBrowser();
     http('GET', '/r/'.$first->referral_code);
     http('POST', '/registro', registration($first->email));
@@ -223,6 +256,7 @@ try {
     app('cache')->flush();
     $app->instance('env', 'production');
     check(http('POST', '/registro', registration('csrf@example.test'))->getStatusCode() === 419, 'CSRF protege formularios fuera de modo testing');
+    check(http('POST', '/medicion', ['event' => 'cta_click', 'placement' => 'hero'])->getStatusCode() === 419, 'CSRF protege analítica local');
     $app->instance('env', 'testing');
     echo json_encode(['passed' => count($passed), 'database' => 'isolated PostgreSQL schema', 'notifications' => 'fake', 'live_test_users' => 0], JSON_PRETTY_PRINT).PHP_EOL;
 } catch (Throwable $e) {

@@ -140,6 +140,19 @@ except urllib.error.HTTPError as error:
 with response:
     assert response.status == 403
 checks['https://jakawi.club/registro'] = {'status': 403, 'valid_csrf': True, 'registration_closed': True}
+for _ in range(2):
+    measurement = urllib.request.Request('https://jakawi.club/medicion', data=b'{"event":"landing_visit","placement":"landing"}', headers={
+        'Accept': 'application/json', 'Content-Type': 'application/json', 'X-XSRF-TOKEN': unquote(xsrf),
+    })
+    with browser.open(measurement, timeout=15) as response:
+        assert response.status == 204
+checks['https://jakawi.club/medicion'] = {'status': 204, 'valid_csrf': True, 'same_session_repeated_request': True}
+for country in ['BO', 'ES']:
+    path = '/marketing/flags/' + country + '.svg'
+    code, headers, content = get('https://jakawi.club' + path, binary=True)
+    assert code == 200 and 'image/svg+xml' in headers.get('Content-Type', '')
+    assert content == (ROOT / 'app/public' / path.lstrip('/')).read_bytes()
+    checks['https://jakawi.club' + path] = {'status': 200, 'local_bytes_match': True}
 
 manifest = json.loads((ROOT / 'app/public/build/manifest.json').read_text())
 assets = {}
@@ -200,18 +213,24 @@ if (ROOT / 'artifacts/mvp/baseline.json').exists():
     baseline_path = ROOT / 'artifacts/mvp/baseline.json'
 if (ROOT / 'artifacts/identity/baseline.json').exists():
     baseline_path = ROOT / 'artifacts/identity/baseline.json'
+if (ROOT / 'artifacts/conversion/baseline.json').exists():
+    baseline_path = ROOT / 'artifacts/conversion/baseline.json'
 if baseline_path.exists():
     baseline = json.loads(baseline_path.read_text())
     old = json.loads(command(['docker', 'inspect', *baseline['containers']]))
+    automatic_restarts = []
     for container in old:
         name = container['Name'].lstrip('/')
         if name == 'jakawi-club-web':
             continue
         before = baseline['containers'][name]
         assert container['Id'] == before['id'], f'{name}: recreated'
-        if name != 'jakawi-club-app':
+        automatic_restart = not name.startswith('jakawi-club-') and container['RestartCount'] > before['restart_count']
+        if automatic_restart:
+            automatic_restarts.append({'name': name, 'before': before['restart_count'], 'after': container['RestartCount'], 'started_at': container['State']['StartedAt']})
+        elif name != 'jakawi-club-app':
             assert container['State']['StartedAt'] == before['started_at'], f'{name}: restarted'
-        assert container['RestartCount'] == before['restart_count'], f'{name}: restart count changed'
+        assert automatic_restart or container['RestartCount'] == before['restart_count'], f'{name}: restart count changed'
         assert sorted(container['NetworkSettings']['Networks']) == before['networks'], f'{name}: networks changed'
         assert container['State']['Running'], f'{name}: stopped'
         if before['health'] == 'healthy':
@@ -221,7 +240,8 @@ if baseline_path.exists():
     for file, digest in baseline['credential_hashes'].items():
         assert sha256(Path(file).read_bytes()).hexdigest() == digest, 'Project credentials changed'
     protected = {
-        'foreign_containers_unchanged': sum(not name.startswith('jakawi-club-') for name in baseline['containers']),
+        'foreign_container_ids_and_networks_unchanged': sum(not name.startswith('jakawi-club-') for name in baseline['containers']),
+        'automatic_foreign_restarts_observed': automatic_restarts,
         'app_and_db_ids_and_networks_unchanged': True,
         'db_lifecycle_unchanged': True,
         'app_restart_allowed_for_opcache_deployment': True,

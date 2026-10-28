@@ -1,0 +1,11 @@
+{
+  "reference_repository_sha": "0bcda5842a0d1b9df93437784d7b3ad0fbb53fde",
+  "references": {
+    "app/resources/js/components/marketing/primitives.tsx": "4dde62fec6e57369dfb73469f6fe043e6c0194acfffd598b56a32e46243c3e26",
+    "app/resources/js/components/marketing/offer/blocks.tsx": "250c72a2e476a6ecc71853059db74631bcdb79ac666dbcd32a5e2ebee233a390",
+    "app/resources/js/components/media/jakawi-vsl-player/JakawiVslPlayer.tsx": "3b14029157bf0d9dd2b39e987c630524cacaa3850b3c1161cabd6850e31928bd",
+    "app/resources/js/components/media/jakawi-vsl-player/youtube-engine.ts": "ee6db7c8f552d4340f18ea01247b94367c98e0c91ac765c416c16ff4d23978af",
+    "app/resources/js/components/media/jakawi-vsl-player/types.ts": "6e8c2dcee3b24a56d81f37cb657967870be9fb05ce9471943436a085c357c9ae"
+  },
+  "adaptation": "Local marketing contracts; official YouTube API engine with local types, no crop/HLS/course/offer dependencies or decorative progress; lazy manual-only presentation."
+}

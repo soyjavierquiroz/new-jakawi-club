@@ -43,3 +43,5 @@ credentials.json
 /artifacts/identity/baseline.json
 /artifacts/identity/LIVE.json
 /artifacts/identity/official-links.json
+/artifacts/conversion/baseline.json
+/artifacts/conversion/LIVE.json

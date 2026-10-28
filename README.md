@@ -118,3 +118,34 @@ Marketing usa Montserrat (400–800) y los inputs Instrument Sans (400–600), e
 Cuando cambie la marca, comparar manualmente el tema oficial y su contexto marketing, actualizar **solo los tokens locales necesarios**, y revisar las páginas a 390 y 1440 px antes de ejecutar `bash scripts/build-frontend.sh` y las validaciones locales. Actualizar el SHA documentado y la evidencia de procedencia. No hay sincronización automática ni paquete compartido. **Prohibido hardcodear colores en TSX**: utilizar tokens y utilidades semánticas. El hover coral se oscurece mediante `color-mix` y los CTA coral utilizan texto grande en negrita para preservar el contraste del blanco oficial. El foco combina el borde coral oficial de los campos con un contorno tinta visible sobre crema.
 
 La evidencia de esta homologación y las capturas están en `artifacts/identity/` ([informe](artifacts/identity/REPORT.md)). `bash scripts/check-identity-visual.sh` reutiliza el Chromium local en un contenedor limitado, sin instalaciones ni cuentas LIVE; las páginas privadas se comprueban mediante fixtures solo del navegador. El sello local `LIVE.json` se genera después del commit para evitar autorreferencia. El build genera primero `public/build-next`; el despliegue conserva los chunks antiguos y publica el nuevo manifest al final, seguido únicamente del reinicio de `app` para renovar OPcache. No necesita migraciones ni cambios de infraestructura.
+
+## Landing de conversión local
+
+La landing usa componentes propios en `app/resources/js/components/marketing/`, el núcleo YouTube oficial adaptado en `components/media/jakawi-vsl-player/` y el formulario en `components/forms/`. No necesita el runtime ni APIs de jakawi.com. La procedencia de los archivos consultados está en `artifacts/conversion/provenance.json`. Se conserva el tema `light-conversion`, las fuentes locales y el único formulario `/registro`.
+
+`libphonenumber-js` está fijado en el lockfile. El selector local empieza en Bolivia (+591), permite búsqueda y teclado y utiliza metadatos `max` para validar y normalizar a E.164. Las 245 banderas SVG son assets locales de `country-flag-icons@1.6.20`, con licencia y hashes en `app/public/marketing/flags/`; no requieren otra dependencia de ejecución. Se pueden recuperar con `bash scripts/prepare-country-flags.sh`, en su contenedor limitado. El país manual tiene prioridad: pegar un número de otro país exige elegir ese país. El backend mantiene su normalización y validación E.164 originales; no se modifican cuentas, activación ni atribución.
+
+El video sigue vacío hasta contar con aprobación. Configurar **solo** en `/srv/sites/jakawi.club/secrets/app.env`:
+
+- `JAKAWI_VIDEO_URL`: URL HTTPS aprobada de YouTube (`watch`, `youtu.be`, `embed`, `shorts` o `live`). Laravel rechaza otros hosts, credenciales y puertos y publica una URL canónica.
+- `JAKAWI_VIDEO_POSTER`: opcional, ruta de archivo local existente como `/marketing/presentacion.webp`. Copiar el archivo aprobado a `app/public/marketing/`; se admiten PNG, JPEG y WebP.
+
+Después de un cambio de entorno se debe recrear **únicamente app**, porque Compose inyecta el env al crear el contenedor: `docker compose up -d --no-deps --force-recreate app`, seguido de `docker compose exec -T --user www-data app php artisan config:cache` y `docker compose restart app`. No mostrar el env en consola. Configurar el video no abre registros. La API de YouTube y su iframe `youtube-nocookie.com` se cargan solo tras pulsar reproducir. Hay pausa, sonido, repetición, pantalla completa y estados de carga/error. No se copia la barra decorativa ni se condicionan CTAs al video. Sin URL válida no hay botón de reproducción ni conexión a YouTube.
+
+La medición propia usa `POST /medicion`, protegido con CSRF y límite de frecuencia. Solo permite visita, clic de CTA e inicio de video. Los conteos agregados se guardan por día de Bolivia, evento y ubicación en `marketing_event_totals`; no contiene IDs, IPs, códigos de referido ni datos del formulario. Se deduplican eventos de navegador por sesión/día/ubicación con un digest HMAC temporal en la caché local. El registro completado se cuenta dentro de la transacción de creación de la cuenta: los correos repetidos y las solicitudes rechazadas no suman conversiones. Los eventos del navegador son conteos operativos, no una prueba de retención ni una medición antifraude. No hay Meta Pixel, GA4 ni envío de métricas a jakawi.com.
+
+La única migración añadida crea esa tabla de totales. No modifica ni elimina datos de usuarios. Los registros públicos siguen cerrados y se conserva la doble habilitación más SMTP real del MVP.
+
+Pruebas focalizadas, en secuencia y con los límites existentes:
+
+```bash
+bash scripts/test-conversion-unit.sh
+bash scripts/test-mvp.sh
+bash scripts/build-frontend.sh
+# Publicar assets según el procedimiento existente, conservando chunks anteriores.
+bash scripts/check-conversion-visual.sh
+python3 scripts/validate-local.py
+python3 scripts/validate-public.py
+```
+
+El navegador reutiliza Chromium instalado, sin instalaciones globales. Intercepta los envíos de cuentas y usa fixtures del proveedor para probar estados de video sin crear usuarios LIVE ni publicar un video de prueba. Se comprueba 390, 768 y 1440 px. La reproducción real LIVE requiere el video aprobado. Evidencia y rollback: `artifacts/conversion/REPORT.md` y `artifacts/conversion/ROLLBACK.md`.

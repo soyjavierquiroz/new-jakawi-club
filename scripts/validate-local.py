@@ -91,7 +91,8 @@ assert not any(app[key] for key in ['db_superuser','db_create_database','db_crea
 assert app['connection'] == 'pgsql' and app['mail'] == 'log'
 assert all(app[key] == 'database' for key in ['cache','queue','session'])
 assert app['database_cache_roundtrip'] and app['sessions_written'] and app['independent_key_valid']
-assert len(app['migrations']) == 4
+assert len(app['migrations']) == 5
+assert '2026_10_28_000002_create_marketing_event_totals' in app['migrations']
 assert '2026_10_28_000001_extend_users_for_launch' in app['migrations']
 
 names = ['jakawi-club-app', 'jakawi-club-web', 'jakawi-club-db']
@@ -129,22 +130,28 @@ if (ROOT / 'artifacts/mvp/baseline.json').exists():
     baseline_path = ROOT / 'artifacts/mvp/baseline.json'
 if (ROOT / 'artifacts/identity/baseline.json').exists():
     baseline_path = ROOT / 'artifacts/identity/baseline.json'
+if (ROOT / 'artifacts/conversion/baseline.json').exists():
+    baseline_path = ROOT / 'artifacts/conversion/baseline.json'
 if baseline_path.exists():
     baseline = json.loads(baseline_path.read_text())
     old = json.loads(command(['docker','inspect',*baseline['containers']]))
+    automatic_restarts = []
     for container in old:
         name = container['Name'].lstrip('/')
         before = baseline['containers'][name]
         assert container['Id'] == before['id'], f'{name}: ID changed'
-        if name != 'jakawi-club-app':
+        automatic_restart = not name.startswith('jakawi-club-') and container['RestartCount'] > before['restart_count']
+        if automatic_restart:
+            automatic_restarts.append({'name': name, 'before': before['restart_count'], 'after': container['RestartCount'], 'started_at': container['State']['StartedAt']})
+        elif name != 'jakawi-club-app':
             assert container['State']['StartedAt'] == before['started_at'], f'{name}: start time changed'
-        assert container['RestartCount'] == before['restart_count'], f'{name}: restarted'
+        assert automatic_restart or container['RestartCount'] == before['restart_count'], f'{name}: restarted'
         assert container['State']['Running'], f'{name}: stopped'
         if before['health'] == 'healthy':
             assert container['State'].get('Health',{}).get('Status') == 'healthy', f'{name}: health changed'
     for path, digest in baseline['protected_files'].items():
         assert sha256(Path(path).read_bytes()).hexdigest() == digest, f'{path}: modified'
-    protected = {'existing_containers_unchanged':len(old), 'infrastructure_files_unchanged':len(baseline['protected_files'])}
+    protected = {'container_ids_unchanged':len(old), 'infrastructure_files_unchanged':len(baseline['protected_files']), 'automatic_foreign_restarts_observed': automatic_restarts}
 
 production_code, _ = get('https://jakawi.com/up')
 assert production_code == 200

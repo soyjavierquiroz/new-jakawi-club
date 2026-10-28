@@ -1,0 +1,116 @@
+{
+  "checks": [
+    {
+      "name": "landing",
+      "width": 390,
+      "overflow": false,
+      "h1": "Tu ciudad tiene mucho más para vivir.",
+      "frameRatio": 1.7777777777777777,
+      "frameWidth": 358,
+      "fieldsetDisabled": true,
+      "country": "+591⌄",
+      "videoState": "unavailable",
+      "youtube": false,
+      "formCount": 1,
+      "targets": [
+        "#registro",
+        "#registro"
+      ],
+      "coral": "rgb(255, 90, 79)",
+      "bodyFont": "Montserrat, ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+      "inputFont": "\"Instrument Sans\", ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+      "brokenImages": 0,
+      "reduced": true,
+      "scroll": "auto",
+      "spinnerAnimation": "none"
+    },
+    {
+      "name": "phone-country-search-keyboard-e164-form-error",
+      "width": 390,
+      "passed": true
+    },
+    {
+      "name": "lazy-vsl-real-event-contract-controls-error",
+      "width": 390,
+      "passed": true,
+      "provider": "browser API fixture; no approved LIVE video"
+    },
+    {
+      "name": "landing",
+      "width": 768,
+      "overflow": false,
+      "h1": "Tu ciudad tiene mucho más para vivir.",
+      "frameRatio": 1.7777777777777777,
+      "frameWidth": 720,
+      "fieldsetDisabled": true,
+      "country": "+591⌄",
+      "videoState": "unavailable",
+      "youtube": false,
+      "formCount": 1,
+      "targets": [
+        "#registro",
+        "#registro"
+      ],
+      "coral": "rgb(255, 90, 79)",
+      "bodyFont": "Montserrat, ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+      "inputFont": "\"Instrument Sans\", ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+      "brokenImages": 0,
+      "reduced": true,
+      "scroll": "auto",
+      "spinnerAnimation": "none"
+    },
+    {
+      "name": "phone-country-search-keyboard-e164-form-error",
+      "width": 768,
+      "passed": true
+    },
+    {
+      "name": "lazy-vsl-real-event-contract-controls-error",
+      "width": 768,
+      "passed": true,
+      "provider": "browser API fixture; no approved LIVE video"
+    },
+    {
+      "name": "landing",
+      "width": 1440,
+      "overflow": false,
+      "h1": "Tu ciudad tiene mucho más para vivir.",
+      "frameRatio": 1.7777777777777777,
+      "frameWidth": 896,
+      "fieldsetDisabled": true,
+      "country": "+591⌄",
+      "videoState": "unavailable",
+      "youtube": false,
+      "formCount": 1,
+      "targets": [
+        "#registro",
+        "#registro"
+      ],
+      "coral": "rgb(255, 90, 79)",
+      "bodyFont": "Montserrat, ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+      "inputFont": "\"Instrument Sans\", ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+      "brokenImages": 0,
+      "reduced": true,
+      "scroll": "auto",
+      "spinnerAnimation": "none"
+    },
+    {
+      "name": "phone-country-search-keyboard-e164-form-error",
+      "width": 1440,
+      "passed": true
+    },
+    {
+      "name": "lazy-vsl-real-event-contract-controls-error",
+      "width": 1440,
+      "passed": true,
+      "provider": "browser API fixture; no approved LIVE video"
+    }
+  ],
+  "browser_api_fixtures": true,
+  "no_live_test_accounts": true,
+  "live_registration_closed": true,
+  "api_loading_error_retry": true,
+  "metrics_vocabulary_verified": true,
+  "runtime_errors": [],
+  "failed_assets": []
+}

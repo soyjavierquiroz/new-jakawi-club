@@ -35,6 +35,39 @@ class LaunchSettings
         return $value;
     }
 
+    public static function youtubeUrl(mixed $value): ?string
+    {
+        $url = self::httpsUrl($value);
+        if (! $url || parse_url($url, PHP_URL_PASS) !== null || parse_url($url, PHP_URL_PORT) !== null) {
+            return null;
+        }
+        $host = strtolower((string) parse_url($url, PHP_URL_HOST));
+        $path = (string) parse_url($url, PHP_URL_PATH);
+        $id = null;
+        if ($host === 'youtu.be' && preg_match('~^/([\w-]{11})/?$~D', $path, $match)) {
+            $id = $match[1];
+        } elseif (in_array($host, ['youtube.com', 'www.youtube.com', 'm.youtube.com', 'music.youtube.com', 'youtube-nocookie.com', 'www.youtube-nocookie.com'], true)) {
+            if ($path === '/watch') {
+                parse_str((string) parse_url($url, PHP_URL_QUERY), $query);
+                $id = $query['v'] ?? null;
+            } elseif (preg_match('~^/(?:embed|shorts|live|v)/([\w-]{11})/?$~D', $path, $match)) {
+                $id = $match[1];
+            }
+        }
+
+        return is_string($id) && preg_match('/^[\w-]{11}$/D', $id) ? 'https://www.youtube.com/watch?v='.$id : null;
+    }
+
+    public static function videoPoster(mixed $value): ?string
+    {
+        // Posters are local files under public/; no remote tracking image or SVG uploads.
+        if (! is_string($value) || ! preg_match('~^/marketing/[a-zA-Z0-9/_-]+\.(?:webp|png|jpe?g)$~D', $value)) {
+            return null;
+        }
+
+        return is_file(public_path(ltrim($value, '/'))) ? $value : null;
+    }
+
     /** @return array<string, mixed> */
     public static function publicData(bool $private = false): array
     {
@@ -51,7 +84,8 @@ class LaunchSettings
 
         return [
             'registration_open' => self::registrationOpen(),
-            'video_url' => self::httpsUrl(config('jakawi.video_url')),
+            'video_url' => self::youtubeUrl(config('jakawi.video_url')),
+            'video_poster' => self::videoPoster(config('jakawi.video_poster')),
             'event' => $title !== '' && $date ? [
                 'title' => $title,
                 'starts_at' => $date,

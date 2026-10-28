@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 cd /opt/sites/jakawi.club
-# Dependencies are unchanged. Validate and build sequentially using the existing lock/install.
+# Validate and build sequentially using the local, locked dependency installation.
 for step in typecheck build; do
     if [ "$step" = typecheck ]; then
         command=(npm run typecheck)

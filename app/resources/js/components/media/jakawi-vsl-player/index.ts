@@ -1,0 +1,1 @@
+export { JakawiVslPlayer } from './JakawiVslPlayer';
