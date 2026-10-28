@@ -1,0 +1,52 @@
+[
+  {
+    "source": "public/build/assets/montserrat-400-normal-BLhwKU8k.woff2",
+    "local": "resources/fonts/montserrat-400-normal.woff2",
+    "sha256": "e66bcd2761ab6924b25ce70dafe10e57a39193c4fea1516730bd9cb5240af6c8"
+  },
+  {
+    "source": "public/build/assets/montserrat-500-normal-DRFEGfly.woff2",
+    "local": "resources/fonts/montserrat-500-normal.woff2",
+    "sha256": "2b53300fb9471520df2f4905847fb7a209879b2029ae893c05c6ee346b1320cd"
+  },
+  {
+    "source": "public/build/assets/montserrat-600-normal-UVxSCcoG.woff2",
+    "local": "resources/fonts/montserrat-600-normal.woff2",
+    "sha256": "d857325c360f7128b347ca924c1974967aaa886ba47dad22e4042d6c38b26a83"
+  },
+  {
+    "source": "public/build/assets/montserrat-700-normal-BdjcYUrC.woff2",
+    "local": "resources/fonts/montserrat-700-normal.woff2",
+    "sha256": "f9d9e65b15372cebcafc3acd1e664a564c5c4b23278de4d5760de9a13c530371"
+  },
+  {
+    "source": "public/build/assets/montserrat-800-normal-axpkC1rd.woff2",
+    "local": "resources/fonts/montserrat-800-normal.woff2",
+    "sha256": "ba826fb84c2e961578adf3a08b5778b87905d4443445d1d56d84f9f157d5ea4b"
+  },
+  {
+    "source": "public/build/assets/instrument-sans-400-normal-DRC__1Mx.woff2",
+    "local": "resources/fonts/instrument-sans-400-normal.woff2",
+    "sha256": "9a91efaa3599a6ef01b2f49e9ec670e3a2f39baeef09c73198f1052cf3bb0850"
+  },
+  {
+    "source": "public/build/assets/instrument-sans-500-normal-Dk9ku72i.woff2",
+    "local": "resources/fonts/instrument-sans-500-normal.woff2",
+    "sha256": "9d3547da16d950d12a677c772a3ff9b69846e60e7dcd1b5efd540993f7286532"
+  },
+  {
+    "source": "public/build/assets/instrument-sans-600-normal-B7fBEWYG.woff2",
+    "local": "resources/fonts/instrument-sans-600-normal.woff2",
+    "sha256": "efb770916eda95a0e31d80cccde9651d4e8617010b21220e9f227c4820d675da"
+  },
+  {
+    "source": "public/jakawi-logo.svg",
+    "local": "public/jakawi-logo.svg",
+    "sha256": "9d34498727ccf767414b319cd82afd9d7bee32ae4797edbc1bc6310998e9bbcf"
+  },
+  {
+    "source": "public/jakawi-mark.svg",
+    "local": "public/jakawi-mark.svg",
+    "sha256": "f3fbd7fb602090d34e0c31331535e58629b9bb52ad6f9f857463e502cb3c178a"
+  }
+]

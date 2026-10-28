@@ -39,3 +39,7 @@ credentials.json
 /temp/
 /artifacts/mvp/baseline.json
 /artifacts/mvp/LIVE.json
+
+/artifacts/identity/baseline.json
+/artifacts/identity/LIVE.json
+/artifacts/identity/official-links.json

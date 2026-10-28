@@ -16,9 +16,10 @@ subprocess.run(['docker', 'compose', 'config', '--quiet'], cwd=ROOT, check=True)
 def command(args, **kwargs):
     return subprocess.check_output(args, cwd=ROOT, text=True, **kwargs)
 
-def get(url, **headers):
+def get(url, binary=False, **headers):
     with urllib.request.urlopen(urllib.request.Request(url, headers=headers), timeout=20) as response:
-        return response.status, response.read().decode()
+        body = response.read()
+        return response.status, body if binary else body.decode()
 
 status, html = get('http://127.0.0.1:18082/')
 assert status == 200 and 'JAKAWI Launch Engine' in html
@@ -54,7 +55,7 @@ assets = json.loads((ROOT / 'app/public/build/manifest.json').read_text())
 asset_checks = {}
 for entry in assets.values():
     for file in [entry['file'], *entry.get('css', [])]:
-        code, _ = get('http://127.0.0.1:18082/build/' + file)
+        code, _ = get('http://127.0.0.1:18082/build/' + file, binary=True)
         assert code == 200
         asset_checks[file] = code
 
@@ -126,6 +127,8 @@ protected = None
 baseline_path = ROOT / 'artifacts/base-tecnica/baseline.json'
 if (ROOT / 'artifacts/mvp/baseline.json').exists():
     baseline_path = ROOT / 'artifacts/mvp/baseline.json'
+if (ROOT / 'artifacts/identity/baseline.json').exists():
+    baseline_path = ROOT / 'artifacts/identity/baseline.json'
 if baseline_path.exists():
     baseline = json.loads(baseline_path.read_text())
     old = json.loads(command(['docker','inspect',*baseline['containers']]))

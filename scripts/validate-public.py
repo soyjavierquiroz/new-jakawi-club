@@ -30,13 +30,14 @@ class NoRedirect(urllib.request.HTTPRedirectHandler):
 opener = urllib.request.build_opener(urllib.request.ProxyHandler({}), NoRedirect())
 
 
-def get(url, headers=None):
+def get(url, headers=None, binary=False):
     try:
         response = opener.open(urllib.request.Request(url, headers=headers or {}), timeout=15)
     except urllib.error.HTTPError as error:
         response = error
     with response:
-        return response.status, response.headers, response.read().decode()
+        body = response.read()
+        return response.status, response.headers, body if binary else body.decode()
 
 
 command(['docker', 'compose', 'config', '--quiet'])
@@ -145,9 +146,9 @@ assets = {}
 for entry in manifest.values():
     for file in [entry['file'], *entry.get('css', [])]:
         url = 'https://jakawi.club/build/' + file
-        code, headers, content = get(url)
+        code, headers, content = get(url, binary=True)
         assert code == 200 and content, (url, code)
-        expected_type = 'text/css' if file.endswith('.css') else 'javascript'
+        expected_type = 'font/woff2' if file.endswith('.woff2') else 'text/css' if file.endswith('.css') else 'javascript'
         assert expected_type in headers.get('Content-Type', ''), (url, headers.get('Content-Type'))
         assets[file] = {'status': code, 'content_type': headers.get('Content-Type')}
 
@@ -197,6 +198,8 @@ protected = None
 baseline_path = ROOT / 'artifacts/https-publication/baseline.json'
 if (ROOT / 'artifacts/mvp/baseline.json').exists():
     baseline_path = ROOT / 'artifacts/mvp/baseline.json'
+if (ROOT / 'artifacts/identity/baseline.json').exists():
+    baseline_path = ROOT / 'artifacts/identity/baseline.json'
 if baseline_path.exists():
     baseline = json.loads(baseline_path.read_text())
     old = json.loads(command(['docker', 'inspect', *baseline['containers']]))

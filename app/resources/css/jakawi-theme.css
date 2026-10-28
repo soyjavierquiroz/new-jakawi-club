@@ -1,0 +1,111 @@
+/*
+ * Local identity, adapted from jakawi.com app/resources/css/theme.css at
+ * 0bcda5842a0d1b9df93437784d7b3ad0fbb53fde. See README for the update procedure.
+ * Keep palette literals here only; components consume semantic tokens.
+ */
+:root {
+    --palette-light-surface: #fffdf9;
+    --palette-light-surface-raised: #ffffff;
+    --palette-light-surface-subtle: #f6eee8;
+    --palette-light-text-secondary: #514a45;
+    --palette-light-text-muted: #706761;
+    --palette-light-border: #e9ddd4;
+    --palette-light-border-strong: #d7c7bc;
+    --palette-light-danger: oklch(0.58 0.22 28);
+
+    --ink: #111111;
+    --cream: #fff8f2;
+    --brand: #ff5a4f;
+    --success: #24b47e;
+    --reward: #ffc83d;
+    --community-whatsapp-bg: #377A1A;
+    --community-whatsapp-hover: #5B7F0B;
+    --community-whatsapp-foreground: var(--palette-light-surface-raised);
+
+    --background: var(--cream);
+    --foreground: var(--ink);
+    --surface: var(--palette-light-surface);
+    --surface-raised: var(--palette-light-surface-raised);
+    --surface-subtle: var(--palette-light-surface-subtle);
+    --text-primary: var(--ink);
+    --text-secondary: var(--palette-light-text-secondary);
+    --text-muted: var(--palette-light-text-muted);
+    --border: var(--palette-light-border);
+    --border-strong: var(--palette-light-border-strong);
+    --brand-subtle: color-mix(in srgb, var(--brand) 14%, var(--background));
+    --brand-foreground: var(--ink);
+    --primary: var(--brand);
+    --primary-foreground: var(--brand-foreground);
+    --primary-hover: color-mix(in srgb, var(--primary) 90%, var(--ink));
+    --success-surface: color-mix(in srgb, var(--success) 16%, var(--background));
+    --success-foreground: var(--ink);
+    --danger: var(--palette-light-danger);
+    --input: var(--border);
+    --ring: var(--brand);
+    --shadow: 0 8px 24px color-mix(in srgb, var(--ink) 6%, transparent);
+    --shadow-featured: 0 14px 30px color-mix(in srgb, var(--ink) 10%, transparent);
+
+    --radius: .875rem;
+    --radius-card: 1.375rem;
+    --radius-control: 1rem;
+    --radius-chip: 9999px;
+    --space-gutter: 1rem;
+    --space-section: 2.5rem;
+    --space-title-copy: .5rem;
+    --space-card: 1rem;
+    --space-media-content: .875rem;
+    --space-content-cta: 1rem;
+}
+
+/* The official light marketing context. No product or dark-mode selectors. */
+[data-marketing-theme="light-conversion"] {
+    --marketing-background: var(--cream);
+    --marketing-text: var(--ink);
+    --marketing-action: var(--brand);
+    --marketing-action-text: var(--palette-light-surface-raised);
+    --background: var(--marketing-background);
+    --foreground: var(--marketing-text);
+    --brand-foreground: var(--marketing-action-text);
+    --primary: var(--marketing-action);
+    --primary-foreground: var(--marketing-action-text);
+    --input: var(--foreground);
+    color-scheme: light;
+}
+
+@theme {
+    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-discovery: 'Montserrat', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+}
+
+/* Inline aliases resolve at the consuming element, including marketing contexts. */
+@theme inline {
+    --color-ink: var(--ink);
+    --color-cream: var(--cream);
+    --color-background: var(--background);
+    --color-foreground: var(--foreground);
+    --color-surface: var(--surface);
+    --color-surface-raised: var(--surface-raised);
+    --color-surface-subtle: var(--surface-subtle);
+    --color-text-primary: var(--text-primary);
+    --color-text-secondary: var(--text-secondary);
+    --color-text-muted: var(--text-muted);
+    --color-border: var(--border);
+    --color-border-strong: var(--border-strong);
+    --color-brand: var(--brand);
+    --color-brand-foreground: var(--brand-foreground);
+    --color-brand-subtle: var(--brand-subtle);
+    --color-primary: var(--primary);
+    --color-primary-foreground: var(--primary-foreground);
+    --color-success: var(--success);
+    --color-success-surface: var(--success-surface);
+    --color-success-foreground: var(--success-foreground);
+    --color-reward: var(--reward);
+    --color-danger: var(--danger);
+    --color-input: var(--input);
+    --color-ring: var(--ring);
+    --shadow-editorial: var(--shadow);
+}
+
+@utility rounded-card { border-radius: var(--radius-card); }
+@utility rounded-control { border-radius: var(--radius-control); }
+@utility rounded-chip { border-radius: var(--radius-chip); }
