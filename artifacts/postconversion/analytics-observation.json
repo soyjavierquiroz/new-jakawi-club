@@ -1,0 +1,15 @@
+{
+  "observed_at": "2026-10-29T09:49:43.024522-04:00",
+  "event": "landing_visit",
+  "placement": "landing",
+  "day": "2026-10-29",
+  "before_total": 5,
+  "after_total": 6,
+  "delta": 1,
+  "baseline_reconstructed_exactly_against_original_digest": true,
+  "source": "not attributed",
+  "registration_conversion_total_before": 0,
+  "registration_conversion_total_after": 0,
+  "metrics_modified_to_match_baseline": false,
+  "landing_analytics_unchanged": true
+}

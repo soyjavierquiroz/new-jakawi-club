@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Seal Git, mounted code, HTTPS assets, receipt guards and project isolation."""
 from datetime import datetime
-from hashlib import sha1, sha256
+from hashlib import md5, sha1, sha256
 from http.cookiejar import CookieJar
 from pathlib import Path
 from urllib.error import HTTPError
@@ -132,13 +132,36 @@ require 'vendor/autoload.php'; $app=require 'bootstrap/app.php'; $app->make(Illu
 $s=[]; foreach(['users','marketing_landings','migrations','marketing_event_totals','marketing_landing_event_totals'] as $table){$s[$table]=(array)Illuminate\Support\Facades\DB::selectOne("select count(*) as count, md5(coalesce(string_agg(row_to_json(u)::text, '' order by row_to_json(u)::text), '')) as digest from {$table} u");}
 $m=config('mail.mailers.'.config('mail.default'));
 echo json_encode(['tables'=>$s,'mailer'=>config('mail.default'),'smtp_remote_host_configured'=>!empty($m['host'])&&!in_array($m['host'],['localhost','127.0.0.1','::1']),'smtp_credentials_present'=>!empty($m['username'])&&!empty($m['password']),'debug'=>config('app.debug'),'registration_flag'=>config('jakawi.registration_open'),'transactional_mail_approved'=>config('jakawi.transactional_mail_ready'),'mail_ready'=>App\Support\LaunchSettings::mailReady(),'registration_open'=>App\Support\LaunchSettings::registrationOpen(),'whatsapp_group_configured'=>!empty(config('jakawi.whatsapp_url')),
+'event_rows'=>Illuminate\Support\Facades\DB::select("select row_to_json(u)::text as row from marketing_event_totals u order by row_to_json(u)::text"),
 'published_slugs'=>App\Models\MarketingLanding::where('status','published')->pluck('slug')->all(),
 'confirmation_route'=>app('router')->getRoutes()->getByName('registration.confirmed')?->uri(),
 'preview_route'=>app('router')->getRoutes()->getByName('landings.confirmation-preview')?->uri(),
 'reserved_confirmation'=>!App\Support\LandingSlug::allowed('confirmado'),
 'privacy_version'=>config('jakawi.privacy_version'),
 'isolated_test_schemas_remaining'=>(int)Illuminate\Support\Facades\DB::selectOne("select count(*) as total from pg_namespace where nspname like 'postconversion_test_%' or nspname like 'landings_test_%' or nspname like 'mvp_test_%'")->total]);''')
-assert state.pop('tables') == baseline['state']['tables']
+tables = state.pop('tables')
+for table, before in baseline['state']['tables'].items():
+    if table != 'marketing_event_totals':
+        assert tables[table] == before, table
+# Browser visits can change on a running site. Verify the exact recovered baseline
+# against its original digest, then require monotonic browser counts and unchanged conversions.
+original_rows = json.loads((PRIVATE/'marketing-event-totals.json').read_text())
+assert md5(''.join(original_rows).encode()).hexdigest() == baseline['state']['tables']['marketing_event_totals']['digest']
+def keyed(rows):
+    return {(r['day'],r['event'],r['placement']):r['total'] for r in rows}
+before_events = keyed([json.loads(row) for row in original_rows])
+after_events = keyed([json.loads(row['row']) for row in state.pop('event_rows')])
+assert before_events.keys() <= after_events.keys()
+changes = []
+for key, total in after_events.items():
+    previous = before_events.get(key, 0)
+    assert total >= previous
+    if key[1] == 'registration_completed':
+        assert total == previous
+    elif total != previous:
+        assert key[1] in ['landing_visit','cta_click','video_start']
+        changes.append({'day':key[0],'event':key[1],'placement':key[2],'delta':total-previous})
+assert sum(total for key,total in after_events.items() if key[1]=='registration_completed') == 0
 for key, expected in baseline['state'].items():
     if key != 'tables':
         assert state[key] == expected
@@ -159,11 +182,12 @@ report = {
     'working_tree_clean':True,'origin_main_synced':True,'mounted_git_blobs_match':True,
     'mounted_files':len(files),'served_assets_match':True,'previous_assets_preserved':True,'assets':assets,
     'health':health,'routes':routes,'administrative_guest_access':protected,'public_registration_http':403,
-    'state':state,'users_landings_analytics_migrations_unchanged':True,
+    'state':state,'users_landings_migrations_unchanged':True,'landing_analytics_unchanged':True,
+    'registration_conversions_unchanged':True,'observed_browser_event_changes':changes,
     'foreign_containers_unchanged':sum(not name.startswith('/jakawi-club-') for name in baseline['containers']),
     'traefik_files_unchanged':len(baseline['traefik']),'only_app_restarted':True,
     'browser_groups_passed':len(browser['checks']),'editor_groups_passed':len(editor['checks']),
     'smtp_delivery_tested':False,
 }
 (EVIDENCE/'LIVE.json').write_text(json.dumps(report,indent=2,ensure_ascii=False)+'\n')
-print(json.dumps({key:report[key] for key in ['git_sha','live_sha','working_tree_clean','origin_main_synced','mounted_git_blobs_match','served_assets_match','health','public_registration_http','users_landings_analytics_migrations_unchanged','browser_groups_passed','editor_groups_passed','state']},indent=2))
+print(json.dumps({key:report[key] for key in ['git_sha','live_sha','working_tree_clean','origin_main_synced','mounted_git_blobs_match','served_assets_match','health','public_registration_http','users_landings_migrations_unchanged','landing_analytics_unchanged','registration_conversions_unchanged','observed_browser_event_changes','browser_groups_passed','editor_groups_passed','state']},indent=2))

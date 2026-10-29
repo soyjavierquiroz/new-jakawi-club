@@ -2,7 +2,7 @@
 
 Baseline: `c315fe625b402fc2408f4d5ccb983ecc4e2a0908`. Assets anteriores y baseline privado: `/srv/sites/jakawi.club/rollback-postconversion-c315fe625b40/`. Código anterior disponible en Git. Los chunks previos siguen en `app/public/build/`.
 
-1. Revisar y revertir el commit de esta entrega mediante `git revert`, conservando cambios posteriores. Commit/push normal; nunca reset ni push forzado.
+1. Revisar y revertir el commit funcional `9f47397655da3fba5afe7c803f15b75207d1b553` mediante `git revert`, conservando cambios posteriores. Commit/push normal; nunca reset ni push forzado.
 2. Sin despliegues posteriores, restaurar el manifest anterior atómicamente. Si los hubo, reconstruir el frontend de la reversión con `bash scripts/build-frontend.sh` y publicar sus chunks/manifest conservando los existentes.
 3. Regenerar rutas y reiniciar solo `app`:
 
