@@ -18,5 +18,8 @@
   "isolated_postgresql": true,
   "smtp_messages_sent": 0,
   "live_accounts_created": 0,
-  "real_playback": "provider intercepted; approved sources and physical devices pending"
+  "real_playback": "provider intercepted; approved sources and physical devices pending",
+  "live_browser_groups": 66,
+  "live_browser_and_editor_groups": 88,
+  "registration_open": false
 }

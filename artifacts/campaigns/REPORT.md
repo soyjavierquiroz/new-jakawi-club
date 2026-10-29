@@ -46,7 +46,9 @@ Evidencia visual: [grupo propio móvil](campaign-custom-430.png), [confirmación
 
 ## G. Despliegue y Git
 
-Procedimiento exclusivo de CLUB: publicar assets nuevos conservando todos los chunks previos, sustituir el manifest al final mediante rename atómico y reiniciar únicamente `jakawi-club-app` para OPcache. No recrear servicios, ejecutar migraciones, modificar Traefik, tocar COM/CRM ni regenerar configuración de entorno innecesariamente.
+Procedimiento exclusivo de CLUB: publicar assets nuevos conservando todos los chunks previos, sustituir el manifest al final mediante rename atómico y reiniciar únicamente `jakawi-club-app` para OPcache. No recrear servicios, ejecutar migraciones, modificar Traefik, modificar COM/CRM ni regenerar configuración de entorno innecesariamente.
+
+Despliegue aplicado con manifest atómico y reinicio exclusivo de `app`; los tres servicios CLUB quedaron saludables con los mismos IDs. La repetición sobre assets HTTPS LIVE pasó **66 grupos** a 390, 430 y 1440 px, sin errores de ejecución ni assets fallidos; [evidencia LIVE](live-browser.json). Ambos `/up` públicos (CLUB y COM) y el loopback respondieron **HTTP 200**. Las banderas de registro y correo transaccional permanecen en **false**; no se regeneró configuración ni se modificó `app.env`.
 
 El sello final `LIVE.json`, ignorado para evitar autorreferencia, se genera con `python3 scripts/verify-campaigns-live.py` después del push normal a `origin/main`. Compara HEAD/origin/main/remoto, árbol limpio, blobs de código montados y assets HTTPS, integridad del entorno, IDs/redes/estado de contenedores propios, hashes de usuarios/permisos/tokens/landings/migraciones/conversiones y registro cerrado con POST 403. Comprueba `/up` de CLUB y COM y el loopback de CLUB. Consultar ese sello para el SHA completo final.
 

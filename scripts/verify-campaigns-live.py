@@ -6,7 +6,7 @@ from http.cookiejar import CookieJar
 from pathlib import Path
 from urllib.error import HTTPError
 from urllib.parse import unquote
-from urllib.request import Request, build_opener, HTTPCookieProcessor, urlopen
+from urllib.request import Request, build_opener, HTTPCookieProcessor, HTTPRedirectHandler, urlopen
 from zoneinfo import ZoneInfo
 import json
 import re
@@ -49,6 +49,8 @@ for item in json.loads(cmd(['docker', 'inspect', 'jakawi-club-app', 'jakawi-club
     assert item['State']['Health']['Status'] == 'healthy'
     if name != 'jakawi-club-app':
         assert item['State']['StartedAt'] == before['started_at']
+    else:
+        assert item['State']['StartedAt'] != before['started_at']
     if name == 'jakawi-club-db':
         assert not item['HostConfig']['PortBindings']
 state = php(r'''<?php
@@ -78,6 +80,23 @@ try:
     raise AssertionError('Registration must remain closed')
 except HTTPError as error:
     assert error.code == 403
+
+class NoRedirect(HTTPRedirectHandler):
+    def redirect_request(self, *args):
+        return None
+
+routes = {}
+slug = page['props']['landing']['slug']
+for path, expected in [(f'/{slug}/confirmado', 302), (f'/{slug}/confirmado?success=1', 302), ('/no-existe/confirmado', 404), ('/admin/landings', 302)]:
+    try:
+        with build_opener(NoRedirect).open('https://jakawi.club' + path, timeout=20) as response:
+            status = response.status
+    except HTTPError as error:
+        status = error.code
+        if path.startswith(f'/{slug}/confirmado'):
+            assert error.headers['Location'] == 'https://jakawi.club/' + slug
+    assert status == expected, (path, status)
+    routes[path] = status
 assets = {}
 for entry in json.loads((ROOT / 'app/public/build/manifest.json').read_text()).values():
     if entry.get('isEntry'):
@@ -105,7 +124,7 @@ assert browser['viewports'] == [390, 430, 1440]
 report = {'verified_at': datetime.now(ZoneInfo('America/La_Paz')).isoformat(), 'baseline_sha': baseline['sha'],
     'git_sha': sha, 'live_sha': sha, 'origin_main_synced': True, 'working_tree_clean': True,
     'mounted_files_match': len(files), 'served_assets_match': assets, 'previous_assets_preserved': True,
-    'health': health, 'public_registration_http': 403, 'registration_flags_closed': True,
+    'health': health, 'routes': routes, 'public_registration_http': 403, 'registration_flags_closed': True,
     'environment_and_smtp_unchanged': True, 'users_permissions_tokens_landings_migrations_conversions_unchanged': True,
     'only_club_app_restarted': True, 'test_schemas_remaining': schemas, 'smtp_messages_sent': 0, 'new_live_accounts': 0,
     'browser_groups': len(browser['checks']), 'editor_groups': len(editor['checks']), 'prior_work_preserved_in_stash': baseline['stash']}
