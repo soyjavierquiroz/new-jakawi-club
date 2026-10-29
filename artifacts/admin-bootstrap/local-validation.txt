@@ -1,0 +1,119 @@
+{
+  "validated_at": "2026-10-28T23:35:16.855500-04:00",
+  "compose_valid": true,
+  "local_http": 200,
+  "inertia_http": 200,
+  "assets": {
+    "assets/UI-DOEeZGCa.js": 200,
+    "assets/instrument-sans-400-normal-DRC__1Mx.woff2": 200,
+    "assets/instrument-sans-500-normal-Dk9ku72i.woff2": 200,
+    "assets/instrument-sans-600-normal-B7fBEWYG.woff2": 200,
+    "assets/montserrat-400-normal-BLhwKU8k.woff2": 200,
+    "assets/montserrat-500-normal-DRFEGfly.woff2": 200,
+    "assets/montserrat-600-normal-UVxSCcoG.woff2": 200,
+    "assets/montserrat-700-normal-BdjcYUrC.woff2": 200,
+    "assets/montserrat-800-normal-axpkC1rd.woff2": 200,
+    "assets/app-DuKQfB9C.js": 200,
+    "assets/app-D6wOzVWA.css": 200,
+    "assets/Auth-D8nLbtXp.js": 200,
+    "assets/Dashboard-Dv5_-Fp4.js": 200,
+    "assets/Privacy-CVaUl_IQ.js": 200,
+    "assets/Registered-nnbvJPWc.js": 200,
+    "assets/Welcome-B1tfsrDt.js": 200,
+    "assets/LandingEditor-CyECcgE2.js": 200,
+    "assets/Landings-DqDDboZl.js": 200
+  },
+  "app": {
+    "php": "8.4.27",
+    "laravel": "13.39.0",
+    "inertia": "v3.5.2",
+    "environment": "production",
+    "debug": false,
+    "url": "https://jakawi.club",
+    "name": "JAKAWI Launch Engine",
+    "db": {
+      "database": "jakawi_club",
+      "username": "jakawi_club"
+    },
+    "db_superuser": false,
+    "db_create_database": false,
+    "db_create_role": false,
+    "connection": "pgsql",
+    "cache": "database",
+    "queue": "database",
+    "session": "database",
+    "mail": "log",
+    "independent_key_valid": true,
+    "database_cache_roundtrip": true,
+    "migrations": [
+      "0001_01_01_000000_create_users_table",
+      "0001_01_01_000001_create_cache_table",
+      "0001_01_01_000002_create_jobs_table",
+      "2026_10_28_000001_extend_users_for_launch",
+      "2026_10_28_000002_create_marketing_event_totals",
+      "2026_10_29_000001_create_marketing_landings"
+    ],
+    "sessions_written": true,
+    "postgres": "16.15"
+  },
+  "containers": {
+    "jakawi-club-app": {
+      "status": "running",
+      "health": "healthy",
+      "memory_limit_mib": 256,
+      "restart_count": 0,
+      "networks": [
+        "jakawi-club-egress",
+        "jakawi-club-private"
+      ],
+      "ports": {
+        "9000/tcp": null
+      }
+    },
+    "jakawi-club-web": {
+      "status": "running",
+      "health": "healthy",
+      "memory_limit_mib": 48,
+      "restart_count": 0,
+      "networks": [
+        "jakawi-club-egress",
+        "jakawi-club-private",
+        "web"
+      ],
+      "ports": {
+        "80/tcp": [
+          {
+            "HostIp": "127.0.0.1",
+            "HostPort": "18082"
+          }
+        ]
+      }
+    },
+    "jakawi-club-db": {
+      "status": "running",
+      "health": "healthy",
+      "memory_limit_mib": 192,
+      "restart_count": 0,
+      "networks": [
+        "jakawi-club-private"
+      ],
+      "ports": {
+        "5432/tcp": null
+      }
+    }
+  },
+  "private_network_internal": true,
+  "jakawi_com_up": 200,
+  "protected_baseline": {
+    "container_ids_unchanged": 43,
+    "infrastructure_files_unchanged": 21,
+    "automatic_foreign_restarts_observed": [
+      {
+        "name": "jakawi-worker-1",
+        "before": 0,
+        "after": 5,
+        "started_at": "2026-10-29T02:56:01.845704699Z"
+      }
+    ]
+  }
+}

@@ -165,6 +165,25 @@ docker compose exec -T --user www-data app php artisan landings:admin correo-del
 
 La instalación no tenía usuarios al desplegar este creador. La identidad de la cuenta administrativa queda por definir; el registro público sigue cerrado. El comando rechaza cuentas inexistentes, sin activar o sin verificar. No abrir registros para aprovisionar administradores.
 
+### Primer administrador mediante CLI
+
+El propietario puede crear su primera cuenta real desde una terminal privada del servidor:
+
+```bash
+cd /opt/sites/jakawi.club
+docker compose exec --user www-data app php artisan landings:bootstrap-admin
+```
+
+Usar una terminal interactiva y conservar el TTY de Compose: no añadir `-T` ni `--no-interaction`. El comando no recibe credenciales por argumentos, variables ni tuberías. Solicita nombre real, correo real, confirmación explícita de que el correo pertenece al propietario y controla su acceso, contraseña oculta y su repetición, y confirmación final del alta. La contraseña exige al menos 12 caracteres, letras y números, y un máximo de 72 bytes; conserva los espacios introducidos. Si no puede ocultar la entrada, cancela sin mostrarla.
+
+La titularidad del correo se confirma manualmente por el propietario en esta operación CLI; no se afirma una comprobación mediante correo enviado. Solo después de ambas confirmaciones crea la cuenta activada y verificada con el UUID/código de referido del modelo existente y la contraseña almacenada mediante su cast de hash. Concede el permiso invocando `landings:admin`, dentro de la misma transacción. Si falla la concesión, revierte el alta completa. No envía correos, genera tokens, registra contraseñas ni cambia la configuración del registro público o del mailer.
+
+Rechaza el correo de cualquier cuenta existente sin cambiar su contraseña o permisos, y rechaza crear otra cuenta si ya hay un administrador. Un bloqueo breve de la tabla de usuarios revalida esas condiciones durante el alta; nunca mantiene bloqueos mientras pregunta al propietario. Para cambios posteriores de permisos, usar el comando `landings:admin` existente.
+
+Después del alta, iniciar sesión en `https://jakawi.club/login` con el correo y contraseña introducidos y abrir `https://jakawi.club/admin/landings`. Se reutilizan login, sesiones y comprobaciones administrativas existentes. Esta entrega prepara el comando y **no crea ninguna cuenta real**. Pruebas focalizadas: `bash scripts/test-admin-bootstrap.sh`; incluyen un terminal TTY real y esquemas PostgreSQL temporales, sin usuarios LIVE ni contraseñas de prueba en archivos. Evidencia y rollback: `artifacts/admin-bootstrap/REPORT.md`.
+
+### Edición y publicación
+
 El modelo `MarketingLanding` usa `marketing_landings.configuration` y `published_configuration` JSONB. `LEAD_VSL` reutiliza el renderer, identidad, selector telefónico, formulario y referidos locales. `/l/{slug}` solo expone landings publicadas; `/` busca el slug `principal` definido en `config/jakawi.php`. La migración crea esa portada con el contenido y video locales aprobados, sin cambiar cuentas, precios ni credenciales. El slug queda permanente tras publicar y la portada no se puede archivar.
 
 Crear, guardar, duplicar, importar, previsualizar, publicar y archivar son acciones distintas. Guardar/importar no cambia la versión pública. Duplicar produce otro borrador. Publicar copia exclusivamente el borrador guardado y su campaña a un snapshot público, con bloqueo de fila y revisión para impedir sobrescrituras desde otra ventana. Archivar retira la ruta pública sin borrar datos. La vista previa autenticada utiliza la misma página `Welcome`, en un iframe real a 390, 430 o 1440 px, sin registro ni eventos analíticos.

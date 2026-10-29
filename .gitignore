@@ -48,3 +48,4 @@ credentials.json
 /artifacts/vsl/LIVE.json
 /artifacts/landings/baseline.json
 /artifacts/landings/LIVE.json
+/artifacts/admin-bootstrap/LIVE.json

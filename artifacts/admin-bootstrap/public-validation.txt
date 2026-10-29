@@ -1,0 +1,251 @@
+{
+  "validated_at": "2026-10-28T23:35:20.092828-04:00",
+  "dns": {
+    "1.1.1.1/jakawi.club": [
+      "167.71.107.80"
+    ],
+    "1.1.1.1/www.jakawi.club": [
+      "167.71.107.80"
+    ],
+    "8.8.8.8/jakawi.club": [
+      "167.71.107.80"
+    ],
+    "8.8.8.8/www.jakawi.club": [
+      "167.71.107.80"
+    ]
+  },
+  "http": {
+    "https://jakawi.club/": {
+      "status": 200,
+      "assets_use_https": true
+    },
+    "https://jakawi.club/up": {
+      "status": 200
+    },
+    "http://127.0.0.1:18082/": {
+      "status": 200
+    },
+    "https://www.jakawi.club/": {
+      "status": 301,
+      "location": "https://jakawi.club/"
+    },
+    "http://jakawi.club/": {
+      "status": 301,
+      "location": "https://jakawi.club/"
+    },
+    "http://www.jakawi.club/": {
+      "status": 301,
+      "location": "https://jakawi.club/"
+    },
+    "https://www.jakawi.club/up?check=publication": {
+      "status": 301,
+      "location": "https://jakawi.club/up?check=publication"
+    },
+    "https://jakawi.club/login": {
+      "status": 200
+    },
+    "https://jakawi.club/recuperar-password": {
+      "status": 200
+    },
+    "https://jakawi.club/privacidad": {
+      "status": 200
+    },
+    "https://jakawi.club/dashboard": {
+      "status": 302,
+      "guest_redirect": true
+    },
+    "https://jakawi.club/registro": {
+      "status": 403,
+      "valid_csrf": true,
+      "registration_closed": true
+    },
+    "https://jakawi.club/medicion": {
+      "status": 204,
+      "valid_csrf": true,
+      "same_session_repeated_request": true
+    },
+    "https://jakawi.club/marketing/flags/BO.svg": {
+      "status": 200,
+      "local_bytes_match": true
+    },
+    "https://jakawi.club/marketing/flags/ES.svg": {
+      "status": 200,
+      "local_bytes_match": true
+    }
+  },
+  "tls": {
+    "jakawi.club": {
+      "valid_chain_and_hostname": true,
+      "issuer": {
+        "countryName": "US",
+        "organizationName": "Let's Encrypt",
+        "commonName": "YE2"
+      },
+      "not_before": "Oct 28 03:54:22 2026 GMT",
+      "not_after": "Jan 26 03:54:21 2027 GMT",
+      "dns_names": [
+        "jakawi.club",
+        "www.jakawi.club"
+      ],
+      "sha256_fingerprint": "42d3cab7b41fe114e91eac87d99e191e0a07231a529398f072cfa01d9925d22a"
+    },
+    "www.jakawi.club": {
+      "valid_chain_and_hostname": true,
+      "issuer": {
+        "countryName": "US",
+        "organizationName": "Let's Encrypt",
+        "commonName": "YE2"
+      },
+      "not_before": "Oct 28 03:54:22 2026 GMT",
+      "not_after": "Jan 26 03:54:21 2027 GMT",
+      "dns_names": [
+        "jakawi.club",
+        "www.jakawi.club"
+      ],
+      "sha256_fingerprint": "42d3cab7b41fe114e91eac87d99e191e0a07231a529398f072cfa01d9925d22a"
+    }
+  },
+  "inertia_http": 200,
+  "assets": {
+    "assets/UI-DOEeZGCa.js": {
+      "status": 200,
+      "content_type": "application/javascript; charset=utf-8"
+    },
+    "assets/instrument-sans-400-normal-DRC__1Mx.woff2": {
+      "status": 200,
+      "content_type": "font/woff2"
+    },
+    "assets/instrument-sans-500-normal-Dk9ku72i.woff2": {
+      "status": 200,
+      "content_type": "font/woff2"
+    },
+    "assets/instrument-sans-600-normal-B7fBEWYG.woff2": {
+      "status": 200,
+      "content_type": "font/woff2"
+    },
+    "assets/montserrat-400-normal-BLhwKU8k.woff2": {
+      "status": 200,
+      "content_type": "font/woff2"
+    },
+    "assets/montserrat-500-normal-DRFEGfly.woff2": {
+      "status": 200,
+      "content_type": "font/woff2"
+    },
+    "assets/montserrat-600-normal-UVxSCcoG.woff2": {
+      "status": 200,
+      "content_type": "font/woff2"
+    },
+    "assets/montserrat-700-normal-BdjcYUrC.woff2": {
+      "status": 200,
+      "content_type": "font/woff2"
+    },
+    "assets/montserrat-800-normal-axpkC1rd.woff2": {
+      "status": 200,
+      "content_type": "font/woff2"
+    },
+    "assets/app-DuKQfB9C.js": {
+      "status": 200,
+      "content_type": "application/javascript; charset=utf-8"
+    },
+    "assets/app-D6wOzVWA.css": {
+      "status": 200,
+      "content_type": "text/css"
+    },
+    "assets/Auth-D8nLbtXp.js": {
+      "status": 200,
+      "content_type": "application/javascript; charset=utf-8"
+    },
+    "assets/Dashboard-Dv5_-Fp4.js": {
+      "status": 200,
+      "content_type": "application/javascript; charset=utf-8"
+    },
+    "assets/Privacy-CVaUl_IQ.js": {
+      "status": 200,
+      "content_type": "application/javascript; charset=utf-8"
+    },
+    "assets/Registered-nnbvJPWc.js": {
+      "status": 200,
+      "content_type": "application/javascript; charset=utf-8"
+    },
+    "assets/Welcome-B1tfsrDt.js": {
+      "status": 200,
+      "content_type": "application/javascript; charset=utf-8"
+    },
+    "assets/LandingEditor-CyECcgE2.js": {
+      "status": 200,
+      "content_type": "application/javascript; charset=utf-8"
+    },
+    "assets/Landings-DqDDboZl.js": {
+      "status": 200,
+      "content_type": "application/javascript; charset=utf-8"
+    }
+  },
+  "laravel": {
+    "environment": "production",
+    "debug": false,
+    "url": "https://jakawi.club",
+    "secure_session_cookie": true,
+    "mail": "log",
+    "registration_open": false,
+    "transactional_mail_ready": false
+  },
+  "containers": {
+    "jakawi-club-app": {
+      "running": true,
+      "health": "healthy",
+      "networks": [
+        "jakawi-club-egress",
+        "jakawi-club-private"
+      ],
+      "ports": {
+        "9000/tcp": null
+      }
+    },
+    "jakawi-club-web": {
+      "running": true,
+      "health": "healthy",
+      "networks": [
+        "jakawi-club-egress",
+        "jakawi-club-private",
+        "web"
+      ],
+      "ports": {
+        "80/tcp": [
+          {
+            "HostIp": "127.0.0.1",
+            "HostPort": "18082"
+          }
+        ]
+      }
+    },
+    "jakawi-club-db": {
+      "running": true,
+      "health": "healthy",
+      "networks": [
+        "jakawi-club-private"
+      ],
+      "ports": {
+        "5432/tcp": null
+      }
+    }
+  },
+  "traefik_backend_reachable": true,
+  "dedicated_dynamic_file_matches_repository": true,
+  "protected_baseline": {
+    "foreign_container_ids_and_networks_unchanged": 40,
+    "automatic_foreign_restarts_observed": [
+      {
+        "name": "jakawi-worker-1",
+        "before": 0,
+        "after": 5,
+        "started_at": "2026-10-29T02:56:01.845704699Z"
+      }
+    ],
+    "app_and_db_ids_and_networks_unchanged": true,
+    "db_lifecycle_unchanged": true,
+    "app_restart_allowed_for_opcache_deployment": true,
+    "existing_traefik_files_unchanged": 21,
+    "project_credentials_unchanged": true
+  },
+  "jakawi_com_up": 200
+}

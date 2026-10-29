@@ -1,0 +1,53 @@
+PASS PostgreSQL aislado en jakawi_club
+PASS comando descubierto por Artisan sin dependencias nuevas
+PASS pruebas con MAIL_MAILER=log
+PASS invitado sin acceso administrativo
+PASS modo no interactivo rechazado sin alta
+PASS terminal sin TTY rechazada sin pedir contraseña
+PASS correo existente normalizado rechazado sin cambiar contraseña ni permisos
+PASS correo inválido no crea cuenta
+PASS titularidad sin confirmar cancela verificación y alta
+PASS confirmación de titularidad usa no por defecto
+PASS contraseña inválida o confirmación distinta no persiste cuenta
+PASS contraseña inválida o confirmación distinta no persiste cuenta
+PASS contraseña inválida o confirmación distinta no persiste cuenta
+PASS cancelación final no crea cuenta ni concede permisos
+PASS error inesperado revierte el alta sin detalles sensibles
+PASS concesión reutiliza landings:admin y su fallo revierte toda el alta
+PASS bootstrap interactivo confirmado crea primer administrador
+PASS identidad normalizada y UUID generado por modelo existente
+PASS código de referido propio sin atribución inventada
+PASS cuenta activada y verificada tras confirmación explícita
+PASS contraseña almacenada con hash existente y espacios conservados
+PASS otras cuentas y sus permisos intactos
+PASS no se generan tokens de activación ni restablecimiento
+PASS repetición rechazada cuando ya existe administrador sin alterar cuentas
+PASS administrador inicia sesión con autenticación existente
+PASS administrador autorizado en creador existente
+PASS administrador autorizado en preview protegido
+PASS usuario normal conserva login existente
+PASS usuario normal sin acceso a administración
+PASS invitado sigue sin acceso después del bootstrap
+PASS registro público permanece cerrado
+PASS registro rechazado no crea usuarios
+PASS registro y correo sin cambios de configuración
+PASS logger realmente activo durante las pruebas
+PASS entrada secreta ausente de salida de consola incluso ante errores
+PASS contraseña ausente de archivos de log con logger activo
+PASS entrada secreta ausente de salida de consola incluso ante errores
+PASS contraseña ausente de archivos de log con logger activo
+PASS entrada secreta ausente de salida de consola incluso ante errores
+PASS contraseña ausente de archivos de log con logger activo
+PASS entrada secreta ausente de salida de consola incluso ante errores
+PASS contraseña ausente de archivos de log con logger activo
+PASS entrada secreta ausente de salida de consola incluso ante errores
+PASS contraseña ausente de archivos de log con logger activo
+PASS no se registran enlaces de acceso
+{
+    "passed": 45,
+    "database": "isolated PostgreSQL schema",
+    "live_users_created": 0,
+    "passwords": "random; memory only; hidden console input",
+    "logger": "active single-file; mail=log"
+}
+PASS terminal TTY real: contraseña oculta, confirmación y alta aislada; cero usuarios LIVE.
