@@ -1,0 +1,89 @@
+{
+  "checked_at": "2026-10-29T11:08:23.135283-04:00",
+  "git_base": "ad117b76181132c9d20b0678c9f1e91f04a2f587",
+  "private_env_redacted": {
+    "env_file_mode": "0o600",
+    "env_file_uid": 0,
+    "env_file_gid": 0,
+    "mail_url_defined": false,
+    "mail_url_nonempty": false,
+    "smtp_username_nonempty": false,
+    "smtp_password_nonempty": false,
+    "mailer_log": true,
+    "app_debug_false": true,
+    "transactional_mail_ready_explicit": false,
+    "registration_open_explicit": false,
+    "duplicate_mail_or_gate_keys": [],
+    "env_file_modified": false
+  },
+  "runtime": {
+    "php": "8.4.27",
+    "laravel": "13.39.0",
+    "symfony_mailer": "v8.1.7",
+    "configuration_cached": true,
+    "app_debug_false": true,
+    "mailer_log": true,
+    "mail_url_nonempty": false,
+    "injected_mail_url_nonempty": false,
+    "smtp_username_nonempty": false,
+    "smtp_password_nonempty": false,
+    "transactional_mail_ready_false": true,
+    "registration_open_false": true,
+    "effective_mail_ready_false": true,
+    "effective_registration_closed": true
+  },
+  "proposal_without_network": {
+    "transport": "Symfony\\Component\\Mailer\\Transport\\Smtp\\EsmtpTransport",
+    "host": "email-smtp.us-east-1.amazonaws.com",
+    "port": 2465,
+    "implicit_tls": true,
+    "ehlo_domain": "jakawi.club",
+    "from_candidate_in_memory": "info@jakawi.com",
+    "from_name": "JAKAWI",
+    "peer_verification_not_disabled": true,
+    "registration_stays_closed": true,
+    "account_mail_stays_disabled": true,
+    "network_connection_attempted": false,
+    "message_send_attempted": false
+  },
+  "authorization": {
+    "aws_credential_creation": "not_provided",
+    "from_candidate_approved": "pending",
+    "test_recipient_authorized": "not_provided"
+  },
+  "smtp_status": {
+    "connected": "not_attempted_in_this_preparation; port_2465_confirmed_by_owner",
+    "authenticated": "not_attempted",
+    "ses_accepted_message": "not_attempted",
+    "mailbox_received": "not_confirmed",
+    "authentication_headers": "not_available"
+  },
+  "local_validation": {
+    "command": "python3 scripts/validate-local.py",
+    "passed": true,
+    "validated_at": "2026-10-29T11:09:15.499126-04:00",
+    "local_http": 200,
+    "inertia_http": 200,
+    "asset_checks": 19,
+    "app_debug": false,
+    "mail_default": "log",
+    "private_network_internal": true,
+    "club_containers_healthy": true,
+    "postgres_published_ports": {
+      "5432/tcp": null
+    },
+    "jakawi_com_up": 200,
+    "protected_baseline": {
+      "container_ids_unchanged": 43,
+      "infrastructure_files_unchanged": 21,
+      "automatic_foreign_restarts_observed": [
+        {
+          "name": "jakawi-worker-1",
+          "before": 0,
+          "after": 17,
+          "started_at": "2026-10-29T14:56:41.715747087Z"
+        }
+      ]
+    }
+  }
+}

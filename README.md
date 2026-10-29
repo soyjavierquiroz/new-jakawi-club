@@ -103,6 +103,8 @@ El MVP de captación incluye landing, registro sin contraseña inicial, activaci
 
 **El registro público permanece cerrado.** La apertura exige `JAKAWI_REGISTRATION_OPEN=true`, `JAKAWI_TRANSACTIONAL_MAIL_READY=true` y un SMTP real aprobado. Con `MAIL_MAILER=log` no se puede abrir ni se escriben notificaciones de acceso en logs. Video, evento y WhatsApp se configuran desde Laravel y permanecen vacíos hasta disponer de contenido aprobado.
 
+La [preparación SMTP transaccional con SES](artifacts/smtp-preparation/REPORT.md) confirma compatibilidad con `smtps` en `us-east-1:2465` y documenta credenciales exclusivas, aplicación privada y prueba única. La instalación sigue pendiente de credenciales y aprobaciones; ambas banderas permanecen en `false`.
+
 Pruebas focalizadas sin dependencias PHP de desarrollo: `bash scripts/test-mvp.sh`. Usa PostgreSQL en un esquema temporal aislado, sesiones de prueba y notificaciones simuladas; no crea usuarios LIVE. TypeScript y build secuenciales: `bash scripts/build-frontend.sh`. Las dependencias no cambiaron y no necesitan reinstalarse.
 
 Informes: [MVP](artifacts/mvp/REPORT.md), [operación y apertura](artifacts/mvp/OPERACION.md), [rollback del MVP](artifacts/mvp/ROLLBACK.md), [base técnica](artifacts/base-tecnica/REPORT.md) y [publicación HTTPS inicial](artifacts/https-publication/REPORT.md). El rollback del MVP conserva datos y la migración aditiva; no utiliza el rollback de publicación HTTPS.
