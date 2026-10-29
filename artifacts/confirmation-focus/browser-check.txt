@@ -1,0 +1,43 @@
+PASS centered-single-cta-email-video-responsive default-inherit 390
+PASS centered-single-cta-email-video-responsive default-custom 390
+PASS centered-single-cta-email-video-responsive default-none 390
+PASS centered-single-cta-email-video-responsive custom-inherit 390
+PASS centered-single-cta-email-video-responsive custom-custom 390
+PASS centered-single-cta-email-video-responsive custom-none 390
+PASS centered-single-cta-email-video-responsive none-inherit 390
+PASS centered-single-cta-email-video-responsive none-custom 390
+PASS centered-single-cta-email-video-responsive none-none 390
+PASS centered-single-cta-email-video-responsive default-inherit 430
+PASS centered-single-cta-email-video-responsive default-custom 430
+PASS centered-single-cta-email-video-responsive default-none 430
+PASS centered-single-cta-email-video-responsive custom-inherit 430
+PASS centered-single-cta-email-video-responsive custom-custom 430
+PASS centered-single-cta-email-video-responsive custom-none 430
+PASS centered-single-cta-email-video-responsive none-inherit 430
+PASS centered-single-cta-email-video-responsive none-custom 430
+PASS centered-single-cta-email-video-responsive none-none 430
+PASS centered-single-cta-email-video-responsive default-inherit 1440
+PASS centered-single-cta-email-video-responsive default-custom 1440
+PASS centered-single-cta-email-video-responsive default-none 1440
+PASS centered-single-cta-email-video-responsive custom-inherit 1440
+PASS centered-single-cta-email-video-responsive custom-custom 1440
+PASS centered-single-cta-email-video-responsive custom-none 1440
+PASS centered-single-cta-email-video-responsive none-inherit 1440
+PASS centered-single-cta-email-video-responsive none-custom 1440
+PASS centered-single-cta-email-video-responsive none-none 1440
+PASS bounce-honors-reduced-motion  
+PASS preserve-custom-editorial-copy  
+PASS activated-receipt-single-cta  
+PASS no-redirect-on-mount-progress-or-pause campaign-default-inherit 
+PASS provider-ended-browser-navigation-once campaign-default-inherit 
+PASS no-redirect-on-mount-progress-or-pause campaign-custom-inherit 
+PASS provider-ended-browser-navigation-once campaign-custom-inherit 
+PASS no-redirect-on-mount-progress-or-pause campaign-default-custom 
+PASS provider-ended-browser-navigation-once campaign-default-custom 
+PASS no-ended-redirect-preview  
+PASS no-ended-redirect-admin  
+PASS no-ended-redirect-hidden  
+PASS error-keeps-manual-cta-without-redirect  
+PASS decorative-progress-and-elapsed-time-never-redirect  
+PASS main-vsl-never-redirects  
+{"passed_groups":42,"viewports":[390,430,1440],"live":false,"no_live_accounts":true}

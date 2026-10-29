@@ -1,0 +1,285 @@
+{
+  "stage": "build-next intercepted in browser",
+  "viewports": [
+    390,
+    430,
+    1440
+  ],
+  "checks": [
+    {
+      "name": "centered-single-cta-email-video-responsive",
+      "campaign": "default-inherit",
+      "width": 390,
+      "group": "https://chat.whatsapp.com/DefaultGroupFixture1234",
+      "passed": true
+    },
+    {
+      "name": "centered-single-cta-email-video-responsive",
+      "campaign": "default-custom",
+      "width": 390,
+      "group": "https://chat.whatsapp.com/ConfirmGroupFixture1234",
+      "passed": true
+    },
+    {
+      "name": "centered-single-cta-email-video-responsive",
+      "campaign": "default-none",
+      "width": 390,
+      "group": null,
+      "passed": true
+    },
+    {
+      "name": "centered-single-cta-email-video-responsive",
+      "campaign": "custom-inherit",
+      "width": 390,
+      "group": "https://chat.whatsapp.com/LandingGroupFixture1234",
+      "passed": true
+    },
+    {
+      "name": "centered-single-cta-email-video-responsive",
+      "campaign": "custom-custom",
+      "width": 390,
+      "group": "https://chat.whatsapp.com/ConfirmGroupFixture1234",
+      "passed": true
+    },
+    {
+      "name": "centered-single-cta-email-video-responsive",
+      "campaign": "custom-none",
+      "width": 390,
+      "group": null,
+      "passed": true
+    },
+    {
+      "name": "centered-single-cta-email-video-responsive",
+      "campaign": "none-inherit",
+      "width": 390,
+      "group": null,
+      "passed": true
+    },
+    {
+      "name": "centered-single-cta-email-video-responsive",
+      "campaign": "none-custom",
+      "width": 390,
+      "group": "https://chat.whatsapp.com/ConfirmGroupFixture1234",
+      "passed": true
+    },
+    {
+      "name": "centered-single-cta-email-video-responsive",
+      "campaign": "none-none",
+      "width": 390,
+      "group": null,
+      "passed": true
+    },
+    {
+      "name": "centered-single-cta-email-video-responsive",
+      "campaign": "default-inherit",
+      "width": 430,
+      "group": "https://chat.whatsapp.com/DefaultGroupFixture1234",
+      "passed": true
+    },
+    {
+      "name": "centered-single-cta-email-video-responsive",
+      "campaign": "default-custom",
+      "width": 430,
+      "group": "https://chat.whatsapp.com/ConfirmGroupFixture1234",
+      "passed": true
+    },
+    {
+      "name": "centered-single-cta-email-video-responsive",
+      "campaign": "default-none",
+      "width": 430,
+      "group": null,
+      "passed": true
+    },
+    {
+      "name": "centered-single-cta-email-video-responsive",
+      "campaign": "custom-inherit",
+      "width": 430,
+      "group": "https://chat.whatsapp.com/LandingGroupFixture1234",
+      "passed": true
+    },
+    {
+      "name": "centered-single-cta-email-video-responsive",
+      "campaign": "custom-custom",
+      "width": 430,
+      "group": "https://chat.whatsapp.com/ConfirmGroupFixture1234",
+      "passed": true
+    },
+    {
+      "name": "centered-single-cta-email-video-responsive",
+      "campaign": "custom-none",
+      "width": 430,
+      "group": null,
+      "passed": true
+    },
+    {
+      "name": "centered-single-cta-email-video-responsive",
+      "campaign": "none-inherit",
+      "width": 430,
+      "group": null,
+      "passed": true
+    },
+    {
+      "name": "centered-single-cta-email-video-responsive",
+      "campaign": "none-custom",
+      "width": 430,
+      "group": "https://chat.whatsapp.com/ConfirmGroupFixture1234",
+      "passed": true
+    },
+    {
+      "name": "centered-single-cta-email-video-responsive",
+      "campaign": "none-none",
+      "width": 430,
+      "group": null,
+      "passed": true
+    },
+    {
+      "name": "centered-single-cta-email-video-responsive",
+      "campaign": "default-inherit",
+      "width": 1440,
+      "group": "https://chat.whatsapp.com/DefaultGroupFixture1234",
+      "passed": true
+    },
+    {
+      "name": "centered-single-cta-email-video-responsive",
+      "campaign": "default-custom",
+      "width": 1440,
+      "group": "https://chat.whatsapp.com/ConfirmGroupFixture1234",
+      "passed": true
+    },
+    {
+      "name": "centered-single-cta-email-video-responsive",
+      "campaign": "default-none",
+      "width": 1440,
+      "group": null,
+      "passed": true
+    },
+    {
+      "name": "centered-single-cta-email-video-responsive",
+      "campaign": "custom-inherit",
+      "width": 1440,
+      "group": "https://chat.whatsapp.com/LandingGroupFixture1234",
+      "passed": true
+    },
+    {
+      "name": "centered-single-cta-email-video-responsive",
+      "campaign": "custom-custom",
+      "width": 1440,
+      "group": "https://chat.whatsapp.com/ConfirmGroupFixture1234",
+      "passed": true
+    },
+    {
+      "name": "centered-single-cta-email-video-responsive",
+      "campaign": "custom-none",
+      "width": 1440,
+      "group": null,
+      "passed": true
+    },
+    {
+      "name": "centered-single-cta-email-video-responsive",
+      "campaign": "none-inherit",
+      "width": 1440,
+      "group": null,
+      "passed": true
+    },
+    {
+      "name": "centered-single-cta-email-video-responsive",
+      "campaign": "none-custom",
+      "width": 1440,
+      "group": "https://chat.whatsapp.com/ConfirmGroupFixture1234",
+      "passed": true
+    },
+    {
+      "name": "centered-single-cta-email-video-responsive",
+      "campaign": "none-none",
+      "width": 1440,
+      "group": null,
+      "passed": true
+    },
+    {
+      "name": "bounce-honors-reduced-motion",
+      "passed": true
+    },
+    {
+      "name": "preserve-custom-editorial-copy",
+      "passed": true
+    },
+    {
+      "name": "activated-receipt-single-cta",
+      "passed": true
+    },
+    {
+      "name": "no-redirect-on-mount-progress-or-pause",
+      "campaign": "campaign-default-inherit",
+      "passed": true
+    },
+    {
+      "name": "provider-ended-browser-navigation-once",
+      "campaign": "campaign-default-inherit",
+      "destination": "https://chat.whatsapp.com/DefaultGroupFixture1234",
+      "passed": true
+    },
+    {
+      "name": "no-redirect-on-mount-progress-or-pause",
+      "campaign": "campaign-custom-inherit",
+      "passed": true
+    },
+    {
+      "name": "provider-ended-browser-navigation-once",
+      "campaign": "campaign-custom-inherit",
+      "destination": "https://chat.whatsapp.com/LandingGroupFixture1234",
+      "passed": true
+    },
+    {
+      "name": "no-redirect-on-mount-progress-or-pause",
+      "campaign": "campaign-default-custom",
+      "passed": true
+    },
+    {
+      "name": "provider-ended-browser-navigation-once",
+      "campaign": "campaign-default-custom",
+      "destination": "https://chat.whatsapp.com/ConfirmGroupFixture1234",
+      "passed": true
+    },
+    {
+      "name": "no-ended-redirect-preview",
+      "passed": true
+    },
+    {
+      "name": "no-ended-redirect-admin",
+      "passed": true
+    },
+    {
+      "name": "no-ended-redirect-hidden",
+      "passed": true
+    },
+    {
+      "name": "error-keeps-manual-cta-without-redirect",
+      "passed": true
+    },
+    {
+      "name": "decorative-progress-and-elapsed-time-never-redirect",
+      "passed": true
+    },
+    {
+      "name": "main-vsl-never-redirects",
+      "passed": true
+    }
+  ],
+  "provider": "YouTube IFrame API intercepted; real official engine and event wiring",
+  "physical_playback_tested": false,
+  "navigation": "Real window.location.assign; WhatsApp requests answered 204 inside browser; no invitation opened",
+  "group_navigation_requests": [
+    "https://chat.whatsapp.com/DefaultGroupFixture1234",
+    "https://chat.whatsapp.com/LandingGroupFixture1234",
+    "https://chat.whatsapp.com/ConfirmGroupFixture1234"
+  ],
+  "group_requests_intercepted": [
+    "https://chat.whatsapp.com/DefaultGroupFixture1234",
+    "https://chat.whatsapp.com/LandingGroupFixture1234",
+    "https://chat.whatsapp.com/ConfirmGroupFixture1234"
+  ],
+  "runtime_errors": [],
+  "failed_assets": [],
+  "no_live_accounts": true,
+  "all_browser_mutations_intercepted": true
+}

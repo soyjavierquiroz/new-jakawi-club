@@ -70,3 +70,5 @@ credentials.json
 /artifacts/vsl-recovery/LIVE.json
 /artifacts/vsl-recovery/*fixtures.json
 /artifacts/vsl-recovery/vsl-*.png
+
+/artifacts/confirmation-focus/LIVE.json

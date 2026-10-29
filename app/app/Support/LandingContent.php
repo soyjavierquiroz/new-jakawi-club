@@ -46,7 +46,7 @@ class LandingContent
 
     public static function confirmationDefaults(): array
     {
-        return ['title' => 'Gracias por dar el siguiente paso.', 'message' => 'Recibimos tu solicitud. Si podemos completarla, recibirás un correo con el siguiente paso. Revisa también tu carpeta de spam.', 'instructions' => 'Continúa con el siguiente paso. Puedes solicitar otro enlace de acceso si lo necesitas.', 'cta_label' => 'Continuar'];
+        return ['title' => '¡Felicidades por dar el siguiente paso!', 'message' => 'Recibimos tu solicitud. Si podemos completarla, recibirás un correo con el siguiente paso. Revisa también tu carpeta de spam.', 'instructions' => 'Continúa con el siguiente paso. Puedes solicitar otro enlace de acceso si lo necesitas.', 'cta_label' => 'Continuar'];
     }
 
     public static function videoDefaults(?string $url = null, ?string $poster = null): array

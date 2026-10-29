@@ -1,0 +1,587 @@
+{
+  "provenance": "Synthetic receipt responses emitted by the isolated Laravel kernel in campaign tests; no LIVE account or invitation.",
+  "receipts": {
+    "default-inherit": {
+      "component": "Registered",
+      "props": {
+        "errors": [],
+        "signed_in": false,
+        "can_manage_landings": false,
+        "status": null,
+        "referral_url": null,
+        "confirmation": {
+          "content": {
+            "title": "Gracias por dar el siguiente paso.",
+            "message": "Recibimos tu solicitud. Si podemos completarla, recibirás un correo con el siguiente paso. Revisa también tu carpeta de spam.",
+            "cta_label": "Continuar",
+            "instructions": "Continúa con el siguiente paso. Puedes solicitar otro enlace de acceso si lo necesitas."
+          },
+          "activation": "pending",
+          "preview": false,
+          "landing_slug": "principal",
+          "video": {
+            "youtube_url": "https://www.youtube.com/watch?v=aqz-KE-bpKQ",
+            "poster": null,
+            "aspect_ratio": "3:4",
+            "source_type": "youtube",
+            "source_aspect_ratio": "9:16",
+            "focal_x": 0.25,
+            "focal_y": 0.5
+          },
+          "whatsapp_group_url": "https://chat.whatsapp.com/DefaultGroupFixture1234",
+          "next": {
+            "url": "https://chat.whatsapp.com/DefaultGroupFixture1234",
+            "external": true,
+            "redirect_seconds": 10
+          },
+          "unavailable": false
+        }
+      },
+      "url": "/principal/confirmado",
+      "version": "709446b23b35501bf3b8aeeb59e8545d",
+      "sharedProps": [
+        "errors",
+        "signed_in",
+        "can_manage_landings",
+        "status"
+      ]
+    },
+    "default-custom": {
+      "component": "Registered",
+      "props": {
+        "errors": [],
+        "signed_in": false,
+        "can_manage_landings": false,
+        "status": null,
+        "referral_url": null,
+        "confirmation": {
+          "content": {
+            "title": "Gracias por dar el siguiente paso.",
+            "message": "Recibimos tu solicitud. Si podemos completarla, recibirás un correo con el siguiente paso. Revisa también tu carpeta de spam.",
+            "cta_label": "Continuar",
+            "instructions": "Continúa con el siguiente paso. Puedes solicitar otro enlace de acceso si lo necesitas."
+          },
+          "activation": "pending",
+          "preview": false,
+          "landing_slug": "principal",
+          "video": {
+            "youtube_url": "https://www.youtube.com/watch?v=aqz-KE-bpKQ",
+            "poster": null,
+            "aspect_ratio": "3:4",
+            "source_type": "youtube",
+            "source_aspect_ratio": "9:16",
+            "focal_x": 0.25,
+            "focal_y": 0.5
+          },
+          "whatsapp_group_url": "https://chat.whatsapp.com/ConfirmGroupFixture1234",
+          "next": {
+            "url": "https://chat.whatsapp.com/ConfirmGroupFixture1234",
+            "external": true,
+            "redirect_seconds": 10
+          },
+          "unavailable": false
+        }
+      },
+      "url": "/principal/confirmado",
+      "version": "709446b23b35501bf3b8aeeb59e8545d",
+      "sharedProps": [
+        "errors",
+        "signed_in",
+        "can_manage_landings",
+        "status"
+      ]
+    },
+    "default-none": {
+      "component": "Registered",
+      "props": {
+        "errors": [],
+        "signed_in": false,
+        "can_manage_landings": false,
+        "status": null,
+        "referral_url": null,
+        "confirmation": {
+          "content": {
+            "title": "Gracias por dar el siguiente paso.",
+            "message": "Recibimos tu solicitud. Si podemos completarla, recibirás un correo con el siguiente paso. Revisa también tu carpeta de spam.",
+            "cta_label": "Continuar",
+            "instructions": "Continúa con el siguiente paso. Puedes solicitar otro enlace de acceso si lo necesitas."
+          },
+          "activation": "pending",
+          "preview": false,
+          "landing_slug": "principal",
+          "video": {
+            "youtube_url": "https://www.youtube.com/watch?v=aqz-KE-bpKQ",
+            "poster": null,
+            "aspect_ratio": "3:4",
+            "source_type": "youtube",
+            "source_aspect_ratio": "9:16",
+            "focal_x": 0.25,
+            "focal_y": 0.5
+          },
+          "whatsapp_group_url": null,
+          "next": null,
+          "unavailable": true
+        }
+      },
+      "url": "/principal/confirmado",
+      "version": "709446b23b35501bf3b8aeeb59e8545d",
+      "sharedProps": [
+        "errors",
+        "signed_in",
+        "can_manage_landings",
+        "status"
+      ]
+    },
+    "custom-inherit": {
+      "component": "Registered",
+      "props": {
+        "errors": [],
+        "signed_in": false,
+        "can_manage_landings": false,
+        "status": null,
+        "referral_url": null,
+        "confirmation": {
+          "content": {
+            "title": "Gracias por dar el siguiente paso.",
+            "message": "Recibimos tu solicitud. Si podemos completarla, recibirás un correo con el siguiente paso. Revisa también tu carpeta de spam.",
+            "cta_label": "Continuar",
+            "instructions": "Continúa con el siguiente paso. Puedes solicitar otro enlace de acceso si lo necesitas."
+          },
+          "activation": "pending",
+          "preview": false,
+          "landing_slug": "webinar",
+          "video": {
+            "youtube_url": "https://www.youtube.com/watch?v=M7lc1UVf-VE",
+            "poster": null,
+            "aspect_ratio": "3:4",
+            "source_type": "youtube",
+            "source_aspect_ratio": "9:16",
+            "focal_x": 0.25,
+            "focal_y": 0.5
+          },
+          "whatsapp_group_url": "https://chat.whatsapp.com/LandingGroupFixture1234",
+          "next": {
+            "url": "https://chat.whatsapp.com/LandingGroupFixture1234",
+            "external": true,
+            "redirect_seconds": 10
+          },
+          "unavailable": false
+        }
+      },
+      "url": "/webinar/confirmado",
+      "version": "709446b23b35501bf3b8aeeb59e8545d",
+      "sharedProps": [
+        "errors",
+        "signed_in",
+        "can_manage_landings",
+        "status"
+      ]
+    },
+    "custom-custom": {
+      "component": "Registered",
+      "props": {
+        "errors": [],
+        "signed_in": false,
+        "can_manage_landings": false,
+        "status": null,
+        "referral_url": null,
+        "confirmation": {
+          "content": {
+            "title": "Gracias por dar el siguiente paso.",
+            "message": "Recibimos tu solicitud. Si podemos completarla, recibirás un correo con el siguiente paso. Revisa también tu carpeta de spam.",
+            "cta_label": "Continuar",
+            "instructions": "Continúa con el siguiente paso. Puedes solicitar otro enlace de acceso si lo necesitas."
+          },
+          "activation": "pending",
+          "preview": false,
+          "landing_slug": "webinar",
+          "video": {
+            "youtube_url": "https://www.youtube.com/watch?v=M7lc1UVf-VE",
+            "poster": null,
+            "aspect_ratio": "3:4",
+            "source_type": "youtube",
+            "source_aspect_ratio": "9:16",
+            "focal_x": 0.25,
+            "focal_y": 0.5
+          },
+          "whatsapp_group_url": "https://chat.whatsapp.com/ConfirmGroupFixture1234",
+          "next": {
+            "url": "https://chat.whatsapp.com/ConfirmGroupFixture1234",
+            "external": true,
+            "redirect_seconds": 10
+          },
+          "unavailable": false
+        }
+      },
+      "url": "/webinar/confirmado",
+      "version": "709446b23b35501bf3b8aeeb59e8545d",
+      "sharedProps": [
+        "errors",
+        "signed_in",
+        "can_manage_landings",
+        "status"
+      ]
+    },
+    "custom-none": {
+      "component": "Registered",
+      "props": {
+        "errors": [],
+        "signed_in": false,
+        "can_manage_landings": false,
+        "status": null,
+        "referral_url": null,
+        "confirmation": {
+          "content": {
+            "title": "Gracias por dar el siguiente paso.",
+            "message": "Recibimos tu solicitud. Si podemos completarla, recibirás un correo con el siguiente paso. Revisa también tu carpeta de spam.",
+            "cta_label": "Continuar",
+            "instructions": "Continúa con el siguiente paso. Puedes solicitar otro enlace de acceso si lo necesitas."
+          },
+          "activation": "pending",
+          "preview": false,
+          "landing_slug": "webinar",
+          "video": {
+            "youtube_url": "https://www.youtube.com/watch?v=M7lc1UVf-VE",
+            "poster": null,
+            "aspect_ratio": "3:4",
+            "source_type": "youtube",
+            "source_aspect_ratio": "9:16",
+            "focal_x": 0.25,
+            "focal_y": 0.5
+          },
+          "whatsapp_group_url": null,
+          "next": null,
+          "unavailable": true
+        }
+      },
+      "url": "/webinar/confirmado",
+      "version": "709446b23b35501bf3b8aeeb59e8545d",
+      "sharedProps": [
+        "errors",
+        "signed_in",
+        "can_manage_landings",
+        "status"
+      ]
+    },
+    "none-inherit": {
+      "component": "Registered",
+      "props": {
+        "errors": [],
+        "signed_in": false,
+        "can_manage_landings": false,
+        "status": null,
+        "referral_url": null,
+        "confirmation": {
+          "content": {
+            "title": "Gracias por dar el siguiente paso.",
+            "message": "Recibimos tu solicitud. Si podemos completarla, recibirás un correo con el siguiente paso. Revisa también tu carpeta de spam.",
+            "cta_label": "Continuar",
+            "instructions": "Continúa con el siguiente paso. Puedes solicitar otro enlace de acceso si lo necesitas."
+          },
+          "activation": "pending",
+          "preview": false,
+          "landing_slug": "fundadores",
+          "video": {
+            "youtube_url": null,
+            "poster": null,
+            "aspect_ratio": "3:4",
+            "source_type": "youtube",
+            "source_aspect_ratio": "9:16",
+            "focal_x": 0.25,
+            "focal_y": 0.5
+          },
+          "whatsapp_group_url": null,
+          "next": null,
+          "unavailable": true
+        }
+      },
+      "url": "/fundadores/confirmado",
+      "version": "709446b23b35501bf3b8aeeb59e8545d",
+      "sharedProps": [
+        "errors",
+        "signed_in",
+        "can_manage_landings",
+        "status"
+      ]
+    },
+    "none-custom": {
+      "component": "Registered",
+      "props": {
+        "errors": [],
+        "signed_in": false,
+        "can_manage_landings": false,
+        "status": null,
+        "referral_url": null,
+        "confirmation": {
+          "content": {
+            "title": "Gracias por dar el siguiente paso.",
+            "message": "Recibimos tu solicitud. Si podemos completarla, recibirás un correo con el siguiente paso. Revisa también tu carpeta de spam.",
+            "cta_label": "Continuar",
+            "instructions": "Continúa con el siguiente paso. Puedes solicitar otro enlace de acceso si lo necesitas."
+          },
+          "activation": "pending",
+          "preview": false,
+          "landing_slug": "fundadores",
+          "video": {
+            "youtube_url": null,
+            "poster": null,
+            "aspect_ratio": "3:4",
+            "source_type": "youtube",
+            "source_aspect_ratio": "9:16",
+            "focal_x": 0.25,
+            "focal_y": 0.5
+          },
+          "whatsapp_group_url": "https://chat.whatsapp.com/ConfirmGroupFixture1234",
+          "next": {
+            "url": "https://chat.whatsapp.com/ConfirmGroupFixture1234",
+            "external": true,
+            "redirect_seconds": 10
+          },
+          "unavailable": false
+        }
+      },
+      "url": "/fundadores/confirmado",
+      "version": "709446b23b35501bf3b8aeeb59e8545d",
+      "sharedProps": [
+        "errors",
+        "signed_in",
+        "can_manage_landings",
+        "status"
+      ]
+    },
+    "none-none": {
+      "component": "Registered",
+      "props": {
+        "errors": [],
+        "signed_in": false,
+        "can_manage_landings": false,
+        "status": null,
+        "referral_url": null,
+        "confirmation": {
+          "content": {
+            "title": "Gracias por dar el siguiente paso.",
+            "message": "Recibimos tu solicitud. Si podemos completarla, recibirás un correo con el siguiente paso. Revisa también tu carpeta de spam.",
+            "cta_label": "Continuar",
+            "instructions": "Continúa con el siguiente paso. Puedes solicitar otro enlace de acceso si lo necesitas."
+          },
+          "activation": "pending",
+          "preview": false,
+          "landing_slug": "fundadores",
+          "video": {
+            "youtube_url": null,
+            "poster": null,
+            "aspect_ratio": "3:4",
+            "source_type": "youtube",
+            "source_aspect_ratio": "9:16",
+            "focal_x": 0.25,
+            "focal_y": 0.5
+          },
+          "whatsapp_group_url": null,
+          "next": null,
+          "unavailable": true
+        }
+      },
+      "url": "/fundadores/confirmado",
+      "version": "709446b23b35501bf3b8aeeb59e8545d",
+      "sharedProps": [
+        "errors",
+        "signed_in",
+        "can_manage_landings",
+        "status"
+      ]
+    }
+  },
+  "confirmed": {
+    "component": "Registered",
+    "props": {
+      "errors": [],
+      "signed_in": true,
+      "can_manage_landings": false,
+      "status": null,
+      "referral_url": "https://jakawi.club/r/NR331FEGSWRD",
+      "confirmation": {
+        "content": {
+          "title": "Otra edición",
+          "message": "Tu solicitud fue procesada.",
+          "cta_label": "Acceder al grupo",
+          "instructions": "Continúa con tu siguiente paso."
+        },
+        "activation": "confirmed",
+        "preview": false,
+        "landing_slug": "principal",
+        "video": {
+          "youtube_url": "https://www.youtube.com/watch?v=M7lc1UVf-VE",
+          "poster": "/marketing/poster-fixture.png",
+          "aspect_ratio": "3:4",
+          "source_type": "youtube",
+          "source_aspect_ratio": "16:9",
+          "focal_x": 0.25,
+          "focal_y": 0.5
+        },
+        "whatsapp_group_url": "https://chat.whatsapp.com/ApprovedGroupFixture123",
+        "next": {
+          "url": "https://chat.whatsapp.com/ApprovedGroupFixture123",
+          "external": true,
+          "redirect_seconds": 10
+        },
+        "unavailable": false
+      }
+    },
+    "url": "/principal/confirmado",
+    "version": "709446b23b35501bf3b8aeeb59e8545d",
+    "sharedProps": [
+      "errors",
+      "signed_in",
+      "can_manage_landings",
+      "status"
+    ]
+  },
+  "main": {
+    "component": "Welcome",
+    "props": {
+      "errors": [],
+      "signed_in": true,
+      "can_manage_landings": true,
+      "status": "Versión guardada publicada.",
+      "launch": {
+        "registration_open": false,
+        "video_url": "https://www.youtube.com/watch?v=aqz-KE-bpKQ",
+        "video_poster": null,
+        "event": null,
+        "whatsapp_url": "https://chat.whatsapp.com/LandingGroupFixture1234"
+      },
+      "landing": {
+        "id": 5,
+        "slug": "campaign-custom",
+        "content": {
+          "after_registration": {
+            "title": "Gracias por dar el siguiente paso.",
+            "message": "Recibimos tu solicitud. Si podemos completarla, recibirás un correo con el siguiente paso. Revisa también tu carpeta de spam.",
+            "cta_label": "Continuar",
+            "instructions": "Continúa con el siguiente paso. Puedes solicitar otro enlace de acceso si lo necesitas."
+          },
+          "next_step": {
+            "action": "whatsapp",
+            "redirect_seconds": 0
+          },
+          "whatsapp_group": {
+            "url": "https://chat.whatsapp.com/LandingGroupFixture1234",
+            "mode": "custom"
+          },
+          "confirmation_whatsapp_group": {
+            "url": null,
+            "mode": "inherit"
+          },
+          "faq": {
+            "items": [
+              {
+                "answer": "JAKAWI es una comunidad en preparación que empieza en Cochabamba. Este espacio permite conocer el lanzamiento, crear tu cuenta cuando abramos los registros e invitar a otras personas.",
+                "question": "¿Qué es JAKAWI?"
+              },
+              {
+                "answer": "El registro y la membresía de esta etapa son gratuitos. No hay pagos, compras ni comisiones disponibles en esta etapa.",
+                "question": "¿Registrarse tiene costo?"
+              },
+              {
+                "answer": "Cuando los registros estén abiertos, podrás completar este formulario. Si tu cuenta es nueva, recibirás un correo para activarla y establecer tu contraseña. Después podrás ingresar a tu cuenta. Por ahora, los registros están cerrados.",
+                "question": "¿Qué pasa después de registrarme?"
+              },
+              {
+                "answer": "Al activar tu cuenta tendrás un enlace personal para compartir. Si alguien se registra con una invitación válida, se conserva su primer referente. En tu cuenta podrás ver el número de personas que invitaste, sin sus datos personales.",
+                "question": "¿Cómo funcionan las invitaciones?"
+              },
+              {
+                "answer": "El correo se utiliza para activar la cuenta y recuperar el acceso. Aquí publicaremos las novedades del lanzamiento, los próximos encuentros y el acceso a la comunidad cuando estén confirmados.",
+                "question": "¿Qué información recibiré?"
+              }
+            ],
+            "title": "Antes de dar el paso.",
+            "eyebrow": "TODO CLARO, DESDE EL INICIO"
+          },
+          "seo": {
+            "title": "Tu ciudad tiene mucho más para vivir",
+            "description": "Conoce el comienzo de JAKAWI en Cochabamba. Una nueva forma de descubrir tu ciudad. Vive más. Gasta menos."
+          },
+          "hero": {
+            "cta": "QUIERO SER PARTE",
+            "title": "Tu ciudad tiene",
+            "ending": "para vivir.",
+            "eyebrow": "COCHABAMBA / PRELANZAMIENTO",
+            "emphasis": "mucho más",
+            "description": "Estamos preparando JAKAWI, una nueva forma de descubrir experiencias, lugares y oportunidades para disfrutar más de Cochabamba."
+          },
+          "final": {
+            "cta": "QUIERO SER PARTE",
+            "title": "Hay mucho por vivir. Empecemos juntos.",
+            "eyebrow": "TU CIUDAD. TU PRÓXIMO CAPÍTULO.",
+            "description": "Sé parte del comienzo de JAKAWI en Cochabamba."
+          },
+          "video": {
+            "youtube_url": "https://www.youtube.com/watch?v=aqz-KE-bpKQ",
+            "poster": null,
+            "aspect_ratio": "3:4",
+            "source_type": "youtube",
+            "source_aspect_ratio": "9:16",
+            "focal_x": 0.5,
+            "focal_y": 0.5
+          },
+          "benefits": {
+            "items": [
+              {
+                "title": "Estar desde el comienzo",
+                "description": "Conoce JAKAWI desde sus primeras etapas y descubre lo que estamos preparando para tu ciudad."
+              },
+              {
+                "title": "Saber cuándo encontrarnos",
+                "description": "Encuentra aquí la información de los próximos encuentros cuando sus fechas estén confirmadas."
+              },
+              {
+                "title": "Una comunidad por descubrir",
+                "description": "Participa en la comunidad cuando esté disponible. Un espacio para acompañar juntos el comienzo de JAKAWI."
+              },
+              {
+                "title": "Invitar a alguien más",
+                "description": "Una vez activada tu cuenta, tendrás un enlace personal para compartir tu invitación."
+              }
+            ],
+            "title": "Las mejores historias empiezan siendo parte.",
+            "eyebrow": "EL COMIENZO ES CONTIGO",
+            "description": "Esto es lo que podrás hacer al sumarte, cuando abramos los registros."
+          },
+          "presentation": {
+            "template": "LEAD_VSL",
+            "show_video": true,
+            "show_faq": true,
+            "show_confirmation_video": true
+          },
+          "registration": {
+            "title": "Las buenas cosas se comparten.",
+            "eyebrow": "TU PRÓXIMO PASO",
+            "description": "Una cuenta. Una invitación personal. Y una ciudad con mucho por descubrir juntos."
+          },
+          "confirmation_video": {
+            "youtube_url": "https://www.youtube.com/watch?v=M7lc1UVf-VE",
+            "poster": null,
+            "aspect_ratio": "3:4",
+            "source_type": "youtube",
+            "source_aspect_ratio": "9:16",
+            "focal_x": 0.5,
+            "focal_y": 0.5
+          }
+        },
+        "preview": false,
+        "revision": 2
+      },
+      "referral_code": null,
+      "referral_preference": null
+    },
+    "url": "/campaign-custom",
+    "version": "709446b23b35501bf3b8aeeb59e8545d",
+    "sharedProps": [
+      "errors",
+      "signed_in",
+      "can_manage_landings",
+      "status"
+    ]
+  }
+}

@@ -67,6 +67,23 @@
 .community-whatsapp-cta:hover:not(:disabled) { background-color: var(--community-whatsapp-hover); }
 .community-whatsapp-cta:focus-visible { outline: 2px solid var(--community-whatsapp-foreground); outline-offset: 2px; box-shadow: 0 0 0 5px var(--community-whatsapp-bg); }
 .confirmation-video { width: 100%; max-width: 420px; margin-inline: auto; }
+.confirmation-page { display: flex; min-height: 100svh; max-width: 52rem; flex-direction: column; align-items: center; gap: 2rem; padding-block: clamp(2.5rem, 5vw, 4.5rem); text-align: center; }
+.confirmation-intro { max-width: 42rem; }
+.confirmation-title { margin-top: 1rem; font-size: clamp(2.25rem, 5vw, 3.5rem); font-weight: 800; line-height: 1.08; letter-spacing: -.045em; text-wrap: balance; }
+.confirmation-message { max-width: 35rem; margin: 1.25rem auto 0; color: var(--text-secondary); font-size: 1.0625rem; line-height: 1.7; white-space: pre-line; }
+.confirmation-action { --community-whatsapp-bg: #25D366; --community-whatsapp-hover: #1EBE5B; --community-whatsapp-foreground: var(--ink); width: 100%; max-width: 30rem; }
+.confirmation-whatsapp-cta { width: 100%; min-height: 64px; padding: 1rem 1.25rem; font-size: .875rem; box-shadow: 0 8px 24px rgb(37 211 102 / 16%); animation: confirmation-whatsapp-bounce 5s ease-in-out infinite; }
+.confirmation-whatsapp-cta:hover, .confirmation-whatsapp-cta:focus-visible { animation-play-state: paused; }
+.confirmation-email { display: grid; width: 100%; max-width: 35rem; justify-items: center; gap: .875rem; padding: clamp(1.5rem, 4vw, 2rem); border: 1px solid var(--border); border-radius: var(--radius-card); background: var(--surface); }
+.confirmation-email-icon { color: var(--ink); }
+.confirmation-email h2 { font-size: 1.375rem; font-weight: 800; letter-spacing: -.025em; }
+.confirmation-email p { max-width: 28rem; color: var(--text-secondary); font-size: .875rem; line-height: 1.8; }
+.confirmation-note { color: var(--text-muted); font-size: .75rem; }
+@keyframes confirmation-whatsapp-bounce {
+    0%, 76%, 88%, 100% { transform: translateY(0); }
+    81% { transform: translateY(-5px); }
+    85% { transform: translateY(-2px); }
+}
 
 @media (min-width: 640px) {
     .shell { padding-inline: calc(var(--space-gutter) * 1.5); }
