@@ -86,7 +86,7 @@ for path, expected, location in [
     except HTTPError as error:
         status = error.code
         if location:
-            assert error.headers['Location'] == 'https://jakawi.club'+location
+            assert error.headers['Location'].rstrip('/') == ('https://jakawi.club'+location).rstrip('/'), (path, 'Unexpected internal redirect')
     assert status == expected, (path, status)
     routes[path] = status
 
