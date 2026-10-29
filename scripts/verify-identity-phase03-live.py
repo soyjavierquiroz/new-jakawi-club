@@ -25,7 +25,8 @@ assert sha256(Path('/srv/sites/jakawi.club/secrets/app.env').read_bytes()).hexdi
 protected=[p for p in base['files'] if p.startswith(('app/resources/js/pages/Welcome','app/resources/js/pages/Registered','app/resources/js/components/marketing/','app/resources/js/components/media/','app/app/Services/Crm/','app/app/Jobs/','app/config/mail','app/config/crm','app/app/Http/Controllers/Registration','app/app/Support/Registration','app/app/Support/Landing','app/app/Support/Launch'))]
 assert all(sha256((ROOT/p).read_bytes()).hexdigest()==base['files'][p] for p in protected)
 files=command(['git','ls-files','app']).decode().splitlines()
-expected={p.removeprefix('app/'):sha256((ROOT/p).read_bytes()).hexdigest() for p in files if (ROOT/p).is_file()}
+# Runtime storage/cache are persistent mounts, not the tracked source directories.
+expected={p.removeprefix('app/'):sha256((ROOT/p).read_bytes()).hexdigest() for p in files if (ROOT/p).is_file() and not p.startswith(('app/storage/','app/bootstrap/cache/'))}
 encoded=base64.b64encode(json.dumps(list(expected)).encode()).decode()
 actual=php("<?php $r=[];foreach(json_decode(base64_decode('"+encoded+"'),true)as $f)$r[$f]=hash_file('sha256',$f);echo json_encode($r);")
 assert actual==expected
