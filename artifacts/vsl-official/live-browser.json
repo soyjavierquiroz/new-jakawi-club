@@ -1,0 +1,375 @@
+{
+  "stage": "LIVE",
+  "checks": [
+    {
+      "name": "official-vsl-lifecycle",
+      "width": 390,
+      "fixture": "YouTube API contract + virtual decorative clock",
+      "geometry": {
+        "frame": {
+          "x": 16,
+          "y": 293.75,
+          "width": 358,
+          "height": 477.328125,
+          "right": 374,
+          "bottom": 771.078125
+        },
+        "iframe": {
+          "x": -370.71875,
+          "y": 214.203125,
+          "width": 1131.453125,
+          "height": 636.421875,
+          "right": 760.734375,
+          "bottom": 850.625
+        },
+        "heading": {
+          "x": 16,
+          "y": 109,
+          "width": 358,
+          "height": 160.75,
+          "right": 374,
+          "bottom": 269.75
+        },
+        "copy": {
+          "x": 16,
+          "y": 795.078125,
+          "width": 358,
+          "height": 254,
+          "right": 374,
+          "bottom": 1049.078125
+        },
+        "media": {
+          "x": 16,
+          "y": 293.75,
+          "width": 358,
+          "height": 477.328125,
+          "right": 374,
+          "bottom": 771.078125
+        },
+        "centerOffset": 46.625,
+        "overflow": false,
+        "players": 1,
+        "closed": true,
+        "country": "+591⌄"
+      },
+      "passed": true,
+      "analytics_before_clock": 0
+    },
+    {
+      "name": "official-vsl-lifecycle",
+      "width": 430,
+      "fixture": "YouTube API contract + virtual decorative clock",
+      "geometry": {
+        "frame": {
+          "x": 16,
+          "y": 293.75,
+          "width": 398,
+          "height": 530.65625,
+          "right": 414,
+          "bottom": 824.40625
+        },
+        "iframe": {
+          "x": -413.9375,
+          "y": 205.3125,
+          "width": 1257.875,
+          "height": 707.53125,
+          "right": 843.9375,
+          "bottom": 912.84375
+        },
+        "heading": {
+          "x": 16,
+          "y": 109,
+          "width": 398,
+          "height": 160.75,
+          "right": 414,
+          "bottom": 269.75
+        },
+        "copy": {
+          "x": 16,
+          "y": 848.40625,
+          "width": 398,
+          "height": 254,
+          "right": 414,
+          "bottom": 1102.40625
+        },
+        "media": {
+          "x": 16,
+          "y": 293.75,
+          "width": 398,
+          "height": 530.65625,
+          "right": 414,
+          "bottom": 824.40625
+        },
+        "centerOffset": 46.625,
+        "overflow": false,
+        "players": 1,
+        "closed": true,
+        "country": "+591⌄"
+      },
+      "passed": true,
+      "analytics_before_clock": 0
+    },
+    {
+      "name": "official-vsl-lifecycle",
+      "width": 1024,
+      "fixture": "YouTube API contract + virtual decorative clock",
+      "geometry": {
+        "frame": {
+          "x": 575.984375,
+          "y": 129,
+          "width": 416,
+          "height": 554.65625,
+          "right": 991.984375,
+          "bottom": 683.65625
+        },
+        "iframe": {
+          "x": 126.609375,
+          "y": 36.5625,
+          "width": 1314.75,
+          "height": 739.53125,
+          "right": 1441.359375,
+          "bottom": 776.09375
+        },
+        "heading": {
+          "x": 32,
+          "y": 186.578125,
+          "width": 479.25,
+          "height": 193.75,
+          "right": 511.25,
+          "bottom": 380.328125
+        },
+        "copy": {
+          "x": 32,
+          "y": 380.328125,
+          "width": 479.25,
+          "height": 245.75,
+          "right": 511.25,
+          "bottom": 626.078125
+        },
+        "media": {
+          "x": 575.984375,
+          "y": 129,
+          "width": 416,
+          "height": 554.65625,
+          "right": 991.984375,
+          "bottom": 683.65625
+        },
+        "centerOffset": 0,
+        "overflow": false,
+        "players": 1,
+        "closed": true,
+        "country": "+591⌄"
+      },
+      "passed": true,
+      "analytics_before_clock": 0
+    },
+    {
+      "name": "official-vsl-lifecycle",
+      "width": 1440,
+      "fixture": "YouTube API contract + virtual decorative clock",
+      "geometry": {
+        "frame": {
+          "x": 847.984375,
+          "y": 129,
+          "width": 416,
+          "height": 554.65625,
+          "right": 1263.984375,
+          "bottom": 683.65625
+        },
+        "iframe": {
+          "x": 398.609375,
+          "y": 36.5625,
+          "width": 1314.75,
+          "height": 739.53125,
+          "right": 1713.359375,
+          "bottom": 776.09375
+        },
+        "heading": {
+          "x": 176,
+          "y": 165.390625,
+          "width": 547.71875,
+          "height": 236.125,
+          "right": 723.71875,
+          "bottom": 401.515625
+        },
+        "copy": {
+          "x": 176,
+          "y": 401.515625,
+          "width": 547.71875,
+          "height": 245.75,
+          "right": 723.71875,
+          "bottom": 647.265625
+        },
+        "media": {
+          "x": 847.984375,
+          "y": 129,
+          "width": 416,
+          "height": 554.65625,
+          "right": 1263.984375,
+          "bottom": 683.65625
+        },
+        "centerOffset": 0,
+        "overflow": false,
+        "players": 1,
+        "closed": true,
+        "country": "+591⌄"
+      },
+      "passed": true,
+      "analytics_before_clock": 0
+    },
+    {
+      "name": "reduced",
+      "passed": true,
+      "fixture": true
+    },
+    {
+      "name": "save-data",
+      "passed": true,
+      "fixture": true
+    },
+    {
+      "name": "blocked",
+      "passed": true,
+      "fixture": true
+    },
+    {
+      "name": "audio-blocked",
+      "passed": true,
+      "fixture": true
+    },
+    {
+      "name": "preview",
+      "passed": true,
+      "fixture": true
+    },
+    {
+      "name": "waitlist",
+      "passed": true,
+      "fixture": true
+    },
+    {
+      "name": "webinar-off",
+      "passed": true,
+      "fixture": true
+    },
+    {
+      "name": "no-video",
+      "passed": true,
+      "fixture": true
+    },
+    {
+      "name": "webinar",
+      "passed": true,
+      "fixture": true
+    },
+    {
+      "name": "sticky-form-international-phone",
+      "passed": true,
+      "fixture": true
+    }
+  ],
+  "viewports": [
+    390,
+    430,
+    1024,
+    1440
+  ],
+  "provider_contract_fixtures": true,
+  "real_playback": [
+    {
+      "width": 390,
+      "state": "error",
+      "fixture": false,
+      "native_clock_and_connection": true,
+      "source": "https://www.youtube.com/watch?v=P42gDOTL6Ys",
+      "events": [
+        {
+          "name": "onReady",
+          "data": null
+        },
+        {
+          "name": "onStateChange",
+          "data": -1
+        },
+        {
+          "name": "onStateChange",
+          "data": 3
+        },
+        {
+          "name": "onError",
+          "data": 150
+        },
+        {
+          "name": "onStateChange",
+          "data": -1
+        }
+      ],
+      "before": {
+        "time": 0,
+        "muted": true,
+        "volume": 100,
+        "state": -1,
+        "videoId": "P42gDOTL6Ys"
+      },
+      "after": {
+        "time": 0,
+        "muted": true,
+        "volume": 100,
+        "state": -1,
+        "videoId": "P42gDOTL6Ys"
+      },
+      "verified_muted_playback": false,
+      "audio_verified": false,
+      "fallback_visible": true
+    },
+    {
+      "width": 1440,
+      "state": "error",
+      "fixture": false,
+      "native_clock_and_connection": true,
+      "source": "https://www.youtube.com/watch?v=P42gDOTL6Ys",
+      "events": [
+        {
+          "name": "onReady",
+          "data": null
+        },
+        {
+          "name": "onStateChange",
+          "data": -1
+        },
+        {
+          "name": "onStateChange",
+          "data": 3
+        },
+        {
+          "name": "onError",
+          "data": 150
+        },
+        {
+          "name": "onStateChange",
+          "data": -1
+        }
+      ],
+      "before": {
+        "time": 0,
+        "muted": true,
+        "volume": 100,
+        "state": -1,
+        "videoId": "P42gDOTL6Ys"
+      },
+      "after": {
+        "time": 0,
+        "muted": true,
+        "volume": 100,
+        "state": -1,
+        "videoId": "P42gDOTL6Ys"
+      },
+      "verified_muted_playback": false,
+      "audio_verified": false,
+      "fallback_visible": true
+    }
+  ],
+  "runtime_errors": [],
+  "failed_assets": [],
+  "no_live_accounts": true
+}

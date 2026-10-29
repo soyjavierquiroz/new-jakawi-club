@@ -2,7 +2,7 @@ import { Head, Link, useForm } from '@inertiajs/react';
 import { useEffect } from 'react';
 import { Footer, Header } from '../components/UI';
 import { RegistrationForm } from '../components/forms/RegistrationForm';
-import { JakawiVslPlayer } from '../components/media/jakawi-vsl-player';
+import { LandingVideo } from '../components/media/jakawi-vsl-player';
 import { MarketingBenefits, MarketingFAQ, MarketingFinalCTA, MarketingHero } from '../components/marketing/primitives';
 import { trackMarketing } from '../components/marketing/analytics';
 import { LandingContext } from '../components/marketing/LandingContext';
@@ -16,7 +16,7 @@ export default function Welcome({ landing, launch, referral_code, referral_prefe
     const template = content.presentation.template;
     const waitlist = template === 'WAITLIST';
     const webinar = template === 'WEBINAR';
-    const video = !waitlist && (!webinar || content.presentation.show_video) ? <JakawiVslPlayer key={launch.video_url} url={launch.video_url} poster={launch.video_poster} aspectRatio={content.video.aspect_ratio} sourceAspectRatio={content.video.source_aspect_ratio} onEvent={event => { if (event.type === 'playing' && !landing.preview) trackMarketing('video_start', 'video', landing.id); }} /> : null;
+    const video = !waitlist && (!webinar || content.presentation.show_video) ? <LandingVideo key={launch.video_url} video={content.video} url={launch.video_url} poster={launch.video_poster} onEvent={event => { if (event.type === 'playing' && !landing.preview) trackMarketing('video_start', 'video', landing.id); }} /> : null;
     const encounter = webinar ? <div className="message mt-6" data-webinar-schedule>{launch.event ? <><p className="font-bold">{launch.event.title}</p><time dateTime={launch.event.starts_at}>{new Intl.DateTimeFormat('es-BO', { dateStyle: 'long', timeStyle: 'short', timeZone: 'America/La_Paz' }).format(new Date(launch.event.starts_at))} (Bolivia)</time></> : <p>Publicaremos la fecha y hora del encuentro cuando estén confirmadas.</p>}</div> : undefined;
     useEffect(() => { if (!landing.preview) trackMarketing('landing_visit', 'landing', landing.id); }, [landing.id, landing.preview]);
     return <LandingContext.Provider value={landing}><Head title={content.seo.title}><meta name="description" content={content.seo.description} />{landing.preview && <meta name="robots" content="noindex, nofollow" />}</Head>{landing.preview && <div className="message text-center" role="status">Vista previa del borrador · revisión {landing.revision} · registro deshabilitado</div>}<Header /><main data-landing-template={template}>

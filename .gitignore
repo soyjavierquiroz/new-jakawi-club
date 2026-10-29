@@ -52,3 +52,7 @@ credentials.json
 
 /artifacts/editor/baseline.json
 /artifacts/editor/LIVE.json
+
+/artifacts/vsl-official/baseline.json
+/artifacts/vsl-official/LIVE.json
+/artifacts/vsl-official/previous-build/

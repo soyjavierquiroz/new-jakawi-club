@@ -90,6 +90,12 @@ try {
     on('Fetch.requestPaused', async event => {
         try {
             const url = new URL(event.request.url);
+            if (url.href==='https://www.youtube.com/iframe_api') { await fulfill(event,200,'application/javascript',"window.__editorProviderFixture=true;window.YT={Player:class{constructor(mount,options){this.muted=true;this.time=0;const iframe=document.createElement('iframe');iframe.src='about:blank';mount.replaceWith(iframe);this.iframe=iframe;setTimeout(()=>options.events.onReady({target:this}),30);}playVideo(){}pauseVideo(){}seekTo(t){this.time=t;}mute(){this.muted=true;}unMute(){this.muted=false;}isMuted(){return this.muted;}getVolume(){return 100;}setVolume(){}getCurrentTime(){return this.time;}getDuration(){return 90;}destroy(){this.iframe.remove();}}};window.onYouTubeIframeAPIReady?.();");return; }
+            if (url.pathname.startsWith('/build/')) {
+                const filename='/workspace/public/build-next/'+url.pathname.slice('/build/'.length);
+                const body=await readFile(filename);
+                await call('Fetch.fulfillRequest',{requestId:event.requestId,responseCode:200,responseHeaders:[{name:'Content-Type',value:filename.endsWith('.css')?'text/css':filename.endsWith('.woff2')?'font/woff2':'application/javascript'}],body:body.toString('base64')});return;
+            }
             if (url.pathname === '/medicion') { metrics.push(JSON.parse(event.request.postData)); await fulfill(event,204,'application/json'); return; }
             if (url.pathname === '/registro') throw new Error('No registration request allowed');
             let page;
@@ -133,9 +139,9 @@ try {
             const inertia = event.request.headers['X-Inertia'] || event.request.headers['x-inertia'];
             if (inertia) await fulfill(event, 200, 'application/json', JSON.stringify(page), [{name:'X-Inertia',value:'true'}]);
             else await fulfill(event, 200, 'text/html; charset=utf-8', html.replace(pattern, (_, open, _body, close) => open+JSON.stringify(page).replaceAll('<','\\u003c')+close));
-        } catch (error) { runtimeErrors.push(error.message); await call('Fetch.failRequest', {requestId:event.requestId,errorReason:'Failed'}); }
+        } catch (error) { if (error.message.includes('Invalid InterceptionId')) return; runtimeErrors.push(error.message); await call('Fetch.failRequest', {requestId:event.requestId,errorReason:'Failed'}).catch(() => {}); }
     });
-    await call('Fetch.enable', {patterns:[{urlPattern:'https://jakawi.club/admin/landings*'},{urlPattern:'https://jakawi.club/medicion'},{urlPattern:'https://jakawi.club/registro'}]});
+    await call('Fetch.enable', {patterns:[{urlPattern:'https://www.youtube.com/iframe_api'},{urlPattern:'https://jakawi.club/build/*'},{urlPattern:'https://jakawi.club/admin/landings*'},{urlPattern:'https://jakawi.club/medicion'},{urlPattern:'https://jakawi.club/registro'}]});
     const until = async (expression, message) => {
         for (let i=0;i<100;i++) { try { if (await evaluate(expression)) return; } catch {} await pause(75); }
         console.log('Browser state at failure',message,await evaluate(`({path:location.pathname,dirty:document.body.textContent.includes('Cambios sin guardar'),template:document.querySelector('#landing-template')?.value,frame:document.querySelector('iframe')?.contentDocument?.querySelector('[data-landing-template]')?.dataset.landingTemplate,errors:[...document.querySelectorAll('[role=alert]')].map(e=>e.textContent),invalid:[...document.querySelectorAll('#landing-form :invalid')].map(e=>e.id),busy:document.querySelector('#landing-form button[type=submit]')?.disabled})`));

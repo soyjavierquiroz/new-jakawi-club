@@ -43,6 +43,8 @@
     --input: var(--border);
     --ring: var(--brand);
     --shadow: 0 8px 24px color-mix(in srgb, var(--ink) 6%, transparent);
+    --scrim: color-mix(in srgb, var(--ink) 82%, transparent);
+    --overlay: color-mix(in srgb, var(--ink) 42%, transparent);
     --shadow-featured: 0 14px 30px color-mix(in srgb, var(--ink) 10%, transparent);
 
     --radius: .875rem;

@@ -1,0 +1,234 @@
+.player {
+    width: min(100%, 420px);
+    margin-inline: auto;
+    overflow: hidden;
+    isolation: isolate;
+    clip-path: inset(0 round 24px);
+    border-radius: 24px;
+    background: var(--ink);
+    box-shadow: var(--shadow-featured);
+}
+.player {
+    position: relative;
+}
+.horizontal {
+    width: min(100%, 720px);
+}
+.frame {
+    border-radius: inherit;
+    position: relative;
+    width: 100%;
+    aspect-ratio: 3 / 4;
+    overflow: hidden;
+    background: var(--ink);
+    color: var(--jakawi-video-text, var(--cream));
+}
+.media {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+img.media {
+    pointer-events: none;
+}
+.youtube {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    border-radius: inherit;
+    line-height: 0;
+}
+.youtube iframe {
+    position: absolute;
+    inset: -1px;
+    display: block;
+    width: calc(100% + 2px);
+    height: calc(100% + 2px);
+    border: 0;
+}
+.overlay {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    background: var(--jakawi-video-overlay, var(--overlay));
+}
+.start {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    border: 1px solid color-mix(in srgb, var(--jakawi-video-text, var(--cream)) 22%, transparent);
+    border-radius: 999px;
+    background: var(--jakawi-video-overlay, var(--scrim));
+    color: var(--jakawi-video-text, var(--cream));
+    font-weight: 700;
+    cursor: pointer;
+    backdrop-filter: blur(10px);
+}
+.start {
+    flex-direction: column;
+    border-radius: 22px;
+    padding: 24px 28px;
+    font-size: 16px;
+}
+.soundCopy {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    max-width: 100%;
+    padding: 12px 18px;
+    border-radius: 999px;
+    border: 1px solid color-mix(in srgb, var(--jakawi-video-text, var(--cream)) 18%, transparent);
+    background: var(--jakawi-video-overlay, rgb(17 17 17 / 82%));
+    color: var(--jakawi-video-text, var(--cream));
+    box-shadow: 0 6px 20px rgb(0 0 0 / 18%);
+    pointer-events: none;
+    line-height: 1.4;
+}
+.soundCopy strong {
+    font-size: clamp(15px, 3.8vw, 18px);
+    font-weight: 600;
+    letter-spacing: -0.015em;
+}
+.soundPrompt {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    font-size: clamp(12px, 3.2vw, 14px);
+    font-weight: 400;
+    color: var(--jakawi-video-text, var(--cream));
+}
+.soundPrompt svg {
+    flex-shrink: 0;
+    color: var(--jakawi-video-accent, var(--brand));
+}
+.soundOverlay {
+    position: absolute;
+    inset: 0;
+    padding: 16px;
+    display: grid;
+    place-items: center;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    text-align: center;
+    touch-action: pan-y pinch-zoom;
+}
+.player .soundOverlay:focus-visible {
+    outline-offset: -4px;
+}
+.pause {
+    position: absolute;
+    bottom: 18px;
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border: 1px solid color-mix(in srgb, var(--jakawi-video-text, var(--cream)) 20%, transparent);
+    border-radius: 50%;
+    background: var(--jakawi-video-overlay, var(--scrim));
+    color: var(--jakawi-video-text, var(--cream));
+    cursor: pointer;
+}
+.pause {
+    z-index: 1;
+    left: 16px;
+}
+.player button:disabled {
+    opacity: 0.5;
+    cursor: default;
+}
+.player button:focus-visible {
+    outline: 3px solid var(--jakawi-video-accent, var(--brand));
+    outline-offset: 3px;
+}
+.error {
+    position: absolute;
+    bottom: 68px;
+    inset-inline: 16px;
+    margin: 0;
+    padding: 10px;
+    border-radius: 12px;
+    background: var(--jakawi-video-overlay, var(--scrim));
+    font-size: 12px;
+    text-align: center;
+    pointer-events: none;
+}
+.loading {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: var(--jakawi-video-overlay, var(--scrim));
+    font-size: 12px;
+    pointer-events: none;
+}
+.progress {
+    position: absolute;
+    inset: auto 0 0;
+    height: 5px;
+    background: color-mix(in srgb, var(--jakawi-video-text, var(--cream)) 15%, transparent);
+    pointer-events: none;
+}
+.progress > div {
+    width: 100%;
+    height: 100%;
+    transform-origin: left;
+    background: var(--jakawi-video-accent, var(--brand));
+}
+.srOnly {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+@media (max-width: 600px) {
+    .player:not(.horizontal) {
+        max-width: 360px;
+    }
+}
+
+
+.marketingFrame .youtube iframe {
+    inset: auto;
+    width: var(--vsl-desktop-width);
+    height: var(--vsl-desktop-height);
+    left: var(--vsl-desktop-left);
+    top: var(--vsl-desktop-top);
+    transform: none;
+}
+/* Marketing uses the approved 3:4 cover geometry at every viewport. */
+.player.marketingFrame {
+    --vsl-frame-ratio: 3 / 4;
+    width: 100%;
+    max-width: none;
+}
+.marketingFrame video.media {
+    width: 100% !important;
+    height: 100% !important;
+    left: 0 !important;
+    top: 0 !important;
+    object-fit: cover !important;
+    object-position: center !important;
+}
+.marketingFrame .youtube iframe,
+.marketingFrame[data-marketing-video-frame='embedded-vertical'] video.media {
+    width: var(--vsl-mobile-width) !important;
+    height: var(--vsl-mobile-height) !important;
+    left: var(--vsl-mobile-left) !important;
+    top: var(--vsl-mobile-top) !important;
+}
+
+.error a { color: inherit; font-weight: 700; text-decoration: underline; text-underline-offset: 2px; }

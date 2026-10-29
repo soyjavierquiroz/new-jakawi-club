@@ -1,0 +1,6 @@
+VSL lifecycle/crop passed 390
+VSL lifecycle/crop passed 430
+VSL lifecycle/crop passed 1024
+VSL lifecycle/crop passed 1440
+Browser request failed Script net::ERR_CONNECTION_FAILED
+{"passed_groups":14,"viewports":[390,430,1024,1440],"live":false,"real_playback":[]}

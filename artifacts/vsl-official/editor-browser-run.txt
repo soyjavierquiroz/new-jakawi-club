@@ -1,0 +1,8 @@
+Checking template LEAD_VSL
+Browser request failed Script net::ERR_ABORTED
+Browser request failed Script net::ERR_ABORTED
+Browser request failed Stylesheet net::ERR_ABORTED
+Checking template WEBINAR
+Checking template WAITLIST
+Browser request failed Script net::ERR_ABORTED
+13 editor/preview groups passed; 390, 430, 768, 1440 px; no LIVE writes.

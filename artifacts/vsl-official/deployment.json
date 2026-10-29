@@ -1,0 +1,21 @@
+{
+  "deployed_at": "2026-10-29T07:59:38.021270-04:00",
+  "baseline_sha": "f485ba92f585fbf80984af3df7a2a5ecc2f7e828",
+  "manifest_before": "87088f40902fdffa92167db2f0b75aa0b2d75b3c5bc821a27fa6e2588dd074dc",
+  "manifest_after": "717c4ac7f955d1cbec64a4c8949403a49a2aed0c380676b39abb57c0b987ad7a",
+  "files_checked": 19,
+  "old_chunks_preserved": true,
+  "migrations": false,
+  "environment_changes": false,
+  "infrastructure_changes": false,
+  "revisions": [
+    {
+      "manifest": "95449db5bf8ee7a9b1c5718117ba9b92292063f62b05889b3a1719bdaa04bf4e",
+      "note": "Initial official port"
+    },
+    {
+      "manifest": "717c4ac7f955d1cbec64a4c8949403a49a2aed0c380676b39abb57c0b987ad7a",
+      "note": "Buffering timeout classified independently of browser autoplay denial"
+    }
+  ]
+}

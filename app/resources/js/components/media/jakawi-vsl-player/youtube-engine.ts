@@ -1,4 +1,5 @@
 // API lifecycle/controller adapted from original YouTubePlayerAdapter; retains retry/blocked handling.
+import { applyYouTubeCrop } from './youtube-crop.js';
 import { initialPlaybackState } from './types';
 import type { YoutubeEngine } from './types';
 import type { PlaybackState, VslEvent } from './types';
@@ -118,6 +119,7 @@ export function createYoutubeEngine(
         source: { type: 'youtube'; url: string };
         origin: string;
         autoplay: boolean;
+        presentation?: unknown;
         onState(state: PlaybackState): void;
         onEvent?(event: VslEvent): void;
         loadApi?: () => Promise<YoutubeApi>;
@@ -131,6 +133,13 @@ export function createYoutubeEngine(
     let intent: 'autoplay' | 'manual' | null = null;
     let progress: ReturnType<typeof setInterval> | undefined;
     let pending: ReturnType<typeof setTimeout> | undefined;
+    let stall: ReturnType<typeof setTimeout> | undefined;
+    let initializationExpired = false;
+    const readiness = setTimeout(() => {
+        if (!alive || state.ready) return;
+        initializationExpired = true;
+        fail('media', 'YouTube está tardando en responder. Intenta de nuevo o abre el video en YouTube.');
+    }, 20000);
     const update = (patch: Partial<PlaybackState>) => {
         if (!alive) return;
         state = { ...state, ...patch };
@@ -150,6 +159,8 @@ export function createYoutubeEngine(
     ) => {
         if (!alive) return;
         clearPending();
+        clearTimeout(readiness);
+        clearTimeout(stall);
         if (audioPending && kind.endsWith('blocked')) {
             player?.mute();
             update({ muted: true });
@@ -230,8 +241,13 @@ export function createYoutubeEngine(
                 },
                 events: {
                     onReady: ({ target }) => {
-                        if (!alive) return;
+                        if (!alive || initializationExpired) return;
+                        clearTimeout(readiness);
                         player = target;
+                        applyYouTubeCrop(
+                            host.querySelector('iframe'),
+                            options.presentation,
+                        );
                         target.mute();
                         update({ ready: true, status: 'ready', muted: true });
                         read();
@@ -250,6 +266,7 @@ export function createYoutubeEngine(
                         read();
                         if (data === 1) {
                             clearPending();
+                            clearTimeout(stall);
                             update({
                                 status: 'playing',
                                 hasPlayed: true,
@@ -265,6 +282,7 @@ export function createYoutubeEngine(
                                 emit('audio-activated');
                             }
                         } else if (data === 2) {
+                            clearTimeout(stall);
                             if (
                                 [
                                     'requesting',
@@ -280,17 +298,27 @@ export function createYoutubeEngine(
                             update({ status: 'paused' });
                             emit('paused');
                         } else if (data === 0) {
+                            clearTimeout(stall);
                             clearPending();
                             intent = null;
                             audioPending = false;
                             update({ status: 'ended' });
                             emit('ended');
-                        } else if (data === 3) update({ status: 'buffering' });
+                        } else if (data === 3) {
+                            update({ status: 'buffering' });
+                            clearTimeout(stall);
+                            stall = setTimeout(() => {
+                                if (alive && state.status === 'buffering')
+                                    fail('media', 'No se pudo continuar el video. Intenta de nuevo o ábrelo en YouTube.');
+                            }, 20000);
+                        }
                     },
                     onError: ({ data }) =>
                         fail(
                             'media',
-                            `YouTube rechazó la reproducción (código ${data}). Consulta el diagnóstico del proveedor.`,
+                            data === 150 || data === 101
+                                ? `Este video no permite reproducción insertada (YouTube ${data}). Puedes verlo en YouTube.`
+                                : `YouTube rechazó la reproducción (código ${data}). Puedes abrir el video en YouTube.`,
                             data,
                         ),
                     onAutoplayBlocked: () => {
@@ -350,6 +378,7 @@ export function createYoutubeEngine(
                 autoplayCancelled = true;
                 if (!player || !state.ready) return;
                 clearPending();
+                clearTimeout(stall);
                 intent = null;
                 audioPending = false;
                 player.pauseVideo();
@@ -387,6 +416,8 @@ export function createYoutubeEngine(
                 if (!alive) return;
                 alive = false;
                 clearPending();
+                clearTimeout(readiness);
+                clearTimeout(stall);
                 clearInterval(progress);
                 player?.destroy();
                 host.replaceChildren();

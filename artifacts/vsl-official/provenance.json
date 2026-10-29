@@ -1,0 +1,111 @@
+{
+  "source_commit": "130bfac34a645060c0df9767e3994064451349c3",
+  "baseline_commit": "f485ba92f585fbf80984af3df7a2a5ecc2f7e828",
+  "files": [
+    {
+      "target": "app/resources/js/components/media/jakawi-vsl-player/JakawiVslPlayer.module.css",
+      "source": "/root/jakawi-marketing-portability-audit-v1/repository/app/resources/js/components/media/jakawi-vsl-player/JakawiVslPlayer.module.css",
+      "source_sha256": "0c7afcfecf6782b9072214e77b3675672d3f0c8704fe3ee22e11330ae81e7903",
+      "target_sha256": "fc337ff1ec1f695100cad4fe2aad5cc63d1a5cda851916c2f94a3027bc4c4561",
+      "adaptation": "Official VSL and marketing geometry selectors; course controls omitted; watch-link styling added."
+    },
+    {
+      "target": "app/resources/js/components/media/jakawi-vsl-player/JakawiVslPlayer.tsx",
+      "source": "/root/jakawi-marketing-portability-audit-v1/repository/app/resources/js/components/media/jakawi-vsl-player/JakawiVslPlayer.tsx",
+      "source_sha256": "8848d5c22ea1961c1b9e50dacb7b69b7eb41ac39a69b3873b7302550117ccfa3",
+      "target_sha256": "838cb15cf9cc81c6ec009edcd3ca0f27cc07075b1959827776f98bce262771c5",
+      "adaptation": "VSL YouTube branch, local SVG icons/class joining, host state attributes, retry and normal watch link. Official overlays/actions/crop/progress retained."
+    },
+    {
+      "target": "app/resources/js/components/media/jakawi-vsl-player/LICENSE.lucide",
+      "source": null,
+      "source_sha256": null,
+      "target_sha256": "1e7290b35280a048667bbf0ebabac1c7fd52a75300e8b2946ac165715997f2bc",
+      "adaptation": "Local host adapter / SVG geometry / exports"
+    },
+    {
+      "target": "app/resources/js/components/media/jakawi-vsl-player/LandingVideo.tsx",
+      "source": "/root/jakawi-marketing-portability-audit-v1/repository/app/resources/js/components/media/jakawi-vsl-player/LandingVideo.tsx",
+      "source_sha256": "171929574c29fbf2d0337d2b90eadd115f288dbbb2fe6238242b3174b39ae65b",
+      "target_sha256": "f6b469f07f531aaade0a0aeb6c680e32d3f493c4f2be691226c0223d17ab478a",
+      "adaptation": "Local host adapter / SVG geometry / exports"
+    },
+    {
+      "target": "app/resources/js/components/media/jakawi-vsl-player/index.ts",
+      "source": "/root/jakawi-marketing-portability-audit-v1/repository/app/resources/js/components/media/jakawi-vsl-player/index.ts",
+      "source_sha256": "f9774333d4ba68797599b0bcbed3a6b3492fab79acb9b6a0579f0a8bda238325",
+      "target_sha256": "7e5dd057c83f807983f5088e6e69729aedcb56120c5b91631f6fe5a5ad49b04b",
+      "adaptation": "Local host adapter / SVG geometry / exports"
+    },
+    {
+      "target": "app/resources/js/components/media/jakawi-vsl-player/landing-video-props.ts",
+      "source": null,
+      "source_sha256": null,
+      "target_sha256": "ffef3c4c8b2c55f0ba99a333ee241724d3eaaf6bc1c623296cb418d0ef4bac9a",
+      "adaptation": "Local host adapter / SVG geometry / exports"
+    },
+    {
+      "target": "app/resources/js/components/media/jakawi-vsl-player/marketing-presentation.ts",
+      "source": "/root/jakawi-marketing-portability-audit-v1/repository/app/resources/js/components/media/jakawi-vsl-player/marketing-presentation.ts",
+      "source_sha256": "6ec6c4247d67ad6e7e0b1b76838a15de6cddd7c9c371a575fc7ea3fe65bd820b",
+      "target_sha256": "5e453583b6ae6f2b8b1133c3fae5f20a23e2fbf244e83e6f093e93d91220b0dc",
+      "adaptation": "Official curve and geometry; development-fixture default omitted for the YouTube-only host."
+    },
+    {
+      "target": "app/resources/js/components/media/jakawi-vsl-player/player-icons.tsx",
+      "source": null,
+      "source_sha256": null,
+      "target_sha256": "7f4f3b4701ccd48b7ffa9fb135c5f88134145a7337a4a0f3db328d2774839bbc",
+      "adaptation": "Local host adapter / SVG geometry / exports"
+    },
+    {
+      "target": "app/resources/js/components/media/jakawi-vsl-player/types.ts",
+      "source": "/root/jakawi-marketing-portability-audit-v1/repository/app/resources/js/components/media/jakawi-vsl-player/types.ts",
+      "source_sha256": "2a07635c65eb3823ce99f4d066c1150a90bfb888e112255e536d68a12927effd",
+      "target_sha256": "8b99a00c42e48d2737b31e4e454cd29e95787320f55e731f48f9587a22324d29",
+      "adaptation": "Official VSL props/state/events; YouTube-only source and VSL-only mode. Reuses initial state and engine control contract without HTML5/HLS."
+    },
+    {
+      "target": "app/resources/js/components/media/jakawi-vsl-player/use-decorative-progress.ts",
+      "source": "/root/jakawi-marketing-portability-audit-v1/repository/app/resources/js/components/media/jakawi-vsl-player/use-decorative-progress.ts",
+      "source_sha256": "06dcd393b7441b5c2425cb444bbcb0bc92c9ab02553559a0bb8e5458d5c4ae5d",
+      "target_sha256": "06dcd393b7441b5c2425cb444bbcb0bc92c9ab02553559a0bb8e5458d5c4ae5d",
+      "adaptation": "Byte-identical official file"
+    },
+    {
+      "target": "app/resources/js/components/media/jakawi-vsl-player/use-vsl-playback.ts",
+      "source": "/root/jakawi-marketing-portability-audit-v1/repository/app/resources/js/components/media/jakawi-vsl-player/use-vsl-playback.ts",
+      "source_sha256": "7bd45aaa9abfa3bed5c10651030564cc366201266dca1847b673406ecbf50406",
+      "target_sha256": "f8cce2d4f57caa1cda0f71bb127ab08b8786d20b04054a2ba4dfacf9d6a465e7",
+      "adaptation": "Official lifecycle/preferences/callback forwarding restricted to YouTube, plus explicit retry."
+    },
+    {
+      "target": "app/resources/js/components/media/jakawi-vsl-player/video-theme.ts",
+      "source": "/root/jakawi-marketing-portability-audit-v1/repository/app/resources/js/components/media/jakawi-vsl-player/video-theme.ts",
+      "source_sha256": "d886f2ca329782f806b56957a23cf94d259ad6fb152db83c8f9a186683c33171",
+      "target_sha256": "d886f2ca329782f806b56957a23cf94d259ad6fb152db83c8f9a186683c33171",
+      "adaptation": "Byte-identical official file"
+    },
+    {
+      "target": "app/resources/js/components/media/jakawi-vsl-player/youtube-crop.ts",
+      "source": "/root/jakawi-marketing-portability-audit-v1/repository/app/resources/js/components/media/jakawi-vsl-player/youtube-crop.ts",
+      "source_sha256": "80289a9702e926898bf72400407fdc4ea810baef7e26321e220b8cb0df7cddbf",
+      "target_sha256": "80289a9702e926898bf72400407fdc4ea810baef7e26321e220b8cb0df7cddbf",
+      "adaptation": "Byte-identical official file"
+    },
+    {
+      "target": "app/resources/js/components/media/jakawi-vsl-player/youtube-engine.ts",
+      "source": "/root/jakawi-marketing-portability-audit-v1/repository/app/resources/js/components/media/jakawi-vsl-player/youtube-engine.ts",
+      "source_sha256": "ee6db7c8f552d4340f18ea01247b94367c98e0c91ac765c416c16ff4d23978af",
+      "target_sha256": "15e103a28713f597e71cd77541db67eff382ef5708df68ad715db8769651a98d",
+      "adaptation": "Official engine plus existing host URL-port rejection, readiness/buffering timeouts and explicit embedding error message."
+    }
+  ],
+  "omitted": [
+    "html5-engine.ts",
+    "hls-source.ts",
+    "PlaybackControls.tsx",
+    "course-presentation.ts"
+  ],
+  "new_packages": []
+}

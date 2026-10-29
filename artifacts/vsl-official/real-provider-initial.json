@@ -1,0 +1,92 @@
+[
+  {
+    "width": 390,
+    "state": "error",
+    "fixture": false,
+    "source": "https://www.youtube.com/watch?v=P42gDOTL6Ys",
+    "events": [
+      {
+        "name": "onReady",
+        "data": null
+      },
+      {
+        "name": "onStateChange",
+        "data": -1
+      },
+      {
+        "name": "onStateChange",
+        "data": 3
+      },
+      {
+        "name": "onError",
+        "data": 150
+      },
+      {
+        "name": "onStateChange",
+        "data": -1
+      }
+    ],
+    "before": {
+      "time": 0,
+      "muted": true,
+      "volume": 100,
+      "state": -1,
+      "videoId": "P42gDOTL6Ys"
+    },
+    "after": {
+      "time": 0,
+      "muted": true,
+      "volume": 100,
+      "state": -1,
+      "videoId": "P42gDOTL6Ys"
+    },
+    "verified_muted_playback": false,
+    "audio_verified": false,
+    "fallback_visible": true
+  },
+  {
+    "width": 1440,
+    "state": "error",
+    "fixture": false,
+    "source": "https://www.youtube.com/watch?v=P42gDOTL6Ys",
+    "events": [
+      {
+        "name": "onReady",
+        "data": null
+      },
+      {
+        "name": "onStateChange",
+        "data": -1
+      },
+      {
+        "name": "onStateChange",
+        "data": 3
+      },
+      {
+        "name": "onError",
+        "data": 150
+      },
+      {
+        "name": "onStateChange",
+        "data": -1
+      }
+    ],
+    "before": {
+      "time": 0,
+      "muted": true,
+      "volume": 100,
+      "state": -1,
+      "videoId": "P42gDOTL6Ys"
+    },
+    "after": {
+      "time": 0,
+      "muted": true,
+      "volume": 100,
+      "state": -1,
+      "videoId": "P42gDOTL6Ys"
+    },
+    "verified_muted_playback": false,
+    "audio_verified": false,
+    "fallback_visible": true
+  }
+]

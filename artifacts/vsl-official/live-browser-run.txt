@@ -1,0 +1,10 @@
+VSL lifecycle/crop passed 390
+VSL lifecycle/crop passed 430
+VSL lifecycle/crop passed 1024
+VSL lifecycle/crop passed 1440
+Browser request failed Script net::ERR_CONNECTION_FAILED
+Browser request failed Fetch net::ERR_ABORTED
+Real provider {"width":390,"state":"error","fixture":false,"native_clock_and_connection":true,"source":"https://www.youtube.com/watch?v=P42gDOTL6Ys","events":[{"name":"onReady","data":null},{"name":"onStateChange","data":-1},{"name":"onStateChange","data":3},{"name":"onError","data":150},{"name":"onStateChange","data":-1}],"before":{"time":0,"muted":true,"volume":100,"state":-1,"videoId":"P42gDOTL6Ys"},"after":{"time":0,"muted":true,"volume":100,"state":-1,"videoId":"P42gDOTL6Ys"},"verified_muted_playback":false,"audio_verified":false,"fallback_visible":true}
+Browser request failed Fetch net::ERR_ABORTED
+Real provider {"width":1440,"state":"error","fixture":false,"native_clock_and_connection":true,"source":"https://www.youtube.com/watch?v=P42gDOTL6Ys","events":[{"name":"onReady","data":null},{"name":"onStateChange","data":-1},{"name":"onStateChange","data":3},{"name":"onError","data":150},{"name":"onStateChange","data":-1}],"before":{"time":0,"muted":true,"volume":100,"state":-1,"videoId":"P42gDOTL6Ys"},"after":{"time":0,"muted":true,"volume":100,"state":-1,"videoId":"P42gDOTL6Ys"},"verified_muted_playback":false,"audio_verified":false,"fallback_visible":true}
+{"passed_groups":14,"viewports":[390,430,1024,1440],"live":true,"real_playback":[{"width":390,"state":"error","verified":false},{"width":1440,"state":"error","verified":false}]}

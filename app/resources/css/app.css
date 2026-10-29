@@ -92,33 +92,10 @@
 .final-cta { background: var(--ink); color: var(--cream); }
 .final-cta .btn-primary { background: var(--marketing-action); color: var(--marketing-action-text); }
 .final-cta .btn-primary:focus-visible { outline-color: var(--cream); }
-.vsl-frame { position: relative; aspect-ratio: 16 / 9; overflow: hidden; border: 1px solid var(--border); border-radius: var(--radius-card); background: var(--ink); box-shadow: var(--shadow); }
-[data-vsl-aspect="3:4"] .vsl-frame { aspect-ratio: 3 / 4; }
-.vsl-host, .vsl-cover { position: absolute; inset: 0; width: 100%; height: 100%; }
-/* Fit the approved source inside the presentation frame; never zoom or crop it. */
-.vsl-host { display: grid; place-items: center; }
-.vsl-host iframe { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; border: 0; }
-[data-vsl-source-aspect="3:4"] .vsl-host iframe { width: auto; height: 100%; max-width: 100%; aspect-ratio: 3 / 4; }
-[data-vsl-source-aspect="9:16"] .vsl-host iframe { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: auto; height: 100%; max-width: 100%; aspect-ratio: 9 / 16; }
-.vsl-cover { display: grid; place-items: center; background: var(--surface-subtle); color: var(--foreground); }
-.vsl-cover::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at 20% 20%, var(--brand-subtle), transparent 65%); }
-.vsl-poster { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
-.vsl-cover-copy { position: relative; display: flex; max-width: 90%; flex-direction: column; align-items: center; gap: .8rem; padding: 1rem; text-align: center; border-radius: var(--radius-control); background: color-mix(in srgb, var(--surface) 94%, transparent); }
-.vsl-cover-copy strong { font-size: clamp(1rem, 2vw, 1.75rem); font-weight: 800; letter-spacing: -.035em; }
-.vsl-cover-copy > span { font-size: .75rem; line-height: 1.5; }
-.vsl-cover-copy img { width: 3rem; height: 3rem; }
-.vsl-tag { letter-spacing: .14em; font-size: .55rem !important; font-weight: 700; color: var(--text-muted); }
-.vsl-play { display: inline-flex; min-height: 52px; align-items: center; justify-content: center; gap: .75rem; border-radius: var(--radius-control); background: var(--marketing-action); padding: .75rem 1.25rem; font-weight: 800; font-size: 1.2rem; color: var(--marketing-action-text); }
-.vsl-play:hover { background: var(--primary-hover); }
-.vsl-status { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; gap: .7rem; background: color-mix(in srgb, var(--surface) 94%, transparent); color: var(--ink); font-size: .875rem; }
-.vsl-spinner { width: 1.25rem; height: 1.25rem; border: 2px solid var(--border-strong); border-top-color: var(--ink); border-radius: 50%; animation: vsl-spin 1s linear infinite; }
-@keyframes vsl-spin { to { transform: rotate(360deg); } }
-.vsl-controls { display: flex; flex-wrap: wrap; gap: .25rem .75rem; justify-content: center; padding-top: .5rem; }
-.vsl-controls button { min-height: 44px; padding: .5rem; font-size: .75rem; font-weight: 700; text-decoration: underline; text-underline-offset: .2em; }
-.vsl-error { margin-top: .75rem; padding: .75rem; border-radius: var(--radius-control); background: var(--surface); color: var(--text-secondary); font-size: .875rem; text-align: center; }
-.vsl-player:fullscreen { display: flex; flex-direction: column; justify-content: center; background: var(--background); padding: 1rem; }
-.vsl-player:fullscreen .vsl-frame { width: 100%; max-width: calc((100dvh - 6rem) * 16 / 9); margin-inline: auto; flex-shrink: 0; }
-.vsl-player[data-vsl-aspect="3:4"]:fullscreen .vsl-frame { max-width: calc((100dvh - 6rem) * 3 / 4); }
+/* Playback styles live in the official CSS Module. Only the no-source cover is host UI. */
+.vsl-unavailable-frame { position: relative; overflow: hidden; border-radius: 24px; background: var(--surface-subtle); display: grid; place-items: center; text-align: center; padding: 1.5rem; }
+.vsl-unavailable-frame > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.vsl-unavailable-frame > div { position: relative; display: grid; justify-items: center; gap: .75rem; }
 .registration-form { scroll-margin-top: 1.5rem; }
 /* A permanent spacer prevents the fixed action from covering the footer. */
 .mobile-sticky-space { height: calc(5.5rem + env(safe-area-inset-bottom, 0px)); }
@@ -139,10 +116,6 @@
 @media (min-width: 640px) {
     .conversion-hero { padding-top: 2.5rem; padding-bottom: 2rem; }
     .hero-eyebrow { font-size: .75rem; }
-    .vsl-cover-copy { padding: 2rem; gap: 1rem; }
-    .vsl-cover-copy img { width: 4rem; height: 4rem; }
-    .vsl-cover-copy > span { font-size: .875rem; }
-    .vsl-tag { font-size: .625rem !important; }
 }
 @media (min-width: 1024px) {
     .conversion-hero { grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); grid-template-areas: '. media' 'heading media' 'copy media' '. media'; grid-template-rows: 1fr auto auto 1fr; column-gap: 4rem; row-gap: 0; padding-block: 3rem; text-align: left; }
