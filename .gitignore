@@ -72,3 +72,6 @@ credentials.json
 /artifacts/vsl-recovery/vsl-*.png
 
 /artifacts/confirmation-focus/LIVE.json
+
+/artifacts/funnel-editor/LIVE.json
+/artifacts/funnel-editor/*fixtures.json

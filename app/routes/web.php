@@ -54,6 +54,9 @@ Route::middleware('auth')->group(function (): void {
 });
 
 // A server receipt bound to this published landing is required to display thanks.
+Route::get('/{slug}/gracias', [RegistrationController::class, 'confirmed'])
+    ->where('slug', \App\Support\LandingSlug::pattern())->name('registration.thanks');
+// Keep previous session receipts and shared confirmation URLs valid.
 Route::get('/{slug}/confirmado', [RegistrationController::class, 'confirmed'])
     ->where('slug', \App\Support\LandingSlug::pattern())->name('registration.confirmed');
 

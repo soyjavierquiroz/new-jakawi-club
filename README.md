@@ -158,6 +158,12 @@ El navegador reutiliza Chromium instalado, sin instalaciones globales. Intercept
 
 ## Creador de Marketing Landings
 
+El editor actual separa **LANDING DE CAPTACIÓN** y **PÁGINA DE CONFIRMACIÓN**; cada pestaña controla sus campos y su preview guardada. La barra superior fija reúne **Guardar borrador**, **Publicar cambios** y el estado de publicación. Guardar nunca publica. El video de la preview procede del borrador; el público procede de `published_configuration`. Las dos URL efectivas se pueden copiar. La confirmación canónica es `/{slug}/gracias`; `/{slug}/confirmado` conserva los recibos y enlaces anteriores. Ambas exigen recibo válido.
+
+Captación usa únicamente **QUIERO SER PARTE DE JAKAWI**, con los CTA repetidos hacia el formulario, enlaces legales y acceso discreto. No muestra WhatsApp ni expone los grupos operativos en su payload público. Confirmación administra grupo específico, fallback de entorno u ocultación; las herencias anteriores siguen resolviéndose para no perder grupos de campañas. El grupo se fija en el recibo y conserva el bounce y la navegación por `ended` real.
+
+Los leads siguen en PostgreSQL CLUB: `users.name/email/phone/uuid/referred_by_id/activated_at/email_verified_at`. Landing/campaña se conservan temporalmente en el recibo y como conteos agregados, sin relación persistente por usuario. No existe sincronización CRM; el bridge actual solo admite identidad numérica COM y CLUB no tiene credencial independiente. Se entrega el [contrato mínimo requerido por CRM](docs/crm-club-endpoint.md), sin modificar COM ni CRM. [Entrega y pruebas focalizadas](artifacts/funnel-editor/REPORT.md).
+
 `/admin/landings` utiliza las sesiones existentes y exige cuenta activada, correo verificado y permiso `is_marketing_admin`. La columna comienza en `false`, no es asignable desde formularios públicos ni desde JSON editorial. No se crean cuentas administrativas automáticamente. Conceder o revocar el permiso a una cuenta existente:
 
 ```bash
@@ -262,7 +268,7 @@ Evidencia, capturas y rollback: [informe del formulario](artifacts/registration/
 
 ### Después del registro
 
-`Registered` sigue siendo la única página de confirmación y bienvenida. Un POST `/registro` aceptado por el backend emite el recibo de sesión de 15 minutos existente, vinculado a la landing y a su snapshot/campaña publicados. Redirige a `/{slug}/confirmado` (por ejemplo `/principal/confirmado`, `/webinar/confirmado` o `/fundadores/confirmado`, cuando esas landings estén publicadas). Sin recibo de esa landing vuelve a su página pública; slugs inexistentes, archivados o reservados devuelven 404. `confirmado` queda reservado. Parámetros de query y visitas no generan recibos ni conversiones. No se crean landings de ejemplo en LIVE.
+`Registered` sigue siendo la única página de confirmación y bienvenida. Un POST `/registro` aceptado por el backend emite el recibo de sesión de 15 minutos existente, vinculado a la landing y a su snapshot/campaña publicados. Redirige a `/{slug}/gracias` (por ejemplo `/principal/gracias`, `/webinar/gracias` o `/fundadores/gracias`, cuando esas landings estén publicadas). Sin recibo de esa landing vuelve a su página pública; slugs inexistentes, archivados o reservados devuelven 404. `confirmado` queda reservado. Parámetros de query y visitas no generan recibos ni conversiones. No se crean landings de ejemplo en LIVE.
 
 `/bienvenida` y el consumo de tokens en `/activar` se conservan. Una activación en la misma sesión y para el mismo correo vuelve a la landing del recibo. En otra sesión utiliza la bienvenida genérica existente. El estado «Cuenta activada» exige sesión autenticada, correo verificado y `activated_at`; una sesión con recibo de otro correo sigue mostrando «Revisa tu correo». El correo repetido recibe el mismo mensaje genérico sin crear otra cuenta, cambiar referente ni sumar conversión. El origen y campaign key se conservan en el recibo temporal y los agregados existentes; no se añade rastreo personal ni cambia el programa de afiliados.
 
@@ -302,9 +308,9 @@ Pruebas, capturas y diagnóstico: [entrega de videos y confirmación](artifacts/
 
 ### Campañas configurables por landing
 
-El editor existente guarda en el JSONB `configuration` dos ajustes operativos independientes: `whatsapp_group` (`default`, `custom`, `none`) y `confirmation_whatsapp_group` (`inherit`, `custom`, `none`). La confirmación hereda de inicio el grupo efectivo de su landing, incluido un grupo propio, el fallback del sistema o la ausencia de grupo. Un grupo diferente en confirmación tiene prioridad explícita. Solo se admiten invitaciones HTTPS de `chat.whatsapp.com`, sin credenciales, puertos, parámetros, fragmentos, rutas adicionales ni dominios parecidos. Se validan al guardar y nuevamente al publicar.
+El JSONB conserva por compatibilidad dos ajustes operativos: `whatsapp_group` (`default`, `custom`, `none`) y `confirmation_whatsapp_group` (`default`, `custom`, `none`, además de `inherit` heredado). El editor actual solo gestiona el grupo desde confirmación. La confirmación hereda de inicio el grupo efectivo de su landing, incluido un grupo propio, el fallback del sistema o la ausencia de grupo. Un grupo diferente en confirmación tiene prioridad explícita. Solo se admiten invitaciones HTTPS de `chat.whatsapp.com`, sin credenciales, puertos, parámetros, fragmentos, rutas adicionales ni dominios parecidos. Se validan al guardar y nuevamente al publicar.
 
-`Welcome` reutiliza el CTA `Community` existente con el grupo efectivo; `Registered` conserva un único botón **UNIRME AL GRUPO DE WHATSAPP** y el verde oficial. Los enlaces públicos abren otra pestaña con `noopener noreferrer`. Sin grupo válido se ocultan CTA y contador. El dashboard mantiene su fallback global.
+`Welcome` omite WhatsApp y los destinos de grupo; `Registered` conserva un único botón **UNIRME AL GRUPO DE WHATSAPP** y el verde oficial. Los enlaces públicos abren otra pestaña con `noopener noreferrer`. Sin grupo válido se ocultan CTA y contador. El dashboard mantiene su fallback global.
 
 Guardar modifica exclusivamente el borrador; publicar copia la configuración al snapshot público. Las dos previews usan el borrador guardado. El POST de registro aceptado fija en el recibo tanto el grupo efectivo como el video efectivo de confirmación, incluidos los fallbacks y los valores vacíos. Editar o republicar la landing, o cambiar posteriormente los defaults, no cambia un recibo vigente. Los recibos anteriores al despliegue se fijan en su primera lectura. Se mantienen protección por sesión/origen, expiración de 15 minutos, estado real de activación, referido y conteo único de conversiones.
 

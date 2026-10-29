@@ -7,7 +7,6 @@ use App\Models\MarketingLanding;
 use App\Support\LaunchSettings;
 use App\Support\LandingContent;
 use App\Support\LandingSlug;
-use App\Support\RegistrationNextStep;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -50,7 +49,9 @@ class WelcomeController extends Controller
         $launch = LaunchSettings::publicData();
         $launch['video_url'] = $content['video']['youtube_url'];
         $launch['video_poster'] = $content['video']['poster'];
-        $launch['whatsapp_url'] = RegistrationNextStep::landingGroup($content);
+        // Group destinations belong to the receipt-protected confirmation only.
+        $launch['whatsapp_url'] = null;
+        unset($content['whatsapp_group'], $content['confirmation_whatsapp_group']);
         if ($preview) {
             $launch['registration_open'] = false;
         }

@@ -1,0 +1,20 @@
+{
+  "review": "Read-only contract check; no request or CRM mutation",
+  "crm_bridge": "/wp-json/jakawi-fluentcrm/v1/events",
+  "club_integration_present": false,
+  "club_crm_environment_keys": [],
+  "identity_contract": "jakawi_user_id / provider_contact_id positive numeric IDs; no UUID external identity",
+  "contact_fields": [
+    "email",
+    "name"
+  ],
+  "independent_club_authentication_available": false,
+  "proposed_adjustment": "docs/crm-club-endpoint.md",
+  "source_sha256": {
+    "jakawi-fluentcrm-bridge.php": "1fd744ef2d92ec51eb88497d3337aea4c79fb04bc329b5b8dbeb2794933a1b1d",
+    "includes/Contract.php": "82ca87383e9ed7a6ed570fc2bc59cc70f80da9b3697f512891ae0cd7db0e1954",
+    "includes/Adapter.php": "dffdc365c2a0688e7a04adfc2d4af319d0693198db3458ad0dd0a235751c2d7e",
+    "includes/SchemaManager.php": "6bbb1caebe87f527fa154560512d34512e706b3d96ce6e1f6dd0d7b609572bc1",
+    "includes/EventStore.php": "28285be82ae784ccab851da35a49f4a5c8f4e285d02decd147449bfa9400c452"
+  }
+}

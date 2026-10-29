@@ -4,9 +4,11 @@ import { Arrow } from '../UI';
 import { LandingContext, useLandingTracking } from './LandingContext';
 import { focusRegistration } from './registration-navigation';
 
-export function MarketingCTA({ location, children = 'QUIERO SER PARTE', className = '' }: { location: 'hero' | 'benefits' | 'final'; children?: ReactNode; className?: string }) {
+export const REGISTRATION_CTA = 'QUIERO SER PARTE DE JAKAWI';
+
+export function MarketingCTA({ location, className = '' }: { location: 'hero' | 'benefits' | 'final'; className?: string }) {
     const trackMarketing = useLandingTracking();
-    return <a href="#registro" className={`btn btn-primary ${className}`} data-marketing-cta={location} onClick={event => { if (focusRegistration('registro', event)) trackMarketing('cta_click', location); }}>{children}<Arrow /></a>;
+    return <a href="#registro" className={`btn btn-primary ${className}`} data-marketing-cta={location} onClick={event => { if (focusRegistration('registro', event)) trackMarketing('cta_click', location); }}>{REGISTRATION_CTA}<Arrow /></a>;
 }
 
 export function MarketingHero({ children, open, compact = false, encounter }: { children?: ReactNode; open: boolean; compact?: boolean; encounter?: ReactNode }) {
@@ -20,7 +22,7 @@ export function MarketingHero({ children, open, compact = false, encounter }: { 
         <div className="hero-copy">
             <p className="text-base leading-relaxed text-text-secondary sm:text-lg">{content.description}</p>
             <p className="mt-4 text-xs font-extrabold tracking-widest">JAKAWI — VIVE MÁS. GASTA MENOS.</p>
-            <MarketingCTA location="hero" className="mt-5">{content.cta}</MarketingCTA>
+            <MarketingCTA location="hero" className="mt-5" />
             {open && <p className="mt-3 text-xs text-text-muted">Registro gratuito en esta etapa.</p>}
             {encounter}
         </div>
@@ -42,5 +44,5 @@ export function MarketingFAQ() {
 
 export function MarketingFinalCTA() {
     const content = useContext(LandingContext)!.content.final;
-    return <section className="final-cta" aria-labelledby="final-title"><div className="shell py-14 text-center sm:py-18"><p className="eyebrow">{content.eyebrow}</p><h2 id="final-title" className="section-title mx-auto mt-5 max-w-3xl">{content.title}</h2><p className="mx-auto mt-5 max-w-lg leading-7">{content.description}</p><MarketingCTA location="final" className="mt-7">{content.cta}</MarketingCTA><p className="mt-4 text-xs">VIVE MÁS. GASTA MENOS.</p></div></section>;
+    return <section className="final-cta" aria-labelledby="final-title"><div className="shell py-14 text-center sm:py-18"><p className="eyebrow">{content.eyebrow}</p><h2 id="final-title" className="section-title mx-auto mt-5 max-w-3xl">{content.title}</h2><p className="mx-auto mt-5 max-w-lg leading-7">{content.description}</p><MarketingCTA location="final" className="mt-7" /><p className="mt-4 text-xs">VIVE MÁS. GASTA MENOS.</p></div></section>;
 }

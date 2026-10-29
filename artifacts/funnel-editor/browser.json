@@ -1,0 +1,101 @@
+{
+  "stage": "build-next intercepted in browser",
+  "checks": [
+    {
+      "name": "top-save-publish-status-and-exclusive-capture-fields",
+      "passed": true
+    },
+    {
+      "name": "copy-independent-page-urls",
+      "passed": true
+    },
+    {
+      "name": "confirmation-tab-isolated-preview-and-legacy-group",
+      "passed": true
+    },
+    {
+      "name": "save-publish-video-snapshot-independent",
+      "passed": true
+    },
+    {
+      "name": "public-video-after-explicit-publication",
+      "passed": true
+    },
+    {
+      "name": "editor-tabs-previews-responsive",
+      "width": 390,
+      "passed": true
+    },
+    {
+      "name": "template-capture-single-action-no-whatsapp",
+      "width": 390,
+      "template": "LEAD_VSL",
+      "passed": true
+    },
+    {
+      "name": "template-capture-single-action-no-whatsapp",
+      "width": 390,
+      "template": "WEBINAR",
+      "passed": true
+    },
+    {
+      "name": "template-capture-single-action-no-whatsapp",
+      "width": 390,
+      "template": "WAITLIST",
+      "passed": true
+    },
+    {
+      "name": "confirmation-group-bounce-ended-without-pause-error-redirect",
+      "width": 390,
+      "passed": true
+    },
+    {
+      "name": "editor-tabs-previews-responsive",
+      "width": 1440,
+      "passed": true
+    },
+    {
+      "name": "template-capture-single-action-no-whatsapp",
+      "width": 1440,
+      "template": "LEAD_VSL",
+      "passed": true
+    },
+    {
+      "name": "template-capture-single-action-no-whatsapp",
+      "width": 1440,
+      "template": "WEBINAR",
+      "passed": true
+    },
+    {
+      "name": "template-capture-single-action-no-whatsapp",
+      "width": 1440,
+      "template": "WAITLIST",
+      "passed": true
+    },
+    {
+      "name": "confirmation-group-bounce-ended-without-pause-error-redirect",
+      "width": 1440,
+      "passed": true
+    }
+  ],
+  "operations": [
+    {
+      "method": "PUT",
+      "path": "/admin/landings/1"
+    },
+    {
+      "method": "POST",
+      "path": "/admin/landings/1/publicar"
+    }
+  ],
+  "viewports": [
+    390,
+    1440
+  ],
+  "runtime_errors": [],
+  "failed_assets": [],
+  "no_live_accounts": true,
+  "all_browser_mutations_intercepted": true,
+  "provider": "YouTube signals intercepted through the official engine",
+  "physical_playback_tested": false
+}

@@ -1,0 +1,18 @@
+PASS top-save-publish-status-and-exclusive-capture-fields
+PASS copy-independent-page-urls
+PASS confirmation-tab-isolated-preview-and-legacy-group
+PASS save-publish-video-snapshot-independent
+PASS public-video-after-explicit-publication
+PASS editor-tabs-previews-responsive 390
+PASS template-capture-single-action-no-whatsapp 390
+PASS template-capture-single-action-no-whatsapp 390
+PASS template-capture-single-action-no-whatsapp 390
+PASS confirmation-group-bounce-ended-without-pause-error-redirect 390
+PASS editor-tabs-previews-responsive 1440
+PASS template-capture-single-action-no-whatsapp 1440
+PASS template-capture-single-action-no-whatsapp 1440
+PASS template-capture-single-action-no-whatsapp 1440
+PASS confirmation-group-bounce-ended-without-pause-error-redirect 1440
+PASS actual-principal-https-video-and-no-whatsapp
+PASS actual-gracias-without-receipt-returns-to-landing
+{"passed_groups":17,"live":true,"viewports":[390,1440]}

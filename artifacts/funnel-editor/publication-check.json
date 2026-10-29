@@ -1,0 +1,28 @@
+{
+  "state": {
+    "revision": 4,
+    "draft_video": "https://www.youtube.com/watch?v=M6Dv-M60_Eg",
+    "published_video": "https://www.youtube.com/watch?v=M6Dv-M60_Eg",
+    "registration_open": true,
+    "mail_ready": true
+  },
+  "pages": {
+    "/": {
+      "status": 200,
+      "effective_video": "https://www.youtube.com/watch?v=M6Dv-M60_Eg",
+      "matches_published": true,
+      "whatsapp_destination": null
+    },
+    "/principal": {
+      "status": 200,
+      "effective_video": "https://www.youtube.com/watch?v=M6Dv-M60_Eg",
+      "matches_published": true,
+      "whatsapp_destination": null
+    }
+  },
+  "health": {
+    "https://jakawi.club/up": 200,
+    "https://jakawi.com/up": 200,
+    "http://127.0.0.1:18082/up": 200
+  }
+}

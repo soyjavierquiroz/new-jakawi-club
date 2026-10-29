@@ -40,7 +40,7 @@ class LandingContent
             'video' => self::videoDefaults(LaunchSettings::defaultVideoUrl(config('jakawi.video_url')), LaunchSettings::videoPoster(config('jakawi.video_poster'))),
             'confirmation_video' => self::videoDefaults(),
             'whatsapp_group' => ['mode' => 'default', 'url' => null],
-            'confirmation_whatsapp_group' => ['mode' => 'inherit', 'url' => null],
+            'confirmation_whatsapp_group' => ['mode' => 'default', 'url' => null],
         ];
     }
 
@@ -80,6 +80,9 @@ class LandingContent
     {
         $content = ['after_registration' => self::confirmationDefaults(), 'next_step' => ['action' => 'recover', 'redirect_seconds' => 0],
             'whatsapp_group' => ['mode' => 'default', 'url' => null], 'confirmation_whatsapp_group' => ['mode' => 'inherit', 'url' => null], ...$content];
+        if (($content['after_registration']['title'] ?? null) === 'Gracias por dar el siguiente paso.') {
+            $content['after_registration']['title'] = self::confirmationDefaults()['title'];
+        }
         if (! isset($content['presentation']) || is_array($content['presentation'])) {
             $content['presentation'] = [...self::presentationDefaults(), ...($content['presentation'] ?? [])];
         }
@@ -141,7 +144,7 @@ class LandingContent
         }
         foreach (['whatsapp_group' => 'default', 'confirmation_whatsapp_group' => 'inherit'] as $section => $default) {
             $rules['content.'.$section] = [$presence, 'array:mode,url'];
-            $rules['content.'.$section.'.mode'] = [$presence, Rule::in([$default, 'custom', 'none'])];
+            $rules['content.'.$section.'.mode'] = [$presence, Rule::in(array_unique([$default, 'default', 'custom', 'none']))];
             $rules['content.'.$section.'.url'] = [$partial ? 'sometimes' : 'present', 'nullable', 'string', 'max:500'];
         }
         $sections = [

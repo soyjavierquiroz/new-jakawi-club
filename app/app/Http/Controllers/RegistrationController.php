@@ -71,7 +71,7 @@ class RegistrationController extends Controller
         $referrals->forget($request);
 
         // Identical receipt for new and existing accounts. No email, name or code leaks.
-        return $receipt ? redirect()->route('registration.confirmed', ['slug' => $receipt['slug']]) : redirect()->route('welcome');
+        return $receipt ? redirect()->route('registration.thanks', ['slug' => $receipt['slug']]) : redirect()->route('welcome');
     }
 
     public function welcome(Request $request): Response|RedirectResponse
@@ -81,7 +81,7 @@ class RegistrationController extends Controller
         }
         $receipt = $request->session()->get('registration_receipt');
         if ($receipt) {
-            return redirect()->route('registration.confirmed', ['slug' => $receipt['slug']]);
+            return redirect()->route('registration.thanks', ['slug' => $receipt['slug']]);
         }
 
         return $this->renderReceipt($request);

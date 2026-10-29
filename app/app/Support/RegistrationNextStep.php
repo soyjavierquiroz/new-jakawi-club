@@ -30,6 +30,7 @@ final class RegistrationNextStep
         $group = $content['confirmation_whatsapp_group'] ?? [];
         return match ($group['mode'] ?? 'inherit') {
             'inherit' => self::landingGroup($content),
+            'default' => self::whatsappGroup(),
             'custom' => self::validGroupUrl($group['url'] ?? null),
             default => null,
         };

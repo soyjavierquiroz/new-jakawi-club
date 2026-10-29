@@ -9,12 +9,12 @@ export function Arrow() {
 export function BrandLogo() {
     return <img src="/jakawi-logo.svg" alt="JAKAWI" width={1080} height={431} className="brand-logo" />;
 }
-export function Header() {
+export function Header({ capture = false }: { capture?: boolean }) {
     const { signed_in, can_manage_landings } = usePage<{ signed_in: boolean; can_manage_landings: boolean }>().props;
-    return <header className="site-header"><div className="shell flex min-h-20 items-center justify-between gap-5"><Link href="/" aria-label="JAKAWI, inicio"><BrandLogo /></Link><nav aria-label="Navegación principal" className="flex items-center gap-5 text-sm font-semibold sm:gap-9">{can_manage_landings && <Link href="/admin/landings">Landings</Link>}<a className="hidden text-text-secondary hover:underline md:block" href="/#como-funciona">La comunidad</a><a className="hidden text-text-secondary hover:underline sm:block" href="/#en-vivo">En vivo</a><Link className="nav-access" href={signed_in ? '/dashboard' : '/login'}>{signed_in ? 'Mi cuenta' : 'Ingresar'} <Arrow /></Link></nav></div></header>;
+    return <header className="site-header"><div className="shell flex min-h-20 items-center justify-between gap-5">{capture ? <BrandLogo /> : <Link href="/" aria-label="JAKAWI, inicio"><BrandLogo /></Link>}<nav aria-label="Navegación principal" className="flex items-center gap-5 text-sm font-semibold sm:gap-9">{!capture && <>{can_manage_landings && <Link href="/admin/landings">Landings</Link>}<a className="hidden text-text-secondary hover:underline md:block" href="/#como-funciona">La comunidad</a><a className="hidden text-text-secondary hover:underline sm:block" href="/#en-vivo">En vivo</a></>}<Link className={capture ? 'text-xs text-text-secondary underline underline-offset-4' : 'nav-access'} href={signed_in ? '/dashboard' : '/login'}>{signed_in ? 'Mi cuenta' : 'Ingresar'}{!capture && <Arrow />}</Link></nav></div></header>;
 }
-export function Footer() {
-    return <footer className="border-t border-border bg-background"><div className="shell flex flex-col justify-between gap-6 py-10 text-sm sm:flex-row sm:items-center"><div><Link href="/" aria-label="JAKAWI, inicio"><BrandLogo /></Link><p className="mt-2 text-text-secondary">VIVE MÁS. GASTA MENOS.</p></div><div className="flex flex-wrap gap-6"><Link href="/privacidad">Privacidad y cookies</Link><Link href="/login">Mi cuenta</Link><span className="text-text-muted">jakawi.club</span></div></div></footer>;
+export function Footer({ capture = false }: { capture?: boolean }) {
+    return <footer className="border-t border-border bg-background"><div className="shell flex flex-col justify-between gap-6 py-10 text-sm sm:flex-row sm:items-center"><div>{capture ? <BrandLogo /> : <Link href="/" aria-label="JAKAWI, inicio"><BrandLogo /></Link>}<p className="mt-2 text-text-secondary">VIVE MÁS. GASTA MENOS.</p></div><div className="flex flex-wrap gap-6"><Link href="/privacidad">Privacidad y cookies</Link>{!capture && <Link href="/login">Mi cuenta</Link>}<span className="text-text-muted">jakawi.club</span></div></div></footer>;
 }
 export function Flash() {
     const { status } = usePage<{ status?: string }>().props;

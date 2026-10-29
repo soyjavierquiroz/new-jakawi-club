@@ -12,7 +12,7 @@ export type LandingVideoSettings = { youtube_url: string | null; poster: string 
 export type LandingContent = {
     presentation: { template: LandingTemplate; show_video: boolean; show_faq: boolean; show_confirmation_video: boolean };
     whatsapp_group: { mode: 'default' | 'custom' | 'none'; url: string | null };
-    confirmation_whatsapp_group: { mode: 'inherit' | 'custom' | 'none'; url: string | null };
+    confirmation_whatsapp_group: { mode: 'inherit' | 'default' | 'custom' | 'none'; url: string | null };
     after_registration: { title: string; message: string; instructions: string; cta_label: string };
     next_step: { action: 'none' | 'recover' | 'account' | 'home' | 'whatsapp'; redirect_seconds: 0 | 5 | 10 | 15 | 30 | 60 };
     seo: { title: string; description: string };
