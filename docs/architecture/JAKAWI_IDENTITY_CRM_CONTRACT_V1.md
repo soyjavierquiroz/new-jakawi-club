@@ -2,14 +2,15 @@
 
 Fecha: **29 de octubre de 2026**, America/La_Paz. Autor de esta revisión: Lead Architect de JAKAWI.CLUB.
 
-**Estado: propuesta técnica coordinada desde CLUB, pendiente de conformidad del Lead Architect de COM.** Las decisiones del propietario se aceptan; este documento no acredita aprobación técnica de COM ni implementa integraciones.
+**Estado: CONFORMIDAD TÉCNICA CON AJUSTES INCORPORADOS.** El Lead Architect de JAKAWI.COM emitió el **29/10/2026** «CONFORMIDAD CON AJUSTES PUNTUALES», sin objeciones arquitectónicas bloqueantes. Los ajustes 1–7 quedan incorporados en sus secciones correspondientes; las decisiones de negocio quedan ratificadas. La arquitectura aceptada se distingue de los detalles técnicos aún propuestos y de las implementaciones futuras pendientes. La operación de producción permanece sin cambios; esta conformidad no autoriza su ejecución.
 
 Convenciones utilizadas en todo el contrato:
 
 | Estado | Significado |
 | --- | --- |
 | **ACEPTADO COMO DECISIÓN DE NEGOCIO** | Distribución de responsabilidades y restricciones decididas por el propietario. |
-| **PROPUESTO TÉCNICAMENTE** | Diseño sometido a revisión conjunta; aún puede cambiar. |
+| **ARQUITECTURA ACEPTADA** | Criterio técnico acordado con la conformidad de COM y los ajustes incorporados; no acredita implementación ni autoriza ejecución. |
+| **PROPUESTO TÉCNICAMENTE** | Detalle de diseño aún sujeto a acuerdo; puede cambiar sin alterar los criterios aceptados. |
 | **IMPLEMENTADO HOY** | Comprobado en el código o entorno indicado; una evidencia histórica se identifica como tal. |
 | **PENDIENTE DE IMPLEMENTAR** | Capacidad ausente o trabajo posterior; no constituye autorización para ejecutarlo. |
 
@@ -19,15 +20,19 @@ Convenciones utilizadas en todo el contrato:
 
 CLUB será el motor de crecimiento comercial y la única autoridad económica de afiliación. COM conservará la operación del negocio, sus cuentas definitivas y sus landings de Partners y productos. CRM gestionará contactos y comunicaciones; no será autoridad de identidad, sesiones, membresías, pagos ni comisiones.
 
-Esta intervención revisa compatibilidad y correo en solo lectura y añade documentación. No implementa SSO, vinculación, sincronización, provisionamiento, migración de referidos, comisiones, pagos, liquidaciones ni cambios en CRM/COM. No abre el registro ni envía correos.
+La revisión original examinó compatibilidad y correo en solo lectura. Esta consolidación incorpora exclusivamente los siete ajustes formales de COM al documento existente, sin repetir auditorías. No implementa SSO, vinculación, sincronización, provisionamiento, migración de referidos, comisiones, pagos, liquidaciones ni cambios en CRM/COM. No abre el registro ni envía correos.
 
-### Base real examinada
+### Base documental de la consolidación
+
+Al iniciar esta consolidación, `main`, HEAD y `origin/main` coincidían en **`5d9649ea518b355be3d0af0095d79d629627943a`**, último commit documental reportado, con árbol limpio. `git pull --ff-only origin main` confirmó que no había cambios por incorporar. No se retrocedieron commits. Solo se actualiza este contrato; las evidencias siguientes pertenecen a la revisión original y no se presentan como comprobaciones nuevas de producción.
+
+### Base real examinada en la revisión original
 
 El baseline solicitado fue `c315fe625b402fc2408f4d5ccb983ecc4e2a0908`. Al iniciar, `main`, HEAD, `origin/main` y la referencia remota coincidían en **`6dc383d6f4913fb9065b17f0b668fef6d52d534d`**, con árbol limpio. `git pull --ff-only origin main` confirmó que no había cambios por incorporar.
 
 El baseline solicitado es ancestro del actual. Los tres commits posteriores son `9f47397` (confirmación por landing y consentimiento), `4e12a85` (verificación de URL canónica) y `6dc383d` (evidencia de medición). Se revisa el código actual, sin retroceder esos cambios. El fragmento histórico del informe de registro no describe íntegramente el comportamiento actual.
 
-LIVE: 368 archivos versionados montados coincidieron con Git y 19 assets HTTPS con el manifest local. `/up` de CLUB, COM y loopback devolvieron 200; el POST público `/registro` con CSRF válido devolvió **403**. Estos controles no son un nuevo despliegue. El commit que incorpore este documento será documental; el código funcional y los assets permanecerán iguales a los examinados.
+LIVE en la revisión original: 368 archivos versionados montados coincidieron con Git y 19 assets HTTPS con el manifest local. `/up` de CLUB, COM y loopback devolvieron 200; el POST público `/registro` con CSRF válido devolvió **403**. Estos controles no fueron un nuevo despliegue. El commit original y esta consolidación son documentales; el código funcional y los assets no se modifican.
 
 ## 2. Responsabilidades de las tres aplicaciones
 
@@ -36,7 +41,7 @@ LIVE: 368 archivos versionados montados coincidieron con Git y 19 assets HTTPS c
 | Área | JAKAWI.CLUB | JAKAWI.COM | CRM.JAKAWI.COM |
 | --- | --- | --- | --- |
 | Crecimiento | Leads, landings externas, campañas, webinars e invitaciones | Captación directa desde sus productos y Partners | Proyección de contactos, listas, tags y segmentación |
-| Identidad | Cuenta y verificación locales; futuro cliente de identidad | Cuenta operativa y autoridad inicial propuesta para identidad global | Identificador de contacto, sin autenticación de miembros |
+| Identidad | Cuenta y verificación locales; futuro cliente de identidad | Cuenta operativa y autoridad inicial de identidad global | Identificador de contacto, sin autenticación de miembros |
 | Producto | Contexto comercial y referencias externas | Membresías, derechos, Partners, Locations, Benefits, Experiences, Challenges y reservas | Sin autoridad de producto |
 | Transacciones | Recibe hechos comerciales verificables en el futuro | Precios, disponibilidad, compras, pagos, canjes y transacciones con Partners | Sin autoridad transaccional |
 | Afiliación económica | Códigos, referente, atribución, elegibilidad, tasas, comisiones, saldos, solicitudes y liquidaciones | Comunica hechos; puede conservar invitaciones sociales sin duplicar comisión | Sin cálculos ni saldos de afiliados |
@@ -44,30 +49,34 @@ LIVE: 368 archivos versionados montados coincidieron con Git y 19 assets HTTPS c
 
 La autoridad de identidad operativa de COM no convierte automáticamente cada lead de CLUB en miembro de COM. La cuenta local y el dashboard gratuito actual de CLUB no conceden derechos sobre membresías, beneficios ni transacciones de COM.
 
-## 3. Identidad global propuesta
+## 3. Identidad global
 
-**PROPUESTO TÉCNICAMENTE:** COM emitirá o gobernará un `global_subject_id` UUID estable. Un servicio dedicado bajo esa autoridad es una evolución posible. Emisión, almacenamiento, unicidad, revocación del vínculo y resolución de conflictos requieren acuerdo técnico antes de implementarse.
+**ARQUITECTURA ACEPTADA — ajuste 1:** JAKAWI.COM será la autoridad inicial de identidad y emitirá o gobernará un `global_subject_id` UUID opaco, estable, único y no reutilizable. Los leads sin prueba suficiente podrán permanecer pendientes sin sujeto global. Un servicio dedicado bajo esa autoridad es una evolución posible; los detalles de emisión, almacenamiento, unicidad y resolución de conflictos requieren contrato técnico antes de implementarse.
 
 ```text
 global_subject_id (UUID, futuro)
-    +-- jakawi_user_id (identificador local de COM)
+    +-- cuenta COM    (mapeo interno; bigint no expuesto)
     +-- club_user_id   (UUID estable de CLUB: users.uuid)
     +-- crm_contact_id (referencia de contacto; no identidad autenticada)
 ```
 
 **IMPLEMENTADO HOY — precisión obligatoria:** CLUB tiene **`users.id` bigint como PK** y **`users.uuid` UUID único, obligatorio y protegido frente a cambios**. Las referencias internas, incluido `referred_by_id`, utilizan bigint. Esto está confirmado tanto en migraciones como en `information_schema.columns` de producción. La descripción «users.id UUID de CLUB» del contrato recibido no corresponde al esquema real.
 
-**PROPUESTO TÉCNICAMENTE:** en los futuros mensajes, `club_user_id` designará `users.uuid`; el bigint permanecerá interno y no se sustituirá. COM debe ratificar este nombre y su tipo. No se enviará ese UUID en `jakawi_user_id`, cuyo significado pertenece a COM. `global_subject_id` no reemplazará ninguno de los identificadores locales.
+**ARQUITECTURA ACEPTADA:** CLUB se identificará externamente mediante `club_user_id=users.uuid`. Los bigint de ambas aplicaciones permanecerán internos y no se sustituirán; el mapeo de cuenta COM no implica exponer su bigint en el futuro contrato de identidad. No se enviará el UUID de CLUB en `identity.jakawi_user_id`, campo heredado del bridge CRM para COM (sección 8). `global_subject_id` no reemplazará ninguno de los identificadores locales.
 
-La vinculación deberá registrar aplicaciones/identificadores locales, estado, método y evidencia verificable, autoridad emisora, fecha, conflictos y revocaciones. Estados conceptuales: pendiente, vinculado, en conflicto y revocado. Unicidad por aplicación e identificador local evitará vincular una cuenta a dos sujetos activos. La revocación de un vínculo no borrará la cuenta ni reescribirá atribuciones económicas históricas.
+La vinculación será explícita, auditable, idempotente y revocable. Deberá registrar aplicaciones/identificadores locales, estado, método y evidencia verificable, autoridad emisora, fecha, conflictos y revocaciones. Estados conceptuales: pendiente, vinculado, en conflicto y revocado. Unicidad por aplicación e identificador local evitará vincular una cuenta a dos sujetos activos. La revocación de un vínculo no borrará cuentas ni reescribirá atribuciones económicas históricas.
 
-Email y WhatsApp normalizados solo permiten encontrar candidatos. No son identidad global inmutable ni prueba suficiente de titularidad. No se copiarán contraseñas, ni se fusionarán/provisionarán cuentas existentes por coincidencia de email. La persona deberá autenticarse en la cuenta que se vincula y autorizar el vínculo. Un cambio posterior de email no cambiará el sujeto global.
+Email y WhatsApp normalizados solo permiten encontrar candidatos. No son identidad global inmutable ni prueba suficiente de titularidad. No se copiarán contraseñas, ni se fusionarán/provisionarán cuentas existentes por coincidencia de email. Las cuentas COM existentes exigirán autenticación de su titular, respetando 2FA/passkeys cuando correspondan, y autorización explícita del vínculo. Un cambio posterior de email no cambiará el sujeto global.
+
+Autenticación y verificación de correo son propiedades distintas. Disponer de un `global_subject_id` no prueba que un correo esté verificado; esa propiedad requiere su propia evidencia verificable.
 
 **PENDIENTE DE IMPLEMENTAR:** sujeto global, registro de vínculos y sus evidencias, políticas de conflictos y revocación. No están presentes en CLUB.
 
 ## 4. Flujo futuro CLUB → COM
 
-**ACEPTADO COMO DECISIÓN DE NEGOCIO; mecanismo PROPUESTO TÉCNICAMENTE, PENDIENTE DE IMPLEMENTAR:**
+**ACEPTADO COMO DECISIÓN DE NEGOCIO; ARQUITECTURA ACEPTADA — ajuste 2, PENDIENTE DE IMPLEMENTAR:**
+
+El handoff no es un registro Fortify convencional. COM implementará un mecanismo específico de provisionamiento autorizado que reutilice la normalización, las validaciones y los controles de duplicados existentes. CLUB entregará los datos autorizados sin obligar a repetir el formulario.
 
 1. La persona llega desde una landing, campaña, webinar o invitación de CLUB y presenta el formulario compartido.
 2. CLUB conserva el lead y su procedencia válida: landing, campaña, UTM cuando existan, referente, momento de captación y evidencias de consentimiento correspondientes.
@@ -77,7 +86,21 @@ Email y WhatsApp normalizados solo permiten encontrar candidatos. No son identid
 6. COM devuelve un resultado correlacionado y, cuando proceda, la identidad global y el vínculo. CLUB persiste ese resultado sin sustituir su cuenta local ni su referente.
 7. La navegación continúa mediante un mecanismo de sesión acordado. Los datos válidos y autorizados de nombre, email y WhatsApp se reutilizan para evitar repetir el formulario; los datos insuficientes se solicitan explícitamente.
 
-Ni un recibo de registro ni un handoff pendiente equivalen a una cuenta operativa activada. El handoff no concede por sí mismo membresías, compras ni derechos de COM.
+Los casos aceptados para el diseño son:
+
+| Caso | Tratamiento requerido |
+| --- | --- |
+| `PROVISIONED` | Cuenta nueva provisionada mediante el mecanismo autorizado de COM. |
+| `AUTH_REQUIRED` | Cuenta existente: autenticación de su titular antes de vincular, con 2FA/passkeys cuando correspondan. |
+| `VERIFICATION_REQUIRED` | Falta prueba suficiente de verificación de correo. |
+| `CONFLICT` | Identidad o vínculo en conflicto; requiere resolución sin apropiación ni duplicación de cuentas. |
+| **RESULTADO IDEMPOTENTE** | Un reintento de la misma operación y contenido devuelve el resultado persistido sin duplicar cuentas ni vínculos; no es un estado adicional de identidad. |
+
+COM aceptará pruebas de email únicamente desde un emisor autenticado y con mecanismo y fecha verificables. Una sesión activa o un booleano declarado no sustituyen esa evidencia.
+
+CLUB no necesita crear una entidad Lead artificial: `club_user_id` corresponde a `users.uuid`; `club_lead_id` será opcional o estará ausente según el contrato definitivo.
+
+Ni un recibo de registro ni un handoff pendiente equivalen a una cuenta operativa activada. El handoff no crea sesiones, membresías ni comisiones, ni concede por sí mismo compras o derechos de COM. La continuación de sesión requiere el mecanismo separado de la sección 11.
 
 **IMPLEMENTADO HOY:** CLUB crea un `User` local pendiente, sin contraseña inicial, cuando el registro está habilitado; no tiene una entidad Lead separada. Actualmente el registro está bloqueado. No hay botón operativo hacia COM, endpoint de handoff ni provisionamiento. La retención individual completa de UTM y campaña de este flujo también es trabajo futuro (sección 13).
 
@@ -85,17 +108,25 @@ Ni un recibo de registro ni un handoff pendiente equivalen a una cuenta operativ
 
 **ACEPTADO COMO DECISIÓN DE NEGOCIO:** este flujo es obligatorio y tiene la misma relevancia que CLUB → COM.
 
-**PROPUESTO TÉCNICAMENTE, PENDIENTE DE IMPLEMENTAR:**
+COM conserva sus landings de Partners, Benefits, Experiences, Challenges y Marketing Landings.
 
-1. La persona entra en una landing de Partner, Benefit, Experience o Challenge de COM.
+**ARQUITECTURA ACEPTADA — ajuste 3, PENDIENTE DE IMPLEMENTAR:**
+
+| Caso | Tratamiento requerido |
+| --- | --- |
+| A. Captación directa sin referente CLUB | Permanece sin referente económico ni comisión artificial. |
+| B. Captación con referencia CLUB válida | Conserva procedencia autenticable, con integridad, vigencia y correlación verificables por CLUB. |
+| C. Usuario COM existente | Conserva su identidad; no se crea una cuenta CLUB por coincidencia de email. El evento puede quedar pendiente de vinculación. |
+
+1. La persona entra en una landing de Partner, Benefit, Experience, Challenge o Marketing Landing de COM.
 2. COM capta al visitante, crea o autentica su cuenta operativa y mantiene el contexto del producto y la transacción.
 3. COM conserva la procedencia comercial disponible, incluida una referencia comercial de CLUB cuando sea válida. Un acceso directo sin atribución válida permanece sin referente económico.
 4. COM publica hacia CLUB un evento autenticado de captación o registro, con identidad vinculada cuando exista y evidencia de procedencia. No se transmiten contraseñas ni sesiones.
 5. CLUB reconoce al sujeto ya vinculado o deja el evento pendiente de resolución. No crea ni fusiona automáticamente cuentas por coincidencia de email. El contrato deberá permitir conservar el hecho comercial pendiente sin exigir crear inmediatamente una cuenta autenticada de CLUB.
 6. CLUB valida el código/evidencia, conserva la atribución que corresponda y evita sobrescribir su primer referente permanente con un toque posterior.
-7. COM comunica una transacción elegible confirmada y sus cambios posteriores. CLUB decide elegibilidad y comisión conforme a sus reglas futuras. COM conserva la transacción y no calcula una segunda comisión económica.
+7. COM emite hechos comerciales: comunica una transacción confirmada y sus cambios posteriores. CLUB determina la elegibilidad económica y la comisión conforme a sus reglas futuras. COM conserva la transacción y no calcula una segunda comisión económica.
 
-El sobre de eventos propuesto incluirá `event_id`, versión, `source_app`, `occurred_at`, identificadores comerciales locales de COM, sujeto/vínculo cuando exista, contexto de captación y referencia comercial verificable. Los hechos de transacción añadirán identificador estable, estado, importe, moneda y referencia a la captación necesaria. Nombres de eventos, endpoints, esquema final y tratamiento de devoluciones/cancelaciones aún requieren contrato propio; aquí no se declaran operativos.
+Los eventos futuros incluirán, cuando corresponda: versión, `event_id` inmutable, `source_app`, `occurred_at`, tipo de evento, ID COM o `global_subject_id`, ID de operación, contexto comercial y estado del hecho. Las referencias a cuentas respetarán el carácter interno de los bigint de la sección 3. Se conservarán sujeto/vínculo cuando exista, contexto de captación y referencia comercial verificable; CLUB podrá conservar eventos pendientes de vinculación. Los hechos de transacción añadirán importe, moneda y referencia a la captación necesaria. Nombres de eventos, endpoints, esquema final y tratamiento de devoluciones/cancelaciones aún requieren contrato propio; aquí no se declaran operativos.
 
 Una referencia en query o una declaración del navegador no acreditan por sí solas una comisión. COM deberá preservar un contexto de referencia validable por CLUB, con integridad, vigencia y correlación acordadas. La vinculación posterior de identidad no inventará ni reemplazará atribuciones ausentes.
 
@@ -113,9 +144,21 @@ CLUB podrá enlazar campañas con identificadores opacos de esos productos y rec
 
 COM mantiene la autoridad de compras y pagos del negocio. La liquidación a un afiliado y el pago de una compra son responsabilidades distintas. Las invitaciones sociales/comunitarias de COM pueden persistir, sin generar una comisión económica paralela.
 
+**ARQUITECTURA ACEPTADA — ajuste 4:** las comisiones económicas de afiliación se distinguen de las recompensas de producto, Challenges y Benefits. Estas recompensas no se trasladan ni se reclasifican automáticamente como comisiones de afiliación. Los eventos COM son hechos comerciales y no generan comisiones automáticamente: CLUB determina su elegibilidad económica conforme a las reglas acordadas.
+
 **IMPLEMENTADO HOY en CLUB:** código personal, enlace `/r/{code}` y primer referente permanente, protegido por modelo y trigger PostgreSQL, con restricción contra autorreferencia. No hay motor de comisiones, saldos ni liquidaciones. Un registro repetido no crea otra cuenta ni cambia referente ni suma conversión.
 
-**PENDIENTE DE IMPLEMENTAR:** reglas económicas y proyecto separado de transición del motor existente de COM. Antes de migrar deberán acordarse corte, reglas y saldos históricos, reconciliación, tratamiento de conflictos y una única fuente de cálculo por transacción. No se retiran tablas, desactivan funciones, cambian cálculos ni migran afiliados en esta tarea.
+**PENDIENTE DE IMPLEMENTAR:** las reglas económicas y la transición desde COM requieren un proyecto separado que acuerde:
+
+- Fecha de corte.
+- Incentivos que se trasladan y sus reglas.
+- Historial conservado en COM.
+- Saldos y obligaciones pendientes.
+- Motor responsable antes y después del corte, con una única fuente de cálculo por transacción.
+- Tratamiento de devoluciones y anulaciones históricas.
+- Reconciliación de saldos, hechos y conflictos sin comisiones duplicadas.
+
+No se borran tablas, recompensas, pagos ni reglas actuales; tampoco se desactivan funciones, cambian cálculos ni migran afiliados en esta tarea.
 
 ## 8. CRM y sincronización de contactos
 
@@ -140,11 +183,13 @@ No se invocó el callback de escritura ni se probó una proyección nueva. El ag
 
 ### Compatibilidad pendiente para CLUB
 
-El bridge v1 solo admite `identity.jakawi_user_id` y `provider_contact_id` numéricos. Su lista de campos permitidos no incluye `global_subject_id` ni `club_user_id`. **No es compatible con enviar directamente el UUID de CLUB en un campo de COM ni con añadir campos arbitrarios.** La coincidencia de email que usa una proyección CRM no autentica ni vincula cuentas de negocio.
+El bridge actual `CONTACT_UPSERT` v1 está diseñado para COM y solo admite `identity.jakawi_user_id` y `provider_contact_id` numéricos. Su lista de campos permitidos no incluye `global_subject_id` ni `club_user_id`. **No admite `users.uuid` de CLUB como `identity.jakawi_user_id` ni campos arbitrarios.** El email puede resolver contactos CRM, pero no identidades autenticadas: esa coincidencia no autentica ni vincula cuentas de negocio.
 
-**PROPUESTO TÉCNICAMENTE / PENDIENTE DE IMPLEMENTAR:** acordar una extensión versionada y compatible del bridge para productor CLUB, identificadores tipados/globales, credenciales independientes por emisor, relojes de actualización y supresiones; después construir una outbox propia de CLUB. La clave HMAC actual de COM no se copiará. No se obligará a crear una cuenta COM solo para proyectar un lead CLUB al CRM.
+**ARQUITECTURA ACEPTADA — ajuste 5, PENDIENTE DE IMPLEMENTAR:** la extensión futura del bridge será versionada, compatible hacia atrás y multiemisor, con identificadores tipados, credenciales independientes, idempotencia por origen/evento, reglas de precedencia y supresiones y consentimientos protegidos. El esquema, las reglas concretas de precedencia y los relojes de actualización quedan por acordar; después se construirá una outbox propia de CLUB. La clave HMAC actual de COM no se copiará. No se obligará a crear una cuenta COM solo para proyectar un lead CLUB al CRM.
 
 El acuerdo de privacidad de CLUB no equivale a opt-in comercial. No convertirlo en `marketing.action=GRANT`. Hasta disponer de una preferencia comercial explícita y su contrato, conservar la ausencia de consentimiento y las supresiones existentes. Cualquier futura proyección deberá acordar esta semántica; no se ejecuta ahora.
+
+`CONTACT_UPSERT` y SMTP transaccional son operaciones independientes. La proyección de un contacto no envía ni acredita entrega de correo; la conformidad del bridge no habilita el mailer transaccional de CLUB.
 
 ## 9. Correo transaccional y ruta SMTP definida
 
@@ -225,16 +270,16 @@ La API SES por HTTPS es otra opción futura, pero el guard actual solo acepta SM
 | `handoff_id` | UUID estable de la operación; igual en reintentos. |
 | `source_app` | Emisor autenticado, por ejemplo CLUB; no confiar en una etiqueta del cuerpo sin vincularla a la credencial. |
 | `club_user_id` | UUID de `users.uuid`; nunca asumir que `users.id` ya es UUID. |
-| `club_lead_id` | Identificador de lead futuro. CLUB no tiene hoy esa entidad; definir nulabilidad/relación antes de exigirlo, sin inventar un segundo ID. |
+| `club_lead_id` | Opcional o ausente según el contrato definitivo. CLUB no necesita una entidad Lead artificial ni inventar un segundo ID. |
 | Nombre/email/WhatsApp | Normalizados; origen, vigencia y verificación por atributo. Email verificado no acredita el teléfono. |
 | Evidencia de verificación | Método, aplicación emisora, fecha y referencia verificable; un booleano declarado o sesión activa no bastan. |
 | Consentimiento/versión | Finalidad, texto/versionado, origen y momento; distinguir privacidad, comunicaciones y autorización del vínculo. |
 | Campaña/landing/UTM/referente | Contexto comercial válido, opcional cuando no existe; no sustituye evidencia de titularidad. |
 | Correlación/vigencia | Versión, momento, expiración y destino preaprobado; concretar firma y claves. |
 
-Resultados funcionales propuestos: `PROVISIONED`, `LINKED`, `AUTH_REQUIRED`, `VERIFICATION_REQUIRED`, `PENDING` y `CONFLICT`. No representan todavía enums ni respuestas HTTP implementadas. La respuesta deberá correlacionar el handoff y declarar el vínculo únicamente tras completar sus requisitos.
+Los casos aceptados y el resultado idempotente figuran en la sección 4. `LINKED` y `PENDING` se mantienen como posibles resultados adicionales propuestos. No representan todavía enums ni respuestas HTTP implementadas. La respuesta deberá correlacionar el handoff y declarar el vínculo únicamente tras completar sus requisitos.
 
-Se requiere autenticación servidor-servidor independiente del bridge CRM, integridad del cuerpo, protección contra replay, expiración, idempotencia persistente, autorización de provisionamiento y vinculación explícita de cuentas existentes. Los detalles del protocolo, claves/rotación, errores, tiempos y resolución interactiva están pendientes de conformidad. La UI pública no revelará si existe un email ajeno. Los redirects se limitan a destinos registrados; no se aceptarán URLs arbitrarias.
+Se requiere autenticación servidor-servidor independiente del bridge CRM, integridad del cuerpo, protección contra replay, expiración, idempotencia persistente, autorización de provisionamiento y vinculación explícita de cuentas existentes. Los detalles del protocolo, claves/rotación, errores, tiempos y resolución interactiva están pendientes de especificación y acuerdo técnico. La UI pública no revelará si existe un email ajeno. Los redirects se limitan a destinos registrados; no se aceptarán URLs arbitrarias.
 
 El endpoint interno no crea automáticamente una sesión de navegador. El intercambio interactivo de continuación y el futuro SSO deben acordarse sin transportar contraseñas ni tokens reutilizables en URLs.
 
@@ -242,21 +287,25 @@ El endpoint interno no crea automáticamente una sesión de navegador. El interc
 
 **IMPLEMENTADO HOY en CLUB:** guard web de sesión local, `User implements MustVerifyEmail`, activación/verificación propias y broker local de contraseñas. No hay cliente OIDC ni SSO con COM.
 
-**REPORTADO POR COM, no corregido ni auditado desde CLUB:** Fortify, PK local bigint, email único y arquitectura con passkeys/2FA. El contrato recibido advierte que Fortify habilita emailVerification, pero el User examinado no implementa MustVerifyEmail; tampoco acredita una política uniforme de verificación ni correo real. Una sesión activa de COM no es evidencia suficiente de verificación de email. COM deberá resolver y acreditar ese requisito antes de emitir claims de correo verificado aceptables para CLUB.
+**REPORTADO POR COM, no corregido ni auditado desde CLUB:** COM utiliza Fortify para login local, PK local bigint, email único y arquitectura con passkeys/2FA. El contrato recibido advierte que Fortify habilita emailVerification, pero el User examinado no implementa MustVerifyEmail; COM no tiene acreditada aún una política global uniforme de verificación de email ni correo real. Una sesión activa de COM no es evidencia suficiente de verificación de email.
 
-**PROPUESTO TÉCNICAMENTE:** OpenID Connect con proveedor bajo autoridad de COM o servicio dedicado de esa autoridad y CLUB como cliente. Authorization Code Flow, PKCE S256, `state` y `nonce` ligados a la operación, HTTPS, redirect URIs registradas, códigos de un uso, tokens limitados y validación de issuer/audience/firma/expiración y nonce. Vincular el `sub` emitido con el sujeto global exige una regla explícita; no se asumirá que todo `sub` equivale automáticamente a `global_subject_id`.
+**ARQUITECTURA ACEPTADA — ajuste 6:** antes de emitir `email_verified=true` en identidad federada, COM deberá definir la política efectiva, verificar su implementación y tratar correctamente las cuentas preexistentes. No se marcarán masivamente como verificadas ni se bloquearán indiscriminadamente cuentas productivas.
 
-`jakawi.com` y `jakawi.club` son dominios raíz diferentes: no se compartirá una cookie Laravel para obtener SSO. Cada aplicación conserva su sesión; navegación unificada exige redirecciones autenticadas y una política acordada de cierre de sesión/revocación y autenticación adicional. No se compartirá APP_KEY, almacén de sesiones ni hashes de contraseña.
+El objetivo SSO aceptado es **OpenID Connect Authorization Code + PKCE S256**, con proveedor bajo autoridad de COM o servicio dedicado de esa autoridad y CLUB como cliente. Fortify no equivale por sí mismo a un servidor OIDC.
+
+**PROPUESTO TÉCNICAMENTE:** `state` y `nonce` ligados a la operación, HTTPS, redirect URIs registradas, códigos de un uso, tokens limitados y validación de issuer/audience/firma/expiración y nonce. Vincular el `sub` emitido con el sujeto global exige una regla explícita; no se asumirá que todo `sub` equivale automáticamente a `global_subject_id`.
+
+`jakawi.com` y `jakawi.club` son dominios raíz diferentes: no se compartirá una cookie Laravel para obtener SSO. Cada aplicación conservará su propia cookie y sesión. El diseño contemplará expiración, revocación, logout, vinculación, recuperación y autenticación adicional cuando corresponda. No se compartirá APP_KEY, almacén de sesiones ni hashes de contraseña.
 
 **PENDIENTE DE IMPLEMENTAR:** selección del proveedor, registro del cliente, claims/scopes, claves, logout, revocación y pruebas. No se construirá un servidor OIDC en esta tarea. Referencias para el diseño futuro: [OpenID Connect Core](https://openid.net/specs/openid-connect-core-1_0.html), [OAuth Security BCP](https://www.rfc-editor.org/rfc/rfc9700.html).
 
 ## 12. Idempotencia, duplicados y coherencia
 
-| Operación | IMPLEMENTADO HOY | PROPUESTO TÉCNICAMENTE / PENDIENTE DE IMPLEMENTAR |
+| Operación | IMPLEMENTADO HOY | ARQUITECTURA ACEPTADA o detalle PROPUESTO TÉCNICAMENTE / PENDIENTE DE IMPLEMENTAR |
 | --- | --- | --- |
 | Registro CLUB | Email normalizado único; restricción PostgreSQL y manejo de concurrencia; respuesta genérica a cuenta existente; conversión solo para alta nueva. | No confundir deduplicación local por email con identidad entre aplicaciones. |
 | Activación CLUB | Broker con token hash, expiración de 60 minutos y consumo serializado; verificación y activación locales. | Evidencia exportable y verificación por COM aún ausentes. |
-| Proyección CRM | event ID + hash, devolución idempotente y conflicto para cambio de cuerpo; FIRST/LATEST y supresiones protegidos en bridge. | Contrato multiorigen y campos CLUB/globales; outbox CLUB con cifrado, reintentos acotados y resolución de errores. |
+| Proyección CRM | event ID + hash, devolución idempotente y conflicto para cambio de cuerpo; FIRST/LATEST y supresiones protegidos en bridge. | Contrato multiorigen con idempotencia por origen/evento, precedencia y campos CLUB/globales; outbox CLUB con cifrado, reintentos acotados y resolución de errores. |
 | Handoff | Ausente. | Unicidad por emisor + handoff ID, hash del contenido y resultado persistido; mismo cuerpo devuelve resultado coherente, cuerpo diferente produce conflicto sin duplicar cuentas. |
 | Eventos COM → CLUB | Ausentes. | Outbox/inbox, deduplicación por emisor + event ID y separación entre ocurrido/recibido; tolerar llegada tardía, reordenación y vínculo pendiente. |
 | Comisión futura | Ausente en CLUB. | Además del event ID, unicidad por transacción/hecho económico, afiliado, concepto y versión de regla acordados; reintentos no duplican devengos ni liquidaciones. |
@@ -265,20 +314,24 @@ No se promete entrega «exactamente una vez». Se propone entrega con reintentos
 
 ## 13. Compatibilidad con el código actual de CLUB
 
-**Resultado: compatible con la separación de responsabilidades, con precisiones y capacidades pendientes concretas. No está listo para integrar identidad ni abrir registro.** Revisión focalizada; no se modificó lógica.
+**Resultado: compatible con la separación de responsabilidades, con precisiones y capacidades pendientes concretas. No está listo para integrar identidad ni abrir registro.** Se conserva el resultado de la revisión focalizada original; esta consolidación no repite la auditoría ni modifica lógica.
 
 | Módulo y fuente local | IMPLEMENTADO HOY | Precisión o pendiente concreto |
 | --- | --- | --- |
-| [User](../../app/app/Models/User.php) y [migración de identidad](../../app/database/migrations/2026_10_28_000001_extend_users_for_launch.php) | PK bigint, UUID estable separado, referente inmutable, MustVerifyEmail. | Corregir el tipo asumido por el contrato; añadir vínculo global futuro sin reemplazar PK/UUID. |
-| [Registro](../../app/app/Http/Controllers/RegistrationController.php) y [request](../../app/app/Http/Requests/RegistrationRequest.php) | User pendiente, datos normalizados, privacidad requerida/aceptada, transacción con atribución y conversión. Email repetido: no crea usuario ni otra conversión. | No hay tabla Lead ni `club_lead_id` independiente, global_subject_id ni outbox de captación. Definir modelo/proyección futura; no renombrar cuentas actuales por documentación. |
+| [User](../../app/app/Models/User.php) y [migración de identidad](../../app/database/migrations/2026_10_28_000001_extend_users_for_launch.php) | PK bigint, UUID estable separado, referente inmutable, MustVerifyEmail. | Mapeo `club_user_id=users.uuid` aceptado; añadir vínculo global futuro sin reemplazar PK/UUID. |
+| [Registro](../../app/app/Http/Controllers/RegistrationController.php) y [request](../../app/app/Http/Requests/RegistrationRequest.php) | User pendiente, datos normalizados, privacidad requerida/aceptada, transacción con atribución y conversión. Email repetido: no crea usuario ni otra conversión. | No hay tabla Lead ni `club_lead_id` independiente, global_subject_id ni outbox de captación. Definir modelo/proyección futura sin exigir una entidad Lead artificial; `club_lead_id` opcional o ausente. |
 | [Activación y recuperación](../../app/app/Http/Controllers/AuthController.php) | Activación consume token y establece email_verified_at/activated_at; login exige ambos; cambio de contraseña revoca sesiones previas. | Entrega real no probada en CLUB. La prueba es de correo, no de WhatsApp ni identidad civil; no existe evidencia federada. |
 | [Referidos](../../app/app/Services/ReferralAttribution.php) y migración | Primer código válido en sesión; cookie opcional 30 días con permiso; referente permanente al crear usuario; sin autorreferencia. | Referidos locales no son aún un sistema económico ni referencias autenticadas para COM. Resolver conflictos/atribución tardía sin reescribir la relación actual. |
-| [Formulario](../../app/resources/js/components/forms/RegistrationForm.tsx) y [privacidad](../../app/resources/js/pages/Privacy.tsx) | En el SHA actual el checkbox empieza **marcado**; texto «Acepto el acuerdo de privacidad». Backend guarda fecha y versión `2026-10-28`; no hay opt-in comercial. Cookie de referido independiente. | El reporte histórico de registro describía otro estado. El valor actual no acredita un clic afirmativo individual ni permiso de marketing/vinculación. Definir evidencias y finalidades futuras sin reclasificar estos registros ni cambiar el control ahora. |
+| [Formulario](../../app/resources/js/components/forms/RegistrationForm.tsx) y [privacidad](../../app/resources/js/pages/Privacy.tsx) | En el SHA examinado el checkbox empieza **marcado**; texto «Acepto el acuerdo de privacidad». Backend guarda fecha y versión `2026-10-28`; no hay opt-in comercial. Cookie de referido independiente. | El checkbox premarcado no constituye por sí solo prueba de consentimiento comercial afirmativo ni autorización del vínculo. Conservar evidencia individual por finalidad según el ajuste 7, sin inferir marketing opt-in retroactivamente ni cambiar el control ahora. |
 | [Mailer](../../app/config/mail.php), [AccountMail](../../app/app/Services/AccountMail.php), [LaunchSettings](../../app/app/Support/LaunchSettings.php) | `log`; guard requiere aprobación explícita + SMTP remoto + remitente válido; AccountMail retorna antes de crear tokens si no está listo. Envío síncrono sin worker. | SES SMTP 2465 es compatible sin cambio lógico; credenciales, remitente y prueba siguen pendientes. El guard no realiza una prueba de entregabilidad. |
 | [Medición](../../app/app/Services/MarketingAnalytics.php) y [eventos públicos](../../app/app/Http/Controllers/MarketingEventController.php) | Totales diarios de visitas/CTA/video; registration_completed solo en alta nueva del servidor. Totales por landing/campaña publicada, sin vínculo personal; recibo de sesión de 15 min para confirmación. | No existe historial individual de lead/campaña/UTM/captación para handoff, inbox de eventos COM ni ledger económico. Los agregados y el recibo temporal no lo sustituyen. |
 | [Contenido editorial](../../app/app/Support/LandingContent.php) y [editor](../../app/app/Http/Controllers/LandingAdminController.php) | LEAD_VSL/WEBINAR/WAITLIST; borrador/snapshot publicado; `/` y `/principal`; URLs `/{slug}`; exporta **jakawi-club-landing-v2**, importa v1/v2; `after_registration` y confirmación local por landing. | El contrato recibido menciona solo v1: debe admitir v2 como estado actual. `next_step` admite none/recover/account/home/whatsapp, sin handoff COM ni redirects arbitrarios; cambios futuros necesitan contrato y validación específicos. |
 
-### Validación y límites de la evidencia
+**ARQUITECTURA ACEPTADA — ajuste 7, PENDIENTE DE IMPLEMENTAR:** CLUB conservará evidencia individual suficiente del acuerdo de privacidad y, cuando apliquen, de la transferencia de datos autorizada y de la vinculación de cuentas autorizada. Cada finalidad conservará su texto/versión, origen, fecha y acto o mecanismo verificable; la fecha y versión actuales no acreditan por sí solas todas esas autorizaciones. El marketing opt-in será independiente: no se inferirá del checkbox premarcado ni se atribuirá retroactivamente a los registros existentes.
+
+### Validación y límites de la evidencia original
+
+Los resultados siguientes corresponden a la revisión original, previa al commit `5d9649e`. Para esta consolidación solo se revisan Git, el diff y la coherencia documental; no se repiten el validador operativo ni las comprobaciones de producción.
 
 Se ejecutó **`python3 scripts/validate-local.py` con éxito**, sin dependencias nuevas: HTTP/Inertia 200, contenedores propios healthy, APP_DEBUG=false, mailer log y aislamiento comprobado. El archivo histórico de evidencia que genera se conservó con sus bytes originales para que esta entrega añada solo documentación.
 
@@ -290,12 +343,16 @@ No se ejecutaron migraciones, builds, instalaciones, suites extensas, reinicios,
 
 ## 14. Responsables y conformidad por fase
 
-| Fase/decisión | Responsable | Condición de cierre futura |
+**ARQUITECTURA ACEPTADA — ajuste 7:** COM responde por identidad, cuentas, verificación, vinculación, autenticación, hechos comerciales y prevención de cuentas duplicadas. CLUB responde por captación, procedencia, campañas, referidos, afiliados, comisiones y futura liquidación. CRM responde por contactos, preferencias, segmentación y comunicaciones.
+
+La aceptación del contrato no autoriza automáticamente implementar SSO, migrar afiliados, activar SMTP, abrir registros, ejecutar migraciones ni modificar sistemas productivos. Cada ejecución requerirá autorización específica.
+
+| Fase/decisión | Responsable | Estado o condición de cierre |
 | --- | --- | --- |
-| Conformidad del presente contrato | Lead Architect COM + Lead Architect CLUB; propietario para decisiones de negocio | Acordar mapeo `club_user_id=users.uuid`, lead pendiente, autoridad global, verificación y flujo inverso. |
+| Conformidad del presente contrato | Lead Architect COM + Lead Architect CLUB; propietario para decisiones de negocio | Conformidad COM emitida el 29/10/2026; ajustes 1–7 incorporados por CLUB y decisiones de negocio ratificadas. Sin objeciones arquitectónicas bloqueantes; ejecución futura pendiente de autorización específica. |
 | Correo transaccional CLUB | Operador AWS/correo + propietario + Lead Architect CLUB | Credenciales separadas, remitente/destinatario aprobados, recepción real y ensayo de acceso autorizados. CRM mantiene su configuración actual. |
-| Identidad y recuperación operativa | Lead Architect COM | Política verificable de email/Fortify y autoridad del sujeto global; resolver la advertencia MustVerifyEmail en su propio proyecto. |
-| Captación y cliente de identidad | Lead Architect CLUB | Modelo de procedencia/consentimientos y evidencia; handoff y vínculo local sin apropiación de cuentas ni atribución alterada. |
+| Identidad y recuperación operativa | Lead Architect COM | Política efectiva de email/Fortify verificada y tratamiento de cuentas preexistentes sin verificación masiva ni bloqueo indiscriminado; sujeto global y vínculos auditables. |
+| Captación y cliente de identidad | Lead Architect CLUB | Modelo de procedencia y evidencias individuales de privacidad, transferencia y vinculación cuando apliquen; marketing opt-in independiente; handoff y vínculo local sin apropiación de cuentas ni atribución alterada. |
 | Handoff y provisionamiento | COM receptor/autoridad; CLUB emisor/cliente | Protocolo autenticado, contrato de conflictos e idempotencia; pruebas conjuntas en entorno autorizado. |
 | Eventos de captación/transacción | COM produce y conserva operación; CLUB recibe y atribuye | Esquema, autenticidad de procedencia, correlación y reconciliación en ambos sentidos. |
 | Proyección de contactos y supresiones | Responsable CRM + arquitectos COM/CLUB | Extensión compatible del bridge, productores/credenciales independientes, preferencias y nuevas entregas verificadas. |
@@ -304,10 +361,10 @@ No se ejecutaron migraciones, builds, instalaciones, suites extensas, reinicios,
 
 ## 15. Roadmap y siguiente paso operativo
 
-Todas las fases siguientes están **PENDIENTES DE IMPLEMENTAR** y requieren su alcance de ejecución posterior. No son parte del commit documental.
+La conformidad técnica de la fase 1 queda consolidada. Las fases operativas 2–8 están **PENDIENTES DE IMPLEMENTAR** y requieren alcance y autorización específica de ejecución posterior. No son parte del commit documental.
 
-1. **Conformidad técnica conjunta:** devolver este documento al Lead Architect de COM para acordar las precisiones reales y el flujo COM → CLUB. No se envía automáticamente a terceros desde esta tarea.
-2. **Correo antes de registro público:** aprobar remitente/destinatario, emitir credenciales SMTP CLUB en SES us-east-1 y preparar la prueba por 2465 TLS descrita en la sección 9. Es el siguiente paso operativo recomendado; no depende de construir SSO, modificar CRM ni migrar afiliados.
+1. **Conformidad técnica conjunta consolidada:** COM emitió «CONFORMIDAD CON AJUSTES PUNTUALES» el 29/10/2026; CLUB incorpora los ajustes 1–7 en este contrato. Quedan pendientes los esquemas y detalles expresamente propuestos, además de las implementaciones futuras. No se envía automáticamente a terceros desde esta tarea.
+2. **Correo antes de registro público:** mediante autorización separada, aprobar remitente/destinatario, emitir credenciales SMTP CLUB en SES us-east-1 y preparar la prueba por 2465 TLS descrita en la sección 9. Es el siguiente paso operativo recomendado; no depende de construir SSO, modificar CRM ni migrar afiliados.
 3. **Apertura de captación como decisión separada:** comprobar activación/verificación/recuperación reales con cuenta expresamente autorizada y cerrar los pendientes existentes de operación/privacidad antes de solicitar apertura. Hasta entonces conservar las banderas cerradas.
 4. **Modelo mínimo de integración:** definir sujeto global y vínculos; procedencia comercial individual con UTM/landing/campaña, evidencias de verificación y consentimientos por finalidad; outbox/inbox. Acordar cómo conservar eventos COM sin cuenta CLUB vinculada.
 5. **Handoff CLUB → COM y captación COM → CLUB:** implementar contratos versionados y probar reintentos, cuenta existente, autenticación del titular, conflicto, llegada directa sin referente y ausencia de pérdida/duplicación de atribución. Ninguna fase activa membresías por ser lead.
