@@ -26,18 +26,21 @@ Las nuevas pruebas aisladas reproducen la serialización antigua de cuatro horas
 
 [Editor y preview](editor-visual.json): 16 grupos, viewport 390, 430, 768 y 1440; URL modificada desde controles, poster/crop, frame fijo, guardado/publicación independientes, renderer real y confirmación sin eventos. [Confirmación y formulario](browser.json): 27 grupos a 390, 430 y 1440; con/sin video, grupo válido/ausente, color/enlace seguro, consentimiento, E.164, referido, errores, login existente, countdown y refresh. Todos los POST de navegador se interceptan. Las fixtures visuales y las notificaciones simuladas no acreditan reproducción o envío reales.
 
-La regresión del VSL oficial conserva pruebas de autoplay muted, eventos del proveedor, audio desde cero, dummy, pause/buffering/replay, preferencias, crop, URL nueva, ocultar video, preview sin analítica y error 150. Evidencia: [VSL](vsl/browser.json). El rechazo 150 nunca acredita playback real.
+La regresión del VSL oficial conserva pruebas de autoplay muted, eventos del proveedor, audio desde cero, dummy, pause/buffering/replay, preferencias, crop, URL nueva, ocultar video, preview sin analítica y error 150. Evidencia: [VSL](vsl/browser.json), 14 grupos a 390, 430, 1024 y 1440 px. El rechazo 150 nunca acredita playback real.
 
 ## G. Capturas
 
 - [Video de confirmación móvil 390](confirmation-video-390.png), [430](confirmation-video-430.png), [desktop 1440](confirmation-video-1440.png).
 - [Editor desktop](editor-1440.png), [móvil](editor-390.png), [preview de confirmación](confirmation-preview-430.png).
+- [Portada LIVE móvil](live-390.png), [desktop](live-1440.png).
 - [Sin video](thanks-without_video-390.png), [grupo configurado](thanks-whatsapp-countdown-390.png).
 - [VSL muted móvil](vsl/vsl-muted-390.png), [desktop](vsl/vsl-muted-1440.png).
 
 Capturas de estados protegidos/medios: fixtures identificadas del navegador con el renderer real; no son nuevos registros de producción ni reproducción física acreditada.
 
 ## H. Git, despliegue y rollback
+
+Los assets se publicaron con manifest atómico conservando los chunks anteriores; se regeneró `config:cache` y se reinició únicamente `app`. La [validación local](local-validation.json) pasó con los tres contenedores CLUB saludables, mismos IDs y entorno intacto. El [navegador con assets LIVE](live-browser.json) pasó 30 grupos, incluidos los tres viewports sobre HTTPS real; el registro permanece cerrado. La [regresión VSL con assets LIVE](vsl/live-browser.json) pasó 14 grupos; no se sondeó una fuente real inexistente ni se acreditó playback. CLUB y COM `/up` y loopback respondieron HTTP 200; POST público de registro con CSRF válido devolvió 403. La comparación privada confirmó hashes completos idénticos de usuarios, permisos administrativos, tokens, landings, migraciones y conversiones; entorno SMTP intacto. El único reinicio fue el de CLUB app.
 
 El sello final se genera después del push mediante `python3 scripts/verify-video-confirmation-live.py` y queda en `LIVE.json` ignorado. Verifica HEAD/origin/main, blobs montados, assets HTTPS, chunks anteriores conservados, `/up` CLUB/COM y loopback, registro cerrado (POST 403), guardas de confirmación y hashes completos de cuentas, permisos, tokens, migraciones, landings y conversiones contra el baseline privado de esta entrega.
 

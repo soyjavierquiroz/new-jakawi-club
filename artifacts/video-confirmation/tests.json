@@ -23,5 +23,17 @@
   "typecheck": "passed",
   "vite": "passed",
   "live_accounts_created": 0,
-  "smtp_sent": 0
+  "smtp_sent": 0,
+  "browser_groups": 27,
+  "editor_groups": 16,
+  "vsl_groups": 14,
+  "live_browser_groups": 30,
+  "live_vsl_groups": 14,
+  "real_playback_verified": false,
+  "health": {
+    "club": 200,
+    "com": 200,
+    "loopback": 200
+  },
+  "public_registration_http": 403
 }
