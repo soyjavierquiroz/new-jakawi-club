@@ -41,14 +41,34 @@ Todas reutilizan componentes, tokens, teléfono internacional, registro, referid
 
 Capturas principales: [editor desktop](editor-1440.png), [editor móvil](editor-390.png), [preview móvil](editor-preview-390.png), [errores JSON](json-field-errors.png). Las capturas `renderer-*-1440.png` muestran cada plantilla a tamaño real usando fixtures; nunca se publican landings de prueba.
 
-La regresión responsive pública y las verificaciones finales de despliegue se añaden al completar la operación.
+`responsive-tests.txt` y `responsive/visual-validation.json`: 11 grupos adicionales contra la portada HTTPS y fixtures de proveedor/formulario. Verifican VSL 3:4 con fuente 9:16 contenida, hero equilibrado, sticky, foco, teclado, teléfono internacional/E.164 y estados de formulario/reproductor. Sin prueba externa de reproducción real de YouTube. Capturas públicas: [390](responsive/hero-390.png), [1440](responsive/hero-1440.png).
+
+`local-validation.txt` y `public-validation.txt`: validadores existentes satisfactorios, HTTPS/assets, debug deshabilitado, registro cerrado, base privada, identidad y redes. `deployment-checks.json` verifica expresamente las URLs solicitadas, igualdad de portada, usuarios y registros de landing sin cambios. `routes-before.txt` y `routes-after.txt` muestran la compatibilidad de enrutamiento.
 
 ## G. Registro y referidos
 
 Se conserva el registro público cerrado y la cuenta existente. No se modifican controladores/modelos de autenticación, registro o referidos. Las pruebas aisladas verifican el comportamiento existente sin enviar notificaciones reales ni crear usuarios LIVE.
 
-## H–J. Despliegue, Git y pendientes
+## H. Estado de ambos sitios
 
-Preparado para despliegue exclusivamente de jakawi.club, conservando chunks anteriores y publicando el manifest al final. Sin migraciones, cambios de secretos, infraestructura, Traefik, DNS, jakawi.com ni servicios compartidos. [Rollback](ROLLBACK.md). El SHA LIVE se sellará después del commit/push con `scripts/verify-editor-live.py`, que comprueba Git limpio/sincronizado, archivos montados, assets HTTPS, rutas, salud y registros sin cambios. `LIVE.json` queda ignorado para evitar autorreferencia.
+Desplegado exclusivamente jakawi.club: chunks anteriores conservados, manifest publicado al final, cachés de rutas/vistas regeneradas y reinicio exclusivo de `jakawi-club-app` para renovar OPcache. Los tres contenedores propios están saludables; Nginx/PostgreSQL conservan ID y fecha de inicio. Sin migraciones ni cambios de secretos, Traefik, DNS o infraestructura. Los hashes existentes de configuración y credenciales siguen coincidiendo. No hubo escrituras a usuarios o registros de landing LIVE.
 
-Pendientes ajenos a este cambio: restricción histórica de inserción de YouTube del video aprobado, documentada en `../vsl/REPORT.md`; no se afirma reproducción real ni se cambia la fuente. No hay público objetivo segmentado, poster ni fecha de encuentro documentados en el creador; no se inventan. Las pruebas Chromium no sustituyen una revisión física iOS/Android.
+| URL | Verificación |
+| --- | --- |
+| https://jakawi.club/ | 200; snapshot principal |
+| https://jakawi.club/principal | 200; misma configuración e ID |
+| https://jakawi.club/admin/landings | 302 a login sin sesión; 401 para JSON sin sesión |
+| https://jakawi.club/up | 200 |
+| https://jakawi.com/up | 200; solo comprobación pública de salud |
+
+El alias `/l/principal` responde 301; aliases inexistentes 404. Login 200, GET registro 405, POST registro con CSRF válido 403 y referido inválido 302 como antes. El administrador y miembro de prueba se verificaron exclusivamente en el esquema aislado, sin usar credenciales LIVE.
+
+## I. Git y SHA LIVE
+
+Commit de implementación y pruebas: `851c3db73b86771b1f126cb21e6210880b4989df` — Optimize landing editor with root URLs, local JSON tools and three templates. Las evidencias finales se registran en un segundo commit documental. Push normal a origin/main; sin reescribir historial.
+
+El SHA efectivo final se sella después del push mediante `python3 scripts/verify-editor-live.py`: exige main limpio, HEAD/origin/main/remoto iguales, archivos montados coincidentes, bytes de assets HTTPS, rutas, salud, registro cerrado y usuarios/landings idénticos al baseline de esta operación. El resultado está en `LIVE.json`, ignorado para evitar autorreferencia. [Rollback preparado](ROLLBACK.md): revertir código/manifest y reiniciar únicamente app, conservando datos y chunks.
+
+## J. Pendientes
+
+Sin pendientes funcionales esenciales del editor solicitado. Se conserva la restricción histórica de inserción de YouTube del video aprobado, documentada en `../vsl/REPORT.md`; no se afirma reproducción real ni se cambia la fuente. No hay público objetivo segmentado, poster ni fecha de encuentro documentados en el creador; no se inventan. Las pruebas Chromium no sustituyen una revisión física iOS/Android. Los JSON antiguos con video deben retirar esa sección para respetar el contrato editorial actual.

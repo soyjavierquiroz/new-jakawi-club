@@ -1,0 +1,37 @@
+Check /
+Browser request failed Fetch net::ERR_ABORTED
+Browser request failed Fetch net::ERR_ABORTED
+Check /#registro
+Check /__conversion/registration
+Browser request failed Fetch net::ERR_ABORTED
+Check /__conversion/video
+Browser request failed Fetch net::ERR_ABORTED
+Browser request failed Fetch net::ERR_ABORTED
+Source frame geometry 390 {"ratio":0.5624732914762828,"safe":true,"frame":{"width":358,"height":477.328125,"top":293.75,"bottom":771.078125},"iframe":{"width":267.359375,"height":475.328125,"top":294.7421875,"bottom":770.0703125},"aspect":"9:16"}
+Check /
+Browser request failed Fetch net::ERR_ABORTED
+Browser request failed Fetch net::ERR_ABORTED
+Check /__conversion/registration
+Browser request failed Fetch net::ERR_ABORTED
+Check /__conversion/video
+Browser request failed Fetch net::ERR_ABORTED
+Browser request failed Fetch net::ERR_ABORTED
+Source frame geometry 430 {"ratio":0.5624815274575871,"safe":true,"frame":{"width":398,"height":530.65625,"top":293.75,"bottom":824.40625},"iframe":{"width":297.359375,"height":528.65625,"top":294.75,"bottom":823.40625},"aspect":"9:16"}
+Check /
+Browser request failed Fetch net::ERR_ABORTED
+Browser request failed Fetch net::ERR_ABORTED
+Check /__conversion/registration
+Browser request failed Fetch net::ERR_ABORTED
+Check /__conversion/video
+Browser request failed Fetch net::ERR_ABORTED
+Source frame geometry 1440 {"ratio":0.5624823296579021,"safe":true,"frame":{"width":416,"height":554.65625,"top":129,"bottom":683.65625},"iframe":{"width":310.859375,"height":552.65625,"top":130,"bottom":682.65625},"aspect":"9:16"}
+Browser request failed Fetch net::ERR_ABORTED
+Check /
+Browser request failed Fetch net::ERR_ABORTED
+Browser request failed Fetch net::ERR_ABORTED
+Check /__conversion/video-error
+Browser request failed Fetch net::ERR_ABORTED
+Browser request failed Script net::ERR_CONNECTION_FAILED
+Check /__conversion/no-video
+Browser request failed Fetch net::ERR_ABORTED
+11 grouped responsive checks passed: geometry, sticky, keyboard/search/country/E.164/form states and VSL lifecycle; 390, 430, 1440 px. Real provider probe skipped (existing source unchanged).

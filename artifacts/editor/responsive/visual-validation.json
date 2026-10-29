@@ -1,0 +1,243 @@
+{
+  "checks": [
+    {
+      "name": "landing",
+      "width": 390,
+      "overflow": false,
+      "h1": "Tu ciudad tiene mucho más para vivir.",
+      "frameRatio": 0.7500081835739304,
+      "frameWidth": 358,
+      "fieldsetDisabled": true,
+      "country": "+591⌄",
+      "videoState": "poster",
+      "youtube": false,
+      "formCount": 1,
+      "targets": [
+        "#registro",
+        "#registro",
+        "#registro"
+      ],
+      "coral": "rgb(255, 90, 79)",
+      "bodyFont": "Montserrat, ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+      "inputFont": "\"Instrument Sans\", ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+      "brokenImages": 0,
+      "reduced": true,
+      "scroll": "auto",
+      "spinnerAnimation": "none",
+      "geometry": {
+        "headingBottom": 269.75,
+        "mediaTop": 293.75,
+        "mediaBottom": 823.078125,
+        "copyTop": 847.078125,
+        "centerOffset": 46.625,
+        "align": "center",
+        "mediaLeft": 16,
+        "headingRight": 374,
+        "players": 1,
+        "titleOverflow": false,
+        "fieldHeights": [
+          50,
+          50,
+          50,
+          50
+        ],
+        "videoTop": 293.75
+      }
+    },
+    {
+      "name": "sticky-form-keyboard-dialog-deeplink-footer",
+      "width": 390,
+      "passed": true,
+      "keyboard": "VisualViewport resize fixture; physical keyboard check pending"
+    },
+    {
+      "name": "phone-country-search-keyboard-e164-form-error",
+      "width": 390,
+      "passed": true
+    },
+    {
+      "name": "lazy-vsl-real-event-contract-controls-error",
+      "width": 390,
+      "passed": true,
+      "source_geometry": {
+        "ratio": 0.5624732914762828,
+        "safe": true,
+        "frame": {
+          "width": 358,
+          "height": 477.328125,
+          "top": 293.75,
+          "bottom": 771.078125
+        },
+        "iframe": {
+          "width": 267.359375,
+          "height": 475.328125,
+          "top": 294.7421875,
+          "bottom": 770.0703125
+        },
+        "aspect": "9:16"
+      },
+      "provider": "browser API fixture; real playback checked separately when configured"
+    },
+    {
+      "name": "landing",
+      "width": 430,
+      "overflow": false,
+      "h1": "Tu ciudad tiene mucho más para vivir.",
+      "frameRatio": 0.7500147223367293,
+      "frameWidth": 398,
+      "fieldsetDisabled": true,
+      "country": "+591⌄",
+      "videoState": "poster",
+      "youtube": false,
+      "formCount": 1,
+      "targets": [
+        "#registro",
+        "#registro",
+        "#registro"
+      ],
+      "coral": "rgb(255, 90, 79)",
+      "bodyFont": "Montserrat, ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+      "inputFont": "\"Instrument Sans\", ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+      "brokenImages": 0,
+      "reduced": true,
+      "scroll": "auto",
+      "spinnerAnimation": "none",
+      "geometry": {
+        "headingBottom": 269.75,
+        "mediaTop": 293.75,
+        "mediaBottom": 876.40625,
+        "copyTop": 900.40625,
+        "centerOffset": 46.625,
+        "align": "center",
+        "mediaLeft": 16,
+        "headingRight": 414,
+        "players": 1,
+        "titleOverflow": false,
+        "fieldHeights": [
+          50,
+          50,
+          50,
+          50
+        ],
+        "videoTop": 293.75
+      }
+    },
+    {
+      "name": "phone-country-search-keyboard-e164-form-error",
+      "width": 430,
+      "passed": true
+    },
+    {
+      "name": "lazy-vsl-real-event-contract-controls-error",
+      "width": 430,
+      "passed": true,
+      "source_geometry": {
+        "ratio": 0.5624815274575871,
+        "safe": true,
+        "frame": {
+          "width": 398,
+          "height": 530.65625,
+          "top": 293.75,
+          "bottom": 824.40625
+        },
+        "iframe": {
+          "width": 297.359375,
+          "height": 528.65625,
+          "top": 294.75,
+          "bottom": 823.40625
+        },
+        "aspect": "9:16"
+      },
+      "provider": "browser API fixture; real playback checked separately when configured"
+    },
+    {
+      "name": "landing",
+      "width": 1440,
+      "overflow": false,
+      "h1": "Tu ciudad tiene mucho más para vivir.",
+      "frameRatio": 0.7500140853005803,
+      "frameWidth": 416,
+      "fieldsetDisabled": true,
+      "country": "+591⌄",
+      "videoState": "poster",
+      "youtube": false,
+      "formCount": 1,
+      "targets": [
+        "#registro",
+        "#registro",
+        "#registro"
+      ],
+      "coral": "rgb(255, 90, 79)",
+      "bodyFont": "Montserrat, ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+      "inputFont": "\"Instrument Sans\", ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+      "brokenImages": 0,
+      "reduced": true,
+      "scroll": "auto",
+      "spinnerAnimation": "none",
+      "geometry": {
+        "headingBottom": 427.515625,
+        "mediaTop": 129,
+        "mediaBottom": 735.65625,
+        "copyTop": 427.515625,
+        "centerOffset": 0,
+        "align": "left",
+        "mediaLeft": 847.984375,
+        "headingRight": 723.71875,
+        "players": 1,
+        "titleOverflow": false,
+        "fieldHeights": [
+          50,
+          50,
+          50,
+          50
+        ],
+        "videoTop": 129
+      }
+    },
+    {
+      "name": "phone-country-search-keyboard-e164-form-error",
+      "width": 1440,
+      "passed": true
+    },
+    {
+      "name": "lazy-vsl-real-event-contract-controls-error",
+      "width": 1440,
+      "passed": true,
+      "source_geometry": {
+        "ratio": 0.5624823296579021,
+        "safe": true,
+        "frame": {
+          "width": 416,
+          "height": 554.65625,
+          "top": 129,
+          "bottom": 683.65625
+        },
+        "iframe": {
+          "width": 310.859375,
+          "height": 552.65625,
+          "top": 130,
+          "bottom": 682.65625
+        },
+        "aspect": "9:16"
+      },
+      "provider": "browser API fixture; real playback checked separately when configured"
+    },
+    {
+      "name": "short-desktop-breakpoint-motion-focus",
+      "passed": true
+    }
+  ],
+  "configured_video_id": "P42gDOTL6Ys",
+  "configured_video_url": "https://www.youtube.com/watch?v=P42gDOTL6Ys",
+  "real_playback": [],
+  "real_provider_failures": [],
+  "browser_api_fixtures": true,
+  "no_live_test_accounts": true,
+  "live_registration_closed": true,
+  "api_loading_error_retry": true,
+  "missing_video_state_verified": true,
+  "metrics_vocabulary_verified": true,
+  "runtime_errors": [],
+  "failed_assets": [],
+  "real_probe_rerun_separately": false
+}

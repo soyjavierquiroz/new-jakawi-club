@@ -1,0 +1,26 @@
+{
+  "implementation_sha": "851c3db73b86771b1f126cb21e6210880b4989df",
+  "routes": {
+    "/": 200,
+    "/principal": 200,
+    "/admin/landings": 302,
+    "/up": 200,
+    "/login": 200,
+    "/registro": 405,
+    "/r/no-existe": 302,
+    "/l/principal": 301,
+    "/l/no-existe": 404,
+    "/no-existe": 404
+  },
+  "jakawi_com_up": 200,
+  "home_and_principal_identical": true,
+  "users_unchanged": true,
+  "landing_records_unchanged": true,
+  "user_count": 1,
+  "debug": false,
+  "registration_open": false,
+  "migrations_run": 0,
+  "restarted_services": [
+    "jakawi-club-app"
+  ]
+}

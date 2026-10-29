@@ -1,5 +1,5 @@
 {
-  "validated_at": "2026-10-28T23:35:20.092828-04:00",
+  "validated_at": "2026-10-29T00:08:30.725615-04:00",
   "dns": {
     "1.1.1.1/jakawi.club": [
       "167.71.107.80"
@@ -107,7 +107,7 @@
   },
   "inertia_http": 200,
   "assets": {
-    "assets/UI-DOEeZGCa.js": {
+    "assets/UI-HIV_vxgy.js": {
       "status": 200,
       "content_type": "application/javascript; charset=utf-8"
     },
@@ -143,39 +143,39 @@
       "status": 200,
       "content_type": "font/woff2"
     },
-    "assets/app-DuKQfB9C.js": {
+    "assets/app-DiJNQoKA.js": {
       "status": 200,
       "content_type": "application/javascript; charset=utf-8"
     },
-    "assets/app-D6wOzVWA.css": {
+    "assets/app-D3-_q5ur.css": {
       "status": 200,
       "content_type": "text/css"
     },
-    "assets/Auth-D8nLbtXp.js": {
+    "assets/Auth-Dm1Cyc_N.js": {
       "status": 200,
       "content_type": "application/javascript; charset=utf-8"
     },
-    "assets/Dashboard-Dv5_-Fp4.js": {
+    "assets/Dashboard-DyvWJe43.js": {
       "status": 200,
       "content_type": "application/javascript; charset=utf-8"
     },
-    "assets/Privacy-CVaUl_IQ.js": {
+    "assets/Privacy-CkqJ4jFt.js": {
       "status": 200,
       "content_type": "application/javascript; charset=utf-8"
     },
-    "assets/Registered-nnbvJPWc.js": {
+    "assets/Registered-guFtL2I6.js": {
       "status": 200,
       "content_type": "application/javascript; charset=utf-8"
     },
-    "assets/Welcome-B1tfsrDt.js": {
+    "assets/Welcome-BZ09sEy4.js": {
       "status": 200,
       "content_type": "application/javascript; charset=utf-8"
     },
-    "assets/LandingEditor-CyECcgE2.js": {
+    "assets/LandingEditor-CrNliRb6.js": {
       "status": 200,
       "content_type": "application/javascript; charset=utf-8"
     },
-    "assets/Landings-DqDDboZl.js": {
+    "assets/Landings-BELtZ7d-.js": {
       "status": 200,
       "content_type": "application/javascript; charset=utf-8"
     }
@@ -237,8 +237,8 @@
       {
         "name": "jakawi-worker-1",
         "before": 0,
-        "after": 5,
-        "started_at": "2026-10-29T02:56:01.845704699Z"
+        "after": 6,
+        "started_at": "2026-10-29T03:56:05.994000146Z"
       }
     ],
     "app_and_db_ids_and_networks_unchanged": true,
