@@ -1,0 +1,34 @@
+
+> typecheck
+> tsc --noEmit
+
+
+> build
+> vite build --outDir public/build-next
+
+vite v8.3.5 building client environment for production...
+transforming...
+✓ 702 modules transformed.
+rendering chunks...
+computing gzip size...
+public/build-next/manifest.json                                       4.46 kB │ gzip:   0.69 kB
+public/build-next/assets/instrument-sans-400-normal-DRC__1Mx.woff2   16.86 kB
+public/build-next/assets/instrument-sans-500-normal-Dk9ku72i.woff2   17.23 kB
+public/build-next/assets/instrument-sans-600-normal-B7fBEWYG.woff2   17.40 kB
+public/build-next/assets/montserrat-600-normal-UVxSCcoG.woff2        18.68 kB
+public/build-next/assets/montserrat-500-normal-DRFEGfly.woff2        18.74 kB
+public/build-next/assets/montserrat-400-normal-BLhwKU8k.woff2        18.78 kB
+public/build-next/assets/montserrat-700-normal-BdjcYUrC.woff2        18.82 kB
+public/build-next/assets/montserrat-800-normal-axpkC1rd.woff2        19.01 kB
+public/build-next/assets/app-D3-_q5ur.css                            34.53 kB │ gzip:   7.75 kB
+public/build-next/assets/Landings-BELtZ7d-.js                         1.81 kB │ gzip:   0.79 kB
+public/build-next/assets/Registered-guFtL2I6.js                       2.09 kB │ gzip:   0.89 kB
+public/build-next/assets/Privacy-CkqJ4jFt.js                          3.47 kB │ gzip:   1.52 kB
+public/build-next/assets/Dashboard-DyvWJe43.js                        3.55 kB │ gzip:   1.30 kB
+public/build-next/assets/Auth-Dm1Cyc_N.js                             3.65 kB │ gzip:   1.39 kB
+public/build-next/assets/UI-HIV_vxgy.js                               6.38 kB │ gzip:   2.70 kB
+public/build-next/assets/LandingEditor-CrNliRb6.js                   21.53 kB │ gzip:   7.24 kB
+public/build-next/assets/Welcome-BZ09sEy4.js                        221.93 kB │ gzip:  60.06 kB
+public/build-next/assets/app-DiJNQoKA.js                            351.25 kB │ gzip: 109.63 kB
+
+✓ built in 2.33s

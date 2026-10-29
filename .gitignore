@@ -49,3 +49,6 @@ credentials.json
 /artifacts/landings/baseline.json
 /artifacts/landings/LIVE.json
 /artifacts/admin-bootstrap/LIVE.json
+
+/artifacts/editor/baseline.json
+/artifacts/editor/LIVE.json

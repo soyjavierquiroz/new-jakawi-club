@@ -1,0 +1,489 @@
+{
+    "invalid_import": {
+        "message": "validation.required",
+        "errors": {
+            "content.hero.title": [
+                "validation.required"
+            ]
+        }
+    },
+    "editor": {
+        "component": "admin\/LandingEditor",
+        "props": {
+            "errors": [],
+            "signed_in": true,
+            "can_manage_landings": true,
+            "status": null,
+            "landing": {
+                "id": 2,
+                "title": "Campaña de prueba",
+                "slug": "campana-prueba",
+                "template": "LEAD_VSL",
+                "configuration": {
+                    "presentation": {
+                        "show_faq": true,
+                        "template": "LEAD_VSL",
+                        "show_video": true
+                    },
+                    "faq": {
+                        "items": [
+                            {
+                                "answer": "JAKAWI es una comunidad en preparación que empieza en Cochabamba. Este espacio permite conocer el lanzamiento, crear tu cuenta cuando abramos los registros e invitar a otras personas.",
+                                "question": "¿Qué es JAKAWI?"
+                            },
+                            {
+                                "answer": "El registro y la membresía de esta etapa son gratuitos. No hay pagos, compras ni comisiones disponibles en esta etapa.",
+                                "question": "¿Registrarse tiene costo?"
+                            },
+                            {
+                                "answer": "Cuando los registros estén abiertos, podrás completar este formulario. Si tu cuenta es nueva, recibirás un correo para activarla y establecer tu contraseña. Después podrás ingresar a tu cuenta. Por ahora, los registros están cerrados.",
+                                "question": "¿Qué pasa después de registrarme?"
+                            },
+                            {
+                                "answer": "Al activar tu cuenta tendrás un enlace personal para compartir. Si alguien se registra con una invitación válida, se conserva su primer referente. En tu cuenta podrás ver el número de personas que invitaste, sin sus datos personales.",
+                                "question": "¿Cómo funcionan las invitaciones?"
+                            },
+                            {
+                                "answer": "El correo se utiliza para activar la cuenta y recuperar el acceso. Aquí publicaremos las novedades del lanzamiento, los próximos encuentros y el acceso a la comunidad cuando estén confirmados.",
+                                "question": "¿Qué información recibiré?"
+                            }
+                        ],
+                        "title": "Antes de dar el paso.",
+                        "eyebrow": "TODO CLARO, DESDE EL INICIO"
+                    },
+                    "seo": {
+                        "title": "Tu ciudad tiene mucho más para vivir",
+                        "description": "Conoce el comienzo de JAKAWI en Cochabamba. Una nueva forma de descubrir tu ciudad. Vive más. Gasta menos."
+                    },
+                    "hero": {
+                        "cta": "QUIERO SER PARTE",
+                        "title": "Solo borrador",
+                        "ending": "para vivir.",
+                        "eyebrow": "COCHABAMBA \/ PRELANZAMIENTO",
+                        "emphasis": "mucho más",
+                        "description": "Estamos preparando JAKAWI, una nueva forma de descubrir experiencias, lugares y oportunidades para disfrutar más de Cochabamba."
+                    },
+                    "final": {
+                        "cta": "QUIERO SER PARTE",
+                        "title": "Hay mucho por vivir. Empecemos juntos.",
+                        "eyebrow": "TU CIUDAD. TU PRÓXIMO CAPÍTULO.",
+                        "description": "Sé parte del comienzo de JAKAWI en Cochabamba."
+                    },
+                    "video": {
+                        "poster": null,
+                        "youtube_url": "https:\/\/www.youtube.com\/watch?v=P42gDOTL6Ys",
+                        "aspect_ratio": "16:9",
+                        "source_aspect_ratio": "3:4"
+                    },
+                    "benefits": {
+                        "items": [
+                            {
+                                "title": "Estar desde el comienzo",
+                                "description": "Conoce JAKAWI desde sus primeras etapas y descubre lo que estamos preparando para tu ciudad."
+                            },
+                            {
+                                "title": "Saber cuándo encontrarnos",
+                                "description": "Encuentra aquí la información de los próximos encuentros cuando sus fechas estén confirmadas."
+                            },
+                            {
+                                "title": "Una comunidad por descubrir",
+                                "description": "Participa en la comunidad cuando esté disponible. Un espacio para acompañar juntos el comienzo de JAKAWI."
+                            },
+                            {
+                                "title": "Invitar a alguien más",
+                                "description": "Una vez activada tu cuenta, tendrás un enlace personal para compartir tu invitación."
+                            }
+                        ],
+                        "title": "Las mejores historias empiezan siendo parte.",
+                        "eyebrow": "EL COMIENZO ES CONTIGO",
+                        "description": "Esto es lo que podrás hacer al sumarte, cuando abramos los registros."
+                    },
+                    "registration": {
+                        "title": "Las buenas cosas se comparten.",
+                        "eyebrow": "TU PRÓXIMO PASO",
+                        "description": "Una cuenta. Una invitación personal. Y una ciudad con mucho por descubrir juntos."
+                    }
+                },
+                "published_configuration": {
+                    "faq": {
+                        "items": [
+                            {
+                                "answer": "JAKAWI es una comunidad en preparación que empieza en Cochabamba. Este espacio permite conocer el lanzamiento, crear tu cuenta cuando abramos los registros e invitar a otras personas.",
+                                "question": "¿Qué es JAKAWI?"
+                            },
+                            {
+                                "answer": "El registro y la membresía de esta etapa son gratuitos. No hay pagos, compras ni comisiones disponibles en esta etapa.",
+                                "question": "¿Registrarse tiene costo?"
+                            },
+                            {
+                                "answer": "Cuando los registros estén abiertos, podrás completar este formulario. Si tu cuenta es nueva, recibirás un correo para activarla y establecer tu contraseña. Después podrás ingresar a tu cuenta. Por ahora, los registros están cerrados.",
+                                "question": "¿Qué pasa después de registrarme?"
+                            },
+                            {
+                                "answer": "Al activar tu cuenta tendrás un enlace personal para compartir. Si alguien se registra con una invitación válida, se conserva su primer referente. En tu cuenta podrás ver el número de personas que invitaste, sin sus datos personales.",
+                                "question": "¿Cómo funcionan las invitaciones?"
+                            },
+                            {
+                                "answer": "El correo se utiliza para activar la cuenta y recuperar el acceso. Aquí publicaremos las novedades del lanzamiento, los próximos encuentros y el acceso a la comunidad cuando estén confirmados.",
+                                "question": "¿Qué información recibiré?"
+                            }
+                        ],
+                        "title": "Antes de dar el paso.",
+                        "eyebrow": "TODO CLARO, DESDE EL INICIO"
+                    },
+                    "seo": {
+                        "title": "Tu ciudad tiene mucho más para vivir",
+                        "description": "Conoce el comienzo de JAKAWI en Cochabamba. Una nueva forma de descubrir tu ciudad. Vive más. Gasta menos."
+                    },
+                    "hero": {
+                        "cta": "QUIERO SER PARTE",
+                        "title": "Solo borrador",
+                        "ending": "para vivir.",
+                        "eyebrow": "COCHABAMBA \/ PRELANZAMIENTO",
+                        "emphasis": "mucho más",
+                        "description": "Estamos preparando JAKAWI, una nueva forma de descubrir experiencias, lugares y oportunidades para disfrutar más de Cochabamba."
+                    },
+                    "final": {
+                        "cta": "QUIERO SER PARTE",
+                        "title": "Hay mucho por vivir. Empecemos juntos.",
+                        "eyebrow": "TU CIUDAD. TU PRÓXIMO CAPÍTULO.",
+                        "description": "Sé parte del comienzo de JAKAWI en Cochabamba."
+                    },
+                    "video": {
+                        "poster": null,
+                        "youtube_url": "https:\/\/www.youtube.com\/watch?v=P42gDOTL6Ys",
+                        "aspect_ratio": "16:9",
+                        "source_aspect_ratio": "3:4"
+                    },
+                    "benefits": {
+                        "items": [
+                            {
+                                "title": "Estar desde el comienzo",
+                                "description": "Conoce JAKAWI desde sus primeras etapas y descubre lo que estamos preparando para tu ciudad."
+                            },
+                            {
+                                "title": "Saber cuándo encontrarnos",
+                                "description": "Encuentra aquí la información de los próximos encuentros cuando sus fechas estén confirmadas."
+                            },
+                            {
+                                "title": "Una comunidad por descubrir",
+                                "description": "Participa en la comunidad cuando esté disponible. Un espacio para acompañar juntos el comienzo de JAKAWI."
+                            },
+                            {
+                                "title": "Invitar a alguien más",
+                                "description": "Una vez activada tu cuenta, tendrás un enlace personal para compartir tu invitación."
+                            }
+                        ],
+                        "title": "Las mejores historias empiezan siendo parte.",
+                        "eyebrow": "EL COMIENZO ES CONTIGO",
+                        "description": "Esto es lo que podrás hacer al sumarte, cuando abramos los registros."
+                    },
+                    "presentation": {
+                        "show_faq": true,
+                        "template": "WAITLIST",
+                        "show_video": true
+                    },
+                    "registration": {
+                        "title": "Las buenas cosas se comparten.",
+                        "eyebrow": "TU PRÓXIMO PASO",
+                        "description": "Una cuenta. Una invitación personal. Y una ciudad con mucho por descubrir juntos."
+                    }
+                },
+                "campaign": "otra_campana",
+                "published_campaign": "otra_campana",
+                "status": "published",
+                "revision": 13,
+                "published_at": "2026-10-29T03:59:13.000000Z",
+                "created_at": "2026-10-29T03:59:11.000000Z",
+                "updated_at": "2026-10-29T03:59:14.000000Z"
+            },
+            "defaults": null,
+            "home_slug": "principal",
+            "registration_open": false,
+            "metrics": [
+                {
+                    "event": "landing_visit",
+                    "campaign": "cocha_2026",
+                    "total": "1"
+                }
+            ]
+        },
+        "url": "\/admin\/landings\/2\/editar",
+        "version": "caff8a19acdec3e6675c6dfbbd115052",
+        "sharedProps": [
+            "errors",
+            "signed_in",
+            "can_manage_landings",
+            "status"
+        ]
+    },
+    "preview": {
+        "component": "Welcome",
+        "props": {
+            "errors": [],
+            "signed_in": true,
+            "can_manage_landings": true,
+            "status": null,
+            "launch": {
+                "registration_open": false,
+                "video_url": "https:\/\/www.youtube.com\/watch?v=P42gDOTL6Ys",
+                "video_poster": null,
+                "event": null,
+                "whatsapp_url": null
+            },
+            "landing": {
+                "id": 2,
+                "slug": "campana-prueba",
+                "content": {
+                    "presentation": {
+                        "show_faq": true,
+                        "template": "LEAD_VSL",
+                        "show_video": true
+                    },
+                    "faq": {
+                        "items": [
+                            {
+                                "answer": "JAKAWI es una comunidad en preparación que empieza en Cochabamba. Este espacio permite conocer el lanzamiento, crear tu cuenta cuando abramos los registros e invitar a otras personas.",
+                                "question": "¿Qué es JAKAWI?"
+                            },
+                            {
+                                "answer": "El registro y la membresía de esta etapa son gratuitos. No hay pagos, compras ni comisiones disponibles en esta etapa.",
+                                "question": "¿Registrarse tiene costo?"
+                            },
+                            {
+                                "answer": "Cuando los registros estén abiertos, podrás completar este formulario. Si tu cuenta es nueva, recibirás un correo para activarla y establecer tu contraseña. Después podrás ingresar a tu cuenta. Por ahora, los registros están cerrados.",
+                                "question": "¿Qué pasa después de registrarme?"
+                            },
+                            {
+                                "answer": "Al activar tu cuenta tendrás un enlace personal para compartir. Si alguien se registra con una invitación válida, se conserva su primer referente. En tu cuenta podrás ver el número de personas que invitaste, sin sus datos personales.",
+                                "question": "¿Cómo funcionan las invitaciones?"
+                            },
+                            {
+                                "answer": "El correo se utiliza para activar la cuenta y recuperar el acceso. Aquí publicaremos las novedades del lanzamiento, los próximos encuentros y el acceso a la comunidad cuando estén confirmados.",
+                                "question": "¿Qué información recibiré?"
+                            }
+                        ],
+                        "title": "Antes de dar el paso.",
+                        "eyebrow": "TODO CLARO, DESDE EL INICIO"
+                    },
+                    "seo": {
+                        "title": "Tu ciudad tiene mucho más para vivir",
+                        "description": "Conoce el comienzo de JAKAWI en Cochabamba. Una nueva forma de descubrir tu ciudad. Vive más. Gasta menos."
+                    },
+                    "hero": {
+                        "cta": "QUIERO SER PARTE",
+                        "title": "Solo borrador",
+                        "ending": "para vivir.",
+                        "eyebrow": "COCHABAMBA \/ PRELANZAMIENTO",
+                        "emphasis": "mucho más",
+                        "description": "Estamos preparando JAKAWI, una nueva forma de descubrir experiencias, lugares y oportunidades para disfrutar más de Cochabamba."
+                    },
+                    "final": {
+                        "cta": "QUIERO SER PARTE",
+                        "title": "Hay mucho por vivir. Empecemos juntos.",
+                        "eyebrow": "TU CIUDAD. TU PRÓXIMO CAPÍTULO.",
+                        "description": "Sé parte del comienzo de JAKAWI en Cochabamba."
+                    },
+                    "video": {
+                        "poster": null,
+                        "youtube_url": "https:\/\/www.youtube.com\/watch?v=P42gDOTL6Ys",
+                        "aspect_ratio": "16:9",
+                        "source_aspect_ratio": "3:4"
+                    },
+                    "benefits": {
+                        "items": [
+                            {
+                                "title": "Estar desde el comienzo",
+                                "description": "Conoce JAKAWI desde sus primeras etapas y descubre lo que estamos preparando para tu ciudad."
+                            },
+                            {
+                                "title": "Saber cuándo encontrarnos",
+                                "description": "Encuentra aquí la información de los próximos encuentros cuando sus fechas estén confirmadas."
+                            },
+                            {
+                                "title": "Una comunidad por descubrir",
+                                "description": "Participa en la comunidad cuando esté disponible. Un espacio para acompañar juntos el comienzo de JAKAWI."
+                            },
+                            {
+                                "title": "Invitar a alguien más",
+                                "description": "Una vez activada tu cuenta, tendrás un enlace personal para compartir tu invitación."
+                            }
+                        ],
+                        "title": "Las mejores historias empiezan siendo parte.",
+                        "eyebrow": "EL COMIENZO ES CONTIGO",
+                        "description": "Esto es lo que podrás hacer al sumarte, cuando abramos los registros."
+                    },
+                    "registration": {
+                        "title": "Las buenas cosas se comparten.",
+                        "eyebrow": "TU PRÓXIMO PASO",
+                        "description": "Una cuenta. Una invitación personal. Y una ciudad con mucho por descubrir juntos."
+                    }
+                },
+                "preview": true,
+                "revision": 13
+            },
+            "referral_code": null,
+            "referral_preference": null
+        },
+        "url": "\/admin\/landings\/2\/preview",
+        "version": "caff8a19acdec3e6675c6dfbbd115052",
+        "sharedProps": [
+            "errors",
+            "signed_in",
+            "can_manage_landings",
+            "status"
+        ]
+    },
+    "create": {
+        "component": "admin\/LandingEditor",
+        "props": {
+            "errors": [],
+            "signed_in": true,
+            "can_manage_landings": true,
+            "status": null,
+            "landing": null,
+            "defaults": {
+                "presentation": {
+                    "template": "LEAD_VSL",
+                    "show_video": true,
+                    "show_faq": true
+                },
+                "seo": {
+                    "title": "Tu ciudad tiene mucho más para vivir",
+                    "description": "Conoce el comienzo de JAKAWI en Cochabamba. Una nueva forma de descubrir tu ciudad. Vive más. Gasta menos."
+                },
+                "hero": {
+                    "eyebrow": "COCHABAMBA \/ PRELANZAMIENTO",
+                    "title": "Tu ciudad tiene",
+                    "emphasis": "mucho más",
+                    "ending": "para vivir.",
+                    "description": "Estamos preparando JAKAWI, una nueva forma de descubrir experiencias, lugares y oportunidades para disfrutar más de Cochabamba.",
+                    "cta": "QUIERO SER PARTE"
+                },
+                "benefits": {
+                    "eyebrow": "EL COMIENZO ES CONTIGO",
+                    "title": "Las mejores historias empiezan siendo parte.",
+                    "description": "Esto es lo que podrás hacer al sumarte, cuando abramos los registros.",
+                    "items": [
+                        {
+                            "title": "Estar desde el comienzo",
+                            "description": "Conoce JAKAWI desde sus primeras etapas y descubre lo que estamos preparando para tu ciudad."
+                        },
+                        {
+                            "title": "Saber cuándo encontrarnos",
+                            "description": "Encuentra aquí la información de los próximos encuentros cuando sus fechas estén confirmadas."
+                        },
+                        {
+                            "title": "Una comunidad por descubrir",
+                            "description": "Participa en la comunidad cuando esté disponible. Un espacio para acompañar juntos el comienzo de JAKAWI."
+                        },
+                        {
+                            "title": "Invitar a alguien más",
+                            "description": "Una vez activada tu cuenta, tendrás un enlace personal para compartir tu invitación."
+                        }
+                    ]
+                },
+                "registration": {
+                    "eyebrow": "TU PRÓXIMO PASO",
+                    "title": "Las buenas cosas se comparten.",
+                    "description": "Una cuenta. Una invitación personal. Y una ciudad con mucho por descubrir juntos."
+                },
+                "faq": {
+                    "eyebrow": "TODO CLARO, DESDE EL INICIO",
+                    "title": "Antes de dar el paso.",
+                    "items": [
+                        {
+                            "question": "¿Qué es JAKAWI?",
+                            "answer": "JAKAWI es una comunidad en preparación que empieza en Cochabamba. Este espacio permite conocer el lanzamiento, crear tu cuenta cuando abramos los registros e invitar a otras personas."
+                        },
+                        {
+                            "question": "¿Registrarse tiene costo?",
+                            "answer": "El registro y la membresía de esta etapa son gratuitos. No hay pagos, compras ni comisiones disponibles en esta etapa."
+                        },
+                        {
+                            "question": "¿Qué pasa después de registrarme?",
+                            "answer": "Cuando los registros estén abiertos, podrás completar este formulario. Si tu cuenta es nueva, recibirás un correo para activarla y establecer tu contraseña. Después podrás ingresar a tu cuenta. Por ahora, los registros están cerrados."
+                        },
+                        {
+                            "question": "¿Cómo funcionan las invitaciones?",
+                            "answer": "Al activar tu cuenta tendrás un enlace personal para compartir. Si alguien se registra con una invitación válida, se conserva su primer referente. En tu cuenta podrás ver el número de personas que invitaste, sin sus datos personales."
+                        },
+                        {
+                            "question": "¿Qué información recibiré?",
+                            "answer": "El correo se utiliza para activar la cuenta y recuperar el acceso. Aquí publicaremos las novedades del lanzamiento, los próximos encuentros y el acceso a la comunidad cuando estén confirmados."
+                        }
+                    ]
+                },
+                "final": {
+                    "eyebrow": "TU CIUDAD. TU PRÓXIMO CAPÍTULO.",
+                    "title": "Hay mucho por vivir. Empecemos juntos.",
+                    "description": "Sé parte del comienzo de JAKAWI en Cochabamba.",
+                    "cta": "QUIERO SER PARTE"
+                },
+                "video": {
+                    "youtube_url": null,
+                    "poster": null,
+                    "aspect_ratio": "3:4",
+                    "source_aspect_ratio": "9:16"
+                }
+            },
+            "home_slug": "principal",
+            "registration_open": false
+        },
+        "url": "\/admin\/landings\/crear",
+        "version": "caff8a19acdec3e6675c6dfbbd115052",
+        "sharedProps": [
+            "errors",
+            "signed_in",
+            "can_manage_landings",
+            "status"
+        ]
+    },
+    "index": {
+        "component": "admin\/Landings",
+        "props": {
+            "errors": [],
+            "signed_in": true,
+            "can_manage_landings": true,
+            "status": null,
+            "landings": [
+                {
+                    "id": 2,
+                    "title": "Campaña de prueba",
+                    "slug": "campana-prueba",
+                    "status": "published",
+                    "campaign": "otra_campana",
+                    "revision": 13,
+                    "published_at": "2026-10-29T03:59:13.000000Z"
+                },
+                {
+                    "id": 3,
+                    "title": "Campaña de prueba (copia)",
+                    "slug": "campana-prueba-copia-cl8uwpr3fh",
+                    "status": "draft",
+                    "campaign": "otra_campana",
+                    "revision": 1,
+                    "published_at": null
+                },
+                {
+                    "id": 1,
+                    "title": "Landing principal JAKAWI",
+                    "slug": "principal",
+                    "status": "published",
+                    "campaign": null,
+                    "revision": 3,
+                    "published_at": "2026-10-29T03:59:13.000000Z"
+                }
+            ],
+            "home_slug": "principal"
+        },
+        "url": "\/admin\/landings",
+        "version": "caff8a19acdec3e6675c6dfbbd115052",
+        "sharedProps": [
+            "errors",
+            "signed_in",
+            "can_manage_landings",
+            "status"
+        ]
+    }
+}

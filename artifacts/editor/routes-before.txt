@@ -1,0 +1,35 @@
+
+  GET|HEAD  / ....................................... home › WelcomeController
+  POST      activar ............... activation.store › AuthController@activate
+  GET|HEAD  activar/{token} ...... activation.show › AuthController@activation
+  GET|HEAD  admin/landings ..... landings.index › LandingAdminController@index
+  POST      admin/landings ..... landings.store › LandingAdminController@store
+  GET|HEAD  admin/landings/crear landings.create › LandingAdminController@cre…
+  PUT       admin/landings/{landing} landings.update › LandingAdminController…
+  POST      admin/landings/{landing}/archivar landings.archive › LandingAdmin…
+  POST      admin/landings/{landing}/duplicar landings.duplicate › LandingAdm…
+  GET|HEAD  admin/landings/{landing}/editar landings.edit › LandingAdminContr…
+  GET|HEAD  admin/landings/{landing}/export landings.export › LandingAdminCon…
+  POST      admin/landings/{landing}/import landings.import › LandingAdminCon…
+  GET|HEAD  admin/landings/{landing}/preview landings.preview › WelcomeContro…
+  POST      admin/landings/{landing}/publicar landings.publish › LandingAdmin…
+  GET|HEAD  bienvenida .............. welcome › RegistrationController@welcome
+  GET|HEAD  dashboard ................... dashboard › DashboardController@show
+  GET|HEAD  l/{slug} ................... landing.show › WelcomeController@show
+  GET|HEAD  login ............................... login › AuthController@login
+  POST      login .. generated::BiuqOfY5mOaDWetu › AuthController@authenticate
+  POST      logout ............................ logout › AuthController@logout
+  POST      medicion .............. marketing.event › MarketingEventController
+  PATCH     perfil ............... profile.update › DashboardController@update
+  POST      preferencias ........ preferences › ReferralController@preferences
+  GET|HEAD  r/{code} ...................... referral › ReferralController@show
+  GET|HEAD  recuperar-password ...... password.request › AuthController@forgot
+  POST      recuperar-password ......... password.email › AuthController@email
+  POST      registro ................. register › RegistrationController@store
+  POST      restablecer-password password.update › AuthController@updatePassw…
+  GET|HEAD  restablecer-password/{token} password.reset › AuthController@reset
+  GET|HEAD  storage/{path} ..................................... storage.local
+  PUT       storage/{path} .............................. storage.local.upload
+  GET|HEAD  verificar-email ...... verification.notice › AuthController@forgot
+
+                                                           Showing [32] routes

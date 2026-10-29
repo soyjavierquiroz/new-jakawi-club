@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Services\ReferralAttribution;
 use App\Models\MarketingLanding;
 use App\Support\LaunchSettings;
+use App\Support\LandingContent;
+use App\Support\LandingSlug;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -20,9 +23,19 @@ class WelcomeController extends Controller
 
     public function show(Request $request, ReferralAttribution $referrals, string $slug): Response
     {
+        abort_unless(LandingSlug::allowed($slug), 404);
         $landing = MarketingLanding::where('slug', $slug)->firstOrFail();
         abort_unless($landing->isPublic(), 404);
         return $this->render($request, $referrals, $landing);
+    }
+
+    public function legacy(Request $request, string $slug): RedirectResponse
+    {
+        abort_unless(LandingSlug::allowed($slug), 404);
+        $landing = MarketingLanding::where('slug', $slug)->firstOrFail();
+        abort_unless($landing->isPublic(), 404);
+        $query = $request->getQueryString();
+        return redirect('/'.$slug.($query ? '?'.$query : ''), 301);
     }
 
     public function preview(Request $request, ReferralAttribution $referrals, MarketingLanding $landing): Response
@@ -32,7 +45,7 @@ class WelcomeController extends Controller
 
     private function render(Request $request, ReferralAttribution $referrals, MarketingLanding $landing, bool $preview = false): Response
     {
-        $content = $preview ? $landing->configuration : $landing->published_configuration;
+        $content = LandingContent::withPresentation($preview ? $landing->configuration : $landing->published_configuration);
         $launch = LaunchSettings::publicData();
         $launch['video_url'] = $content['video']['youtube_url'];
         $launch['video_poster'] = $content['video']['poster'];

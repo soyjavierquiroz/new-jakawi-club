@@ -12,11 +12,12 @@ use App\Http\Controllers\LandingAdminController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', WelcomeController::class)->name('home');
-Route::get('/l/{slug}', [WelcomeController::class, 'show'])->name('landing.show');
+Route::get('/l/{slug}', [WelcomeController::class, 'legacy'])->name('landing.legacy');
 Route::prefix('admin/landings')->middleware(['auth', 'verified', MarketingAdmin::class])->group(function (): void {
     Route::get('/', [LandingAdminController::class, 'index'])->name('landings.index');
     Route::get('/crear', [LandingAdminController::class, 'create'])->name('landings.create');
     Route::post('/', [LandingAdminController::class, 'store'])->name('landings.store');
+    Route::post('/import', [LandingAdminController::class, 'import'])->name('landings.import-local');
     Route::get('/{landing}/editar', [LandingAdminController::class, 'edit'])->name('landings.edit');
     Route::put('/{landing}', [LandingAdminController::class, 'update'])->name('landings.update');
     Route::get('/{landing}/preview', [WelcomeController::class, 'preview'])->name('landings.preview');
@@ -50,3 +51,7 @@ Route::middleware('auth')->group(function (): void {
     Route::get('/dashboard', [DashboardController::class, 'show'])->middleware('verified')->name('dashboard');
     Route::patch('/perfil', [DashboardController::class, 'update'])->middleware('verified')->name('profile.update');
 });
+
+// Last, single-segment GET only. Reserved POST-only paths retain their 405 response.
+Route::get('/{slug}', [WelcomeController::class, 'show'])
+    ->where('slug', \App\Support\LandingSlug::pattern())->name('landing.show');

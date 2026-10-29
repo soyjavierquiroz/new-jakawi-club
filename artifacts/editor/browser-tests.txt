@@ -1,0 +1,4 @@
+Checking template LEAD_VSL
+Checking template WEBINAR
+Checking template WAITLIST
+13 editor/preview groups passed; 390, 430, 768, 1440 px; no LIVE writes.

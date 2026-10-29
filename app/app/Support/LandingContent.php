@@ -9,11 +9,14 @@ use Illuminate\Validation\ValidationException;
 class LandingContent
 {
     public const SCHEMA = 'jakawi-club-landing-v1';
+    public const TEMPLATES = ['LEAD_VSL', 'WEBINAR', 'WAITLIST'];
+    public const EDITORIAL = ['seo', 'hero', 'benefits', 'registration', 'faq', 'final'];
 
     /** The local LEAD_VSL template; editorial data never includes operational settings. */
     public static function defaults(): array
     {
         return [
+            'presentation' => ['template' => 'LEAD_VSL', 'show_video' => true, 'show_faq' => true],
             'seo' => ['title' => 'Tu ciudad tiene mucho más para vivir', 'description' => 'Conoce el comienzo de JAKAWI en Cochabamba. Una nueva forma de descubrir tu ciudad. Vive más. Gasta menos.'],
             'hero' => ['eyebrow' => 'COCHABAMBA / PRELANZAMIENTO', 'title' => 'Tu ciudad tiene', 'emphasis' => 'mucho más', 'ending' => 'para vivir.', 'description' => 'Estamos preparando JAKAWI, una nueva forma de descubrir experiencias, lugares y oportunidades para disfrutar más de Cochabamba.', 'cta' => 'QUIERO SER PARTE'],
             'benefits' => ['eyebrow' => 'EL COMIENZO ES CONTIGO', 'title' => 'Las mejores historias empiezan siendo parte.', 'description' => 'Esto es lo que podrás hacer al sumarte, cuando abramos los registros.', 'items' => [
@@ -37,7 +40,13 @@ class LandingContent
 
     public static function envelope(array $content): array
     {
-        return ['schema' => self::SCHEMA, 'template' => 'LEAD_VSL', 'content' => $content];
+        return ['schema' => self::SCHEMA, 'template' => $content['presentation']['template'] ?? 'LEAD_VSL', 'content' => array_intersect_key($content, array_flip(self::EDITORIAL))];
+    }
+
+    /** Legacy snapshots gain presentation defaults in memory, without database writes. */
+    public static function withPresentation(array $content): array
+    {
+        return ['presentation' => ['template' => 'LEAD_VSL', 'show_video' => true, 'show_faq' => true], ...$content];
     }
 
     public static function import(string $json, array $base): array
@@ -50,12 +59,16 @@ class LandingContent
         Validator::make(['document' => $document], [
             'document' => ['required', 'array:schema,template,content'],
             'document.schema' => ['required', Rule::in([self::SCHEMA])],
-            'document.template' => ['sometimes', Rule::in(['LEAD_VSL'])],
-            'document.content' => ['required', 'array:seo,hero,benefits,registration,faq,final,video'],
+            'document.template' => ['sometimes', 'required', Rule::in(self::TEMPLATES)],
+            'document.content' => ['required', 'array:'.implode(',', self::EDITORIAL)],
         ])->validate();
         // Check supplied keys/types before merging; unknown keys are never silently discarded.
         self::validate($document['content'], true);
-        return self::validate(self::merge($base, $document['content']));
+        $merged = self::merge(self::withPresentation($base), $document['content']);
+        if (isset($document['template'])) {
+            $merged['presentation']['template'] = $document['template'];
+        }
+        return self::validate($merged);
     }
 
     private static function merge(array $base, array $patch): array
@@ -71,7 +84,15 @@ class LandingContent
     {
         $presence = $partial ? 'sometimes' : 'required';
         $text = [$presence, 'required', 'string', 'max:1200', 'not_regex:/[<>]/u'];
-        $rules = ['content' => ['required', 'array:seo,hero,benefits,registration,faq,final,video']];
+        if (! $partial) {
+            $content = self::withPresentation($content);
+        }
+        $rules = ['content' => ['required', 'array:seo,hero,benefits,registration,faq,final,video,presentation']];
+        $rules['content.presentation'] = [$presence, 'array:template,show_video,show_faq'];
+        $rules['content.presentation.template'] = [$presence, Rule::in(self::TEMPLATES)];
+        foreach (['show_video', 'show_faq'] as $key) {
+            $rules['content.presentation.'.$key] = [$presence, 'boolean:strict'];
+        }
         $sections = [
             'seo' => ['title', 'description'], 'hero' => ['eyebrow', 'title', 'emphasis', 'ending', 'description', 'cta'],
             'benefits' => ['eyebrow', 'title', 'description', 'items'], 'registration' => ['eyebrow', 'title', 'description'],

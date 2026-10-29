@@ -152,3 +152,28 @@
     .hero-copy { padding-top: 1.5rem; }
     .conversion-title { font-size: clamp(3.2rem, 4.5vw, 4.25rem); }
 }
+
+/* Editor uses official tokens; the iframe keeps its real viewport while fitting the panel. */
+.shell.landing-editor-page { max-width: 100rem; }
+.landing-editor-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1.5rem; align-items: start; }
+.landing-editor-content, .landing-editor-preview { min-width: 0; }
+.editor-save-bar { position: sticky; top: 0; z-index: 5; padding: 1rem; border: 1px solid var(--border); border-radius: var(--radius-control); background: var(--background); box-shadow: var(--shadow); }
+.landing-preview-stage { position: relative; overflow: hidden; }
+.landing-preview-frame { position: absolute; inset: 0 auto auto 0; margin: 0; transform-origin: top left; }
+.editor-mobile-tabs { display: flex; gap: .75rem; }
+.editor-mobile-tabs [aria-pressed="true"], [aria-label="Ancho de la vista previa"] [aria-pressed="true"] { background: var(--brand-subtle); border-color: var(--ink); }
+.editor-tool-dialog { width: min(52rem, calc(100vw - 2rem)); max-height: calc(100dvh - 2rem); margin: auto; padding: 1.5rem; overflow: auto; border: 1px solid var(--border); border-radius: var(--radius-card); background: var(--surface); color: var(--foreground); box-shadow: var(--shadow); }
+.editor-tool-dialog::backdrop { background: color-mix(in srgb, var(--ink) 50%, transparent); }
+.compact-hero { grid-template-columns: minmax(0, 1fr); grid-template-areas: 'heading' 'copy' 'media'; grid-template-rows: auto; text-align: center; gap: 1.5rem; }
+.compact-hero .hero-heading, .compact-hero .hero-copy { max-width: 46rem; margin-inline: auto; padding-top: 0; }
+.compact-hero .hero-eyebrow { justify-content: center; }
+.compact-hero .hero-media { margin-inline: auto; }
+.hero-without-media { grid-template-areas: 'heading' 'copy'; padding-bottom: 2.5rem; }
+@media (max-width: 768px) {
+    [data-mobile-view="editor"] > .landing-editor-preview, [data-mobile-view="preview"] > .landing-editor-content { display: none; }
+}
+@media (min-width: 769px) {
+    .landing-editor-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+    .landing-editor-preview { position: sticky; top: 1rem; }
+    .editor-mobile-tabs { display: none; }
+}

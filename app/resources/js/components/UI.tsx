@@ -39,6 +39,6 @@ export function EventCard({ launch }: { launch: Launch }) {
 export function Community({ launch }: { launch: Launch }) {
     return <div><p className="eyebrow">SIGAMOS EN CONTACTO</p><h3 className="mt-4 text-2xl font-extrabold tracking-tight">La conversación continúa.</h3><p className="mt-4 leading-relaxed text-text-secondary">Un espacio para acompañar el lanzamiento de JAKAWI y conocer las novedades.</p>{launch.whatsapp_url ? <a href={launch.whatsapp_url} target="_blank" rel="noopener noreferrer" className="btn community-whatsapp-cta mt-6"><CommunityWhatsAppIcon /> Unirme a WhatsApp <Arrow /></a> : <p className="mt-6 inline-flex rounded-chip border border-border px-4 py-2 text-xs font-semibold">Comunidad de WhatsApp · Próximamente</p>}</div>;
 }
-export function PageFrame({ children, narrow = false }: { children: ReactNode; narrow?: boolean }) {
-    return <><Header /><main className={`shell min-h-[65vh] py-12 sm:py-20 ${narrow ? 'max-w-2xl!' : ''}`}><Flash />{children}</main><Footer /></>;
+export function PageFrame({ children, narrow = false, wide = false }: { children: ReactNode; narrow?: boolean; wide?: boolean }) {
+    return <><Header /><main className={`shell min-h-[65vh] py-12 sm:py-20 ${narrow ? 'max-w-2xl!' : ''} ${wide ? 'landing-editor-page' : ''}`}><Flash />{children}</main><Footer /></>;
 }

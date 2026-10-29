@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\MarketingLanding;
 use App\Support\LandingContent;
+use App\Support\LandingSlug;
+use App\Support\LaunchSettings;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -22,13 +24,13 @@ class LandingAdminController extends Controller
 
     public function create(): Response
     {
-        return Inertia::render('admin/LandingEditor', ['landing' => null, 'defaults' => LandingContent::defaults(), 'home_slug' => config('jakawi.home_landing_slug')]);
+        return Inertia::render('admin/LandingEditor', ['landing' => null, 'defaults' => LandingContent::defaults(), 'home_slug' => config('jakawi.home_landing_slug'), 'registration_open' => LaunchSettings::registrationOpen()]);
     }
 
     public function edit(MarketingLanding $landing): Response
     {
         return Inertia::render('admin/LandingEditor', [
-            'landing' => $landing, 'defaults' => null, 'home_slug' => config('jakawi.home_landing_slug'),
+            'landing' => [...$landing->toArray(), 'configuration' => LandingContent::withPresentation($landing->configuration)], 'defaults' => null, 'home_slug' => config('jakawi.home_landing_slug'), 'registration_open' => LaunchSettings::registrationOpen(),
             'metrics' => DB::table('marketing_landing_event_totals')->where('landing_id', $landing->id)
                 ->select('event', 'campaign')->selectRaw('SUM(total) AS total')->groupBy('event', 'campaign')->get(),
         ]);
@@ -37,7 +39,7 @@ class LandingAdminController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $data = $this->editorData($request);
-        $landing = MarketingLanding::create([...$data, 'template' => 'LEAD_VSL', 'status' => 'draft']);
+        $landing = MarketingLanding::create([...$data, 'status' => 'draft']);
         return redirect()->route('landings.edit', $landing)->with('status', 'Borrador creado. Puedes previsualizarlo antes de publicar.');
     }
 
@@ -70,16 +72,11 @@ class LandingAdminController extends Controller
         return redirect()->route('landings.edit', $copy)->with('status', 'Copia creada como borrador independiente.');
     }
 
-    public function import(Request $request, MarketingLanding $landing): RedirectResponse
+    public function import(Request $request, ?MarketingLanding $landing = null): JsonResponse
     {
-        $data = $request->validate(['editorial_json' => ['required', 'string', 'max:65536']]);
-        DB::transaction(function () use ($request, $landing, $data): void {
-            $locked = $this->lock($request, $landing);
-            $locked->configuration = LandingContent::import($data['editorial_json'], $locked->configuration);
-            $locked->revision++;
-            $locked->save();
-        });
-        return back()->with('status', 'JSON importado al borrador. Los campos omitidos se conservaron. No se publicó.');
+        $data = $request->validate(['editorial_json' => ['required', 'string', 'max:65536'], 'configuration' => ['sometimes', 'required', 'array']]);
+        $base = LandingContent::validate($data['configuration'] ?? $landing?->configuration ?? LandingContent::defaults());
+        return response()->json(['configuration' => LandingContent::import($data['editorial_json'], $base)]);
     }
 
     public function export(MarketingLanding $landing): JsonResponse
@@ -135,10 +132,14 @@ class LandingAdminController extends Controller
             'campaign' => ['nullable', 'string', 'max:80', 'regex:/^[a-zA-Z0-9_-]+$/D'],
             'configuration' => ['required', 'array'],
         ]);
-        if ($landing?->published_at !== null && $data['slug'] !== $landing->slug) {
+        if (! LandingSlug::allowed($data['slug'])) {
+            throw ValidationException::withMessages(['slug' => 'Este slug está reservado para una ruta del sitio.']);
+        }
+        if (($landing?->published_at !== null || $landing?->isHome()) && $data['slug'] !== $landing->slug) {
             throw ValidationException::withMessages(['slug' => 'El slug es permanente después de publicar para conservar enlaces y analítica.']);
         }
         $data['configuration'] = LandingContent::validate($data['configuration']);
+        $data['template'] = $data['configuration']['presentation']['template'];
         return $data;
     }
 }

@@ -94,9 +94,14 @@ try {
     check($home->isPublic() && $home->isHome(), 'portada inicial publicada desde configuración local');
     $page = payload(http('GET', '/', [], true));
     check($page['props']['landing']['id'] === $home->id && ! $page['props']['launch']['registration_open'], 'portada real configurada y registro cerrado');
-    check(payload(http('GET', '/l/principal', [], true))['props']['landing']['content'] === $page['props']['landing']['content'], 'ruta pública usa el mismo renderer y snapshot');
+    check(payload(http('GET', '/principal', [], true))['props']['landing']['content'] === $page['props']['landing']['content'], 'ruta pública usa el mismo renderer y snapshot');
 
+    check(http('GET', '/l/principal?utm_source=historico')->getStatusCode() === 301 && str_ends_with(http('GET', '/l/principal?utm_source=historico')->headers->get('Location'), '/principal?utm_source=historico'), 'alias histórico 301 conserva query');
+    check(http('GET', '/l/no-existe')->getStatusCode() === 404, 'alias inexistente no redirige');
+    check(http('GET', '/login', [], true)->getStatusCode() === 200 && http('GET', '/registro')->getStatusCode() === 405 && http('GET', '/up')->getStatusCode() === 200, 'login registro y up conservan comportamiento');
+    check(http('GET', '/r/no-existe')->isRedirect(), 'referido inválido conserva redirección existente');
     $protected = [
+        ['POST', '/admin/landings/import'],
         ['GET', '/admin/landings'], ['GET', '/admin/landings/crear'], ['GET', '/admin/landings/'.$home->id.'/editar'],
         ['GET', '/admin/landings/'.$home->id.'/preview'], ['GET', '/admin/landings/'.$home->id.'/export'],
         ['POST', '/admin/landings'], ['PUT', '/admin/landings/'.$home->id],
@@ -122,7 +127,7 @@ try {
     $landing = App\Models\MarketingLanding::where('slug', 'campana-prueba')->firstOrFail();
     $base = '/admin/landings/'.$landing->id;
     check($landing->status === 'draft' && $landing->published_configuration === null, 'crear no publica e ignora estado enviado');
-    check(http('GET', '/l/campana-prueba')->getStatusCode() === 404, 'borrador invisible públicamente');
+    check(http('GET', '/campana-prueba')->getStatusCode() === 404, 'borrador invisible públicamente');
     check(http('POST', '/admin/landings', $data)->getStatusCode() === 422, 'slugs únicos');
     check(http('POST', '/admin/landings', [...$data, 'slug' => '../mal'])->getStatusCode() === 422, 'slug inválido rechazado');
     $preview = payload(http('GET', $base.'/preview', [], true));
@@ -132,10 +137,16 @@ try {
     check($export == App\Support\LandingContent::envelope($content), 'exportación editorial completa v1');
     check(! isset($export['status'], $export['slug'], $export['campaign']), 'exportación excluye operaciones y campaña');
     $partial = ['schema' => App\Support\LandingContent::SCHEMA, 'content' => ['hero' => ['title' => 'Nuevo titular']]];
-    check(http('POST', $base.'/import', ['revision' => 1, 'editorial_json' => json_encode($partial)])->isRedirect(), 'importación parcial válida');
+    $imported = http('POST', $base.'/import', ['editorial_json' => json_encode($partial), 'configuration' => $content]);
+    check($imported->getStatusCode() === 200, 'importación parcial válida devuelve formulario local');
+    check($landing->fresh()->revision === 1 && $landing->fresh()->configuration == $content, 'importar no persiste ni publica');
+    $data['configuration'] = payload($imported)['configuration'];
+    check(http('PUT', $base, [...$data, 'revision' => 1])->isRedirect(), 'guardado independiente tras importar');
     $landing->refresh();
     check($landing->configuration['hero']['title'] === 'Nuevo titular' && $landing->configuration['hero']['description'] === $content['hero']['description'] && $landing->configuration['benefits'] == $content['benefits'], 'importación parcial conserva todos los campos omitidos');
-    check($landing->revision === 2 && $landing->status === 'draft', 'importación independiente sin publicar');
+    check($landing->revision === 2 && $landing->status === 'draft', 'guardar importación no publica');
+    $full = http('POST', '/admin/landings/import', ['editorial_json' => json_encode(App\Support\LandingContent::envelope($landing->configuration)), 'configuration' => $landing->configuration]);
+    check($full->getStatusCode() === 200 && payload($full)['configuration'] == $landing->configuration, 'JSON completo conserva medios y datos existentes');
     foreach ([
         '{', '{"schema":"otra","content":{"hero":{"title":"x"}}}',
         json_encode([...$partial, 'status' => 'published']),
@@ -144,16 +155,24 @@ try {
         json_encode([...$partial, 'content' => ['hero' => ['css' => 'display:none']]]),
         json_encode([...$partial, 'content' => ['hero' => ['title' => '<script>alert(1)</script>']]]),
         json_encode([...$partial, 'content' => ['hero' => ['title' => null]]]),
-        json_encode([...$partial, 'content' => ['video' => ['youtube_url' => 'https://evil.test/video']]]),
+        json_encode([...$partial, 'content' => ['video' => ['youtube_url' => 'https://www.youtube.com/watch?v=P42gDOTL6Ys']]]),
+        json_encode([...$partial, 'campaign' => 'otra']),
+        json_encode([...$partial, 'template' => 'OTRA']),
+        json_encode([...$partial, 'content' => ['presentation' => ['template' => 'WEBINAR']]]),
         json_encode([...$partial, 'content' => ['video' => ['poster' => '/marketing/../secret.png']]]),
         json_encode([...$partial, 'content' => ['benefits' => ['items' => [['title' => 'Incompleto']]]]]),
         json_encode([...$partial, 'content' => ['faq' => ['items' => ['x' => ['question' => 'a', 'answer' => 'b']]]]]),
     ] as $invalid) check(http('POST', $base.'/import', ['revision' => 2, 'editorial_json' => $invalid])->getStatusCode() === 422, 'JSON inválido o campo no permitido rechazado');
     check($landing->fresh()->revision === 2, 'JSON inválido no modifica el borrador');
+    foreach (App\Support\LandingSlug::reserved() as $reserved) {
+        check(http('POST', '/admin/landings', [...$data, 'slug' => $reserved])->getStatusCode() === 422, 'slug reservado: '.$reserved);
+    }
+    Illuminate\Support\Facades\Route::post('/futuro/endpoint', fn () => response('ok'));
+    check(! App\Support\LandingSlug::allowed('futuro') && http('POST', '/admin/landings', [...$data, 'slug' => 'futuro'])->getStatusCode() === 422, 'futuro espacio de rutas reservado dinámicamente');
     check(http('POST', $base.'/publicar', ['revision' => 1])->getStatusCode() === 422, 'publicación rechaza revisión obsoleta');
     check(http('POST', $base.'/publicar', ['revision' => 2, 'configuration' => ['hero' => ['title' => 'No guardado']]])->isRedirect(), 'publicación usa exclusivamente el borrador persistido');
     $landing->refresh();
-    $published = payload(http('GET', '/l/campana-prueba', [], true));
+    $published = payload(http('GET', '/campana-prueba', [], true));
     check($published['props']['landing']['content']['hero']['title'] === 'Nuevo titular' && $landing->published_campaign === 'cocha_2026', 'publicación snapshot y asociación campaña');
     $data['configuration'] = $landing->configuration;
     $data['configuration']['hero']['title'] = 'Solo borrador';
@@ -165,7 +184,7 @@ try {
     $landing->refresh();
     check($landing->configuration['video']['youtube_url'] === 'https://www.youtube.com/watch?v=P42gDOTL6Ys' && $landing->configuration['video']['poster'] === null, 'YouTube normalizado independiente del poster y encuadre');
     check(payload(http('GET', $base.'/preview', [], true))['props']['landing']['content']['hero']['title'] === 'Solo borrador', 'preview muestra último borrador');
-    check(payload(http('GET', '/l/campana-prueba', [], true))['props']['landing']['content']['hero']['title'] === 'Nuevo titular', 'guardar no altera versión publicada');
+    check(payload(http('GET', '/campana-prueba', [], true))['props']['landing']['content']['hero']['title'] === 'Nuevo titular', 'guardar no altera versión publicada');
     check(http('PUT', $base, [...$data, 'slug' => 'otro-slug', 'revision' => 4])->getStatusCode() === 422, 'slug publicado protegido');
     check(http('POST', '/medicion', ['event' => 'landing_visit', 'placement' => 'landing', 'landing_id' => $landing->id])->getStatusCode() === 204, 'analítica asociada a landing');
     http('POST', '/medicion', ['event' => 'landing_visit', 'placement' => 'landing', 'landing_id' => $landing->id]);
@@ -175,17 +194,34 @@ try {
     check($copy->id !== $landing->id && $copy->slug !== $landing->slug && $copy->status === 'draft' && $copy->published_configuration === null && $copy->configuration === $landing->configuration, 'copia independiente sin estado público');
     check(http('POST', '/medicion', ['event' => 'landing_visit', 'placement' => 'landing', 'landing_id' => $copy->id])->getStatusCode() === 422, 'no se miden borradores');
     check(http('POST', $base.'/archivar', ['revision' => 4])->isRedirect(), 'archivar landing');
-    check(http('GET', '/l/campana-prueba')->getStatusCode() === 404, 'archivada invisible públicamente');
+    check(http('GET', '/campana-prueba')->getStatusCode() === 404, 'archivada invisible públicamente');
     check(http('POST', $base.'/publicar', ['revision' => 5])->isRedirect(), 'republicar versión guardada');
-    check(payload(http('GET', '/l/campana-prueba', [], true))['props']['landing']['content']['hero']['title'] === 'Solo borrador', 'republicación aplica cambios guardados');
+    check(payload(http('GET', '/campana-prueba', [], true))['props']['landing']['content']['hero']['title'] === 'Solo borrador', 'republicación aplica cambios guardados');
     check(http('POST', '/admin/landings/'.$home->id.'/archivar', ['revision' => $home->revision])->getStatusCode() === 422, 'portada no puede archivarse');
     $homeContent = $home->configuration;
     $homeContent['hero']['title'] = 'Portada configurada';
     check(http('PUT', '/admin/landings/'.$home->id, ['title' => $home->title, 'slug' => 'principal', 'configuration' => $homeContent, 'revision' => $home->revision])->isRedirect(), 'guardar portada configurada');
     check(payload(http('GET', '/', [], true))['props']['landing']['content']['hero']['title'] !== 'Portada configurada', 'portada conserva versión pública al guardar');
     check(http('POST', '/admin/landings/'.$home->id.'/publicar', ['revision' => $home->fresh()->revision])->isRedirect(), 'publicar portada');
+    check(payload(http('GET', '/', [], true))['props']['landing']['content'] === payload(http('GET', '/principal', [], true))['props']['landing']['content'], 'portada y principal idénticas después de publicar');
     check(payload(http('GET', '/', [], true))['props']['landing']['content']['hero']['title'] === 'Portada configurada', 'portada sirve configuración publicada local');
+    foreach (App\Support\LandingContent::TEMPLATES as $template) {
+        $next = $landing->fresh()->configuration;
+        $next['presentation']['template'] = $template;
+        $oldPublic = $landing->fresh()->published_configuration;
+        check(http('PUT', $base, [...$data, 'configuration' => $next, 'revision' => $landing->fresh()->revision])->isRedirect(), 'guardar plantilla '.$template);
+        check($landing->fresh()->published_configuration === $oldPublic, 'plantilla pública preservada hasta publicar '.$template);
+        $rendered = payload(http('GET', $base.'/preview', [], true));
+        check($rendered['props']['landing']['content']['presentation']['template'] === $template && $rendered['props']['landing']['content']['hero'] === $next['hero'], 'renderer y textos de plantilla '.$template);
+        check(http('POST', $base.'/publicar', ['revision' => $landing->fresh()->revision])->isRedirect(), 'publicar plantilla '.$template);
+        check(payload(http('GET', '/campana-prueba', [], true))['props']['landing']['content']['presentation']['template'] === $template, 'snapshot público de plantilla '.$template);
+    }
+    $fixtureContent = $landing->fresh()->configuration; $fixtureContent['presentation']['template'] = 'LEAD_VSL';
+    http('PUT', $base, [...$data, 'configuration' => $fixtureContent, 'revision' => $landing->fresh()->revision]);
+    $legacy = $home->configuration; unset($legacy['presentation']);
+    check(App\Support\LandingContent::withPresentation($legacy)['presentation']['template'] === 'LEAD_VSL', 'snapshots anteriores compatibles sin migración');
     file_put_contents('/evidence/browser-fixtures.json', json_encode([
+        'invalid_import' => payload(http('POST', '/admin/landings/import', ['editorial_json' => json_encode(['schema' => App\Support\LandingContent::SCHEMA, 'content' => ['hero' => ['title' => null]]])])),
         'editor' => payload(http('GET', $base.'/editar', [], true)),
         'preview' => payload(http('GET', $base.'/preview', [], true)),
         'create' => payload(http('GET', '/admin/landings/crear', [], true)),
@@ -193,6 +229,7 @@ try {
     ], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
     check(Artisan::call('landings:admin', ['email' => $admin->email, '--revoke' => true]) === 0 && http('GET', '/admin/landings')->getStatusCode() === 403, 'revocación inmediata del permiso');
     freshBrowser();
+    check(http('GET', '/r/'.$admin->referral_code)->isRedirect(), 'ruta de referido válido conserva redirección');
     check(http('POST', '/registro', registration('closed@example.test', ['landing_id' => $landing->id, 'is_marketing_admin' => true]))->getStatusCode() === 403, 'registro público cerrado aun con landing publicada');
     check(! User::where('email', 'closed@example.test')->exists(), 'ninguna cuenta creada por registro cerrado');
     $app->instance('env', 'production');

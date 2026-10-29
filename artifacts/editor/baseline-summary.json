@@ -1,0 +1,10 @@
+{
+  "sha": "95bb8a4d65a4ca01e5419799dbb47d67404e0f5c",
+  "origin_main": "95bb8a4d65a4ca01e5419799dbb47d67404e0f5c",
+  "mounted_sources_match": true,
+  "served_assets_match": true,
+  "debug": false,
+  "registration_open": false,
+  "user_count": 1,
+  "rollback": "/srv/sites/jakawi.club/rollback-editor-95bb8a4d65a4"
+}

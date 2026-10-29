@@ -6,8 +6,10 @@ export type Launch = {
     whatsapp_url: string | null;
 };
 export type Member = { name: string; email: string; phone: string | null; city: string | null };
+export type LandingTemplate = 'LEAD_VSL' | 'WEBINAR' | 'WAITLIST';
 
 export type LandingContent = {
+    presentation: { template: LandingTemplate; show_video: boolean; show_faq: boolean };
     seo: { title: string; description: string };
     hero: { eyebrow: string; title: string; emphasis: string; ending: string; description: string; cta: string };
     benefits: { eyebrow: string; title: string; description: string; items: { title: string; description: string }[] };

@@ -10,5 +10,5 @@ docker run --rm --name jakawi-club-landings-visual --network jakawi-club-egress 
     --volume /usr/share/fonts:/usr/share/fonts:ro --volume /etc/fonts:/etc/fonts:ro \
     --volume /opt/sites/jakawi.club/app:/workspace:ro \
     --volume /opt/sites/jakawi.club/scripts:/checks:ro \
-    --volume /opt/sites/jakawi.club/artifacts/landings:/evidence \
+    --volume /opt/sites/jakawi.club/artifacts/editor:/evidence \
     node:22-bookworm-slim@sha256:de170b39439eb0e5a3444ad7d60b015614a381e10fecae2e30ec9e735122f38d node /checks/check-landings-visual.mjs "$@"

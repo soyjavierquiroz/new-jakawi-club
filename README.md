@@ -184,9 +184,9 @@ Después del alta, iniciar sesión en `https://jakawi.club/login` con el correo 
 
 ### Edición y publicación
 
-El modelo `MarketingLanding` usa `marketing_landings.configuration` y `published_configuration` JSONB. `LEAD_VSL` reutiliza el renderer, identidad, selector telefónico, formulario y referidos locales. `/l/{slug}` solo expone landings publicadas; `/` busca el slug `principal` definido en `config/jakawi.php`. La migración crea esa portada con el contenido y video locales aprobados, sin cambiar cuentas, precios ni credenciales. El slug queda permanente tras publicar y la portada no se puede archivar.
+El modelo `MarketingLanding` usa `marketing_landings.configuration` y `published_configuration` JSONB. `LEAD_VSL` reutiliza el renderer, identidad, selector telefónico, formulario y referidos locales. `/{slug}` solo expone landings publicadas; `/l/{slug}` redirige 301 al enlace directo después de comprobar su existencia; `/` busca el slug `principal` definido en `config/jakawi.php`. La migración crea esa portada con el contenido y video locales aprobados, sin cambiar cuentas, precios ni credenciales. El slug queda permanente tras publicar y la portada no se puede archivar.
 
-Crear, guardar, duplicar, importar, previsualizar, publicar y archivar son acciones distintas. Guardar/importar no cambia la versión pública. Duplicar produce otro borrador. Publicar copia exclusivamente el borrador guardado y su campaña a un snapshot público, con bloqueo de fila y revisión para impedir sobrescrituras desde otra ventana. Archivar retira la ruta pública sin borrar datos. La vista previa autenticada utiliza la misma página `Welcome`, en un iframe real a 390, 430 o 1440 px, sin registro ni eventos analíticos.
+Crear, guardar, duplicar, importar, previsualizar, publicar y archivar son acciones distintas. Guardar no cambia la versión pública. Importar valida y aplica al formulario local: no persiste ni publica. Duplicar produce otro borrador. Publicar copia exclusivamente el borrador guardado y su campaña a un snapshot público, con bloqueo de fila y revisión para impedir sobrescrituras desde otra ventana. Archivar retira la ruta pública sin borrar datos. La vista previa autenticada utiliza la misma página `Welcome`, en un iframe real a 390, 430 o 1440 px, sin registro ni eventos analíticos.
 
 La importación/exportación usa `jakawi-club-landing-v1`. Ejemplo parcial:
 
@@ -195,13 +195,12 @@ La importación/exportación usa `jakawi-club-landing-v1`. Ejemplo parcial:
   "schema": "jakawi-club-landing-v1",
   "template": "LEAD_VSL",
   "content": {
-    "hero": { "title": "Tu próximo capítulo empieza aquí" },
-    "video": { "aspect_ratio": "3:4", "source_aspect_ratio": "9:16" }
+    "hero": { "title": "Tu próximo capítulo empieza aquí" }
   }
 }
 ```
 
-Los campos omitidos se conservan; las listas se reemplazan completas. Solo se admiten textos de `seo`, `hero`, `benefits`, `registration`, `faq`, `final` y la configuración `video`. Se rechazan campos desconocidos, HTML, listas incompletas, URLs ajenas a YouTube, posters remotos/inexistentes y documentos de otra versión. El documento no controla slug, campaña, estado, permisos, precios, reglas de negocio, endpoints ni CSS. La exportación representa el borrador persistido, sin metadatos operativos.
+Los campos omitidos se conservan; las listas se reemplazan completas. Solo se admiten textos de `seo`, `hero`, `benefits`, `registration`, `faq`, `final`. Video y poster se editan exclusivamente en sus controles y no se admiten en JSON editorial. Se rechazan campos desconocidos u operativos, HTML, listas incompletas y documentos de otra versión. Los controles de medios siguen rechazando URLs ajenas a YouTube y posters remotos/inexistentes. El documento no controla slug, campaña, estado, permisos, precios, reglas de negocio, endpoints ni CSS. La exportación visible representa los valores actuales del formulario, incluidos cambios sin guardar, sin metadatos operativos. El endpoint histórico `/{landing}/export` sigue entregando el borrador guardado.
 
 YouTube, poster local, marco 3:4/16:9 y proporción original 9:16/3:4/16:9 son independientes. Tras la migración, editar el video de cada landing desde el editor: `JAKAWI_VIDEO_URL` y `JAKAWI_VIDEO_POSTER` proporcionan valores iniciales a landings nuevas, sin sobrescribir snapshots existentes. Los posters siguen usando archivos aprobados de `public/marketing/`.
 
@@ -223,3 +222,20 @@ python3 scripts/validate-public.py
 Las pruebas administrativas usan PostgreSQL en un esquema temporal que se elimina al terminar. Generan fixtures HTTP reales para probar el editor en Chromium, con las mutaciones interceptadas en navegador. El responsive comprueba la portada HTTPS real a 390, 430 y 1440 px y reutiliza fixtures de video/formulario sin crear usuarios LIVE. No repite la sonda externa de YouTube: la restricción histórica del proveedor sobre el video aprobado se documenta en `artifacts/vsl/REPORT.md`.
 
 Evidencia: `artifacts/landings/`. [Rollback del creador](artifacts/landings/ROLLBACK.md). Después del commit y push, `python3 scripts/verify-landings-live.py` sella el SHA efectivo, los archivos montados, assets servidos, servicios propios y cierre del registro en `artifacts/landings/LIVE.json`, excluido de Git.
+
+
+### Editor optimizado y plantillas
+
+La portada `/` y `/principal` usan el mismo registro y snapshot publicado; `principal` está protegido. El listado destaca **PORTADA PRINCIPAL**. `LandingSlug` reserva namespaces explícitos y las raíces de todas las rutas registradas, incluyendo endpoints POST; la ruta GET de una sola sección se registra al final. Nunca redirigir aliases inexistentes. Tras añadir rutas, regenerar `route:cache` como en cualquier despliegue.
+
+El editor tiene dos columnas desde 769 px y pestañas Editor/Preview hasta 768 px. La preview automática usa el renderer real del borrador guardado a 390, 430 o 1440 px, ajustado visualmente al panel; abrir a tamaño completo permite inspeccionarlo sin escala. Guardar permanece visible junto al formulario. El estado diferencia cambios sin guardar, borrador, publicación y cambios pendientes. La preview no registra usuarios ni eventos.
+
+**COPIAR BRIEF PARA IA**, **IMPORTAR JSON** y **EXPORTAR JSON** están al inicio, también al crear una landing. El brief incluye identidad, campaña, objetivo, contexto editorial, condiciones conocidas y estado real del registro, sin datos de sesión ni credenciales. No hay integración de IA. Importar admite texto o archivo de 64 KiB, muestra errores por campo y devuelve configuración validada sin escrituras. Exportar/copia/descarga representa el formulario actual. Solo admite template y textos de seo, hero, benefits, registration, faq y final; video, poster, presentación, estado, slug y campaña están excluidos. Los JSON históricos que contienen video deben retirar esa sección antes de importar.
+
+`configuration.presentation` guarda plantilla y opciones; el snapshot publicado mantiene su propia presentación. Los snapshots anteriores reciben valores LEAD_VSL en memoria. No necesita migraciones.
+
+- **LEAD_VSL:** composición original, VSL 3:4/16:9, beneficios, formulario, FAQ, cierre y sticky móvil.
+- **WEBINAR:** hero de encuentro, fecha/hora únicamente desde configuración confirmada, contenido aprobado en beneficios, video opcional y formulario existente. No crea eventos ni llamadas a Zoom.
+- **WAITLIST:** hero compacto, formulario antes de beneficios (hasta tres), FAQ opcional y sticky. Conserva todos los textos y medios para otras plantillas.
+
+Duplicar crea un borrador independiente. Las tres plantillas reutilizan registro, atribución, tokens y publicación existentes. Evidencia actual: [informe del editor](artifacts/editor/REPORT.md). Pruebas: `bash scripts/test-landings.sh`, `bash scripts/test-mvp.sh`, `bash scripts/build-frontend.sh`, `bash scripts/check-landings-visual.sh`, `bash scripts/check-landings-responsive.sh --landing-builder`, validadores local y público. Los runners de landings guardan la evidencia nueva en `artifacts/editor/`. Sellar commit/LIVE después del push con `python3 scripts/verify-editor-live.py`; requiere el baseline local ignorado. [Rollback](artifacts/editor/ROLLBACK.md).
