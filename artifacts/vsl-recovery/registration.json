@@ -1,0 +1,47 @@
+{
+  "owner_authorized_opening": true,
+  "ses_iam_confirmation_source": "owner confirmation in this session; no additional AWS audit",
+  "iam_user": "jakawi-club-smtp-us-east-1",
+  "iam_policy": "JakawiClubSesSmtpSend",
+  "action": "ses:SendRawEmail",
+  "identity": "jakawi.com",
+  "from_address": "info@jakawi.com",
+  "recipient_condition_present": false,
+  "ses_region": "us-east-1",
+  "production_access_enabled_owner_confirmed": true,
+  "prior_real_delivery_and_spf_dkim_dmarc_pass_owner_confirmed": true,
+  "smtp_tls_authenticated": true,
+  "new_test_messages_sent": 0,
+  "effective": {
+    "registration_flag": true,
+    "transactional_mail_ready_flag": true,
+    "mail_ready": true,
+    "registration_open": true,
+    "debug": false
+  },
+  "http": {
+    "/": {
+      "http": 200,
+      "registration_open": true,
+      "official_video_configured": true
+    },
+    "/principal": {
+      "http": 200,
+      "registration_open": true,
+      "official_video_configured": true
+    },
+    "POST /registro missing_csrf": {
+      "http": 419
+    },
+    "POST /registro invalid_fields": {
+      "http": 422,
+      "rejected_fields": [
+        "name",
+        "email",
+        "phone",
+        "privacy"
+      ]
+    }
+  },
+  "live_registration_success_with_new_account": "not attempted; no unsolicited activation email"
+}

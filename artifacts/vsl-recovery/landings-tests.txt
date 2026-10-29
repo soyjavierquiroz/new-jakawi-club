@@ -1,0 +1,277 @@
+PASS esquema aislado exclusivo de jakawi_club
+PASS portada inicial publicada desde configuración local
+PASS portada real configurada y registro cerrado
+PASS ruta pública usa el mismo renderer y snapshot
+PASS alias histórico 301 conserva query
+PASS alias inexistente no redirige
+PASS login registro y up conservan comportamiento
+PASS referido inválido conserva redirección existente
+PASS invitado sin acceso: POST /admin/landings/import
+PASS invitado sin acceso: GET /admin/landings
+PASS invitado sin acceso: GET /admin/landings/crear
+PASS invitado sin acceso: GET /admin/landings/1/editar
+PASS invitado sin acceso: GET /admin/landings/1/preview
+PASS invitado sin acceso: GET /admin/landings/1/preview/confirmado
+PASS invitado sin acceso: GET /admin/landings/1/export
+PASS invitado sin acceso: POST /admin/landings
+PASS invitado sin acceso: PUT /admin/landings/1
+PASS invitado sin acceso: POST /admin/landings/1/import
+PASS invitado sin acceso: POST /admin/landings/1/publicar
+PASS invitado sin acceso: POST /admin/landings/1/duplicar
+PASS invitado sin acceso: POST /admin/landings/1/archivar
+PASS login con autenticación existente
+PASS miembro sin permiso: POST /admin/landings/import
+PASS miembro sin permiso: GET /admin/landings
+PASS miembro sin permiso: GET /admin/landings/crear
+PASS miembro sin permiso: GET /admin/landings/1/editar
+PASS miembro sin permiso: GET /admin/landings/1/preview
+PASS miembro sin permiso: GET /admin/landings/1/preview/confirmado
+PASS miembro sin permiso: GET /admin/landings/1/export
+PASS miembro sin permiso: POST /admin/landings
+PASS miembro sin permiso: PUT /admin/landings/1
+PASS miembro sin permiso: POST /admin/landings/1/import
+PASS miembro sin permiso: POST /admin/landings/1/publicar
+PASS miembro sin permiso: POST /admin/landings/1/duplicar
+PASS miembro sin permiso: POST /admin/landings/1/archivar
+PASS concesión explícita sobre cuenta existente
+PASS administrador autorizado
+PASS formulario de creación protegido
+PASS admin sin verificar bloqueado
+PASS admin sin activar bloqueado
+PASS crear landing con JSONB válido
+PASS crear no publica e ignora estado enviado
+PASS borrador invisible públicamente
+PASS slugs únicos
+PASS slug inválido rechazado
+PASS preview real protegido sin registro ni publicación
+PASS preview no genera conteos de servidor
+PASS exportación editorial completa v1
+PASS exportación excluye operaciones y campaña
+PASS importación parcial válida devuelve formulario local
+PASS importar no persiste ni publica
+PASS guardado independiente tras importar
+PASS importación parcial conserva todos los campos omitidos
+PASS guardar importación no publica
+PASS JSON completo conserva medios y datos existentes
+PASS JSON inválido o campo no permitido rechazado
+PASS JSON inválido o campo no permitido rechazado
+PASS JSON inválido o campo no permitido rechazado
+PASS JSON inválido o campo no permitido rechazado
+PASS JSON inválido o campo no permitido rechazado
+PASS JSON inválido o campo no permitido rechazado
+PASS JSON inválido o campo no permitido rechazado
+PASS JSON inválido o campo no permitido rechazado
+PASS JSON inválido o campo no permitido rechazado
+PASS JSON inválido o campo no permitido rechazado
+PASS JSON inválido o campo no permitido rechazado
+PASS JSON inválido o campo no permitido rechazado
+PASS JSON inválido o campo no permitido rechazado
+PASS JSON inválido o campo no permitido rechazado
+PASS JSON inválido o campo no permitido rechazado
+PASS JSON inválido no modifica el borrador
+PASS slug reservado: login
+PASS slug reservado: registro
+PASS slug reservado: register
+PASS slug reservado: logout
+PASS slug reservado: dashboard
+PASS slug reservado: profile
+PASS slug reservado: admin
+PASS slug reservado: r
+PASS slug reservado: l
+PASS slug reservado: up
+PASS slug reservado: privacy
+PASS slug reservado: preferencias
+PASS slug reservado: password
+PASS slug reservado: email
+PASS slug reservado: storage
+PASS slug reservado: build
+PASS slug reservado: api
+PASS slug reservado: confirmado
+PASS slug reservado: medicion
+PASS slug reservado: privacidad
+PASS slug reservado: bienvenida
+PASS slug reservado: recuperar-password
+PASS slug reservado: activar
+PASS slug reservado: restablecer-password
+PASS slug reservado: verificar-email
+PASS slug reservado: perfil
+PASS futuro espacio de rutas reservado dinámicamente
+PASS publicación rechaza revisión obsoleta
+PASS publicación usa exclusivamente el borrador persistido
+PASS publicación snapshot y asociación campaña
+PASS editar y guardar
+PASS YouTube normalizado independiente del poster y encuadre
+PASS marco fijo y encuadre guardados desde controles
+PASS preview real usa video de confirmación guardado
+PASS preview muestra último borrador
+PASS guardar no altera versión publicada
+PASS slug publicado protegido
+PASS analítica asociada a landing
+PASS analítica deduplicada usa campaña publicada
+PASS duplicar landing
+PASS copia independiente sin estado público
+PASS no se miden borradores
+PASS archivar landing
+PASS archivada invisible públicamente
+PASS republicar versión guardada
+PASS republicación aplica cambios guardados
+PASS portada no puede archivarse
+PASS guardar portada configurada
+PASS portada conserva versión pública al guardar
+PASS publicar portada
+PASS portada y principal idénticas después de publicar
+PASS portada sirve configuración publicada local
+PASS guardar plantilla LEAD_VSL
+PASS plantilla pública preservada hasta publicar LEAD_VSL
+PASS renderer y textos de plantilla LEAD_VSL
+PASS publicar plantilla LEAD_VSL
+PASS snapshot público de plantilla LEAD_VSL
+PASS guardar plantilla WEBINAR
+PASS plantilla pública preservada hasta publicar WEBINAR
+PASS renderer y textos de plantilla WEBINAR
+PASS publicar plantilla WEBINAR
+PASS snapshot público de plantilla WEBINAR
+PASS guardar plantilla WAITLIST
+PASS plantilla pública preservada hasta publicar WAITLIST
+PASS renderer y textos de plantilla WAITLIST
+PASS publicar plantilla WAITLIST
+PASS snapshot público de plantilla WAITLIST
+PASS guardar posconversión con acción segura y contador
+PASS guardar gracias no publica ni cambia snapshot
+PASS preview de gracias usa borrador guardado y renderer real
+PASS importación de gracias no persiste ni publica y conserva destino
+PASS snapshots anteriores compatibles sin migración
+PASS URL VSL publicada heredada llega al renderer: /
+PASS URL VSL publicada heredada llega al renderer: /principal
+PASS normalización de lectura no reescribe el snapshot publicado
+PASS ocultar video conserva la URL publicada
+PASS ausencia explícita de video de campaña no recibe fallback de otra campaña
+PASS campaña independiente creada: default
+PASS grupo publicado: default
+PASS grupo público efectivo: default
+PASS guardar confirmación default/inherit
+PASS preview grupo y destino efectivos default/inherit
+PASS borrador no cambia grupo publicado default/inherit
+PASS guardar confirmación default/custom
+PASS preview grupo y destino efectivos default/custom
+PASS borrador no cambia grupo publicado default/custom
+PASS guardar confirmación default/none
+PASS preview grupo y destino efectivos default/none
+PASS borrador no cambia grupo publicado default/none
+PASS preview usa grupo del borrador; público conserva snapshot default
+PASS publicar aplica grupo guardado default
+PASS JSON conserva operación jakawi-club-landing-v1/default
+PASS JSON rechaza grupos jakawi-club-landing-v1/whatsapp_group
+PASS JSON rechaza grupos jakawi-club-landing-v1/confirmation_whatsapp_group
+PASS JSON conserva operación jakawi-club-landing-v2/default
+PASS JSON rechaza grupos jakawi-club-landing-v2/whatsapp_group
+PASS JSON rechaza grupos jakawi-club-landing-v2/confirmation_whatsapp_group
+PASS export editorial excluye grupos y URL default
+PASS campaña independiente creada: custom
+PASS grupo publicado: custom
+PASS grupo público efectivo: custom
+PASS guardar confirmación custom/inherit
+PASS preview grupo y destino efectivos custom/inherit
+PASS borrador no cambia grupo publicado custom/inherit
+PASS guardar confirmación custom/custom
+PASS preview grupo y destino efectivos custom/custom
+PASS borrador no cambia grupo publicado custom/custom
+PASS guardar confirmación custom/none
+PASS preview grupo y destino efectivos custom/none
+PASS borrador no cambia grupo publicado custom/none
+PASS preview usa grupo del borrador; público conserva snapshot custom
+PASS publicar aplica grupo guardado custom
+PASS JSON conserva operación jakawi-club-landing-v1/custom
+PASS JSON rechaza grupos jakawi-club-landing-v1/whatsapp_group
+PASS JSON rechaza grupos jakawi-club-landing-v1/confirmation_whatsapp_group
+PASS JSON conserva operación jakawi-club-landing-v2/custom
+PASS JSON rechaza grupos jakawi-club-landing-v2/whatsapp_group
+PASS JSON rechaza grupos jakawi-club-landing-v2/confirmation_whatsapp_group
+PASS export editorial excluye grupos y URL custom
+PASS campaña independiente creada: none
+PASS grupo publicado: none
+PASS grupo público efectivo: none
+PASS guardar confirmación none/inherit
+PASS preview grupo y destino efectivos none/inherit
+PASS borrador no cambia grupo publicado none/inherit
+PASS guardar confirmación none/custom
+PASS preview grupo y destino efectivos none/custom
+PASS borrador no cambia grupo publicado none/custom
+PASS guardar confirmación none/none
+PASS preview grupo y destino efectivos none/none
+PASS borrador no cambia grupo publicado none/none
+PASS preview usa grupo del borrador; público conserva snapshot none
+PASS publicar aplica grupo guardado none
+PASS JSON conserva operación jakawi-club-landing-v1/none
+PASS JSON rechaza grupos jakawi-club-landing-v1/whatsapp_group
+PASS JSON rechaza grupos jakawi-club-landing-v1/confirmation_whatsapp_group
+PASS JSON conserva operación jakawi-club-landing-v2/none
+PASS JSON rechaza grupos jakawi-club-landing-v2/whatsapp_group
+PASS JSON rechaza grupos jakawi-club-landing-v2/confirmation_whatsapp_group
+PASS export editorial excluye grupos y URL none
+PASS campañas no alteran otros snapshots 3
+PASS campañas no alteran otros snapshots 2
+PASS campañas no alteran otros snapshots 1
+PASS guardar rechaza URL insegura whatsapp_group
+PASS publicar revalida URL; conserva snapshot whatsapp_group
+PASS guardar rechaza URL insegura whatsapp_group
+PASS publicar revalida URL; conserva snapshot whatsapp_group
+PASS guardar rechaza URL insegura whatsapp_group
+PASS publicar revalida URL; conserva snapshot whatsapp_group
+PASS guardar rechaza URL insegura whatsapp_group
+PASS publicar revalida URL; conserva snapshot whatsapp_group
+PASS guardar rechaza URL insegura whatsapp_group
+PASS publicar revalida URL; conserva snapshot whatsapp_group
+PASS guardar rechaza URL insegura whatsapp_group
+PASS publicar revalida URL; conserva snapshot whatsapp_group
+PASS guardar rechaza URL insegura whatsapp_group
+PASS publicar revalida URL; conserva snapshot whatsapp_group
+PASS guardar rechaza URL insegura whatsapp_group
+PASS publicar revalida URL; conserva snapshot whatsapp_group
+PASS guardar rechaza URL insegura whatsapp_group
+PASS publicar revalida URL; conserva snapshot whatsapp_group
+PASS guardar rechaza URL insegura whatsapp_group
+PASS publicar revalida URL; conserva snapshot whatsapp_group
+PASS guardar rechaza URL insegura whatsapp_group
+PASS publicar revalida URL; conserva snapshot whatsapp_group
+PASS guardar rechaza URL insegura whatsapp_group
+PASS publicar revalida URL; conserva snapshot whatsapp_group
+PASS guardar rechaza URL insegura whatsapp_group
+PASS publicar revalida URL; conserva snapshot whatsapp_group
+PASS guardar rechaza URL insegura confirmation_whatsapp_group
+PASS publicar revalida URL; conserva snapshot confirmation_whatsapp_group
+PASS guardar rechaza URL insegura confirmation_whatsapp_group
+PASS publicar revalida URL; conserva snapshot confirmation_whatsapp_group
+PASS guardar rechaza URL insegura confirmation_whatsapp_group
+PASS publicar revalida URL; conserva snapshot confirmation_whatsapp_group
+PASS guardar rechaza URL insegura confirmation_whatsapp_group
+PASS publicar revalida URL; conserva snapshot confirmation_whatsapp_group
+PASS guardar rechaza URL insegura confirmation_whatsapp_group
+PASS publicar revalida URL; conserva snapshot confirmation_whatsapp_group
+PASS guardar rechaza URL insegura confirmation_whatsapp_group
+PASS publicar revalida URL; conserva snapshot confirmation_whatsapp_group
+PASS guardar rechaza URL insegura confirmation_whatsapp_group
+PASS publicar revalida URL; conserva snapshot confirmation_whatsapp_group
+PASS guardar rechaza URL insegura confirmation_whatsapp_group
+PASS publicar revalida URL; conserva snapshot confirmation_whatsapp_group
+PASS guardar rechaza URL insegura confirmation_whatsapp_group
+PASS publicar revalida URL; conserva snapshot confirmation_whatsapp_group
+PASS guardar rechaza URL insegura confirmation_whatsapp_group
+PASS publicar revalida URL; conserva snapshot confirmation_whatsapp_group
+PASS guardar rechaza URL insegura confirmation_whatsapp_group
+PASS publicar revalida URL; conserva snapshot confirmation_whatsapp_group
+PASS guardar rechaza URL insegura confirmation_whatsapp_group
+PASS publicar revalida URL; conserva snapshot confirmation_whatsapp_group
+PASS guardar rechaza URL insegura confirmation_whatsapp_group
+PASS publicar revalida URL; conserva snapshot confirmation_whatsapp_group
+PASS compatibilidad de snapshots previos sin migraciones
+PASS revocación inmediata del permiso
+PASS ruta de referido válido conserva redirección
+PASS registro público cerrado aun con landing publicada
+PASS ninguna cuenta creada por registro cerrado
+PASS CSRF en acciones administrativas
+{
+    "passed": 272,
+    "database": "isolated PostgreSQL schema",
+    "live_test_users": 0
+}

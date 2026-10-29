@@ -1,0 +1,92 @@
+{
+  "production_source": "jakawi-app-1:resources/js/components/media/jakawi-vsl-player",
+  "https_asset_verified": "LandingVideo-0a8Md4hk.js",
+  "files": {
+    "JakawiVslPlayer.module.css": {
+      "com_sha256": "0c7afcfecf6782b9072214e77b3675672d3f0c8704fe3ee22e11330ae81e7903",
+      "club_sha256": "a0c2bd73ad4a18116a2d9fd9fb92a79c8bf0585110d661a42c3444302d705d6e",
+      "identical": false
+    },
+    "LandingVideo.tsx": {
+      "com_sha256": "171929574c29fbf2d0337d2b90eadd115f288dbbb2fe6238242b3174b39ae65b",
+      "club_sha256": "f536186c280d0dc1fde41fb4c9a7d0c128fa6367bcbb060d46cb6dc599aa3f75",
+      "identical": false
+    },
+    "JakawiVslPlayer.tsx": {
+      "com_sha256": "8848d5c22ea1961c1b9e50dacb7b69b7eb41ac39a69b3873b7302550117ccfa3",
+      "club_sha256": "043716f10a96bdaa5fa6bf1b97089a2d5690d49b23cefac36e698b3bd7b54866",
+      "identical": false
+    },
+    "marketing-presentation.ts": {
+      "com_sha256": "6ec6c4247d67ad6e7e0b1b76838a15de6cddd7c9c371a575fc7ea3fe65bd820b",
+      "club_sha256": "1894b23511e0f96d4192ca78b0364138dd1cb3da6a13622c5f4037779d016da4",
+      "identical": false
+    },
+    "use-decorative-progress.ts": {
+      "com_sha256": "06dcd393b7441b5c2425cb444bbcb0bc92c9ab02553559a0bb8e5458d5c4ae5d",
+      "club_sha256": "06dcd393b7441b5c2425cb444bbcb0bc92c9ab02553559a0bb8e5458d5c4ae5d",
+      "identical": true
+    },
+    "use-vsl-playback.ts": {
+      "com_sha256": "7bd45aaa9abfa3bed5c10651030564cc366201266dca1847b673406ecbf50406",
+      "club_sha256": "f8cce2d4f57caa1cda0f71bb127ab08b8786d20b04054a2ba4dfacf9d6a465e7",
+      "identical": false
+    },
+    "youtube-crop.ts": {
+      "com_sha256": "80289a9702e926898bf72400407fdc4ea810baef7e26321e220b8cb0df7cddbf",
+      "club_sha256": "80289a9702e926898bf72400407fdc4ea810baef7e26321e220b8cb0df7cddbf",
+      "identical": true
+    },
+    "youtube-engine.ts": {
+      "com_sha256": "ee6db7c8f552d4340f18ea01247b94367c98e0c91ac765c416c16ff4d23978af",
+      "club_sha256": "b672406694a0810494a1899843b2464f75e2c9acf427d2024bb077df4bdccb6e",
+      "identical": false
+    }
+  },
+  "effective_contract": {
+    "provider": "YouTube IFrame API",
+    "api_script": "https://www.youtube.com/iframe_api",
+    "iframe_host": "https://www.youtube-nocookie.com",
+    "origin": "window.location.origin",
+    "iframe_allow": "autoplay; encrypted-media; fullscreen; picture-in-picture",
+    "autoplay": "mute in onReady, then playVideo",
+    "sound_gesture": [
+      "pauseVideo",
+      "seekTo(0,true)",
+      "unMute",
+      "playVideo"
+    ],
+    "sound_confirmation": "onStateChange(1), !isMuted(), getVolume()>0",
+    "decorative_progress": {
+      "acceleration": 3,
+      "seconds": 90
+    },
+    "frame_ratio": "3:4",
+    "crop": "official youtube-crop.ts unchanged",
+    "react_lifecycle": "create on mount/source/autoplay change; destroy and clear host on cleanup; CLUB additionally recreates on explicit retry"
+  },
+  "club_adaptations": [
+    "YouTube VSL branch only; no course, HTML5 or HLS modules",
+    "local SVG icon imports and CSS token bindings",
+    "editable independent crop X/Y and source aspect ratios",
+    "initialization and buffering deadlines with in-page retry",
+    "provider errors visible without a poster or outbound link"
+  ],
+  "public_http_policies": {
+    "com": {
+      "CSP": null,
+      "Permissions-Policy": null,
+      "Referrer-Policy": null,
+      "X-Frame-Options": "SAMEORIGIN"
+    },
+    "club": {
+      "CSP": null,
+      "Permissions-Policy": null,
+      "Referrer-Policy": "strict-origin-when-cross-origin",
+      "X-Frame-Options": "SAMEORIGIN"
+    }
+  },
+  "provider_result": "Both real production pages report onError 150 for the same ID; no playing or advancing media time observed.",
+  "provider_visible_diagnostic_club": "Sign in to confirm you’re not a bot",
+  "interpretation_limit": "These server Chromium observations do not establish a global embedding restriction for real visitors; no playback verified in this environment."
+}

@@ -1,0 +1,282 @@
+{
+  "stage": "build-next intercepted only in browser",
+  "checks": [
+    {
+      "name": "official-vsl-lifecycle",
+      "width": 390,
+      "fixture": "YouTube API contract + virtual decorative clock",
+      "geometry": {
+        "frame": {
+          "x": 16,
+          "y": 293.75,
+          "width": 358,
+          "height": 477.328125,
+          "right": 374,
+          "bottom": 771.078125
+        },
+        "iframe": {
+          "x": -370.71875,
+          "y": 214.203125,
+          "width": 1131.453125,
+          "height": 636.421875,
+          "right": 760.734375,
+          "bottom": 850.625
+        },
+        "heading": {
+          "x": 16,
+          "y": 109,
+          "width": 358,
+          "height": 160.75,
+          "right": 374,
+          "bottom": 269.75
+        },
+        "copy": {
+          "x": 16,
+          "y": 795.078125,
+          "width": 358,
+          "height": 210,
+          "right": 374,
+          "bottom": 1005.078125
+        },
+        "media": {
+          "x": 16,
+          "y": 293.75,
+          "width": 358,
+          "height": 477.328125,
+          "right": 374,
+          "bottom": 771.078125
+        },
+        "centerOffset": 24.625,
+        "overflow": false,
+        "players": 1,
+        "closed": true,
+        "country": "+591⌄"
+      },
+      "passed": true,
+      "analytics_before_clock": 0
+    },
+    {
+      "name": "official-vsl-lifecycle",
+      "width": 430,
+      "fixture": "YouTube API contract + virtual decorative clock",
+      "geometry": {
+        "frame": {
+          "x": 16,
+          "y": 293.75,
+          "width": 398,
+          "height": 530.65625,
+          "right": 414,
+          "bottom": 824.40625
+        },
+        "iframe": {
+          "x": -413.9375,
+          "y": 205.3125,
+          "width": 1257.875,
+          "height": 707.53125,
+          "right": 843.9375,
+          "bottom": 912.84375
+        },
+        "heading": {
+          "x": 16,
+          "y": 109,
+          "width": 398,
+          "height": 160.75,
+          "right": 414,
+          "bottom": 269.75
+        },
+        "copy": {
+          "x": 16,
+          "y": 848.40625,
+          "width": 398,
+          "height": 210,
+          "right": 414,
+          "bottom": 1058.40625
+        },
+        "media": {
+          "x": 16,
+          "y": 293.75,
+          "width": 398,
+          "height": 530.65625,
+          "right": 414,
+          "bottom": 824.40625
+        },
+        "centerOffset": 24.625,
+        "overflow": false,
+        "players": 1,
+        "closed": true,
+        "country": "+591⌄"
+      },
+      "passed": true,
+      "analytics_before_clock": 0
+    },
+    {
+      "name": "official-vsl-lifecycle",
+      "width": 1024,
+      "fixture": "YouTube API contract + virtual decorative clock",
+      "geometry": {
+        "frame": {
+          "x": 575.984375,
+          "y": 129,
+          "width": 416,
+          "height": 554.65625,
+          "right": 991.984375,
+          "bottom": 683.65625
+        },
+        "iframe": {
+          "x": 126.609375,
+          "y": 36.5625,
+          "width": 1314.75,
+          "height": 739.53125,
+          "right": 1441.359375,
+          "bottom": 776.09375
+        },
+        "heading": {
+          "x": 32,
+          "y": 200.578125,
+          "width": 479.25,
+          "height": 193.75,
+          "right": 511.25,
+          "bottom": 394.328125
+        },
+        "copy": {
+          "x": 32,
+          "y": 394.328125,
+          "width": 479.25,
+          "height": 217.75,
+          "right": 511.25,
+          "bottom": 612.078125
+        },
+        "media": {
+          "x": 575.984375,
+          "y": 129,
+          "width": 416,
+          "height": 554.65625,
+          "right": 991.984375,
+          "bottom": 683.65625
+        },
+        "centerOffset": 0,
+        "overflow": false,
+        "players": 1,
+        "closed": true,
+        "country": "+591⌄"
+      },
+      "passed": true,
+      "analytics_before_clock": 0
+    },
+    {
+      "name": "official-vsl-lifecycle",
+      "width": 1440,
+      "fixture": "YouTube API contract + virtual decorative clock",
+      "geometry": {
+        "frame": {
+          "x": 847.984375,
+          "y": 129,
+          "width": 416,
+          "height": 554.65625,
+          "right": 1263.984375,
+          "bottom": 683.65625
+        },
+        "iframe": {
+          "x": 398.609375,
+          "y": 36.5625,
+          "width": 1314.75,
+          "height": 739.53125,
+          "right": 1713.359375,
+          "bottom": 776.09375
+        },
+        "heading": {
+          "x": 176,
+          "y": 179.390625,
+          "width": 547.71875,
+          "height": 236.125,
+          "right": 723.71875,
+          "bottom": 415.515625
+        },
+        "copy": {
+          "x": 176,
+          "y": 415.515625,
+          "width": 547.71875,
+          "height": 217.75,
+          "right": 723.71875,
+          "bottom": 633.265625
+        },
+        "media": {
+          "x": 847.984375,
+          "y": 129,
+          "width": 416,
+          "height": 554.65625,
+          "right": 1263.984375,
+          "bottom": 683.65625
+        },
+        "centerOffset": 0,
+        "overflow": false,
+        "players": 1,
+        "closed": true,
+        "country": "+591⌄"
+      },
+      "passed": true,
+      "analytics_before_clock": 0
+    },
+    {
+      "name": "reduced",
+      "passed": true,
+      "fixture": true
+    },
+    {
+      "name": "save-data",
+      "passed": true,
+      "fixture": true
+    },
+    {
+      "name": "blocked",
+      "passed": true,
+      "fixture": true
+    },
+    {
+      "name": "audio-blocked",
+      "passed": true,
+      "fixture": true
+    },
+    {
+      "name": "preview",
+      "passed": true,
+      "fixture": true
+    },
+    {
+      "name": "waitlist",
+      "passed": true,
+      "fixture": true
+    },
+    {
+      "name": "webinar-off",
+      "passed": true,
+      "fixture": true
+    },
+    {
+      "name": "no-video",
+      "passed": true,
+      "fixture": true
+    },
+    {
+      "name": "webinar",
+      "passed": true,
+      "fixture": true
+    },
+    {
+      "name": "sticky-form-international-phone",
+      "passed": true,
+      "fixture": true
+    }
+  ],
+  "viewports": [
+    390,
+    430,
+    1024,
+    1440
+  ],
+  "provider_contract_fixtures": true,
+  "real_playback": [],
+  "runtime_errors": [],
+  "failed_assets": [],
+  "no_live_accounts": true
+}

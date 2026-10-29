@@ -1,0 +1,16 @@
+{
+  "source": "read-only production container jakawi-app-1",
+  "files_sha256": {
+    "JakawiVslPlayer.tsx": "8848d5c22ea1961c1b9e50dacb7b69b7eb41ac39a69b3873b7302550117ccfa3",
+    "use-vsl-playback.ts": "7bd45aaa9abfa3bed5c10651030564cc366201266dca1847b673406ecbf50406",
+    "youtube-engine.ts": "ee6db7c8f552d4340f18ea01247b94367c98e0c91ac765c416c16ff4d23978af",
+    "youtube-crop.ts": "80289a9702e926898bf72400407fdc4ea810baef7e26321e220b8cb0df7cddbf",
+    "marketing-presentation.ts": "6ec6c4247d67ad6e7e0b1b76838a15de6cddd7c9c371a575fc7ea3fe65bd820b",
+    "use-decorative-progress.ts": "06dcd393b7441b5c2425cb444bbcb0bc92c9ab02553559a0bb8e5458d5c4ae5d",
+    "JakawiVslPlayer.module.css": "0c7afcfecf6782b9072214e77b3675672d3f0c8704fe3ee22e11330ae81e7903",
+    "LandingVideo.tsx": "171929574c29fbf2d0337d2b90eadd115f288dbbb2fe6238242b3174b39ae65b"
+  },
+  "https_asset": "LandingVideo-0a8Md4hk.js",
+  "asset_sha256": "7dd94e3b2e492443f8586835899192880da96836858b37a5ffbe984664753f5a",
+  "https_matches_container": true
+}

@@ -1,0 +1,1739 @@
+{
+  "recorded_at": "2026-10-29T20:29:21.788Z",
+  "stage": "live",
+  "provider": "real YouTube IFrame API; no provider requests intercepted",
+  "first_party_mutations": "blocked in browser",
+  "browser": {
+    "protocolVersion": "1.3",
+    "product": "Chrome/156.0.8078.4",
+    "revision": "@f842f52ef39fd97b449eb27cff414bf05a98ddce",
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+    "jsVersion": "15.6.75"
+  },
+  "pages": [
+    {
+      "url": "https://jakawi.com/l/elmeromero-padel-desde-cero",
+      "width": 390,
+      "blocked_mutations": [],
+      "embed_requests": [
+        {
+          "url": "https://www.youtube-nocookie.com/embed/P42gDOTL6Ys?origin=https%3A%2F%2Fjakawi.com&playsinline=1&controls=0&enablejsapi=1&cc_load_policy=0&iv_load_policy=3&autoplay=0&rel=0&widgetid=1&forigin=https%3A%2F%2Fjakawi.com%2Fl%2Felmeromero-padel-desde-cero&aoriginsup=1&vf=1",
+          "headers": {
+            "Referer": "https://jakawi.com/"
+          }
+        }
+      ],
+      "http_errors": [],
+      "network_errors": [],
+      "runtime_errors": [],
+      "headers": {
+        "x-frame-options": "SAMEORIGIN"
+      },
+      "autoplay": {
+        "source": "https://www.youtube.com/shorts/P42gDOTL6Ys",
+        "show_video": null,
+        "registration_open": null,
+        "frame": {
+          "x": 16,
+          "y": 123.25,
+          "width": 358,
+          "height": 477.328125
+        },
+        "region": {
+          "x": 16,
+          "y": 123.25,
+          "width": 358,
+          "height": 477.328125
+        },
+        "iframe": {
+          "src": "https://www.youtube-nocookie.com/embed/P42gDOTL6Ys?origin=https%3A%2F%2Fjakawi.com&playsinline=1&controls=0&enablejsapi=1&cc_load_policy=0&iv_load_policy=3&autoplay=0&rel=0&widgetid=1&forigin=https%3A%2F%2Fjakawi.com%2Fl%2Felmeromero-padel-desde-cero&aoriginsup=1&vf=1",
+          "allow": "autoplay; encrypted-media; fullscreen; picture-in-picture",
+          "referrerPolicy": "strict-origin-when-cross-origin",
+          "box": {
+            "x": -370.71875,
+            "y": 43.703125,
+            "width": 1131.453125,
+            "height": 636.421875
+          }
+        },
+        "state": null,
+        "overflow": false,
+        "posters": 0,
+        "error": "YouTube rechaz\u00f3 la reproducci\u00f3n (c\u00f3digo 150). Consulta el diagn\u00f3stico del proveedor.",
+        "active_youtube_iframes": 1,
+        "external_video_links": [],
+        "sound_overlay": false,
+        "probe": {
+          "events": [
+            {
+              "name": "onReady",
+              "data": null,
+              "at": 4016.7000000178814,
+              "before": {
+                "time": 0,
+                "duration": 8,
+                "muted": false,
+                "volume": 100,
+                "state": 5
+              },
+              "after": {
+                "time": 0,
+                "duration": 8,
+                "muted": false,
+                "volume": 100,
+                "state": 5
+              }
+            },
+            {
+              "name": "onStateChange",
+              "data": -1,
+              "at": 5821.5,
+              "before": {
+                "time": 0,
+                "duration": 8,
+                "muted": true,
+                "volume": 100,
+                "state": -1
+              },
+              "after": {
+                "time": 0,
+                "duration": 8,
+                "muted": true,
+                "volume": 100,
+                "state": -1
+              }
+            },
+            {
+              "name": "onStateChange",
+              "data": 3,
+              "at": 5853.100000023842,
+              "before": {
+                "time": 0,
+                "duration": 8,
+                "muted": true,
+                "volume": 100,
+                "state": 3
+              },
+              "after": {
+                "time": 0,
+                "duration": 8,
+                "muted": true,
+                "volume": 100,
+                "state": 3
+              }
+            },
+            {
+              "name": "onError",
+              "data": 150,
+              "at": 7261.600000023842,
+              "before": {
+                "time": 0,
+                "duration": 8,
+                "muted": true,
+                "volume": 100,
+                "state": 3
+              },
+              "after": {
+                "time": 0,
+                "duration": 8,
+                "muted": true,
+                "volume": 100,
+                "state": 3
+              }
+            },
+            {
+              "name": "onStateChange",
+              "data": -1,
+              "at": 7269.600000023842,
+              "before": {
+                "time": 0,
+                "duration": 8,
+                "muted": true,
+                "volume": 100,
+                "state": -1
+              },
+              "after": {
+                "time": 0,
+                "duration": 8,
+                "muted": true,
+                "volume": 100,
+                "state": -1
+              }
+            }
+          ],
+          "commands": [
+            {
+              "name": "mute",
+              "args": [],
+              "at": 4017.600000023842,
+              "before": {
+                "time": 0,
+                "duration": 8,
+                "muted": false,
+                "volume": 100,
+                "state": 5
+              }
+            },
+            {
+              "name": "playVideo",
+              "args": [],
+              "at": 4018.7000000178814,
+              "before": {
+                "time": 0,
+                "duration": 8,
+                "muted": false,
+                "volume": 100,
+                "state": 5
+              }
+            }
+          ],
+          "instances": [
+            {
+              "videoId": "P42gDOTL6Ys",
+              "host": "https://www.youtube-nocookie.com",
+              "playerVars": {
+                "origin": "https://jakawi.com",
+                "playsinline": 1,
+                "controls": 0,
+                "enablejsapi": 1,
+                "cc_load_policy": 0,
+                "iv_load_policy": 3,
+                "autoplay": 0,
+                "rel": 0
+              }
+            }
+          ],
+          "samples": [
+            {
+              "at": 4021,
+              "time": 0,
+              "muted": false,
+              "volume": 100,
+              "state": 5
+            },
+            {
+              "at": 5430.200000017881,
+              "time": 0,
+              "muted": false,
+              "volume": 100,
+              "state": 5
+            },
+            {
+              "at": 6012.600000023842,
+              "time": 0,
+              "muted": true,
+              "volume": 100,
+              "state": 3
+            },
+            {
+              "at": 7210.600000023842,
+              "time": 0,
+              "muted": true,
+              "volume": 100,
+              "state": 3
+            },
+            {
+              "at": 7569.4000000059605,
+              "time": 0,
+              "muted": true,
+              "volume": 100,
+              "state": -1
+            }
+          ]
+        }
+      },
+      "verdict": {
+        "mounted": true,
+        "onReady": true,
+        "playing": false,
+        "time_advances": false,
+        "starts_muted": null,
+        "onError": [
+          150
+        ]
+      }
+    },
+    {
+      "url": "https://jakawi.club/principal",
+      "width": 390,
+      "blocked_mutations": [
+        {
+          "path": "/medicion",
+          "method": "POST"
+        }
+      ],
+      "embed_requests": [
+        {
+          "url": "https://www.youtube-nocookie.com/embed/P42gDOTL6Ys?origin=https%3A%2F%2Fjakawi.club&playsinline=1&controls=0&enablejsapi=1&cc_load_policy=0&iv_load_policy=3&autoplay=0&rel=0&widgetid=1&forigin=https%3A%2F%2Fjakawi.club%2Fprincipal&aoriginsup=1&vf=1",
+          "headers": {
+            "Referer": "https://jakawi.club/"
+          }
+        }
+      ],
+      "http_errors": [],
+      "network_errors": [
+        {
+          "type": "Fetch",
+          "error": "net::ERR_ABORTED"
+        }
+      ],
+      "runtime_errors": [],
+      "headers": {
+        "referrer-policy": "strict-origin-when-cross-origin",
+        "x-frame-options": "SAMEORIGIN"
+      },
+      "autoplay": {
+        "source": "https://www.youtube.com/watch?v=P42gDOTL6Ys",
+        "show_video": true,
+        "registration_open": true,
+        "frame": {
+          "x": 16,
+          "y": 293.75,
+          "width": 358,
+          "height": 477.328125
+        },
+        "region": {
+          "x": 16,
+          "y": 293.75,
+          "width": 358,
+          "height": 477.328125
+        },
+        "iframe": {
+          "src": "https://www.youtube-nocookie.com/embed/P42gDOTL6Ys?origin=https%3A%2F%2Fjakawi.club&playsinline=1&controls=0&enablejsapi=1&cc_load_policy=0&iv_load_policy=3&autoplay=0&rel=0&widgetid=1&forigin=https%3A%2F%2Fjakawi.club%2Fprincipal&aoriginsup=1&vf=1",
+          "allow": "autoplay; encrypted-media; fullscreen; picture-in-picture",
+          "referrerPolicy": "strict-origin-when-cross-origin",
+          "box": {
+            "x": -370.71875,
+            "y": 214.203125,
+            "width": 1131.453125,
+            "height": 636.421875
+          }
+        },
+        "state": "error",
+        "overflow": false,
+        "posters": 0,
+        "error": "YouTube rechaz\u00f3 la reproducci\u00f3n insertada (c\u00f3digo 150). Intenta de nuevo aqu\u00ed.",
+        "active_youtube_iframes": 1,
+        "external_video_links": [],
+        "sound_overlay": false,
+        "probe": {
+          "events": [
+            {
+              "name": "onReady",
+              "data": null,
+              "at": 4019,
+              "before": {
+                "time": 0,
+                "duration": 8,
+                "muted": false,
+                "volume": 100,
+                "state": 5
+              },
+              "after": {
+                "time": 0,
+                "duration": 8,
+                "muted": false,
+                "volume": 100,
+                "state": 5
+              }
+            },
+            {
+              "name": "onStateChange",
+              "data": -1,
+              "at": 4603,
+              "before": {
+                "time": 0,
+                "duration": 8,
+                "muted": true,
+                "volume": 100,
+                "state": -1
+              },
+              "after": {
+                "time": 0,
+                "duration": 8,
+                "muted": true,
+                "volume": 100,
+                "state": -1
+              }
+            },
+            {
+              "name": "onStateChange",
+              "data": 3,
+              "at": 4610.699999988079,
+              "before": {
+                "time": 0,
+                "duration": 8,
+                "muted": true,
+                "volume": 100,
+                "state": 3
+              },
+              "after": {
+                "time": 0,
+                "duration": 8,
+                "muted": true,
+                "volume": 100,
+                "state": 3
+              }
+            },
+            {
+              "name": "onError",
+              "data": 150,
+              "at": 4921.799999982119,
+              "before": {
+                "time": 0,
+                "duration": 8,
+                "muted": true,
+                "volume": 100,
+                "state": 3
+              },
+              "after": {
+                "time": 0,
+                "duration": 8,
+                "muted": true,
+                "volume": 100,
+                "state": 3
+              }
+            },
+            {
+              "name": "onStateChange",
+              "data": -1,
+              "at": 4922.5,
+              "before": {
+                "time": 0,
+                "duration": 8,
+                "muted": true,
+                "volume": 100,
+                "state": -1
+              },
+              "after": {
+                "time": 0,
+                "duration": 8,
+                "muted": true,
+                "volume": 100,
+                "state": -1
+              }
+            }
+          ],
+          "commands": [
+            {
+              "name": "mute",
+              "args": [],
+              "at": 4020,
+              "before": {
+                "time": 0,
+                "duration": 8,
+                "muted": false,
+                "volume": 100,
+                "state": 5
+              }
+            },
+            {
+              "name": "playVideo",
+              "args": [],
+              "at": 4022.699999988079,
+              "before": {
+                "time": 0,
+                "duration": 8,
+                "muted": false,
+                "volume": 100,
+                "state": 5
+              }
+            }
+          ],
+          "instances": [
+            {
+              "videoId": "P42gDOTL6Ys",
+              "host": "https://www.youtube-nocookie.com",
+              "playerVars": {
+                "origin": "https://jakawi.club",
+                "playsinline": 1,
+                "controls": 0,
+                "enablejsapi": 1,
+                "cc_load_policy": 0,
+                "iv_load_policy": 3,
+                "autoplay": 0,
+                "rel": 0
+              }
+            }
+          ],
+          "samples": [
+            {
+              "at": 4191.299999982119,
+              "time": 0,
+              "muted": false,
+              "volume": 100,
+              "state": 5
+            },
+            {
+              "at": 4610.4000000059605,
+              "time": 0,
+              "muted": true,
+              "volume": 100,
+              "state": -1
+            },
+            {
+              "at": 5100.0999999940395,
+              "time": 0,
+              "muted": true,
+              "volume": 100,
+              "state": -1
+            }
+          ]
+        }
+      },
+      "verdict": {
+        "mounted": true,
+        "onReady": true,
+        "playing": false,
+        "time_advances": false,
+        "starts_muted": null,
+        "onError": [
+          150
+        ]
+      }
+    },
+    {
+      "url": "https://jakawi.club/",
+      "width": 390,
+      "blocked_mutations": [
+        {
+          "path": "/medicion",
+          "method": "POST"
+        }
+      ],
+      "embed_requests": [
+        {
+          "url": "https://www.youtube-nocookie.com/embed/P42gDOTL6Ys?origin=https%3A%2F%2Fjakawi.club&playsinline=1&controls=0&enablejsapi=1&cc_load_policy=0&iv_load_policy=3&autoplay=0&rel=0&widgetid=1&forigin=https%3A%2F%2Fjakawi.club%2F&aoriginsup=1&vf=1",
+          "headers": {
+            "Referer": "https://jakawi.club/"
+          }
+        }
+      ],
+      "http_errors": [],
+      "network_errors": [
+        {
+          "type": "Fetch",
+          "error": "net::ERR_ABORTED"
+        }
+      ],
+      "runtime_errors": [],
+      "headers": {
+        "referrer-policy": "strict-origin-when-cross-origin",
+        "x-frame-options": "SAMEORIGIN"
+      },
+      "autoplay": {
+        "source": "https://www.youtube.com/watch?v=P42gDOTL6Ys",
+        "show_video": true,
+        "registration_open": true,
+        "frame": {
+          "x": 16,
+          "y": 293.75,
+          "width": 358,
+          "height": 477.328125
+        },
+        "region": {
+          "x": 16,
+          "y": 293.75,
+          "width": 358,
+          "height": 477.328125
+        },
+        "iframe": {
+          "src": "https://www.youtube-nocookie.com/embed/P42gDOTL6Ys?origin=https%3A%2F%2Fjakawi.club&playsinline=1&controls=0&enablejsapi=1&cc_load_policy=0&iv_load_policy=3&autoplay=0&rel=0&widgetid=1&forigin=https%3A%2F%2Fjakawi.club%2F&aoriginsup=1&vf=1",
+          "allow": "autoplay; encrypted-media; fullscreen; picture-in-picture",
+          "referrerPolicy": "strict-origin-when-cross-origin",
+          "box": {
+            "x": -370.71875,
+            "y": 214.203125,
+            "width": 1131.453125,
+            "height": 636.421875
+          }
+        },
+        "state": "error",
+        "overflow": false,
+        "posters": 0,
+        "error": "YouTube rechaz\u00f3 la reproducci\u00f3n insertada (c\u00f3digo 150). Intenta de nuevo aqu\u00ed.",
+        "active_youtube_iframes": 1,
+        "external_video_links": [],
+        "sound_overlay": false,
+        "probe": {
+          "events": [
+            {
+              "name": "onReady",
+              "data": null,
+              "at": 2112.600000023842,
+              "before": {
+                "time": 0,
+                "duration": 8,
+                "muted": false,
+                "volume": 100,
+                "state": 5
+              },
+              "after": {
+                "time": 0,
+                "duration": 8,
+                "muted": false,
+                "volume": 100,
+                "state": 5
+              }
+            },
+            {
+              "name": "onStateChange",
+              "data": -1,
+              "at": 2682,
+              "before": {
+                "time": 0,
+                "duration": 8,
+                "muted": true,
+                "volume": 100,
+                "state": -1
+              },
+              "after": {
+                "time": 0,
+                "duration": 8,
+                "muted": true,
+                "volume": 100,
+                "state": -1
+              }
+            },
+            {
+              "name": "onStateChange",
+              "data": 3,
+              "at": 2691.800000011921,
+              "before": {
+                "time": 0,
+                "duration": 8,
+                "muted": true,
+                "volume": 100,
+                "state": 3
+              },
+              "after": {
+                "time": 0,
+                "duration": 8,
+                "muted": true,
+                "volume": 100,
+                "state": 3
+              }
+            },
+            {
+              "name": "onError",
+              "data": 150,
+              "at": 3015,
+              "before": {
+                "time": 0,
+                "duration": 8,
+                "muted": true,
+                "volume": 100,
+                "state": 3
+              },
+              "after": {
+                "time": 0,
+                "duration": 8,
+                "muted": true,
+                "volume": 100,
+                "state": 3
+              }
+            },
+            {
+              "name": "onStateChange",
+              "data": -1,
+              "at": 3015.4000000059605,
+              "before": {
+                "time": 0,
+                "duration": 8,
+                "muted": true,
+                "volume": 100,
+                "state": -1
+              },
+              "after": {
+                "time": 0,
+                "duration": 8,
+                "muted": true,
+                "volume": 100,
+                "state": -1
+              }
+            }
+          ],
+          "commands": [
+            {
+              "name": "mute",
+              "args": [],
+              "at": 2113.300000011921,
+              "before": {
+                "time": 0,
+                "duration": 8,
+                "muted": false,
+                "volume": 100,
+                "state": 5
+              }
+            },
+            {
+              "name": "playVideo",
+              "args": [],
+              "at": 2113.5,
+              "before": {
+                "time": 0,
+                "duration": 8,
+                "muted": false,
+                "volume": 100,
+                "state": 5
+              }
+            }
+          ],
+          "instances": [
+            {
+              "videoId": "P42gDOTL6Ys",
+              "host": "https://www.youtube-nocookie.com",
+              "playerVars": {
+                "origin": "https://jakawi.club",
+                "playsinline": 1,
+                "controls": 0,
+                "enablejsapi": 1,
+                "cc_load_policy": 0,
+                "iv_load_policy": 3,
+                "autoplay": 0,
+                "rel": 0
+              }
+            }
+          ],
+          "samples": [
+            {
+              "at": 2114.5,
+              "time": 0,
+              "muted": false,
+              "volume": 100,
+              "state": 5
+            },
+            {
+              "at": 2692.7000000178814,
+              "time": 0,
+              "muted": true,
+              "volume": 100,
+              "state": 3
+            },
+            {
+              "at": 3206.7000000178814,
+              "time": 0,
+              "muted": true,
+              "volume": 100,
+              "state": -1
+            }
+          ]
+        }
+      },
+      "verdict": {
+        "mounted": true,
+        "onReady": true,
+        "playing": false,
+        "time_advances": false,
+        "starts_muted": null,
+        "onError": [
+          150
+        ]
+      }
+    },
+    {
+      "url": "https://jakawi.com/l/elmeromero-padel-desde-cero",
+      "width": 430,
+      "blocked_mutations": [],
+      "embed_requests": [
+        {
+          "url": "https://www.youtube-nocookie.com/embed/P42gDOTL6Ys?origin=https%3A%2F%2Fjakawi.com&playsinline=1&controls=0&enablejsapi=1&cc_load_policy=0&iv_load_policy=3&autoplay=0&rel=0&widgetid=1&forigin=https%3A%2F%2Fjakawi.com%2Fl%2Felmeromero-padel-desde-cero&aoriginsup=1&vf=1",
+          "headers": {
+            "Referer": "https://jakawi.com/"
+          }
+        }
+      ],
+      "http_errors": [],
+      "network_errors": [],
+      "runtime_errors": [],
+      "headers": {
+        "x-frame-options": "SAMEORIGIN"
+      },
+      "autoplay": {
+        "source": "https://www.youtube.com/shorts/P42gDOTL6Ys",
+        "show_video": null,
+        "registration_open": null,
+        "frame": {
+          "x": 16,
+          "y": 129.75,
+          "width": 398,
+          "height": 530.65625
+        },
+        "region": {
+          "x": 16,
+          "y": 129.75,
+          "width": 398,
+          "height": 530.65625
+        },
+        "iframe": {
+          "src": "https://www.youtube-nocookie.com/embed/P42gDOTL6Ys?origin=https%3A%2F%2Fjakawi.com&playsinline=1&controls=0&enablejsapi=1&cc_load_policy=0&iv_load_policy=3&autoplay=0&rel=0&widgetid=1&forigin=https%3A%2F%2Fjakawi.com%2Fl%2Felmeromero-padel-desde-cero&aoriginsup=1&vf=1",
+          "allow": "autoplay; encrypted-media; fullscreen; picture-in-picture",
+          "referrerPolicy": "strict-origin-when-cross-origin",
+          "box": {
+            "x": -413.9375,
+            "y": 41.3125,
+            "width": 1257.875,
+            "height": 707.53125
+          }
+        },
+        "state": null,
+        "overflow": false,
+        "posters": 0,
+        "error": "YouTube rechaz\u00f3 la reproducci\u00f3n (c\u00f3digo 150). Consulta el diagn\u00f3stico del proveedor.",
+        "active_youtube_iframes": 1,
+        "external_video_links": [],
+        "sound_overlay": false,
+        "probe": {
+          "events": [
+            {
+              "name": "onReady",
+              "data": null,
+              "at": 3365.199999988079,
+              "before": {
+                "time": 0,
+                "duration": 8,
+                "muted": false,
+                "volume": 100,
+                "state": 5
+              },
+              "after": {
+                "time": 0,
+                "duration": 8,
+                "muted": false,
+                "volume": 100,
+                "state": 5
+              }
+            },
+            {
+              "name": "onStateChange",
+              "data": -1,
+              "at": 4128.9000000059605,
+              "before": {
+                "time": 0,
+                "duration": 8,
+                "muted": true,
+                "volume": 100,
+                "state": -1
+              },
+              "after": {
+                "time": 0,
+                "duration": 8,
+                "muted": true,
+                "volume": 100,
+                "state": -1
+              }
+            },
+            {
+              "name": "onStateChange",
+              "data": 3,
+              "at": 4198,
+              "before": {
+                "time": 0,
+                "duration": 8,
+                "muted": true,
+                "volume": 100,
+                "state": 3
+              },
+              "after": {
+                "time": 0,
+                "duration": 8,
+                "muted": true,
+                "volume": 100,
+                "state": 3
+              }
+            },
+            {
+              "name": "onError",
+              "data": 150,
+              "at": 5094.5999999940395,
+              "before": {
+                "time": 0,
+                "duration": 8,
+                "muted": true,
+                "volume": 100,
+                "state": 3
+              },
+              "after": {
+                "time": 0,
+                "duration": 8,
+                "muted": true,
+                "volume": 100,
+                "state": 3
+              }
+            },
+            {
+              "name": "onStateChange",
+              "data": -1,
+              "at": 5097.0999999940395,
+              "before": {
+                "time": 0,
+                "duration": 8,
+                "muted": true,
+                "volume": 100,
+                "state": -1
+              },
+              "after": {
+                "time": 0,
+                "duration": 8,
+                "muted": true,
+                "volume": 100,
+                "state": -1
+              }
+            }
+          ],
+          "commands": [
+            {
+              "name": "mute",
+              "args": [],
+              "at": 3369.5,
+              "before": {
+                "time": 0,
+                "duration": 8,
+                "muted": false,
+                "volume": 100,
+                "state": 5
+              }
+            },
+            {
+              "name": "playVideo",
+              "args": [],
+              "at": 3369.9000000059605,
+              "before": {
+                "time": 0,
+                "duration": 8,
+                "muted": false,
+                "volume": 100,
+                "state": 5
+              }
+            }
+          ],
+          "instances": [
+            {
+              "videoId": "P42gDOTL6Ys",
+              "host": "https://www.youtube-nocookie.com",
+              "playerVars": {
+                "origin": "https://jakawi.com",
+                "playsinline": 1,
+                "controls": 0,
+                "enablejsapi": 1,
+                "cc_load_policy": 0,
+                "iv_load_policy": 3,
+                "autoplay": 0,
+                "rel": 0
+              }
+            }
+          ],
+          "samples": [
+            {
+              "at": 3816.199999988079,
+              "time": 0,
+              "muted": false,
+              "volume": 100,
+              "state": 5
+            },
+            {
+              "at": 4125.9000000059605,
+              "time": 0,
+              "muted": true,
+              "volume": 100,
+              "state": 5
+            },
+            {
+              "at": 4905.4000000059605,
+              "time": 0,
+              "muted": true,
+              "volume": 100,
+              "state": 3
+            }
+          ]
+        }
+      },
+      "verdict": {
+        "mounted": true,
+        "onReady": true,
+        "playing": false,
+        "time_advances": false,
+        "starts_muted": null,
+        "onError": [
+          150
+        ]
+      }
+    },
+    {
+      "url": "https://jakawi.club/principal",
+      "width": 430,
+      "blocked_mutations": [
+        {
+          "path": "/medicion",
+          "method": "POST"
+        }
+      ],
+      "embed_requests": [
+        {
+          "url": "https://www.youtube-nocookie.com/embed/P42gDOTL6Ys?origin=https%3A%2F%2Fjakawi.club&playsinline=1&controls=0&enablejsapi=1&cc_load_policy=0&iv_load_policy=3&autoplay=0&rel=0&widgetid=1&forigin=https%3A%2F%2Fjakawi.club%2Fprincipal&aoriginsup=1&vf=1",
+          "headers": {
+            "Referer": "https://jakawi.club/"
+          }
+        }
+      ],
+      "http_errors": [],
+      "network_errors": [
+        {
+          "type": "Fetch",
+          "error": "net::ERR_ABORTED"
+        }
+      ],
+      "runtime_errors": [],
+      "headers": {
+        "referrer-policy": "strict-origin-when-cross-origin",
+        "x-frame-options": "SAMEORIGIN"
+      },
+      "autoplay": {
+        "source": "https://www.youtube.com/watch?v=P42gDOTL6Ys",
+        "show_video": true,
+        "registration_open": true,
+        "frame": {
+          "x": 16,
+          "y": 293.75,
+          "width": 398,
+          "height": 530.65625
+        },
+        "region": {
+          "x": 16,
+          "y": 293.75,
+          "width": 398,
+          "height": 530.65625
+        },
+        "iframe": {
+          "src": "https://www.youtube-nocookie.com/embed/P42gDOTL6Ys?origin=https%3A%2F%2Fjakawi.club&playsinline=1&controls=0&enablejsapi=1&cc_load_policy=0&iv_load_policy=3&autoplay=0&rel=0&widgetid=1&forigin=https%3A%2F%2Fjakawi.club%2Fprincipal&aoriginsup=1&vf=1",
+          "allow": "autoplay; encrypted-media; fullscreen; picture-in-picture",
+          "referrerPolicy": "strict-origin-when-cross-origin",
+          "box": {
+            "x": -413.9375,
+            "y": 205.3125,
+            "width": 1257.875,
+            "height": 707.53125
+          }
+        },
+        "state": "error",
+        "overflow": false,
+        "posters": 0,
+        "error": "YouTube rechaz\u00f3 la reproducci\u00f3n insertada (c\u00f3digo 150). Intenta de nuevo aqu\u00ed.",
+        "active_youtube_iframes": 1,
+        "external_video_links": [],
+        "sound_overlay": false,
+        "probe": {
+          "events": [
+            {
+              "name": "onReady",
+              "data": null,
+              "at": 2209.100000023842,
+              "before": {
+                "time": 0,
+                "duration": 8,
+                "muted": false,
+                "volume": 100,
+                "state": 5
+              },
+              "after": {
+                "time": 0,
+                "duration": 8,
+                "muted": false,
+                "volume": 100,
+                "state": 5
+              }
+            },
+            {
+              "name": "onStateChange",
+              "data": -1,
+              "at": 2780.7000000178814,
+              "before": {
+                "time": 0,
+                "duration": 8,
+                "muted": true,
+                "volume": 100,
+                "state": -1
+              },
+              "after": {
+                "time": 0,
+                "duration": 8,
+                "muted": true,
+                "volume": 100,
+                "state": -1
+              }
+            },
+            {
+              "name": "onStateChange",
+              "data": 3,
+              "at": 2796.9000000059605,
+              "before": {
+                "time": 0,
+                "duration": 8,
+                "muted": true,
+                "volume": 100,
+                "state": 3
+              },
+              "after": {
+                "time": 0,
+                "duration": 8,
+                "muted": true,
+                "volume": 100,
+                "state": 3
+              }
+            },
+            {
+              "name": "onError",
+              "data": 150,
+              "at": 3111.100000023842,
+              "before": {
+                "time": 0,
+                "duration": 8,
+                "muted": true,
+                "volume": 100,
+                "state": 3
+              },
+              "after": {
+                "time": 0,
+                "duration": 8,
+                "muted": true,
+                "volume": 100,
+                "state": 3
+              }
+            },
+            {
+              "name": "onStateChange",
+              "data": -1,
+              "at": 3111.800000011921,
+              "before": {
+                "time": 0,
+                "duration": 8,
+                "muted": true,
+                "volume": 100,
+                "state": -1
+              },
+              "after": {
+                "time": 0,
+                "duration": 8,
+                "muted": true,
+                "volume": 100,
+                "state": -1
+              }
+            }
+          ],
+          "commands": [
+            {
+              "name": "mute",
+              "args": [],
+              "at": 2209.300000011921,
+              "before": {
+                "time": 0,
+                "duration": 8,
+                "muted": false,
+                "volume": 100,
+                "state": 5
+              }
+            },
+            {
+              "name": "playVideo",
+              "args": [],
+              "at": 2209.5,
+              "before": {
+                "time": 0,
+                "duration": 8,
+                "muted": false,
+                "volume": 100,
+                "state": 5
+              }
+            }
+          ],
+          "instances": [
+            {
+              "videoId": "P42gDOTL6Ys",
+              "host": "https://www.youtube-nocookie.com",
+              "playerVars": {
+                "origin": "https://jakawi.club",
+                "playsinline": 1,
+                "controls": 0,
+                "enablejsapi": 1,
+                "cc_load_policy": 0,
+                "iv_load_policy": 3,
+                "autoplay": 0,
+                "rel": 0
+              }
+            }
+          ],
+          "samples": [
+            {
+              "at": 2212.7000000178814,
+              "time": 0,
+              "muted": false,
+              "volume": 100,
+              "state": 5
+            },
+            {
+              "at": 2782.100000023842,
+              "time": 0,
+              "muted": true,
+              "volume": 100,
+              "state": -1
+            },
+            {
+              "at": 3294.9000000059605,
+              "time": 0,
+              "muted": true,
+              "volume": 100,
+              "state": -1
+            }
+          ]
+        }
+      },
+      "verdict": {
+        "mounted": true,
+        "onReady": true,
+        "playing": false,
+        "time_advances": false,
+        "starts_muted": null,
+        "onError": [
+          150
+        ]
+      }
+    },
+    {
+      "url": "https://jakawi.com/l/elmeromero-padel-desde-cero",
+      "width": 1440,
+      "blocked_mutations": [],
+      "embed_requests": [
+        {
+          "url": "https://www.youtube-nocookie.com/embed/P42gDOTL6Ys?origin=https%3A%2F%2Fjakawi.com&playsinline=1&controls=0&enablejsapi=1&cc_load_policy=0&iv_load_policy=3&autoplay=0&rel=0&widgetid=1&forigin=https%3A%2F%2Fjakawi.com%2Fl%2Felmeromero-padel-desde-cero&aoriginsup=1&vf=2",
+          "headers": {
+            "Referer": "https://jakawi.com/"
+          }
+        }
+      ],
+      "http_errors": [],
+      "network_errors": [],
+      "runtime_errors": [],
+      "headers": {
+        "x-frame-options": "SAMEORIGIN"
+      },
+      "autoplay": {
+        "source": "https://www.youtube.com/shorts/P42gDOTL6Ys",
+        "show_video": null,
+        "registration_open": null,
+        "frame": {
+          "x": 852,
+          "y": 32,
+          "width": 460,
+          "height": 613.328125
+        },
+        "region": {
+          "x": 852,
+          "y": 32,
+          "width": 460,
+          "height": 613.328125
+        },
+        "iframe": {
+          "src": "https://www.youtube-nocookie.com/embed/P42gDOTL6Ys?origin=https%3A%2F%2Fjakawi.com&playsinline=1&controls=0&enablejsapi=1&cc_load_policy=0&iv_load_policy=3&autoplay=0&rel=0&widgetid=1&forigin=https%3A%2F%2Fjakawi.com%2Fl%2Felmeromero-padel-desde-cero&aoriginsup=1&vf=2",
+          "allow": "autoplay; encrypted-media; fullscreen; picture-in-picture",
+          "referrerPolicy": "strict-origin-when-cross-origin",
+          "box": {
+            "x": 355.09375,
+            "y": -70.21875,
+            "width": 1453.8125,
+            "height": 817.765625
+          }
+        },
+        "state": null,
+        "overflow": false,
+        "posters": 0,
+        "error": "YouTube rechaz\u00f3 la reproducci\u00f3n (c\u00f3digo 150). Consulta el diagn\u00f3stico del proveedor.",
+        "active_youtube_iframes": 1,
+        "external_video_links": [],
+        "sound_overlay": false,
+        "probe": {
+          "events": [
+            {
+              "name": "onReady",
+              "data": null,
+              "at": 3211.9000000059605,
+              "before": {
+                "time": 0,
+                "duration": 0,
+                "muted": false,
+                "volume": 100,
+                "state": 5
+              },
+              "after": {
+                "time": 0,
+                "duration": 0,
+                "muted": false,
+                "volume": 100,
+                "state": 5
+              }
+            },
+            {
+              "name": "onStateChange",
+              "data": -1,
+              "at": 3667.199999988079,
+              "before": {
+                "time": 0,
+                "duration": 0,
+                "muted": true,
+                "volume": 100,
+                "state": -1
+              },
+              "after": {
+                "time": 0,
+                "duration": 0,
+                "muted": true,
+                "volume": 100,
+                "state": -1
+              }
+            },
+            {
+              "name": "onStateChange",
+              "data": 3,
+              "at": 3667.699999988079,
+              "before": {
+                "time": 0,
+                "duration": 0,
+                "muted": true,
+                "volume": 100,
+                "state": 3
+              },
+              "after": {
+                "time": 0,
+                "duration": 0,
+                "muted": true,
+                "volume": 100,
+                "state": 3
+              }
+            },
+            {
+              "name": "onStateChange",
+              "data": -1,
+              "at": 4574.5999999940395,
+              "before": {
+                "time": 0,
+                "duration": 0,
+                "muted": true,
+                "volume": 100,
+                "state": -1
+              },
+              "after": {
+                "time": 0,
+                "duration": 0,
+                "muted": true,
+                "volume": 100,
+                "state": -1
+              }
+            },
+            {
+              "name": "onStateChange",
+              "data": 3,
+              "at": 4578.9000000059605,
+              "before": {
+                "time": 0,
+                "duration": 0,
+                "muted": true,
+                "volume": 100,
+                "state": 3
+              },
+              "after": {
+                "time": 0,
+                "duration": 0,
+                "muted": true,
+                "volume": 100,
+                "state": 3
+              }
+            },
+            {
+              "name": "onError",
+              "data": 150,
+              "at": 4881.5,
+              "before": {
+                "time": 0,
+                "duration": 0,
+                "muted": true,
+                "volume": 100,
+                "state": 3
+              },
+              "after": {
+                "time": 0,
+                "duration": 0,
+                "muted": true,
+                "volume": 100,
+                "state": 3
+              }
+            },
+            {
+              "name": "onStateChange",
+              "data": -1,
+              "at": 4882.300000011921,
+              "before": {
+                "time": 0,
+                "duration": 8,
+                "muted": true,
+                "volume": 100,
+                "state": -1
+              },
+              "after": {
+                "time": 0,
+                "duration": 8,
+                "muted": true,
+                "volume": 100,
+                "state": -1
+              }
+            }
+          ],
+          "commands": [
+            {
+              "name": "mute",
+              "args": [],
+              "at": 3211.9000000059605,
+              "before": {
+                "time": 0,
+                "duration": 0,
+                "muted": false,
+                "volume": 100,
+                "state": 5
+              }
+            },
+            {
+              "name": "playVideo",
+              "args": [],
+              "at": 3212.199999988079,
+              "before": {
+                "time": 0,
+                "duration": 0,
+                "muted": false,
+                "volume": 100,
+                "state": 5
+              }
+            }
+          ],
+          "instances": [
+            {
+              "videoId": "P42gDOTL6Ys",
+              "host": "https://www.youtube-nocookie.com",
+              "playerVars": {
+                "origin": "https://jakawi.com",
+                "playsinline": 1,
+                "controls": 0,
+                "enablejsapi": 1,
+                "cc_load_policy": 0,
+                "iv_load_policy": 3,
+                "autoplay": 0,
+                "rel": 0
+              }
+            }
+          ],
+          "samples": [
+            {
+              "at": 3594.0999999940395,
+              "time": 0,
+              "muted": false,
+              "volume": 100,
+              "state": 5
+            },
+            {
+              "at": 3898.699999988079,
+              "time": 0,
+              "muted": true,
+              "volume": 100,
+              "state": 3
+            },
+            {
+              "at": 4573,
+              "time": 0,
+              "muted": true,
+              "volume": 100,
+              "state": 3
+            },
+            {
+              "at": 4914.800000011921,
+              "time": 0,
+              "muted": true,
+              "volume": 100,
+              "state": -1
+            }
+          ]
+        }
+      },
+      "verdict": {
+        "mounted": true,
+        "onReady": true,
+        "playing": false,
+        "time_advances": false,
+        "starts_muted": null,
+        "onError": [
+          150
+        ]
+      }
+    },
+    {
+      "url": "https://jakawi.club/principal",
+      "width": 1440,
+      "blocked_mutations": [
+        {
+          "path": "/medicion",
+          "method": "POST"
+        }
+      ],
+      "embed_requests": [
+        {
+          "url": "https://www.youtube-nocookie.com/embed/P42gDOTL6Ys?origin=https%3A%2F%2Fjakawi.club&playsinline=1&controls=0&enablejsapi=1&cc_load_policy=0&iv_load_policy=3&autoplay=0&rel=0&widgetid=1&forigin=https%3A%2F%2Fjakawi.club%2Fprincipal&aoriginsup=1&vf=3",
+          "headers": {
+            "Referer": "https://jakawi.club/"
+          }
+        }
+      ],
+      "http_errors": [],
+      "network_errors": [
+        {
+          "type": "Fetch",
+          "error": "net::ERR_ABORTED"
+        }
+      ],
+      "runtime_errors": [],
+      "headers": {
+        "referrer-policy": "strict-origin-when-cross-origin",
+        "x-frame-options": "SAMEORIGIN"
+      },
+      "autoplay": {
+        "source": "https://www.youtube.com/watch?v=P42gDOTL6Ys",
+        "show_video": true,
+        "registration_open": true,
+        "frame": {
+          "x": 847.984375,
+          "y": 129,
+          "width": 416,
+          "height": 554.65625
+        },
+        "region": {
+          "x": 847.984375,
+          "y": 129,
+          "width": 416,
+          "height": 554.65625
+        },
+        "iframe": {
+          "src": "https://www.youtube-nocookie.com/embed/P42gDOTL6Ys?origin=https%3A%2F%2Fjakawi.club&playsinline=1&controls=0&enablejsapi=1&cc_load_policy=0&iv_load_policy=3&autoplay=0&rel=0&widgetid=1&forigin=https%3A%2F%2Fjakawi.club%2Fprincipal&aoriginsup=1&vf=3",
+          "allow": "autoplay; encrypted-media; fullscreen; picture-in-picture",
+          "referrerPolicy": "strict-origin-when-cross-origin",
+          "box": {
+            "x": 398.609375,
+            "y": 36.5625,
+            "width": 1314.75,
+            "height": 739.53125
+          }
+        },
+        "state": "error",
+        "overflow": false,
+        "posters": 0,
+        "error": "YouTube rechaz\u00f3 la reproducci\u00f3n insertada (c\u00f3digo 150). Intenta de nuevo aqu\u00ed.",
+        "active_youtube_iframes": 1,
+        "external_video_links": [],
+        "sound_overlay": false,
+        "probe": {
+          "events": [
+            {
+              "name": "onReady",
+              "data": null,
+              "at": 3864.5999999940395,
+              "before": {
+                "time": 0,
+                "duration": 8,
+                "muted": false,
+                "volume": 100,
+                "state": 5
+              },
+              "after": {
+                "time": 0,
+                "duration": 8,
+                "muted": false,
+                "volume": 100,
+                "state": 5
+              }
+            },
+            {
+              "name": "onStateChange",
+              "data": -1,
+              "at": 4461.899999976158,
+              "before": {
+                "time": 0,
+                "duration": 8,
+                "muted": true,
+                "volume": 100,
+                "state": -1
+              },
+              "after": {
+                "time": 0,
+                "duration": 8,
+                "muted": true,
+                "volume": 100,
+                "state": -1
+              }
+            },
+            {
+              "name": "onStateChange",
+              "data": 3,
+              "at": 4470.199999988079,
+              "before": {
+                "time": 0,
+                "duration": 8,
+                "muted": true,
+                "volume": 100,
+                "state": 3
+              },
+              "after": {
+                "time": 0,
+                "duration": 8,
+                "muted": true,
+                "volume": 100,
+                "state": 3
+              }
+            },
+            {
+              "name": "onError",
+              "data": 150,
+              "at": 4767.399999976158,
+              "before": {
+                "time": 0,
+                "duration": 8,
+                "muted": true,
+                "volume": 100,
+                "state": 3
+              },
+              "after": {
+                "time": 0,
+                "duration": 8,
+                "muted": true,
+                "volume": 100,
+                "state": 3
+              }
+            },
+            {
+              "name": "onStateChange",
+              "data": -1,
+              "at": 4768.299999982119,
+              "before": {
+                "time": 0,
+                "duration": 8,
+                "muted": true,
+                "volume": 100,
+                "state": -1
+              },
+              "after": {
+                "time": 0,
+                "duration": 8,
+                "muted": true,
+                "volume": 100,
+                "state": -1
+              }
+            }
+          ],
+          "commands": [
+            {
+              "name": "mute",
+              "args": [],
+              "at": 3865.199999988079,
+              "before": {
+                "time": 0,
+                "duration": 8,
+                "muted": false,
+                "volume": 100,
+                "state": 5
+              }
+            },
+            {
+              "name": "playVideo",
+              "args": [],
+              "at": 3865.7999999821186,
+              "before": {
+                "time": 0,
+                "duration": 8,
+                "muted": false,
+                "volume": 100,
+                "state": 5
+              }
+            }
+          ],
+          "instances": [
+            {
+              "videoId": "P42gDOTL6Ys",
+              "host": "https://www.youtube-nocookie.com",
+              "playerVars": {
+                "origin": "https://jakawi.club",
+                "playsinline": 1,
+                "controls": 0,
+                "enablejsapi": 1,
+                "cc_load_policy": 0,
+                "iv_load_policy": 3,
+                "autoplay": 0,
+                "rel": 0
+              }
+            }
+          ],
+          "samples": [
+            {
+              "at": 4187.0999999940395,
+              "time": 0,
+              "muted": false,
+              "volume": 100,
+              "state": 5
+            },
+            {
+              "at": 4469.899999976158,
+              "time": 0,
+              "muted": true,
+              "volume": 100,
+              "state": -1
+            },
+            {
+              "at": 4979.0999999940395,
+              "time": 0,
+              "muted": true,
+              "volume": 100,
+              "state": -1
+            }
+          ]
+        }
+      },
+      "provider_visible_diagnostic": "Sign in to confirm you\u2019re not a bot",
+      "verdict": {
+        "mounted": true,
+        "onReady": true,
+        "playing": false,
+        "time_advances": false,
+        "starts_muted": null,
+        "onError": [
+          150
+        ]
+      }
+    }
+  ],
+  "collection_note": "Seven real production observations using the same Chromium build and real provider. The final CLUB page used a fresh browser with read-only provider DOM inspection after an accumulated session timed out in CDP. An additional COM observation is retained below.",
+  "additional_observations": [
+    {
+      "url": "https://jakawi.com/l/elmeromero-padel-desde-cero",
+      "width": 1440,
+      "verdict": {
+        "mounted": true,
+        "onReady": true,
+        "playing": false,
+        "time_advances": false,
+        "starts_muted": null,
+        "onError": []
+      },
+      "provider_visible_diagnostic": null,
+      "last_sample": {
+        "at": 48179.40000000596,
+        "time": 0,
+        "muted": true,
+        "volume": 100,
+        "state": 3
+      },
+      "observation": "Separate real COM run remained buffering at media time 0 without onError during its observation window."
+    }
+  ]
+}

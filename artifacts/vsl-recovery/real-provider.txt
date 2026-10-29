@@ -1,0 +1,7 @@
+{"url": "https://jakawi.com/l/elmeromero-padel-desde-cero", "width": 390, "mounted": true, "onReady": true, "playing": false, "time_advances": false, "starts_muted": null, "onError": [150]}
+{"url": "https://jakawi.club/principal", "width": 390, "mounted": true, "onReady": true, "playing": false, "time_advances": false, "starts_muted": null, "onError": [150]}
+{"url": "https://jakawi.club/", "width": 390, "mounted": true, "onReady": true, "playing": false, "time_advances": false, "starts_muted": null, "onError": [150]}
+{"url": "https://jakawi.com/l/elmeromero-padel-desde-cero", "width": 430, "mounted": true, "onReady": true, "playing": false, "time_advances": false, "starts_muted": null, "onError": [150]}
+{"url": "https://jakawi.club/principal", "width": 430, "mounted": true, "onReady": true, "playing": false, "time_advances": false, "starts_muted": null, "onError": [150]}
+{"url": "https://jakawi.com/l/elmeromero-padel-desde-cero", "width": 1440, "mounted": true, "onReady": true, "playing": false, "time_advances": false, "starts_muted": null, "onError": [150]}
+{"url": "https://jakawi.club/principal", "width": 1440, "mounted": true, "onReady": true, "playing": false, "time_advances": false, "starts_muted": null, "onError": [150]}
