@@ -88,10 +88,7 @@ class LandingContent
             if (! is_array($video)) {
                 continue;
             }
-            // Retire the rejected seed from legacy snapshots without rewriting them.
-            if (! isset($video['source_type']) && LaunchSettings::youtubeUrl($video['youtube_url'] ?? null) === 'https://www.youtube.com/watch?v=P42gDOTL6Ys') {
-                $video['youtube_url'] = null;
-            }
+            // Add metadata without changing a campaign's published media or visibility.
             // Legacy frames normalize in memory; the visual ratio is no longer editable.
             $content[$key] = [...self::videoDefaults(), ...$video, 'aspect_ratio' => '3:4'];
         }

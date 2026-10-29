@@ -155,7 +155,7 @@ try {
     check(App\Support\LandingContent::confirmationVideo($content['confirmation_video'])['youtube_url'] === $content['confirmation_video']['youtube_url'], 'video específico tiene prioridad sobre default');
     config(['jakawi.confirmation_video_url' => null]);
     check(App\Support\LandingContent::confirmationVideo()['youtube_url'] === null, 'sin URL no inventa video');
-    check(LaunchSettings::defaultVideoUrl('https://youtu.be/P42gDOTL6Ys') === null, 'error 150 histórico nunca se usa como default');
+    check(LaunchSettings::defaultVideoUrl('https://youtu.be/P42gDOTL6Ys') === 'https://www.youtube.com/watch?v=P42gDOTL6Ys', 'default aprobado no se excluye por ID ni por fallos observados del proveedor');
     config(['jakawi.whatsapp_group_url' => 'https://chat.whatsapp.com/ApprovedGroupFixture123']);
     check(payload(http('GET', '/principal/confirmado', [], true))['props']['confirmation']['whatsapp_group_url'] === null, 'recibo sin grupo permanece sin grupo tras cambiar fallback');
     freshBrowser(); app('cache')->flush();
@@ -194,9 +194,9 @@ try {
     check(isset($normalized['after_registration'], $normalized['next_step'], $normalized['presentation']), 'snapshots antiguos reciben defaults solo en memoria');
     $blockedLegacy = $legacy;
     $blockedLegacy['video'] = ['youtube_url' => 'https://youtu.be/P42gDOTL6Ys', 'poster' => null, 'aspect_ratio' => '16:9', 'source_aspect_ratio' => '9:16'];
-    check(App\Support\LandingContent::withPresentation($blockedLegacy)['video']['youtube_url'] === null
+    check(App\Support\LandingContent::withPresentation($blockedLegacy)['video']['youtube_url'] === $blockedLegacy['video']['youtube_url']
         && App\Support\LandingContent::withPresentation($blockedLegacy)['video']['aspect_ratio'] === '3:4'
-        && $blockedLegacy['video']['youtube_url'] !== null, 'default heredado con error 150 se retira en memoria sin alterar snapshot');
+        && $blockedLegacy['video']['youtube_url'] !== null, 'URL publicada heredada se conserva al añadir metadatos y marco 3:4');
     foreach (['source_type' => 'html', 'focal_x' => -0.1, 'focal_y' => 1.1, 'youtube_url' => 'https://youtube.com.evil.test/watch?v=M7lc1UVf-VE', 'poster' => 'https://evil.test/poster.png'] as $key => $bad) {
         $rejected = false;
         try { App\Support\LandingContent::validate([...$content, 'confirmation_video' => [...$content['confirmation_video'], $key => $bad]]); } catch (Illuminate\Validation\ValidationException) { $rejected = true; }

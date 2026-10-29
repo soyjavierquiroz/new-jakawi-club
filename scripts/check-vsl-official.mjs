@@ -78,7 +78,7 @@ try {
     let html = await (await fetch('https://jakawi.club/')).text();
     const pattern = /(<script\b[^>]*data-page="app"[^>]*>)([\s\S]*?)(<\/script>)/;
     const original = JSON.parse(html.match(pattern)[2]);
-    assert.equal(original.props.launch.registration_open, false);
+    assert.equal(typeof original.props.launch.registration_open, 'boolean');
     const approvedUrl = 'https://www.youtube.com/watch?v=M7lc1UVf-VE'; // browser contract fixture only
     if (!live) {
         const oldManifest = JSON.parse(await readFile('/workspace/public/build/manifest.json', 'utf8'));
@@ -111,7 +111,7 @@ try {
             }
             if(url.hostname==='jakawi.club'&&url.pathname.startsWith('/__vsl/')){
                 const name=url.pathname.split('/').at(-1),page=structuredClone(original);
-                page.url=url.pathname+url.search;page.props.landing.preview=name==='preview';
+                page.url=url.pathname+url.search;page.props.landing.preview=name==='preview';page.props.launch.registration_open=name==='registration';
                 const content=page.props.landing.content;
                 content.presentation.template=name==='waitlist'?'WAITLIST':name.startsWith('webinar')?'WEBINAR':'LEAD_VSL';
                 page.props.launch.video_url=approvedUrl;
@@ -165,7 +165,7 @@ try {
         await click('.vsl-play');assert(await progress()<.02);assert(await evaluate(`!window.__vslPlayer.muted&&window.__vslPlayer.time===0`),'Replay retains audio and restarts');await emit(1);
         assert(!metrics.some(e=>['progress','retention','audio-activated'].includes(e.event)),'Dummy is not analytics');
         await evaluate('window.__vslOptions.events.onError({data:150})');await until(`document.querySelector('[data-vsl-state]').dataset.vslState==='error'`,'Provider 150');
-        assert(await evaluate(`document.querySelector('[role=status] a')?.href===${JSON.stringify(approvedUrl)}&&document.querySelector('[role=status]').textContent.includes('150')`),'Visible normal YouTube fallback');
+        assert(await evaluate(`!document.querySelector('[role=status] a')&&document.querySelector('[role=status]').textContent.includes('150')`),'Visible provider error with no outbound video link');
         await screenshot(`vsl-error-${width}`);await click('.vsl-play');await until('window.__instances===2','Retry replaces failed engine');
         console.log('VSL lifecycle/crop passed',width);
         checks.push({name:'official-vsl-lifecycle',width,fixture:'YouTube API contract + virtual decorative clock',geometry,passed:true,analytics_before_clock:eventsBefore});
@@ -185,10 +185,10 @@ try {
     for(const name of ['waitlist','webinar-off','no-video','webinar']){
         const before=apiRequests;await navigate(name);await pause(150);
         if(name==='webinar'){await until('!!window.__vslOptions','Webinar mounts player');assert.equal(await evaluate('document.querySelectorAll(".vsl-player").length'),1);}
-        else{assert.equal(apiRequests,before,'Hidden/missing video never loads YouTube');assert(await evaluate('!document.querySelector("iframe,script[src*=youtube]")'));}
+        else{assert.equal(apiRequests,before,'Hidden/missing video never loads YouTube');assert(await evaluate('!document.querySelector("iframe,script[src*=youtube]")'));assert(await evaluate(`(()=>{const hero=document.querySelector('.conversion-hero');return getComputedStyle(hero).gridTemplateColumns.split(' ').length===1&&!document.querySelector('.hero-media')})()`),'Missing video leaves a single column without an empty media slot');}
         checks.push({name,passed:true,fixture:true});
     }
-    await navigate('api-error');await until(`document.querySelector('[data-vsl-state]').dataset.vslState==='error'`,'API load failure becomes error');assert(await evaluate(`document.querySelector('.vsl-play').textContent.includes('Intentar de nuevo')&&!!document.querySelector('[role=status] a')`));
+    await navigate('api-error');await until(`document.querySelector('[data-vsl-state]').dataset.vslState==='error'`,'API load failure becomes error');assert(await evaluate(`document.querySelector('.vsl-play').textContent.includes('Intentar de nuevo')&&!document.querySelector('[role=status] a')`));
     await evaluate('window.__allowAPIRetry=true');await click('.vsl-play');await until('!!window.__vslOptions','API failure retry loads again');
     await navigate('horizontal');await until('!!window.__vslOptions','Horizontal frame');await emit(1);await pause(100);assert(await evaluate(`(()=>{const f=document.querySelector('.vsl-frame').getBoundingClientRect(),i=document.querySelector('iframe').getBoundingClientRect();return Math.abs(f.width/f.height-3/4)<.001&&Math.abs(i.width/i.height-3/4)<.001})()`),'Legacy horizontal settings render in a fixed 3:4 frame without distortion');
     // Existing sticky and international phone behavior uses intercepted form requests.
@@ -217,7 +217,7 @@ try {
             const read=`(()=>{const p=window.__realPlayer;return p?.getCurrentTime?{time:p.getCurrentTime(),muted:p.isMuted(),volume:p.getVolume(),state:p.getPlayerState(),videoId:p.getVideoData()?.video_id}:null})()`;
             const before=await evaluate(read);await pause(1500);const after=await evaluate(read);const events=await evaluate('window.__realEvents');
             const verified=!!before&&!!after&&events.some(e=>e.name==='onStateChange'&&e.data===1)&&after.state===1&&after.time>before.time&&before.muted&&after.muted;
-            const row={width,state:await state(),fixture:false,native_clock_and_connection:true,source:approvedUrl,events,before,after,verified_muted_playback:verified,audio_verified:false,fallback_visible:await evaluate(`!!document.querySelector('[role=status] a')`)};
+            const row={width,state:await state(),fixture:false,native_clock_and_connection:true,source:original.props.launch.video_url,events,before,after,verified_muted_playback:verified,audio_verified:false,fallback_visible:await evaluate(`!!document.querySelector('[role=status] a')`)};
             if(verified&&await evaluate('!!document.querySelector("[data-vsl-sound]")')){
                 const point=await evaluate(`(()=>{const r=document.querySelector('[data-vsl-sound]').getBoundingClientRect();return {x:r.x+r.width/2,y:r.y+r.height/2}})()`);await call('Input.dispatchMouseEvent',{type:'mousePressed',button:'left',clickCount:1,...point});await call('Input.dispatchMouseEvent',{type:'mouseReleased',button:'left',clickCount:1,...point});await pause(1000);row.audio_before=await evaluate(read);await pause(1000);row.audio_after=await evaluate(read);row.audio_events=await evaluate('window.__realEvents');row.audio_verified=row.audio_events.slice(events.length).some(e=>e.name==='onStateChange'&&e.data===1)&&!!row.audio_before&&!!row.audio_after&&!row.audio_after.muted&&row.audio_after.state===1&&row.audio_after.time>row.audio_before.time;
             }

@@ -96,7 +96,7 @@ try {
         f.callbacks.onStateChange({data:2});check(f.e.getState().status==='blocked','Late pause preserves blocked state');f.e.dispose();
     }
     {
-        const f=await fixture(false);f.callbacks.onReady({target:f.p});f.callbacks.onError({data:150});check(f.e.getState().error.code===150 && f.e.getState().error.kind==='media' && /no permite/.test(f.e.getState().error.message),'150 preserved with clear embedding error');f.e.dispose();
+        const f=await fixture(false);f.callbacks.onReady({target:f.p});f.callbacks.onError({data:150});check(f.e.getState().error.code===150 && f.e.getState().error.kind==='media' && /rechazó/.test(f.e.getState().error.message),'150 preserved with provider error and in-page retry');f.e.dispose();
     }
     {
         const nativeTimeout=globalThis.setTimeout,nativeClear=globalThis.clearTimeout;let deadline;

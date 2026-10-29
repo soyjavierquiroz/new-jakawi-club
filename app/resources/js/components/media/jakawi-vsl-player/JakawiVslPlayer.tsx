@@ -8,7 +8,6 @@ import { useDecorativeProgress } from './use-decorative-progress';
 import type { JakawiVslPlayerProps } from './types';
 import { useVslPlayback } from './use-vsl-playback';
 import { videoThemeColors } from './video-theme';
-import { parseYoutubeId } from './youtube-engine';
 
 export function JakawiVslPlayer(props: JakawiVslPlayerProps) {
     props = { ...props, framing: typeof props.framing === 'string' ? { kind: props.framing } : props.framing };
@@ -21,8 +20,6 @@ export function JakawiVslPlayer(props: JakawiVslPlayerProps) {
     const colors = videoThemeColors(props.colors);
     const { state, youtubeRef, engineRef, retry } = useVslPlayback(props);
     const sourceKey = `${props.source.type}:${props.source.url}`;
-    let watchUrl: string | undefined;
-    try { watchUrl = `https://www.youtube.com/watch?v=${parseYoutubeId(props.source.url)}`; } catch { /* Engine reports invalid sources. */ }
     const [progressReset, setProgressReset] = useState(0);
     const progress = useDecorativeProgress(
         state,
@@ -55,7 +52,7 @@ export function JakawiVslPlayer(props: JakawiVslPlayerProps) {
     const manual = ['ready', 'paused', 'ended', 'blocked', 'error'].includes(
         state.status,
     );
-    const showPoster = !state.hasPlayed || state.status === 'ended';
+    const showPoster = !state.error && (!state.hasPlayed || state.status === 'ended');
     const replay = () => {
         setProgressReset((value) => value + 1);
         engineRef.current?.seek(0);
@@ -222,8 +219,7 @@ export function JakawiVslPlayer(props: JakawiVslPlayerProps) {
                 </>
                 {state.error && (
                     <p role="status" className={styles.error}>
-                        {state.error.message}{' '}
-                        {watchUrl && <a href={watchUrl} target="_blank" rel="noopener noreferrer">Ver en YouTube</a>}
+                        {state.error.message}
                     </p>
                 )}
                 {(state.status === 'initializing' ||

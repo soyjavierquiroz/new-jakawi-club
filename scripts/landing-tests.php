@@ -237,6 +237,24 @@ try {
     check($import['configuration']['after_registration']['title'] === 'Gracias importadas' && $import['configuration']['next_step'] === $next['next_step'] && $landing->fresh()->configuration === $next && $landing->fresh()->published_configuration === $savedPublic, 'importación de gracias no persiste ni publica y conserva destino');
     $legacy = $home->configuration; unset($legacy['presentation']);
     check(App\Support\LandingContent::withPresentation($legacy)['presentation']['template'] === 'LEAD_VSL', 'snapshots anteriores compatibles sin migración');
+    $originalHome = $home->fresh()->published_configuration;
+    $publishedLegacy = $originalHome;
+    unset($publishedLegacy['presentation'], $publishedLegacy['video']['source_type']);
+    $publishedLegacy['video']['youtube_url'] = 'https://www.youtube.com/watch?v=P42gDOTL6Ys';
+    $home->update(['published_configuration' => $publishedLegacy]);
+    foreach (['/', '/principal'] as $route) {
+        $liveProps = payload(http('GET', $route, [], true))['props'];
+        check($liveProps['launch']['video_url'] === $publishedLegacy['video']['youtube_url'] && $liveProps['landing']['content']['presentation']['show_video'], 'URL VSL publicada heredada llega al renderer: '.$route);
+    }
+    check($home->fresh()->published_configuration === $publishedLegacy, 'normalización de lectura no reescribe el snapshot publicado');
+    $publishedLegacy['presentation'] = ['show_video' => false];
+    $home->update(['published_configuration' => $publishedLegacy]);
+    $hiddenProps = payload(http('GET', '/principal', [], true))['props'];
+    check(! $hiddenProps['landing']['content']['presentation']['show_video'] && $hiddenProps['launch']['video_url'] === $publishedLegacy['video']['youtube_url'], 'ocultar video conserva la URL publicada');
+    $publishedLegacy['video']['youtube_url'] = null;
+    $home->update(['published_configuration' => $publishedLegacy]);
+    check(payload(http('GET', '/principal', [], true))['props']['launch']['video_url'] === null, 'ausencia explícita de video de campaña no recibe fallback de otra campaña');
+    $home->update(['published_configuration' => $originalHome]);
     require '/tests/campaigns-admin-tests.php';
     file_put_contents('/evidence/browser-fixtures.json', json_encode([
         'invalid_import' => payload(http('POST', '/admin/landings/import', ['editorial_json' => json_encode(['schema' => App\Support\LandingContent::SCHEMA, 'content' => ['hero' => ['title' => null]]])])),

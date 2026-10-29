@@ -142,7 +142,8 @@
 .compact-hero .hero-heading, .compact-hero .hero-copy { max-width: 46rem; margin-inline: auto; padding-top: 0; }
 .compact-hero .hero-eyebrow { justify-content: center; }
 .compact-hero .hero-media { margin-inline: auto; }
-.hero-without-media { grid-template-areas: 'heading' 'copy'; padding-bottom: 2.5rem; }
+.hero-without-media { grid-template-columns: minmax(0, 1fr); grid-template-areas: 'heading' 'copy'; grid-template-rows: auto auto; row-gap: 1.5rem; padding-bottom: 2.5rem; }
+.hero-without-media .hero-heading, .hero-without-media .hero-copy { width: 100%; max-width: 46rem; margin-inline: auto; padding-top: 0; }
 @media (max-width: 768px) {
     [data-mobile-view="editor"] > .landing-editor-preview, [data-mobile-view="preview"] > .landing-editor-content { display: none; }
 }

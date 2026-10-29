@@ -66,3 +66,7 @@ credentials.json
 /artifacts/campaigns/LIVE.json
 /artifacts/campaigns/*fixtures.json
 /artifacts/campaigns/browser-debug.json
+
+/artifacts/vsl-recovery/LIVE.json
+/artifacts/vsl-recovery/*fixtures.json
+/artifacts/vsl-recovery/vsl-*.png

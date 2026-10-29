@@ -70,9 +70,7 @@ class LaunchSettings
 
     public static function defaultVideoUrl(mixed $value): ?string
     {
-        $url = self::youtubeUrl($value);
-        // This historical default is known to reject embedding (YouTube 150).
-        return $url === 'https://www.youtube.com/watch?v=P42gDOTL6Ys' ? null : $url;
+        return self::youtubeUrl($value);
     }
 
     /** @return array<string, mixed> */

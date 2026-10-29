@@ -138,7 +138,7 @@ export function createYoutubeEngine(
     const readiness = setTimeout(() => {
         if (!alive || state.ready) return;
         initializationExpired = true;
-        fail('media', 'YouTube está tardando en responder. Intenta de nuevo o abre el video en YouTube.');
+        fail('media', 'YouTube está tardando en responder. Intenta de nuevo aquí.');
     }, 20000);
     const update = (patch: Partial<PlaybackState>) => {
         if (!alive) return;
@@ -309,7 +309,7 @@ export function createYoutubeEngine(
                             clearTimeout(stall);
                             stall = setTimeout(() => {
                                 if (alive && state.status === 'buffering')
-                                    fail('media', 'No se pudo continuar el video. Intenta de nuevo o ábrelo en YouTube.');
+                                    fail('media', 'No se pudo continuar el video. Intenta de nuevo aquí.');
                             }, 20000);
                         }
                     },
@@ -317,8 +317,8 @@ export function createYoutubeEngine(
                         fail(
                             'media',
                             data === 150 || data === 101
-                                ? `Este video no permite reproducción insertada (YouTube ${data}). Puedes verlo en YouTube.`
-                                : `YouTube rechazó la reproducción (código ${data}). Puedes abrir el video en YouTube.`,
+                                ? `YouTube rechazó la reproducción insertada (código ${data}). Intenta de nuevo aquí.`
+                                : `YouTube rechazó la reproducción (código ${data}). Intenta de nuevo aquí.`,
                             data,
                         ),
                     onAutoplayBlocked: () => {
