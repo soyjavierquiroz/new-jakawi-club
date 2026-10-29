@@ -1,0 +1,1 @@
+{"passed_groups":27,"viewports":[390,430,1440],"live":true,"real_registration_open":false,"no_live_accounts":true}

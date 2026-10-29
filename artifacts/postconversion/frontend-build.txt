@@ -1,0 +1,42 @@
+
+> typecheck
+> tsc --noEmit
+
+
+> build
+> vite build --outDir public/build-next
+
+vite v8.3.5 building client environment for production...
+transforming...
+✓ 711 modules transformed.
+rendering chunks...
+computing gzip size...
+public/build-next/manifest.json                                       4.51 kB │ gzip:   0.70 kB
+public/build-next/assets/instrument-sans-400-normal-DRC__1Mx.woff2   16.86 kB
+public/build-next/assets/instrument-sans-500-normal-Dk9ku72i.woff2   17.23 kB
+public/build-next/assets/instrument-sans-600-normal-B7fBEWYG.woff2   17.40 kB
+public/build-next/assets/montserrat-600-normal-UVxSCcoG.woff2        18.68 kB
+public/build-next/assets/montserrat-500-normal-DRFEGfly.woff2        18.74 kB
+public/build-next/assets/montserrat-400-normal-BLhwKU8k.woff2        18.78 kB
+public/build-next/assets/montserrat-700-normal-BdjcYUrC.woff2        18.82 kB
+public/build-next/assets/montserrat-800-normal-axpkC1rd.woff2        19.01 kB
+public/build-next/assets/Welcome-D9iDiMfH.css                         4.69 kB │ gzip:   1.39 kB
+public/build-next/assets/app-Cvkb0nbA.css                            31.75 kB │ gzip:   7.22 kB
+public/build-next/assets/Landings-BAe8oq0b.js                         1.81 kB │ gzip:   0.79 kB
+public/build-next/assets/Dashboard-BQICtYbL.js                        3.55 kB │ gzip:   1.30 kB
+public/build-next/assets/Auth-B5K5ZDBB.js                             3.65 kB │ gzip:   1.39 kB
+public/build-next/assets/Privacy-_xk6TZo-.js                          3.83 kB │ gzip:   1.67 kB
+public/build-next/assets/Registered-ojw02mBL.js                       4.28 kB │ gzip:   1.76 kB
+public/build-next/assets/UI-R9PGKdYl.js                               6.38 kB │ gzip:   2.70 kB
+public/build-next/assets/LandingEditor-CLhr_0wq.js                   24.33 kB │ gzip:   7.96 kB
+public/build-next/assets/Welcome-0i3ghlHA.js                        229.41 kB │ gzip:  62.61 kB
+public/build-next/assets/app-CsuFI8bQ.js                            351.28 kB │ gzip: 109.64 kB
+
+✓ built in 4.11s
+[PLUGIN_TIMINGS] JavaScript callbacks ran for 3.3s of this 4.0s build (81%).
+The slowest callbacks, timed inside each callback (the wait before a callback starts is excluded, the time it awaits is included):
+  - plugin @tailwindcss/vite:generate:build transform (62%, 2.5s, 2 calls)
+Additional callback time came from the callbacks below and from callbacks under 1s.
+1 callback is listed without a time. Its calls overlapped, so the time inside one call includes work from other calls. To find its cost, profile the build with `node --cpu-prof`:
+  - plugin vite:css transform (2 calls)
+See https://rolldown.rs/reference/InputOptions.checks#bundlertimings for more details.

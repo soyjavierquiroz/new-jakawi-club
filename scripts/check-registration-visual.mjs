@@ -6,7 +6,7 @@ import assert from 'node:assert/strict';
 import { lookup } from 'node:dns/promises';
 
 const output = '/evidence';
-const widths = [390, 1440];
+const widths = [390, 430, 1440];
 const live = process.argv.includes('--live');
 await mkdir(output, { recursive: true });
 const reference = await readFile('/workspace/resources/css/jakawi-theme.css', 'utf8');
@@ -192,8 +192,9 @@ try {
         assert.deepEqual(data.fields.map(f => f.autocomplete), ['name', 'tel-national', 'email']);
         assert.equal(data.fields[1].inputMode, 'tel');
         assert.equal(data.formCount, 1); assert(!data.overflow && !data.warnings);
-        assert(!data.privacyChecked && data.privacyRequired, 'Required consent needs affirmative acceptance');
-        assert.equal(data.privacyText, 'Acepto el aviso de privacidad');
+        assert(data.privacyChecked && data.privacyRequired, 'Required consent begins checked at owner request');
+        assert(!await evaluate(`!!document.querySelector('#phone-help')||document.body.textContent.includes('Incluye el código de área')`));
+        assert.equal(data.privacyText, 'Acepto el acuerdo de privacidad');
         assert.equal(data.privacyUrl, 'https://jakawi.club/privacidad');
         assert(data.country.includes('Bolivia +591') && data.flag.endsWith('/BO.svg'));
         assert.equal(data.cta, 'QUIERO SER PARTE DE JAKAWI');
@@ -235,7 +236,6 @@ try {
     await click('[data-marketing-cta=sticky]');
     await until(`location.hash==='#registro'&&document.activeElement.id==='registro'&&document.querySelector('.mobile-sticky-cta').hidden`, 'Sticky focuses the shared form');
     await fill('#name', 'Persona de prueba'); await fill('#email', 'browser@example.invalid'); await fill('#phone', '1');
-    await click('#privacy');
     const count = submissions.length;
     await evaluate(`document.querySelector('#registro form').requestSubmit()`);
     await until(`document.querySelector('#phone').getAttribute('aria-invalid')==='true'&&document.activeElement.id==='phone'`, 'Invalid national number gets an accessible local error');
@@ -259,7 +259,7 @@ try {
     assert(await evaluate(`document.querySelector('dialog').contains(document.activeElement)`), 'Dialog traps focus');
     await key('Escape', 'Escape', 27);
     assert(await evaluate(`!document.querySelector('dialog').open&&document.activeElement.matches('.phone-country')`));
-    await click('#privacy'); // Withdraw the explicit acceptance made above.
+    await click('#privacy'); // Uncheck the initial acceptance; required validation still applies.
     await evaluate(`document.querySelector('#registro form').requestSubmit()`); await pause(100);
     assert.equal(submissions.length, count, 'Unchecked required consent blocks submission');
     assert(await evaluate(`!document.querySelector('#privacy').checked&&!document.querySelector('#privacy').validity.valid`));
@@ -272,7 +272,7 @@ try {
     assert.equal(payload.phone, '+59170000000'); assert.equal(payload.privacy, true);
     assert.equal(payload.referral_code, referral); assert.equal(payload.landing_id, original.props.landing.id);
     assert.deepEqual(Object.keys(payload).sort(), ['email', 'landing_id', 'name', 'phone', 'privacy', 'referral_code'], 'No marketing subscription is bundled into consent');
-    const errors = { name: 'Escribe tu nombre.', email: 'Escribe un correo electrónico válido.', privacy: 'Debes aceptar el aviso de privacidad para continuar.' };
+    const errors = { name: 'Escribe tu nombre.', email: 'Escribe un correo electrónico válido.', privacy: 'Debes aceptar el acuerdo de privacidad para continuar.' };
     const responsePage = { ...fixturePage, url: '/__registration/LEAD_VSL', props: { ...fixturePage.props, errors } };
     await call('Fetch.fulfillRequest', { requestId: heldSubmission, responseCode: 200,
         responseHeaders: [{ name: 'Content-Type', value: 'application/json' }, { name: 'X-Inertia', value: 'true' }],

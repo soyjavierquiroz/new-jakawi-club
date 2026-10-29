@@ -149,6 +149,10 @@ class AuthController extends Controller
         if ($activatedUser) {
             Auth::login($activatedUser);
             $request->session()->regenerate();
+            $digest = hash_hmac('sha256', $activatedUser->email, config('app.key'));
+            if (! hash_equals($digest, (string) $request->session()->get('registration_email_digest', ''))) {
+                $request->session()->forget(['registration_receipt', 'registration_email_digest']);
+            }
             $request->session()->put('welcome_expires_at', now()->addMinutes(15)->timestamp);
 
             return redirect()->route('welcome');

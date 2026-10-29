@@ -4,7 +4,7 @@ import { Arrow, ErrorText, Flash } from '../UI';
 import { InternationalPhoneInput } from './InternationalPhoneInput';
 
 export function RegistrationForm({ open, referralCode, landingId }: { open: boolean; referralCode: string | null; landingId?: number }) {
-    const form = useForm({ name: '', phone: '', email: '', privacy: false, referral_code: referralCode || '', ...(landingId ? { landing_id: landingId } : {}) });
+    const form = useForm({ name: '', phone: '', email: '', privacy: true, referral_code: referralCode || '', ...(landingId ? { landing_id: landingId } : {}) });
     const phoneValue = useRef('');
     const errorFocus = useRef<string | null>(null);
     useEffect(() => {
@@ -30,7 +30,7 @@ export function RegistrationForm({ open, referralCode, landingId }: { open: bool
                 <div><InternationalPhoneInput error={form.errors.phone} onChange={phone => { phoneValue.current = phone; form.setData('phone', phone); form.clearErrors('phone'); }} onBlur={() => { if (!phoneValue.current) form.setError('phone', 'Revisa el número y el país seleccionado.'); }} /><ErrorText id="phone-error">{form.errors.phone}</ErrorText><input type="hidden" name="phone" value={form.data.phone} /></div>
                 <div><label className="sr-only" htmlFor="email">Correo electrónico</label><input className="input" id="email" name="email" placeholder="Tu correo electrónico" type="email" autoComplete="email" maxLength={254} required value={form.data.email} onChange={event => form.setData('email', event.target.value)} aria-invalid={!!form.errors.email} aria-describedby={form.errors.email ? 'email-error' : undefined} /><ErrorText id="email-error">{form.errors.email}</ErrorText></div>
                 <input type="hidden" name="referral_code" value={form.data.referral_code} />
-                <label className="checkbox-label"><input className="checkbox" id="privacy" type="checkbox" name="privacy" required checked={form.data.privacy} onChange={event => form.setData('privacy', event.target.checked)} aria-invalid={!!form.errors.privacy} aria-describedby={form.errors.privacy ? 'privacy-error' : undefined} /><span>Acepto el <Link href="/privacidad" className="underline underline-offset-2">aviso de privacidad</Link></span></label>
+                <label className="checkbox-label"><input className="checkbox" id="privacy" type="checkbox" name="privacy" required checked={form.data.privacy} onChange={event => form.setData('privacy', event.target.checked)} aria-invalid={!!form.errors.privacy} aria-describedby={form.errors.privacy ? 'privacy-error' : undefined} /><span>Acepto el <Link href="/privacidad" className="underline underline-offset-2">acuerdo de privacidad</Link></span></label>
                 <ErrorText id="privacy-error">{form.errors.privacy}</ErrorText><ErrorText>{form.errors.referral_code}</ErrorText>
                 <button className="btn btn-primary w-full" disabled={!open || form.processing} aria-busy={form.processing} aria-describedby={!open ? 'registration-status' : undefined} type="submit">{form.processing ? 'Un momento…' : 'QUIERO SER PARTE DE JAKAWI'}<Arrow /></button>
             </fieldset>

@@ -127,12 +127,15 @@ try {
                 page = structuredClone(editor);
                 page.url = base+'/editar';
             } else {
-                page = structuredClone(url.pathname.endsWith('/crear') ? fixtures.create : url.pathname.endsWith('/preview') ? fixtures.preview : url.pathname === '/admin/landings' ? fixtures.index : editor);
+                page = structuredClone(url.pathname.endsWith('/preview/confirmado') ? fixtures.confirmation_preview : url.pathname.endsWith('/crear') ? fixtures.create : url.pathname.endsWith('/preview') ? fixtures.preview : url.pathname === '/admin/landings' ? fixtures.index : editor);
                 if (url.pathname.endsWith('/preview')) {
                     page.props.landing.content = structuredClone(editor.props.landing.configuration);
                     page.props.landing.revision = editor.props.landing.revision;
                     page.props.launch.video_url = page.props.landing.content.video.youtube_url;
                     page.props.launch.video_poster = page.props.landing.content.video.poster;
+                }
+                if (url.pathname.endsWith('/preview/confirmado')) {
+                    page.props.confirmation.content = structuredClone(editor.props.landing.configuration.after_registration);
                 }
                 page.url = url.pathname;
             }
@@ -167,7 +170,7 @@ try {
     await click('EXPORTAR JSON');
     let exported=JSON.parse(await evaluate(`document.querySelector('#editorial-output').value`));
     assert.equal(exported.content.hero.title,'Titular desde el editor');
-    assert.equal(exported.schema,'jakawi-club-landing-v1');
+    assert.equal(exported.schema,'jakawi-club-landing-v2');
     assert(!exported.content.video && !exported.content.presentation && !exported.campaign && !exported.status);
     await click('Copiar contenido');
     assert.equal(JSON.parse(await evaluate('navigator.clipboard.readText()')).content.hero.title,'Titular desde el editor');
@@ -179,7 +182,7 @@ try {
     await click('Cerrar');
     await click('COPIAR BRIEF PARA IA');
     const brief=await evaluate('navigator.clipboard.readText()');
-    assert(brief.includes('JAKAWI.CLUB')&&brief.includes('CERRADO')&&brief.includes('jakawi-club-landing-v1')&&brief.includes('Titular desde el editor')&&brief.includes('No inventar ofertas'));
+    assert(brief.includes('JAKAWI.CLUB')&&brief.includes('CERRADO')&&brief.includes('jakawi-club-landing-v2')&&brief.includes('Titular desde el editor')&&brief.includes('No inventar ofertas'));
     assert(!brief.includes('youtube_url')&&!brief.includes('editor@example.test')&&!brief.includes('PasswordEditor123')&&!brief.includes('APP_KEY'));
     await click('IMPORTAR JSON');
     await setField('editorial-json',JSON.stringify({schema:'jakawi-club-landing-v1',content:{hero:{title:null}}}));
@@ -220,6 +223,22 @@ try {
         checks.push({name:'real-renderer-preview',...result});
         await screenshot(`preview-${width}`);
     }
+    await evaluate(`[...document.querySelectorAll('summary')].find(e=>e.textContent==='Después del registro').parentElement.open=true`);
+    assert(await evaluate(`!!document.getElementById('content.after_registration.title')`));
+    assert(await evaluate(`!!document.querySelector('#next-countdown')`),'WhatsApp countdown control is available');
+    await click('Después del registro');
+    for (const width of [390,430,1440]) {
+        await click(width===1440?'Desktop':String(width));
+        await until(`document.querySelector('iframe')?.contentWindow?.innerWidth===${width}&&!!document.querySelector('iframe')?.contentDocument?.querySelector('[data-activation]')`,'Saved confirmation preview renders');
+        const result=await evaluate(`(()=>{const f=document.querySelector('iframe'),d=f.contentDocument;return {overflow:d.documentElement.scrollWidth>f.contentWindow.innerWidth,preview:d.body.textContent.includes('Vista previa del borrador'),activation:d.querySelector('[data-activation]').dataset.activation,title:d.querySelector('h1').textContent,timer:!!d.querySelector('[role=timer]')}})()`);
+        assert(!result.overflow && result.preview && !result.timer); assert.equal(result.activation,'pending');
+        assert.equal(result.title,editor.props.landing.configuration.after_registration.title);
+        await evaluate(`document.querySelector('.landing-editor-preview').scrollIntoView({block:'start'});document.querySelector('iframe').contentWindow.scrollTo(0,document.querySelector('iframe').contentDocument.querySelector('main').offsetTop)`);
+        await screenshot(`confirmation-preview-${width}`);
+        checks.push({name:'real-confirmation-preview',width,...result});
+    }
+    await click('Landing');
+    await until(`!!document.querySelector('iframe')?.contentDocument?.querySelector('#registro')`,'Back to landing preview');
     assert.equal(metrics.length,0,'Preview sends no analytics');
     assert.equal(operations.length,1,'Preview never saves or publishes');
     await click('Publicar versión guardada');
@@ -282,7 +301,7 @@ try {
     assert(!await evaluate('!!document.querySelector("iframe")'));
     assert(await evaluate('document.documentElement.scrollWidth<=innerWidth'));
     await click('IMPORTAR JSON'); await click('Cerrar'); await click('EXPORTAR JSON');
-    assert(JSON.parse(await evaluate(`document.querySelector('#editorial-output').value`)).schema==='jakawi-club-landing-v1');
+    assert(JSON.parse(await evaluate(`document.querySelector('#editorial-output').value`)).schema==='jakawi-club-landing-v2');
     await click('Cerrar'); await screenshot('create-390');
     await navigate('/admin/landings');
     assert(await evaluate('document.documentElement.scrollWidth<=innerWidth'));

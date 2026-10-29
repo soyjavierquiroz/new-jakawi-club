@@ -10,6 +10,8 @@ export type LandingTemplate = 'LEAD_VSL' | 'WEBINAR' | 'WAITLIST';
 
 export type LandingContent = {
     presentation: { template: LandingTemplate; show_video: boolean; show_faq: boolean };
+    after_registration: { title: string; message: string; instructions: string; cta_label: string };
+    next_step: { action: 'none' | 'recover' | 'account' | 'home' | 'whatsapp'; redirect_seconds: 0 | 5 | 10 | 15 | 30 | 60 };
     seo: { title: string; description: string };
     hero: { eyebrow: string; title: string; emphasis: string; ending: string; description: string; cta: string };
     benefits: { eyebrow: string; title: string; description: string; items: { title: string; description: string }[] };

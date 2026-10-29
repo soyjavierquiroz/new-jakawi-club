@@ -8,9 +8,10 @@ use Illuminate\Validation\ValidationException;
 
 class LandingContent
 {
-    public const SCHEMA = 'jakawi-club-landing-v1';
+    public const SCHEMA = 'jakawi-club-landing-v2';
+    public const LEGACY_SCHEMA = 'jakawi-club-landing-v1';
     public const TEMPLATES = ['LEAD_VSL', 'WEBINAR', 'WAITLIST'];
-    public const EDITORIAL = ['seo', 'hero', 'benefits', 'registration', 'faq', 'final'];
+    public const EDITORIAL = ['seo', 'hero', 'benefits', 'registration', 'faq', 'final', 'after_registration'];
 
     /** The local LEAD_VSL template; editorial data never includes operational settings. */
     public static function defaults(): array
@@ -34,19 +35,27 @@ class LandingContent
                 ['question' => '¿Qué información recibiré?', 'answer' => 'El correo se utiliza para activar la cuenta y recuperar el acceso. Aquí publicaremos las novedades del lanzamiento, los próximos encuentros y el acceso a la comunidad cuando estén confirmados.'],
             ]],
             'final' => ['eyebrow' => 'TU CIUDAD. TU PRÓXIMO CAPÍTULO.', 'title' => 'Hay mucho por vivir. Empecemos juntos.', 'description' => 'Sé parte del comienzo de JAKAWI en Cochabamba.', 'cta' => 'QUIERO SER PARTE'],
+            'after_registration' => self::confirmationDefaults(),
+            'next_step' => ['action' => 'recover', 'redirect_seconds' => 0],
             'video' => ['youtube_url' => LaunchSettings::youtubeUrl(config('jakawi.video_url')), 'poster' => LaunchSettings::videoPoster(config('jakawi.video_poster')), 'aspect_ratio' => '3:4', 'source_aspect_ratio' => '9:16'],
         ];
     }
 
+    public static function confirmationDefaults(): array
+    {
+        return ['title' => 'Gracias por dar el siguiente paso.', 'message' => 'Recibimos tu solicitud. Si podemos completarla, recibirás un correo con el siguiente paso. Revisa también tu carpeta de spam.', 'instructions' => 'Continúa con el siguiente paso. Puedes solicitar otro enlace de acceso si lo necesitas.', 'cta_label' => 'Continuar'];
+    }
+
     public static function envelope(array $content): array
     {
+        $content = self::withPresentation($content);
         return ['schema' => self::SCHEMA, 'template' => $content['presentation']['template'] ?? 'LEAD_VSL', 'content' => array_intersect_key($content, array_flip(self::EDITORIAL))];
     }
 
     /** Legacy snapshots gain presentation defaults in memory, without database writes. */
     public static function withPresentation(array $content): array
     {
-        return ['presentation' => ['template' => 'LEAD_VSL', 'show_video' => true, 'show_faq' => true], ...$content];
+        return ['presentation' => ['template' => 'LEAD_VSL', 'show_video' => true, 'show_faq' => true], 'after_registration' => self::confirmationDefaults(), 'next_step' => ['action' => 'recover', 'redirect_seconds' => 0], ...$content];
     }
 
     public static function import(string $json, array $base): array
@@ -58,7 +67,7 @@ class LandingContent
         }
         Validator::make(['document' => $document], [
             'document' => ['required', 'array:schema,template,content'],
-            'document.schema' => ['required', Rule::in([self::SCHEMA])],
+            'document.schema' => ['required', Rule::in([self::SCHEMA, self::LEGACY_SCHEMA])],
             'document.template' => ['sometimes', 'required', Rule::in(self::TEMPLATES)],
             'document.content' => ['required', 'array:'.implode(',', self::EDITORIAL)],
         ])->validate();
@@ -87,7 +96,7 @@ class LandingContent
         if (! $partial) {
             $content = self::withPresentation($content);
         }
-        $rules = ['content' => ['required', 'array:seo,hero,benefits,registration,faq,final,video,presentation']];
+        $rules = ['content' => ['required', 'array:seo,hero,benefits,registration,faq,final,video,presentation,after_registration,next_step']];
         $rules['content.presentation'] = [$presence, 'array:template,show_video,show_faq'];
         $rules['content.presentation.template'] = [$presence, Rule::in(self::TEMPLATES)];
         foreach (['show_video', 'show_faq'] as $key) {
@@ -97,6 +106,7 @@ class LandingContent
             'seo' => ['title', 'description'], 'hero' => ['eyebrow', 'title', 'emphasis', 'ending', 'description', 'cta'],
             'benefits' => ['eyebrow', 'title', 'description', 'items'], 'registration' => ['eyebrow', 'title', 'description'],
             'faq' => ['eyebrow', 'title', 'items'], 'final' => ['eyebrow', 'title', 'description', 'cta'],
+            'after_registration' => ['title', 'message', 'instructions', 'cta_label'],
             'video' => ['youtube_url', 'poster', 'aspect_ratio', 'source_aspect_ratio'],
         ];
         foreach ($sections as $section => $keys) {
@@ -106,6 +116,12 @@ class LandingContent
                     $rules['content.'.$section.'.'.$key] = $text;
                 }
             }
+        }
+        $rules['content.next_step'] = [$presence, 'array:action,redirect_seconds'];
+        $rules['content.next_step.action'] = [$presence, Rule::in(['none', 'recover', 'account', 'home', 'whatsapp'])];
+        $rules['content.next_step.redirect_seconds'] = [$presence, 'integer', Rule::in([0, 5, 10, 15, 30, 60])];
+        foreach (['title', 'message', 'instructions', 'cta_label'] as $key) {
+            $rules['content.after_registration.'.$key][] = 'not_regex:/(?:cuenta\s+(?:est[aá]\s+)?activada|correo\s+(?:est[aá]\s+)?verificado|correo\s+enviado)/iu';
         }
         foreach (['benefits' => ['title', 'description'], 'faq' => ['question', 'answer']] as $section => $keys) {
             $rules['content.'.$section.'.items'] = [$presence, 'array', 'list', 'min:1', 'max:8'];

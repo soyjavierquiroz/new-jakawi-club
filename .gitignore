@@ -58,3 +58,5 @@ credentials.json
 /artifacts/vsl-official/previous-build/
 
 /artifacts/registration/LIVE.json
+
+/artifacts/postconversion/LIVE.json

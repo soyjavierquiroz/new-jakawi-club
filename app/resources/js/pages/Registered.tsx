@@ -1,7 +1,66 @@
 import { Head, Link } from '@inertiajs/react';
-import { Community, EventCard, PageFrame, ReferralLink } from '../components/UI';
-import type { Launch } from '../types';
+import { useEffect, useRef, useState } from 'react';
+import { Arrow, PageFrame, ReferralLink } from '../components/UI';
+import type { LandingContent } from '../types';
 
-export default function Registered({ referral_url, launch }: { referral_url: string | null; launch: Launch }) {
-    return <><Head title="Bienvenido a JAKAWI" /><PageFrame><div className="max-w-3xl"><p className="eyebrow">ESTO RECIÉN EMPIEZA</p><h1 className="section-title mt-5">¡Ya eres parte<br />de JAKAWI!</h1>{referral_url ? <><p className="mb-9 mt-6 text-lg text-text-secondary">Tu cuenta está activada. Ahora puedes compartir tu invitación.</p><div className="rounded-card border border-border bg-surface p-6"><ReferralLink url={referral_url} /></div><Link className="btn btn-primary mt-6" href="/dashboard">Ir a mi cuenta ↗</Link></> : <><p className="mt-6 text-lg leading-relaxed text-text-secondary">Recibimos tu solicitud. Si podemos completarla, recibirás un correo con el siguiente paso. Revisa también tu carpeta de spam.</p><div className="my-8 rounded-card border border-border bg-surface p-6"><h2 className="font-semibold">Tu invitación personal está a un paso.</h2><p className="mt-3 text-sm leading-7 text-text-secondary">Abre el enlace de activación de tu correo y elige una contraseña. Después verás aquí tu enlace personal. El enlace de activación vence en 60 minutos.</p></div><Link className="text-sm font-semibold underline underline-offset-4" href="/recuperar-password">Solicitar otro enlace de acceso</Link></>}<p className="mt-7 text-xs text-text-muted">Esta bienvenida está disponible durante 15 minutos.</p></div><div className="mt-14 grid gap-6 md:grid-cols-2"><article className="feature-card"><EventCard launch={launch} /></article><article className="feature-card"><Community launch={launch} /></article></div></PageFrame></>;
+type Confirmation = {
+    content: LandingContent['after_registration'];
+    activation: 'pending' | 'confirmed';
+    preview: boolean;
+    landing_slug: string | null;
+    next: { url: string; external: boolean; redirect_seconds: number } | null;
+    unavailable: boolean;
+};
+
+function NextStep({ confirmation }: { confirmation: Confirmation }) {
+    const { next, preview, content, landing_slug } = confirmation;
+    const [remaining, setRemaining] = useState<number | null>(null);
+    const [cancelled, setCancelled] = useState(false);
+    const started = useRef(false);
+    useEffect(() => {
+        if (cancelled) return;
+        if (preview || !next?.redirect_seconds || !next.external) return;
+        const key = `jakawi-next-step:${landing_slug}:${next.url}`;
+        try {
+            if (!started.current && sessionStorage.getItem(key)) return;
+            started.current = true;
+            // A refresh/back navigation must never restart automatic navigation.
+            sessionStorage.setItem(key, 'shown');
+        } catch { return; }
+        const end = Date.now() + next.redirect_seconds * 1000;
+        setRemaining(next.redirect_seconds);
+        const timer = window.setInterval(() => {
+            const seconds = Math.max(0, Math.ceil((end - Date.now()) / 1000));
+            setRemaining(seconds);
+            if (seconds === 0) { window.clearInterval(timer); window.location.assign(next.url); }
+        }, 250);
+        return () => window.clearInterval(timer);
+    }, [next?.url, next?.redirect_seconds, next?.external, preview, landing_slug, cancelled]);
+    if (!next) return confirmation.unavailable ? <p className="message mt-6" role="status">El acceso al grupo de WhatsApp aún no está disponible.</p> : null;
+    return <div className="mt-7 space-y-4">
+        {preview ? <button className="btn btn-primary" disabled>{content.cta_label}<Arrow /></button> : next.external ? <a className="btn btn-primary" href={next.url} rel="noreferrer">{content.cta_label}<Arrow /></a> : <Link className="btn btn-primary" href={next.url}>{content.cta_label}<Arrow /></Link>}
+        {preview && next.redirect_seconds > 0 && <p className="text-sm text-text-secondary">Vista previa: contador de {next.redirect_seconds} segundos. Redirección deshabilitada.</p>}
+        {remaining !== null && !cancelled && <div className="rounded-card border border-border bg-background p-4"><p className="text-sm" role="timer" aria-live="off">Accederás al grupo de WhatsApp en {remaining} segundos.</p><button type="button" className="mt-3 text-sm font-semibold underline" onClick={() => { setCancelled(true); setRemaining(null); }}>Cancelar redirección</button></div>}
+        {cancelled && <p className="text-sm text-text-secondary" role="status">Redirección cancelada. Puedes continuar con el botón cuando quieras.</p>}
+    </div>;
+}
+
+export default function Registered({ referral_url, confirmation }: { referral_url: string | null; confirmation: Confirmation }) {
+    const { content, activation, preview } = confirmation;
+    const activated = activation === 'confirmed';
+    return <><Head title="Gracias por tu solicitud"><meta name="robots" content="noindex, nofollow" /></Head><PageFrame narrow>
+        {preview && <p className="message mb-7" role="status">Vista previa del borrador · después del registro. No acredita una conversión ni envía datos.</p>}
+        <p className="eyebrow">TU SIGUIENTE PASO EN JAKAWI</p>
+        <h1 className="section-title mt-5 break-words">{content.title}</h1>
+        <p className="mt-6 whitespace-pre-line break-words text-lg leading-relaxed text-text-secondary">{content.message}</p>
+        <section className="my-8 rounded-card border border-border bg-surface p-6" aria-labelledby="activation-status" data-activation={activation}>
+            <h2 id="activation-status" className="text-xl font-bold">{activated ? 'Cuenta activada' : 'Activación pendiente'}</h2>
+            <p className="mt-3 text-sm leading-7 text-text-secondary">{activated ? 'Tu correo está verificado. Ya puedes ingresar y compartir tu invitación personal.' : 'Esta confirmación no activa tu cuenta. Si tu cuenta es nueva, abre el enlace que recibas por correo y elige una contraseña. Revisa también spam. El enlace vence en 60 minutos.'}</p>
+        </section>
+        <p className="whitespace-pre-line break-words leading-relaxed text-text-secondary">{content.instructions}</p>
+        <NextStep key={`${confirmation.landing_slug}:${confirmation.next?.url}:${preview}`} confirmation={confirmation} />
+        {activated && referral_url && <div className="mt-9 rounded-card border border-border bg-surface p-6"><ReferralLink url={referral_url} /><Link className="btn btn-secondary mt-5" href="/dashboard">Ir a mi cuenta<Arrow /></Link></div>}
+        {!activated && <p className="mt-7"><Link className="text-sm font-semibold underline underline-offset-4" href="/recuperar-password">Solicitar otro enlace de acceso</Link></p>}
+        <p className="mt-7 text-xs text-text-muted">{preview ? 'Preview sin registro, analítica ni navegación automática.' : 'Esta confirmación está disponible durante 15 minutos.'}</p>
+    </PageFrame></>;
 }

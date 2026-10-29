@@ -6,6 +6,7 @@ use App\Models\MarketingLanding;
 use App\Support\LandingContent;
 use App\Support\LandingSlug;
 use App\Support\LaunchSettings;
+use App\Support\RegistrationNextStep;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -24,13 +25,13 @@ class LandingAdminController extends Controller
 
     public function create(): Response
     {
-        return Inertia::render('admin/LandingEditor', ['landing' => null, 'defaults' => LandingContent::defaults(), 'home_slug' => config('jakawi.home_landing_slug'), 'registration_open' => LaunchSettings::registrationOpen()]);
+        return Inertia::render('admin/LandingEditor', ['landing' => null, 'defaults' => LandingContent::defaults(), 'home_slug' => config('jakawi.home_landing_slug'), 'registration_open' => LaunchSettings::registrationOpen(), 'whatsapp_group_available' => RegistrationNextStep::whatsappGroup() !== null]);
     }
 
     public function edit(MarketingLanding $landing): Response
     {
         return Inertia::render('admin/LandingEditor', [
-            'landing' => [...$landing->toArray(), 'configuration' => LandingContent::withPresentation($landing->configuration)], 'defaults' => null, 'home_slug' => config('jakawi.home_landing_slug'), 'registration_open' => LaunchSettings::registrationOpen(),
+            'landing' => [...$landing->toArray(), 'configuration' => LandingContent::withPresentation($landing->configuration), 'published_configuration' => $landing->published_configuration ? LandingContent::withPresentation($landing->published_configuration) : null], 'defaults' => null, 'home_slug' => config('jakawi.home_landing_slug'), 'registration_open' => LaunchSettings::registrationOpen(), 'whatsapp_group_available' => RegistrationNextStep::whatsappGroup() !== null,
             'metrics' => DB::table('marketing_landing_event_totals')->where('landing_id', $landing->id)
                 ->select('event', 'campaign')->selectRaw('SUM(total) AS total')->groupBy('event', 'campaign')->get(),
         ]);

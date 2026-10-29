@@ -1,0 +1,14 @@
+{
+  "deployed_at": "2026-10-29T09:40:35.681806-04:00",
+  "baseline_sha": "c315fe625b402fc2408f4d5ccb983ecc4e2a0908",
+  "previous_manifest_sha256": "43225cd85dd2901d115650840b602fc05e4a67b515bd56544bc4787c0c8bbc7a",
+  "manifest_sha256": "afc060ed4ef9e5403b1279df5742b8fa6e2c80c8d958ecd2ef95dd6ed49ab2e1",
+  "new_asset_files": 10,
+  "previous_assets_preserved": true,
+  "atomic_manifest_replace": true,
+  "route_cache_regenerated": true,
+  "restart_service": "app",
+  "migrations": false,
+  "secret_changes": false,
+  "registration_opened": false
+}

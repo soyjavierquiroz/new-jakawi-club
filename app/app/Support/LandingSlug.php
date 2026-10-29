@@ -9,7 +9,7 @@ final class LandingSlug
     /** Include namespaces even when their only real endpoint uses POST or a child path. */
     public static function reserved(): array
     {
-        $reserved = ['login', 'registro', 'register', 'logout', 'dashboard', 'profile', 'admin', 'r', 'l', 'up', 'privacy', 'preferencias', 'password', 'email', 'storage', 'build', 'api'];
+        $reserved = ['login', 'registro', 'register', 'logout', 'dashboard', 'profile', 'admin', 'r', 'l', 'up', 'privacy', 'preferencias', 'password', 'email', 'storage', 'build', 'api', 'confirmado'];
         foreach (Route::getRoutes() as $route) {
             $root = explode('/', trim($route->uri(), '/'))[0];
             if ($root !== '' && ! str_contains($root, '{')) {

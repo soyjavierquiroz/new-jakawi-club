@@ -40,7 +40,7 @@ class RegistrationRequest extends FormRequest
             'name.max' => 'Usa un nombre de hasta 120 caracteres.',
             'email.*' => 'Escribe un correo electrónico válido.',
             'phone.*' => 'Incluye el prefijo de tu país, por ejemplo +59170000000.',
-            'privacy.*' => 'Debes aceptar el aviso de privacidad para continuar.',
+            'privacy.*' => 'Debes aceptar el acuerdo de privacidad para continuar.',
             'referral_code.*' => 'El código de invitación no es válido. Vuelve a abrir tu enlace.',
         ];
     }

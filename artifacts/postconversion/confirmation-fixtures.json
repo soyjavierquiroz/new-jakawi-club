@@ -1,0 +1,139 @@
+{
+    "pending": {
+        "component": "Registered",
+        "props": {
+            "errors": [],
+            "signed_in": false,
+            "can_manage_landings": false,
+            "status": null,
+            "referral_url": null,
+            "confirmation": {
+                "content": {
+                    "title": "Gracias por sumarte a esta landing.",
+                    "message": "Tu solicitud fue procesada.",
+                    "cta_label": "Acceder al grupo",
+                    "instructions": "Continúa con tu siguiente paso."
+                },
+                "activation": "pending",
+                "preview": false,
+                "landing_slug": "principal",
+                "next": null,
+                "unavailable": true
+            }
+        },
+        "url": "\/principal\/confirmado",
+        "version": "4d1a136bb3d0f87424b19b4003d33ba6",
+        "sharedProps": [
+            "errors",
+            "signed_in",
+            "can_manage_landings",
+            "status"
+        ]
+    },
+    "whatsapp": {
+        "component": "Registered",
+        "props": {
+            "errors": [],
+            "signed_in": false,
+            "can_manage_landings": false,
+            "status": null,
+            "referral_url": null,
+            "confirmation": {
+                "content": {
+                    "title": "Gracias por sumarte a esta landing.",
+                    "message": "Tu solicitud fue procesada.",
+                    "cta_label": "Acceder al grupo",
+                    "instructions": "Continúa con tu siguiente paso."
+                },
+                "activation": "pending",
+                "preview": false,
+                "landing_slug": "principal",
+                "next": {
+                    "url": "https:\/\/chat.whatsapp.com\/ApprovedGroupFixture123",
+                    "external": true,
+                    "redirect_seconds": 10
+                },
+                "unavailable": false
+            }
+        },
+        "url": "\/principal\/confirmado",
+        "version": "4d1a136bb3d0f87424b19b4003d33ba6",
+        "sharedProps": [
+            "errors",
+            "signed_in",
+            "can_manage_landings",
+            "status"
+        ]
+    },
+    "confirmed": {
+        "component": "Registered",
+        "props": {
+            "errors": [],
+            "signed_in": true,
+            "can_manage_landings": false,
+            "status": null,
+            "referral_url": "https:\/\/jakawi.club\/r\/E4W9A7LXVC0L",
+            "confirmation": {
+                "content": {
+                    "title": "Gracias por sumarte a esta landing.",
+                    "message": "Tu solicitud fue procesada.",
+                    "cta_label": "Acceder al grupo",
+                    "instructions": "Continúa con tu siguiente paso."
+                },
+                "activation": "confirmed",
+                "preview": false,
+                "landing_slug": "principal",
+                "next": {
+                    "url": "https:\/\/chat.whatsapp.com\/ApprovedGroupFixture123",
+                    "external": true,
+                    "redirect_seconds": 10
+                },
+                "unavailable": false
+            }
+        },
+        "url": "\/principal\/confirmado",
+        "version": "4d1a136bb3d0f87424b19b4003d33ba6",
+        "sharedProps": [
+            "errors",
+            "signed_in",
+            "can_manage_landings",
+            "status"
+        ]
+    },
+    "preview": {
+        "component": "Registered",
+        "props": {
+            "errors": [],
+            "signed_in": true,
+            "can_manage_landings": true,
+            "status": null,
+            "referral_url": null,
+            "confirmation": {
+                "content": {
+                    "title": "Gracias por sumarte a esta landing.",
+                    "message": "Tu solicitud fue procesada.",
+                    "cta_label": "Acceder al grupo",
+                    "instructions": "Continúa con tu siguiente paso."
+                },
+                "activation": "pending",
+                "preview": true,
+                "landing_slug": "principal",
+                "next": {
+                    "url": "https:\/\/chat.whatsapp.com\/ApprovedGroupFixture123",
+                    "external": true,
+                    "redirect_seconds": 10
+                },
+                "unavailable": false
+            }
+        },
+        "url": "\/admin\/landings\/1\/preview\/confirmado",
+        "version": "4d1a136bb3d0f87424b19b4003d33ba6",
+        "sharedProps": [
+            "errors",
+            "signed_in",
+            "can_manage_landings",
+            "status"
+        ],
+        "clearHistory": true
+    }
+}

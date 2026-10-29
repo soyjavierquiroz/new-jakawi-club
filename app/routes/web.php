@@ -21,6 +21,7 @@ Route::prefix('admin/landings')->middleware(['auth', 'verified', MarketingAdmin:
     Route::get('/{landing}/editar', [LandingAdminController::class, 'edit'])->name('landings.edit');
     Route::put('/{landing}', [LandingAdminController::class, 'update'])->name('landings.update');
     Route::get('/{landing}/preview', [WelcomeController::class, 'preview'])->name('landings.preview');
+    Route::get('/{landing}/preview/confirmado', [RegistrationController::class, 'preview'])->name('landings.confirmation-preview');
     Route::get('/{landing}/export', [LandingAdminController::class, 'export'])->name('landings.export');
     Route::post('/{landing}/import', [LandingAdminController::class, 'import'])->name('landings.import');
     Route::post('/{landing}/duplicar', [LandingAdminController::class, 'duplicate'])->name('landings.duplicate');
@@ -51,6 +52,10 @@ Route::middleware('auth')->group(function (): void {
     Route::get('/dashboard', [DashboardController::class, 'show'])->middleware('verified')->name('dashboard');
     Route::patch('/perfil', [DashboardController::class, 'update'])->middleware('verified')->name('profile.update');
 });
+
+// A server receipt bound to this published landing is required to display thanks.
+Route::get('/{slug}/confirmado', [RegistrationController::class, 'confirmed'])
+    ->where('slug', \App\Support\LandingSlug::pattern())->name('registration.confirmed');
 
 // Last, single-segment GET only. Reserved POST-only paths retain their 405 response.
 Route::get('/{slug}', [WelcomeController::class, 'show'])

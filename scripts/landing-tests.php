@@ -103,7 +103,7 @@ try {
     $protected = [
         ['POST', '/admin/landings/import'],
         ['GET', '/admin/landings'], ['GET', '/admin/landings/crear'], ['GET', '/admin/landings/'.$home->id.'/editar'],
-        ['GET', '/admin/landings/'.$home->id.'/preview'], ['GET', '/admin/landings/'.$home->id.'/export'],
+        ['GET', '/admin/landings/'.$home->id.'/preview'], ['GET', '/admin/landings/'.$home->id.'/preview/confirmado'], ['GET', '/admin/landings/'.$home->id.'/export'],
         ['POST', '/admin/landings'], ['PUT', '/admin/landings/'.$home->id],
     ];
     foreach (['import', 'publicar', 'duplicar', 'archivar'] as $action) $protected[] = ['POST', '/admin/landings/'.$home->id.'/'.$action];
@@ -218,12 +218,24 @@ try {
     }
     $fixtureContent = $landing->fresh()->configuration; $fixtureContent['presentation']['template'] = 'LEAD_VSL';
     http('PUT', $base, [...$data, 'configuration' => $fixtureContent, 'revision' => $landing->fresh()->revision]);
+    $savedPublic = $landing->fresh()->published_configuration;
+    $next = $landing->fresh()->configuration;
+    $next['after_registration']['title'] = 'Gracias desde el editor';
+    $next['next_step'] = ['action' => 'whatsapp', 'redirect_seconds' => 15];
+    check(http('PUT', $base, [...$data, 'configuration' => $next, 'revision' => $landing->fresh()->revision])->isRedirect(), 'guardar posconversión con acción segura y contador');
+    check($landing->fresh()->published_configuration === $savedPublic, 'guardar gracias no publica ni cambia snapshot');
+    $confirmationPreview = payload(http('GET', $base.'/preview/confirmado', [], true));
+    check($confirmationPreview['component'] === 'Registered' && $confirmationPreview['props']['confirmation']['content']['title'] === 'Gracias desde el editor' && $confirmationPreview['props']['confirmation']['preview'], 'preview de gracias usa borrador guardado y renderer real');
+    $json = ['schema' => App\Support\LandingContent::SCHEMA, 'content' => ['after_registration' => ['title' => 'Gracias importadas']]];
+    $import = payload(http('POST', '/admin/landings/import', ['editorial_json' => json_encode($json), 'configuration' => $next]));
+    check($import['configuration']['after_registration']['title'] === 'Gracias importadas' && $import['configuration']['next_step'] === $next['next_step'] && $landing->fresh()->configuration === $next && $landing->fresh()->published_configuration === $savedPublic, 'importación de gracias no persiste ni publica y conserva destino');
     $legacy = $home->configuration; unset($legacy['presentation']);
     check(App\Support\LandingContent::withPresentation($legacy)['presentation']['template'] === 'LEAD_VSL', 'snapshots anteriores compatibles sin migración');
     file_put_contents('/evidence/browser-fixtures.json', json_encode([
         'invalid_import' => payload(http('POST', '/admin/landings/import', ['editorial_json' => json_encode(['schema' => App\Support\LandingContent::SCHEMA, 'content' => ['hero' => ['title' => null]]])])),
         'editor' => payload(http('GET', $base.'/editar', [], true)),
         'preview' => payload(http('GET', $base.'/preview', [], true)),
+        'confirmation_preview' => $confirmationPreview,
         'create' => payload(http('GET', '/admin/landings/crear', [], true)),
         'index' => payload(http('GET', '/admin/landings', [], true)),
     ], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
