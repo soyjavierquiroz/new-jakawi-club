@@ -1,0 +1,172 @@
+{
+  "checks": [
+    {
+      "name": "brief-export-unsaved-copy-download-and-local-import",
+      "passed": true
+    },
+    {
+      "name": "real-renderer-preview",
+      "width": 390,
+      "overflow": false,
+      "title": "Titular importado mucho más para vivir.",
+      "closed": true,
+      "ratio": 0.7500081835739304,
+      "poster": "25% 75%",
+      "preview": true
+    },
+    {
+      "name": "real-renderer-preview",
+      "width": 430,
+      "overflow": false,
+      "title": "Titular importado mucho más para vivir.",
+      "closed": true,
+      "ratio": 0.7500147223367293,
+      "poster": "25% 75%",
+      "preview": true
+    },
+    {
+      "name": "real-renderer-preview",
+      "width": 1440,
+      "overflow": false,
+      "title": "Titular importado mucho más para vivir.",
+      "closed": true,
+      "ratio": 0.7500140853005803,
+      "poster": "25% 75%",
+      "preview": true
+    },
+    {
+      "name": "real-confirmation-preview",
+      "width": 390,
+      "overflow": false,
+      "preview": true,
+      "activation": "pending",
+      "title": "Gracias desde el editor",
+      "timer": false
+    },
+    {
+      "name": "real-confirmation-preview",
+      "width": 430,
+      "overflow": false,
+      "preview": true,
+      "activation": "pending",
+      "title": "Gracias desde el editor",
+      "timer": false
+    },
+    {
+      "name": "real-confirmation-preview",
+      "width": 1440,
+      "overflow": false,
+      "preview": true,
+      "activation": "pending",
+      "title": "Gracias desde el editor",
+      "timer": false
+    },
+    {
+      "name": "save-preview-publish-independent",
+      "passed": true
+    },
+    {
+      "name": "template-renderer",
+      "template": "LEAD_VSL",
+      "forms": 1,
+      "video": true,
+      "faq": true,
+      "registrationFirst": false,
+      "hasUnconfirmedTime": false,
+      "benefits": 4,
+      "title": "Titular importado mucho más para vivir."
+    },
+    {
+      "name": "template-renderer",
+      "template": "WEBINAR",
+      "forms": 1,
+      "video": true,
+      "faq": true,
+      "registrationFirst": false,
+      "hasUnconfirmedTime": false,
+      "benefits": 4,
+      "title": "Titular importado mucho más para vivir."
+    },
+    {
+      "name": "template-renderer",
+      "template": "WAITLIST",
+      "forms": 1,
+      "video": false,
+      "faq": true,
+      "registrationFirst": true,
+      "hasUnconfirmedTime": false,
+      "benefits": 3,
+      "title": "Titular importado mucho más para vivir."
+    },
+    {
+      "name": "responsive-editor",
+      "width": 390,
+      "passed": true
+    },
+    {
+      "name": "responsive-editor",
+      "width": 430,
+      "passed": true
+    },
+    {
+      "name": "responsive-editor",
+      "width": 768,
+      "passed": true
+    },
+    {
+      "name": "responsive-editor",
+      "width": 1440,
+      "passed": true
+    },
+    {
+      "name": "create-tools-and-home-index",
+      "passed": true
+    }
+  ],
+  "operations": [
+    {
+      "method": "PUT",
+      "path": "/admin/landings/2"
+    },
+    {
+      "method": "POST",
+      "path": "/admin/landings/2/publicar"
+    },
+    {
+      "method": "PUT",
+      "path": "/admin/landings/2"
+    },
+    {
+      "method": "PUT",
+      "path": "/admin/landings/2"
+    },
+    {
+      "method": "PUT",
+      "path": "/admin/landings/2"
+    },
+    {
+      "method": "PUT",
+      "path": "/admin/landings/2"
+    },
+    {
+      "method": "PUT",
+      "path": "/admin/landings/2"
+    }
+  ],
+  "validations": [
+    {
+      "path": "/admin/landings/import"
+    },
+    {
+      "path": "/admin/landings/import"
+    },
+    {
+      "path": "/admin/landings/import"
+    }
+  ],
+  "preview_metrics": 0,
+  "live_test_users": 0,
+  "backend_fixtures": "real isolated HTTP kernel responses; browser mutations intercepted",
+  "runtime_errors": [],
+  "failed_assets": []
+}

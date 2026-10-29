@@ -155,7 +155,7 @@ try {
         json_encode([...$partial, 'content' => ['hero' => ['css' => 'display:none']]]),
         json_encode([...$partial, 'content' => ['hero' => ['title' => '<script>alert(1)</script>']]]),
         json_encode([...$partial, 'content' => ['hero' => ['title' => null]]]),
-        json_encode([...$partial, 'content' => ['video' => ['youtube_url' => 'https://www.youtube.com/watch?v=P42gDOTL6Ys']]]),
+        json_encode([...$partial, 'content' => ['video' => ['youtube_url' => 'https://www.youtube.com/watch?v=M7lc1UVf-VE']]]),
         json_encode([...$partial, 'campaign' => 'otra']),
         json_encode([...$partial, 'template' => 'OTRA']),
         json_encode([...$partial, 'content' => ['presentation' => ['template' => 'WEBINAR']]]),
@@ -176,13 +176,19 @@ try {
     check($published['props']['landing']['content']['hero']['title'] === 'Nuevo titular' && $landing->published_campaign === 'cocha_2026', 'publicación snapshot y asociación campaña');
     $data['configuration'] = $landing->configuration;
     $data['configuration']['hero']['title'] = 'Solo borrador';
-    $data['configuration']['video']['youtube_url'] = 'https://youtu.be/P42gDOTL6Ys';
-    $data['configuration']['video']['aspect_ratio'] = '16:9';
+    $data['configuration']['video']['youtube_url'] = 'https://youtu.be/M7lc1UVf-VE';
+    $data['configuration']['video']['aspect_ratio'] = '16:9'; // legacy input normalizes to the fixed frame
+    $data['configuration']['video']['focal_x'] = 0.2;
+    $data['configuration']['video']['poster'] = '/marketing/poster-fixture.png';
+    $data['configuration']['video']['focal_y'] = 0.8;
+    $data['configuration']['confirmation_video']['youtube_url'] = 'https://youtu.be/M7lc1UVf-VE';
     $data['configuration']['video']['source_aspect_ratio'] = '3:4';
     $data['campaign'] = 'otra_campana';
     check(http('PUT', $base, [...$data, 'revision' => 3])->isRedirect(), 'editar y guardar');
     $landing->refresh();
-    check($landing->configuration['video']['youtube_url'] === 'https://www.youtube.com/watch?v=P42gDOTL6Ys' && $landing->configuration['video']['poster'] === null, 'YouTube normalizado independiente del poster y encuadre');
+    check($landing->configuration['video']['youtube_url'] === 'https://www.youtube.com/watch?v=M7lc1UVf-VE' && $landing->configuration['video']['poster'] === '/marketing/poster-fixture.png', 'YouTube normalizado independiente del poster y encuadre');
+    check($landing->configuration['video']['aspect_ratio'] === '3:4' && $landing->configuration['video']['focal_x'] === 0.2, 'marco fijo y encuadre guardados desde controles');
+    check(payload(http('GET', $base.'/preview/confirmado', [], true))['props']['confirmation']['video']['youtube_url'] === 'https://www.youtube.com/watch?v=M7lc1UVf-VE', 'preview real usa video de confirmación guardado');
     check(payload(http('GET', $base.'/preview', [], true))['props']['landing']['content']['hero']['title'] === 'Solo borrador', 'preview muestra último borrador');
     check(payload(http('GET', '/campana-prueba', [], true))['props']['landing']['content']['hero']['title'] === 'Nuevo titular', 'guardar no altera versión publicada');
     check(http('PUT', $base, [...$data, 'slug' => 'otro-slug', 'revision' => 4])->getStatusCode() === 422, 'slug publicado protegido');

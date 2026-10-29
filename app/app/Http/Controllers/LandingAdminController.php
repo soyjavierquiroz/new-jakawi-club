@@ -25,7 +25,7 @@ class LandingAdminController extends Controller
 
     public function create(): Response
     {
-        return Inertia::render('admin/LandingEditor', ['landing' => null, 'defaults' => LandingContent::defaults(), 'home_slug' => config('jakawi.home_landing_slug'), 'registration_open' => LaunchSettings::registrationOpen(), 'whatsapp_group_available' => RegistrationNextStep::whatsappGroup() !== null]);
+        return Inertia::render('admin/LandingEditor', ['landing' => null, 'defaults' => LandingContent::defaults(), 'home_slug' => config('jakawi.home_landing_slug'), 'registration_open' => LaunchSettings::registrationOpen(), 'whatsapp_group_available' => RegistrationNextStep::whatsappGroup() !== null, 'confirmation_video_default_url' => LaunchSettings::defaultVideoUrl(config('jakawi.confirmation_video_url'))]);
     }
 
     public function edit(MarketingLanding $landing): Response
@@ -34,6 +34,7 @@ class LandingAdminController extends Controller
             'landing' => [...$landing->toArray(), 'configuration' => LandingContent::withPresentation($landing->configuration), 'published_configuration' => $landing->published_configuration ? LandingContent::withPresentation($landing->published_configuration) : null], 'defaults' => null, 'home_slug' => config('jakawi.home_landing_slug'), 'registration_open' => LaunchSettings::registrationOpen(), 'whatsapp_group_available' => RegistrationNextStep::whatsappGroup() !== null,
             'metrics' => DB::table('marketing_landing_event_totals')->where('landing_id', $landing->id)
                 ->select('event', 'campaign')->selectRaw('SUM(total) AS total')->groupBy('event', 'campaign')->get(),
+            'confirmation_video_default_url' => LaunchSettings::defaultVideoUrl(config('jakawi.confirmation_video_url')),
         ]);
     }
 

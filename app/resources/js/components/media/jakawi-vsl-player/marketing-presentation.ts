@@ -51,13 +51,12 @@ export function verticalFraming({
     return {
         widthPercent: (width / viewportAspectRatio) * 100,
         heightPercent: height * 100,
-        leftPercent:
-            (Math.max(
-                viewportAspectRatio - width,
-                Math.min(0, viewportAspectRatio / 2 - width * clamp(focalX)),
-            ) /
-                viewportAspectRatio) *
-            100,
+        // Crop within the centered content region, never into embedded side bands.
+        leftPercent: (
+            Math.max(viewportAspectRatio - contentAspectRatio * height,
+                Math.min(0, viewportAspectRatio / 2 - contentAspectRatio * height * clamp(focalX)))
+            - (sourceAspectRatio - contentAspectRatio) * height / 2
+        ) / viewportAspectRatio * 100,
         topPercent:
             Math.max(1 - height, Math.min(0, 0.5 - height * clamp(focalY))) *
             100,
@@ -91,6 +90,8 @@ export function resolveFraming(
             : framing.kind;
     return {
         kind,
+        focalX: framing?.focalX ?? 0.5,
+        focalY: framing?.focalY ?? 0.5,
         sourceAspectRatio,
         viewportAspectRatio: framing?.viewportAspectRatio && Number.isFinite(framing.viewportAspectRatio) && framing.viewportAspectRatio > 0
             ? framing.viewportAspectRatio : kind === 'horizontal' ? 16 / 9 : 3 / 4,

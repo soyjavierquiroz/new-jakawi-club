@@ -271,3 +271,28 @@ El grupo plegable **Después del registro** edita `after_registration.title`, `m
 El contador de WhatsApp está deshabilitado de inicio; admite 5, 10, 15, 30 o 60 segundos y se puede cancelar. Refrescar o volver atrás no reinicia la navegación automática en esa pestaña. La preview autenticada `/{id}/preview/confirmado` bajo `/admin/landings` usa el componente real a 390, 430 y 1440 px, sin registros, eventos ni redirecciones. Guardar e importar siguen sin publicar; la publicación copia el borrador guardado al snapshot. Los snapshots anteriores reciben valores compatibles en memoria sin migración ni escrituras.
 
 Validación focalizada de esta entrega: `bash scripts/test-postconversion.sh`, pruebas existentes de landings/MVP/unidades y `bash scripts/build-frontend.sh`, secuenciales. Para guardar evidencia nueva de landings/editor sin alterar la histórica: `JAKAWI_EVIDENCE_DIR=/opt/sites/jakawi.club/artifacts/postconversion bash scripts/test-landings.sh` y el mismo prefijo para `bash scripts/check-landings-visual.sh`. Navegador del formulario y gracias: `bash scripts/check-postconversion-visual.sh` y `--live` tras desplegar. Los casos de apertura y correo usan exclusivamente esquemas PostgreSQL temporales/notificaciones falsas y fixtures de navegador; no son altas LIVE ni prueba SMTP. Informe y rollback: [posconversión](artifacts/postconversion/REPORT.md), [rollback](artifacts/postconversion/ROLLBACK.md). Sellar con `python3 scripts/verify-postconversion-live.py` después del commit/push.
+
+
+### Videos públicos 3:4 y confirmación por landing
+
+Todos los videos públicos y sus previews usan `JakawiVslPlayer` con marco visual fijo 3:4 en desktop y móvil. En **Video y medios** se configuran URL de YouTube, poster local existente, proporción del contenido original y encuadre horizontal/vertical (0–100 %). El video principal puede mostrarse u ocultarse en LEAD_VSL, WEBINAR y WAITLIST. El recorte cover conserva la proporción del contenido y limita el encuadre al área útil para evitar bandas del lienzo incrustado. Se mantienen autoplay muted, audio desde cero, overlay, progreso decorativo, pause/replay y errores del proveedor.
+
+**Después del registro** conserva los textos de `after_registration` y añade `confirmation_video`, separado del JSON editorial. El recibo aceptado guarda este video junto al snapshot de la landing; la misma página `Registered` y el mismo player sirven las tres plantillas. Solo una cuenta realmente activada y verificada puede mostrar ese estado. Refrescar no registra conversiones nuevas. La preview usa el borrador guardado y no envía eventos ni altas.
+
+Configuración operativa opcional en `/srv/sites/jakawi.club/secrets/app.env`:
+
+```dotenv
+JAKAWI_CONFIRMATION_VIDEO_URL=
+JAKAWI_WHATSAPP_GROUP_URL=
+JAKAWI_REGISTRATION_OPEN=false
+```
+
+Una URL específica de confirmación tiene prioridad sobre la predeterminada. Sin ambas URLs válidas, se oculta el reproductor público y el admin explica el estado vacío. El antiguo video predeterminado `P42gDOTL6Ys`, rechazado con error 150, no se utiliza para nuevas landings ni como fallback; los snapshots heredados de ese seed se normalizan en memoria sin modificar la base de datos. Se necesita una fuente aprobada con inserción permitida para acreditar playback real.
+
+El grupo oficial solo se lee desde `JAKAWI_WHATSAPP_GROUP_URL`, mediante `config/jakawi.php`: HTTPS `chat.whatsapp.com` y código de invitación, sin query, credenciales, fragmentos ni puertos. Este nombre sustituye a `JAKAWI_WHATSAPP_URL` para el grupo oficial. Aparece en todas las confirmaciones con el verde de marca, texto **UNIRME AL GRUPO DE WHATSAPP**, `target="_blank"` y `rel="noopener noreferrer"`. Vacío o inválido oculta el botón. El JSON editorial v2/v1 no puede cambiar el grupo, videos, poster, encuadre ni destinos operativos.
+
+Después de cambiar el entorno privado, aplicar exclusivamente a CLUB con `docker compose up -d --no-deps app`, regenerar `config:cache` y reiniciar solo `app`. Compose vuelve a cargar las variables de `env_file` al recrear el servicio; un reinicio por sí solo no lee los cambios del archivo. No modificar SMTP ni abrir el registro durante esa operación.
+
+La incidencia de activación de `javierquirozsueldo@gmail.com` procedía de la serialización Bolivia/UTC del runner, ya corregida conservando el token y su expiración original. La cuenta está activada y verificada; el token ya se consumió y no corresponde reemitir su activación. Las pruebas aisladas reproducen el error de cuatro horas, la reemisión que invalida el token anterior, la expiración de 60 minutos y el uso único. No se reenvía correo LIVE ni se modifica la cuenta administrativa.
+
+Pruebas, capturas y diagnóstico: [entrega de videos y confirmación](artifacts/video-confirmation/REPORT.md). Sello después del commit/push: `python3 scripts/verify-video-confirmation-live.py`; verifica archivos montados, assets HTTPS, hashes de cuentas/permisos/tokens/conversiones y ambos `/up`, con baseline exclusivo de CLUB y sin consultar infraestructura compartida. El resultado `artifacts/video-confirmation/LIVE.json` no se versiona para evitar autorreferencia.

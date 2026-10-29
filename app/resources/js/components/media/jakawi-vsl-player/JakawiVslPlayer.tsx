@@ -178,7 +178,7 @@ export function JakawiVslPlayer(props: JakawiVslPlayerProps) {
                             src={poster}
                             alt=""
                             className={styles.media}
-                            style={{ objectFit: 'cover' }}
+                            style={{ objectFit: 'cover', objectPosition: props.focalPosition }}
                         />
                     )}
                     {manual && (

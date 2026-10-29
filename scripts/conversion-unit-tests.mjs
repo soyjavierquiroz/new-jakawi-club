@@ -53,13 +53,25 @@ try {
     const config = {youtube_url:'https://youtu.be/M7lc1UVf-VE',poster:null,aspect_ratio:'3:4',source_aspect_ratio:'9:16'};
     const props = landingVideoProps(config, config.youtube_url, null);
     check(props.mode==='vsl' && props.autoplay==='muted' && props.marketingFrame && props.fit==='cover', 'Typed renderer selects official marketing VSL');
-    check(props.framing.kind==='embedded-vertical' && props.framing.viewportAspectRatio===9/16 && props.progressSeconds===90 && props.progressAcceleration===3, 'Original crop and dummy 3/90 defaults');
-    check(landingVideoProps({...config,aspect_ratio:'16:9'},config.youtube_url,null).marketingFrame===false, 'Editor horizontal frame remains supported');
+    check(props.framing.kind==='embedded-vertical' && props.framing.viewportAspectRatio===3/4 && props.progressSeconds===90 && props.progressAcceleration===3, 'Original crop and dummy 3/90 defaults');
+    check(landingVideoProps({...config,aspect_ratio:'16:9'},config.youtube_url,null).marketingFrame===true, 'Legacy frames always normalize to 3:4');
     check(landingVideoProps({...config,source_aspect_ratio:'3:4'},config.youtube_url,'/marketing/poster.webp').poster==='/marketing/poster.webp', 'Poster and original aspect are independent');
     const cover = verticalFraming({...resolveFraming('youtube',props.framing),viewportAspectRatio:3/4});
     check(Math.abs(cover.widthPercent-316.0493827)<.001 && Math.abs(cover.heightPercent-133.3333333)<.001, 'Official 16:9 canvas crop into 3:4');
     check(Math.abs(vslProgress(30,90,3)-.7037037037)<.0001 && vslProgress(90,90,3)===1, 'Decorative curve uses its own 90 second horizon');
     check(vslProgress(10,0,3)===0 && vslProgress(10,90,100)===vslProgress(10,90,6), 'Curve validates horizon and clamps exponent');
+    for (const focalX of [0,.2,.5,.8,1]) {
+        const g=verticalFraming({sourceAspectRatio:16/9,contentAspectRatio:9/16,viewportAspectRatio:3/4,focalX});
+        check(Math.abs(g.leftPercent + (g.widthPercent-100)/2)<.001, 'Embedded crop never exposes side bands at extreme focal positions');
+    }
+    const positioned = landingVideoProps({...config,focal_x:.2,focal_y:.8},config.youtube_url,null);
+    check(positioned.framing.focalX===.2 && positioned.framing.focalY===.8 && positioned.focalPosition==='20% 80%', 'Crop controls propagate to provider and poster');
+    for (const source of [9/16,3/4,16/9]) {
+        for (const focal of [0,.5,1]) {
+            const g=verticalFraming({sourceAspectRatio:source,viewportAspectRatio:3/4,focalX:focal,focalY:focal});
+            check(g.widthPercent>=100 && g.heightPercent>=100 && Math.abs((g.widthPercent*.75)/g.heightPercent-source)<.001, 'Cover fills 3:4 without distorting source');
+        }
+    }
     async function fixture(autoplay=true) {
         let callbacks; const messages=[],calls=[]; let time=6,volume=0,muted=true;
         const p={playVideo(){calls.push('play')},pauseVideo(){calls.push('pause')},seekTo(value){time=value;calls.push('seek:'+value)},mute(){muted=true;calls.push('mute')},unMute(){muted=false;calls.push('unmute')},isMuted:()=>muted,getVolume:()=>volume,setVolume(value){volume=value},getCurrentTime:()=>time,getDuration:()=>90,destroy(){calls.push('dispose')}};

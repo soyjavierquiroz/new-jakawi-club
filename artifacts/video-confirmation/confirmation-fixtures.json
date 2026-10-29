@@ -1,0 +1,220 @@
+{
+    "pending": {
+        "component": "Registered",
+        "props": {
+            "errors": [],
+            "signed_in": false,
+            "can_manage_landings": false,
+            "status": null,
+            "referral_url": null,
+            "confirmation": {
+                "content": {
+                    "title": "Gracias por sumarte a esta landing.",
+                    "message": "Tu solicitud fue procesada.",
+                    "cta_label": "Acceder al grupo",
+                    "instructions": "Continúa con tu siguiente paso."
+                },
+                "activation": "pending",
+                "preview": false,
+                "landing_slug": "principal",
+                "video": {
+                    "youtube_url": "https:\/\/www.youtube.com\/watch?v=M7lc1UVf-VE",
+                    "poster": "\/marketing\/poster-fixture.png",
+                    "aspect_ratio": "3:4",
+                    "source_type": "youtube",
+                    "source_aspect_ratio": "16:9",
+                    "focal_x": 0.25,
+                    "focal_y": 0.5
+                },
+                "whatsapp_group_url": null,
+                "next": null,
+                "unavailable": true
+            }
+        },
+        "url": "\/principal\/confirmado",
+        "version": "55cf8f0752e356ef43ccb00de431657e",
+        "sharedProps": [
+            "errors",
+            "signed_in",
+            "can_manage_landings",
+            "status"
+        ]
+    },
+    "whatsapp": {
+        "component": "Registered",
+        "props": {
+            "errors": [],
+            "signed_in": false,
+            "can_manage_landings": false,
+            "status": null,
+            "referral_url": null,
+            "confirmation": {
+                "content": {
+                    "title": "Gracias por sumarte a esta landing.",
+                    "message": "Tu solicitud fue procesada.",
+                    "cta_label": "Acceder al grupo",
+                    "instructions": "Continúa con tu siguiente paso."
+                },
+                "activation": "pending",
+                "preview": false,
+                "landing_slug": "principal",
+                "video": {
+                    "youtube_url": "https:\/\/www.youtube.com\/watch?v=M7lc1UVf-VE",
+                    "poster": "\/marketing\/poster-fixture.png",
+                    "aspect_ratio": "3:4",
+                    "source_type": "youtube",
+                    "source_aspect_ratio": "16:9",
+                    "focal_x": 0.25,
+                    "focal_y": 0.5
+                },
+                "whatsapp_group_url": "https:\/\/chat.whatsapp.com\/ApprovedGroupFixture123",
+                "next": {
+                    "url": "https:\/\/chat.whatsapp.com\/ApprovedGroupFixture123",
+                    "external": true,
+                    "redirect_seconds": 10
+                },
+                "unavailable": false
+            }
+        },
+        "url": "\/principal\/confirmado",
+        "version": "55cf8f0752e356ef43ccb00de431657e",
+        "sharedProps": [
+            "errors",
+            "signed_in",
+            "can_manage_landings",
+            "status"
+        ]
+    },
+    "confirmed": {
+        "component": "Registered",
+        "props": {
+            "errors": [],
+            "signed_in": true,
+            "can_manage_landings": false,
+            "status": null,
+            "referral_url": "https:\/\/jakawi.club\/r\/KA6EWXZ7MZ0Y",
+            "confirmation": {
+                "content": {
+                    "title": "Gracias por sumarte a esta landing.",
+                    "message": "Tu solicitud fue procesada.",
+                    "cta_label": "Acceder al grupo",
+                    "instructions": "Continúa con tu siguiente paso."
+                },
+                "activation": "confirmed",
+                "preview": false,
+                "landing_slug": "principal",
+                "video": {
+                    "youtube_url": "https:\/\/www.youtube.com\/watch?v=M7lc1UVf-VE",
+                    "poster": "\/marketing\/poster-fixture.png",
+                    "aspect_ratio": "3:4",
+                    "source_type": "youtube",
+                    "source_aspect_ratio": "16:9",
+                    "focal_x": 0.25,
+                    "focal_y": 0.5
+                },
+                "whatsapp_group_url": "https:\/\/chat.whatsapp.com\/ApprovedGroupFixture123",
+                "next": {
+                    "url": "https:\/\/chat.whatsapp.com\/ApprovedGroupFixture123",
+                    "external": true,
+                    "redirect_seconds": 10
+                },
+                "unavailable": false
+            }
+        },
+        "url": "\/principal\/confirmado",
+        "version": "55cf8f0752e356ef43ccb00de431657e",
+        "sharedProps": [
+            "errors",
+            "signed_in",
+            "can_manage_landings",
+            "status"
+        ]
+    },
+    "preview": {
+        "component": "Registered",
+        "props": {
+            "errors": [],
+            "signed_in": true,
+            "can_manage_landings": true,
+            "status": null,
+            "referral_url": null,
+            "confirmation": {
+                "content": {
+                    "title": "Gracias por sumarte a esta landing.",
+                    "message": "Tu solicitud fue procesada.",
+                    "cta_label": "Acceder al grupo",
+                    "instructions": "Continúa con tu siguiente paso."
+                },
+                "activation": "pending",
+                "preview": true,
+                "landing_slug": "principal",
+                "video": {
+                    "youtube_url": "https:\/\/www.youtube.com\/watch?v=M7lc1UVf-VE",
+                    "poster": "\/marketing\/poster-fixture.png",
+                    "aspect_ratio": "3:4",
+                    "source_type": "youtube",
+                    "source_aspect_ratio": "16:9",
+                    "focal_x": 0.25,
+                    "focal_y": 0.5
+                },
+                "whatsapp_group_url": "https:\/\/chat.whatsapp.com\/ApprovedGroupFixture123",
+                "next": {
+                    "url": "https:\/\/chat.whatsapp.com\/ApprovedGroupFixture123",
+                    "external": true,
+                    "redirect_seconds": 10
+                },
+                "unavailable": false
+            }
+        },
+        "url": "\/admin\/landings\/1\/preview\/confirmado",
+        "version": "55cf8f0752e356ef43ccb00de431657e",
+        "sharedProps": [
+            "errors",
+            "signed_in",
+            "can_manage_landings",
+            "status"
+        ],
+        "clearHistory": true
+    },
+    "without_video": {
+        "component": "Registered",
+        "props": {
+            "errors": [],
+            "signed_in": false,
+            "can_manage_landings": false,
+            "status": null,
+            "referral_url": null,
+            "confirmation": {
+                "content": {
+                    "title": "Gracias por sumarte a esta landing.",
+                    "message": "Tu solicitud fue procesada.",
+                    "cta_label": "Acceder al grupo",
+                    "instructions": "Continúa con tu siguiente paso."
+                },
+                "activation": "pending",
+                "preview": false,
+                "landing_slug": "principal",
+                "video": {
+                    "youtube_url": null,
+                    "poster": null,
+                    "aspect_ratio": "3:4",
+                    "source_type": "youtube",
+                    "source_aspect_ratio": "9:16",
+                    "focal_x": 0.5,
+                    "focal_y": 0.5
+                },
+                "whatsapp_group_url": null,
+                "next": null,
+                "unavailable": true
+            }
+        },
+        "url": "\/principal\/confirmado",
+        "version": "55cf8f0752e356ef43ccb00de431657e",
+        "sharedProps": [
+            "errors",
+            "signed_in",
+            "can_manage_landings",
+            "status"
+        ]
+    }
+}

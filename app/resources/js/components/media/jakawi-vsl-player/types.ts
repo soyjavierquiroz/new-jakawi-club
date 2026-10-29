@@ -59,7 +59,7 @@ export interface JakawiVslPlayerProps {
     theme?: 'inherit' | 'custom';
     colors?: { accent?: string; text?: string; overlay?: string };
     fit?: 'cover' | 'contain';
-    /** Marketing landing: mobile 3:4 cover, with the configured desktop frame retained. */
+    /** Marketing videos always use a 3:4 cover frame at every viewport. */
     marketingFrame?: boolean;
     focalPosition?: string;
     /** Stable layout fixed before loading. Auto uses sourceAspectRatio or defaults

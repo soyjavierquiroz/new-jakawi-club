@@ -66,6 +66,7 @@
 .community-whatsapp-cta { background-color: var(--community-whatsapp-bg); color: var(--community-whatsapp-foreground); border-radius: var(--radius-control); transition: background-color 160ms ease, box-shadow 160ms ease; }
 .community-whatsapp-cta:hover:not(:disabled) { background-color: var(--community-whatsapp-hover); }
 .community-whatsapp-cta:focus-visible { outline: 2px solid var(--community-whatsapp-foreground); outline-offset: 2px; box-shadow: 0 0 0 5px var(--community-whatsapp-bg); }
+.confirmation-video { width: 100%; max-width: 420px; margin-inline: auto; }
 
 @media (min-width: 640px) {
     .shell { padding-inline: calc(var(--space-gutter) * 1.5); }

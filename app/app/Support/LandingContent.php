@@ -37,13 +37,29 @@ class LandingContent
             'final' => ['eyebrow' => 'TU CIUDAD. TU PRÓXIMO CAPÍTULO.', 'title' => 'Hay mucho por vivir. Empecemos juntos.', 'description' => 'Sé parte del comienzo de JAKAWI en Cochabamba.', 'cta' => 'QUIERO SER PARTE'],
             'after_registration' => self::confirmationDefaults(),
             'next_step' => ['action' => 'recover', 'redirect_seconds' => 0],
-            'video' => ['youtube_url' => LaunchSettings::youtubeUrl(config('jakawi.video_url')), 'poster' => LaunchSettings::videoPoster(config('jakawi.video_poster')), 'aspect_ratio' => '3:4', 'source_aspect_ratio' => '9:16'],
+            'video' => self::videoDefaults(LaunchSettings::defaultVideoUrl(config('jakawi.video_url')), LaunchSettings::videoPoster(config('jakawi.video_poster'))),
+            'confirmation_video' => self::videoDefaults(),
         ];
     }
 
     public static function confirmationDefaults(): array
     {
         return ['title' => 'Gracias por dar el siguiente paso.', 'message' => 'Recibimos tu solicitud. Si podemos completarla, recibirás un correo con el siguiente paso. Revisa también tu carpeta de spam.', 'instructions' => 'Continúa con el siguiente paso. Puedes solicitar otro enlace de acceso si lo necesitas.', 'cta_label' => 'Continuar'];
+    }
+
+    public static function videoDefaults(?string $url = null, ?string $poster = null): array
+    {
+        return ['youtube_url' => $url, 'poster' => $poster, 'aspect_ratio' => '3:4',
+            'source_type' => 'youtube', 'source_aspect_ratio' => '9:16', 'focal_x' => 0.5, 'focal_y' => 0.5];
+    }
+
+    public static function confirmationVideo(array $video = []): array
+    {
+        $video = [...self::videoDefaults(), ...$video, 'aspect_ratio' => '3:4'];
+        $video['youtube_url'] = LaunchSettings::youtubeUrl($video['youtube_url'])
+            ?? LaunchSettings::defaultVideoUrl(config('jakawi.confirmation_video_url'));
+        $video['poster'] = LaunchSettings::videoPoster($video['poster']);
+        return $video;
     }
 
     public static function envelope(array $content): array
@@ -55,7 +71,17 @@ class LandingContent
     /** Legacy snapshots gain presentation defaults in memory, without database writes. */
     public static function withPresentation(array $content): array
     {
-        return ['presentation' => ['template' => 'LEAD_VSL', 'show_video' => true, 'show_faq' => true], 'after_registration' => self::confirmationDefaults(), 'next_step' => ['action' => 'recover', 'redirect_seconds' => 0], ...$content];
+        $content = ['presentation' => ['template' => 'LEAD_VSL', 'show_video' => true, 'show_faq' => true], 'after_registration' => self::confirmationDefaults(), 'next_step' => ['action' => 'recover', 'redirect_seconds' => 0], ...$content];
+        foreach (['video', 'confirmation_video'] as $key) {
+            $video = $content[$key] ?? [];
+            // Retire the rejected seed from legacy snapshots without rewriting them.
+            if (! isset($video['source_type']) && LaunchSettings::youtubeUrl($video['youtube_url'] ?? null) === 'https://www.youtube.com/watch?v=P42gDOTL6Ys') {
+                $video['youtube_url'] = null;
+            }
+            // Legacy frames normalize in memory; the visual ratio is no longer editable.
+            $content[$key] = [...self::videoDefaults(), ...$video, 'aspect_ratio' => '3:4'];
+        }
+        return $content;
     }
 
     public static function import(string $json, array $base): array
@@ -96,7 +122,7 @@ class LandingContent
         if (! $partial) {
             $content = self::withPresentation($content);
         }
-        $rules = ['content' => ['required', 'array:seo,hero,benefits,registration,faq,final,video,presentation,after_registration,next_step']];
+        $rules = ['content' => ['required', 'array:seo,hero,benefits,registration,faq,final,video,confirmation_video,presentation,after_registration,next_step']];
         $rules['content.presentation'] = [$presence, 'array:template,show_video,show_faq'];
         $rules['content.presentation.template'] = [$presence, Rule::in(self::TEMPLATES)];
         foreach (['show_video', 'show_faq'] as $key) {
@@ -107,12 +133,11 @@ class LandingContent
             'benefits' => ['eyebrow', 'title', 'description', 'items'], 'registration' => ['eyebrow', 'title', 'description'],
             'faq' => ['eyebrow', 'title', 'items'], 'final' => ['eyebrow', 'title', 'description', 'cta'],
             'after_registration' => ['title', 'message', 'instructions', 'cta_label'],
-            'video' => ['youtube_url', 'poster', 'aspect_ratio', 'source_aspect_ratio'],
         ];
         foreach ($sections as $section => $keys) {
             $rules['content.'.$section] = [$presence, 'array:'.implode(',', $keys)];
             foreach ($keys as $key) {
-                if ($key !== 'items' && $section !== 'video') {
+                if ($key !== 'items') {
                     $rules['content.'.$section.'.'.$key] = $text;
                 }
             }
@@ -130,21 +155,32 @@ class LandingContent
                 $rules['content.'.$section.'.items.*.'.$key] = ['required', 'string', 'max:1200', 'not_regex:/[<>]/u'];
             }
         }
-        foreach (['youtube_url', 'poster'] as $key) {
-            $rules['content.video.'.$key] = [$partial ? 'sometimes' : 'present', 'nullable', 'string', 'max:500'];
-        }
-        $rules['content.video.aspect_ratio'] = [$presence, Rule::in(['3:4', '16:9'])];
-        $rules['content.video.source_aspect_ratio'] = [$presence, Rule::in(['9:16', '3:4', '16:9'])];
-        Validator::make(['content' => $content], $rules)->after(function ($validator) use ($content): void {
+        foreach (['video', 'confirmation_video'] as $section) {
+            $rules['content.'.$section] = [$presence, 'array:youtube_url,poster,aspect_ratio,source_type,source_aspect_ratio,focal_x,focal_y'];
             foreach (['youtube_url', 'poster'] as $key) {
-                $value = $content['video'][$key] ?? null;
-                if ($value !== null && ($key === 'youtube_url' ? LaunchSettings::youtubeUrl($value) : LaunchSettings::videoPoster($value)) === null) {
-                    $validator->errors()->add('content.video.'.$key, $key === 'poster' ? 'Selecciona un poster local existente en /marketing/.' : 'Usa una URL HTTPS válida de YouTube.');
+                $rules['content.'.$section.'.'.$key] = [$partial ? 'sometimes' : 'present', 'nullable', 'string', 'max:500'];
+            }
+            $rules['content.'.$section.'.aspect_ratio'] = [$presence, Rule::in(['3:4'])];
+            $rules['content.'.$section.'.source_type'] = [$presence, Rule::in(['youtube'])];
+            $rules['content.'.$section.'.source_aspect_ratio'] = [$presence, Rule::in(['9:16', '3:4', '16:9'])];
+            foreach (['focal_x', 'focal_y'] as $key) {
+                $rules['content.'.$section.'.'.$key] = [$presence, 'numeric:strict', 'between:0,1'];
+            }
+        }
+        Validator::make(['content' => $content], $rules)->after(function ($validator) use ($content): void {
+            foreach (['video', 'confirmation_video'] as $section) {
+                foreach (['youtube_url', 'poster'] as $key) {
+                    $value = $content[$section][$key] ?? null;
+                    if ($value !== null && ($key === 'youtube_url' ? LaunchSettings::youtubeUrl($value) : LaunchSettings::videoPoster($value)) === null) {
+                        $validator->errors()->add('content.'.$section.'.'.$key, $key === 'poster' ? 'Selecciona un poster local existente en /marketing/.' : 'Usa una URL HTTPS válida de YouTube.');
+                    }
                 }
             }
         })->validate();
-        if (isset($content['video']['youtube_url'])) {
-            $content['video']['youtube_url'] = LaunchSettings::youtubeUrl($content['video']['youtube_url']);
+        foreach (['video', 'confirmation_video'] as $section) {
+            if (isset($content[$section]['youtube_url'])) {
+                $content[$section]['youtube_url'] = LaunchSettings::youtubeUrl($content[$section]['youtube_url']);
+            }
         }
         return $content;
     }

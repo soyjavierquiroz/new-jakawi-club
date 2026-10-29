@@ -60,3 +60,5 @@ credentials.json
 /artifacts/registration/LIVE.json
 
 /artifacts/postconversion/LIVE.json
+
+/artifacts/video-confirmation/LIVE.json

@@ -1,6 +1,7 @@
 import { Head, Link } from '@inertiajs/react';
 import { useEffect, useRef, useState } from 'react';
 import { Arrow, PageFrame, ReferralLink } from '../components/UI';
+import { LandingVideo } from '../components/media/jakawi-vsl-player';
 import type { LandingContent } from '../types';
 
 type Confirmation = {
@@ -10,6 +11,8 @@ type Confirmation = {
     landing_slug: string | null;
     next: { url: string; external: boolean; redirect_seconds: number } | null;
     unavailable: boolean;
+    video: LandingContent['video'];
+    whatsapp_group_url: string | null;
 };
 
 function NextStep({ confirmation }: { confirmation: Confirmation }) {
@@ -36,9 +39,9 @@ function NextStep({ confirmation }: { confirmation: Confirmation }) {
         }, 250);
         return () => window.clearInterval(timer);
     }, [next?.url, next?.redirect_seconds, next?.external, preview, landing_slug, cancelled]);
-    if (!next) return confirmation.unavailable ? <p className="message mt-6" role="status">El acceso al grupo de WhatsApp aún no está disponible.</p> : null;
+    if (!next) return null;
     return <div className="mt-7 space-y-4">
-        {preview ? <button className="btn btn-primary" disabled>{content.cta_label}<Arrow /></button> : next.external ? <a className="btn btn-primary" href={next.url} rel="noreferrer">{content.cta_label}<Arrow /></a> : <Link className="btn btn-primary" href={next.url}>{content.cta_label}<Arrow /></Link>}
+        {!next.external && (preview ? <button className="btn btn-primary" disabled>{content.cta_label}<Arrow /></button> : <Link className="btn btn-primary" href={next.url}>{content.cta_label}<Arrow /></Link>)}
         {preview && next.redirect_seconds > 0 && <p className="text-sm text-text-secondary">Vista previa: contador de {next.redirect_seconds} segundos. Redirección deshabilitada.</p>}
         {remaining !== null && !cancelled && <div className="rounded-card border border-border bg-background p-4"><p className="text-sm" role="timer" aria-live="off">Accederás al grupo de WhatsApp en {remaining} segundos.</p><button type="button" className="mt-3 text-sm font-semibold underline" onClick={() => { setCancelled(true); setRemaining(null); }}>Cancelar redirección</button></div>}
         {cancelled && <p className="text-sm text-text-secondary" role="status">Redirección cancelada. Puedes continuar con el botón cuando quieras.</p>}
@@ -50,11 +53,14 @@ export default function Registered({ referral_url, confirmation }: { referral_ur
     const activated = activation === 'confirmed';
     return <><Head title="Gracias por tu solicitud"><meta name="robots" content="noindex, nofollow" /></Head><PageFrame narrow>
         {preview && <p className="message mb-7" role="status">Vista previa del borrador · después del registro. No acredita una conversión ni envía datos.</p>}
-        <p className="eyebrow">TU SIGUIENTE PASO EN JAKAWI</p>
+        <p className="eyebrow">{activated ? 'TU SIGUIENTE PASO EN JAKAWI' : 'REGISTRO RECIBIDO'}</p>
         <h1 className="section-title mt-5 break-words">{content.title}</h1>
         <p className="mt-6 whitespace-pre-line break-words text-lg leading-relaxed text-text-secondary">{content.message}</p>
+        {confirmation.video?.youtube_url && <div className="confirmation-video my-8" aria-label="Video explicativo"><LandingVideo video={confirmation.video} url={confirmation.video.youtube_url} poster={confirmation.video.poster} /></div>}
+        {preview && !confirmation.video?.youtube_url && <p className="message my-6" role="status">Sin video explicativo configurado. El reproductor público estará oculto.</p>}
+        {confirmation.whatsapp_group_url && <div className="mt-7">{preview ? <button className="btn community-whatsapp-cta" disabled>UNIRME AL GRUPO DE WHATSAPP</button> : <a className="btn community-whatsapp-cta" href={confirmation.whatsapp_group_url} target="_blank" rel="noopener noreferrer">UNIRME AL GRUPO DE WHATSAPP</a>}</div>}
         <section className="my-8 rounded-card border border-border bg-surface p-6" aria-labelledby="activation-status" data-activation={activation}>
-            <h2 id="activation-status" className="text-xl font-bold">{activated ? 'Cuenta activada' : 'Activación pendiente'}</h2>
+            <h2 id="activation-status" className="text-xl font-bold">{activated ? 'Cuenta activada' : 'Revisa tu correo'}</h2>
             <p className="mt-3 text-sm leading-7 text-text-secondary">{activated ? 'Tu correo está verificado. Ya puedes ingresar y compartir tu invitación personal.' : 'Esta confirmación no activa tu cuenta. Si tu cuenta es nueva, abre el enlace que recibas por correo y elige una contraseña. Revisa también spam. El enlace vence en 60 minutos.'}</p>
         </section>
         <p className="whitespace-pre-line break-words leading-relaxed text-text-secondary">{content.instructions}</p>

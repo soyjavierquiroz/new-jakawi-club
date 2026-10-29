@@ -80,7 +80,7 @@ try {
         const next = nextManifest[name];
         if (!next) continue;
         html = html.replaceAll(`/build/${entry.file}`, `/build/${next.file}`);
-        for (let i = 0; i < (entry.css || []).length; i++) html = html.replaceAll(`/build/${entry.css[i]}`, `/build/${next.css[i]}`);
+        for (let i = 0; i < Math.min((entry.css || []).length, (next.css || []).length); i++) html = html.replaceAll(`/build/${entry.css[i]}`, `/build/${next.css[i]}`);
     }
     const fixtures = JSON.parse(await readFile('/evidence/browser-fixtures.json', 'utf8'));
     const operations = [], validations = [], metrics = [], checks = [];
@@ -90,6 +90,7 @@ try {
     on('Fetch.requestPaused', async event => {
         try {
             const url = new URL(event.request.url);
+            if (url.pathname === '/marketing/poster-fixture.png') { const body=await readFile('/checks/fixtures/poster-fixture.png'); await call('Fetch.fulfillRequest',{requestId:event.requestId,responseCode:200,responseHeaders:[{name:'Content-Type',value:'image/png'}],body:body.toString('base64')}); return; }
             if (url.href==='https://www.youtube.com/iframe_api') { await fulfill(event,200,'application/javascript',"window.__editorProviderFixture=true;window.YT={Player:class{constructor(mount,options){this.muted=true;this.time=0;const iframe=document.createElement('iframe');iframe.src='about:blank';mount.replaceWith(iframe);this.iframe=iframe;setTimeout(()=>options.events.onReady({target:this}),30);}playVideo(){}pauseVideo(){}seekTo(t){this.time=t;}mute(){this.muted=true;}unMute(){this.muted=false;}isMuted(){return this.muted;}getVolume(){return 100;}setVolume(){}getCurrentTime(){return this.time;}getDuration(){return 90;}destroy(){this.iframe.remove();}}};window.onYouTubeIframeAPIReady?.();");return; }
             if (url.pathname.startsWith('/build/')) {
                 const filename='/workspace/public/build-next/'+url.pathname.slice('/build/'.length);
@@ -136,6 +137,7 @@ try {
                 }
                 if (url.pathname.endsWith('/preview/confirmado')) {
                     page.props.confirmation.content = structuredClone(editor.props.landing.configuration.after_registration);
+                    page.props.confirmation.video = structuredClone(editor.props.landing.configuration.confirmation_video);
                 }
                 page.url = url.pathname;
             }
@@ -144,7 +146,7 @@ try {
             else await fulfill(event, 200, 'text/html; charset=utf-8', html.replace(pattern, (_, open, _body, close) => open+JSON.stringify(page).replaceAll('<','\\u003c')+close));
         } catch (error) { if (error.message.includes('Invalid InterceptionId')) return; runtimeErrors.push(error.message); await call('Fetch.failRequest', {requestId:event.requestId,errorReason:'Failed'}).catch(() => {}); }
     });
-    await call('Fetch.enable', {patterns:[{urlPattern:'https://www.youtube.com/iframe_api'},{urlPattern:'https://jakawi.club/build/*'},{urlPattern:'https://jakawi.club/admin/landings*'},{urlPattern:'https://jakawi.club/medicion'},{urlPattern:'https://jakawi.club/registro'}]});
+    await call('Fetch.enable', {patterns:[{urlPattern:'https://www.youtube.com/iframe_api'},{urlPattern:'https://jakawi.club/build/*'},{urlPattern:'https://jakawi.club/marketing/poster-fixture.png'},{urlPattern:'https://jakawi.club/admin/landings*'},{urlPattern:'https://jakawi.club/medicion'},{urlPattern:'https://jakawi.club/registro'}]});
     const until = async (expression, message) => {
         for (let i=0;i<100;i++) { try { if (await evaluate(expression)) return; } catch {} await pause(75); }
         console.log('Browser state at failure',message,await evaluate(`({path:location.pathname,dirty:document.body.textContent.includes('Cambios sin guardar'),template:document.querySelector('#landing-template')?.value,frame:document.querySelector('iframe')?.contentDocument?.querySelector('[data-landing-template]')?.dataset.landingTemplate,errors:[...document.querySelectorAll('[role=alert]')].map(e=>e.textContent),invalid:[...document.querySelectorAll('#landing-form :invalid')].map(e=>e.id),busy:document.querySelector('#landing-form button[type=submit]')?.disabled})`));
@@ -210,16 +212,24 @@ try {
     await until(`!document.querySelector('dialog').open`,'Full file applies');
     assert.equal(operations.length,0,'Full file import never persists');
     checks.push({name:'brief-export-unsaved-copy-download-and-local-import',passed:true});
+    await setField('content.video.youtube_url','https://www.youtube.com/watch?v=aqz-KE-bpKQ');
+    await setField('content.video.poster','/marketing/poster-fixture.png');
+    await setField('content.video.focal_x',.25,'HTMLInputElement');
+    await setField('content.video.focal_y',.75,'HTMLInputElement');
+    assert(!await evaluate(`!!document.getElementById('content.video.aspect_ratio')`),'Frame size cannot be edited');
     await click('Guardar borrador');
     await until(`[...document.querySelectorAll('button')].find(b=>b.textContent==='Publicar versión guardada')?.disabled===false`,'Save completes');
     assert.equal(operations.length,1); assert.equal(operations[0].method,'PUT');
     assert.equal(editor.props.landing.configuration.hero.title,'Titular importado');
+    assert.equal(editor.props.landing.configuration.video.youtube_url,'https://www.youtube.com/watch?v=aqz-KE-bpKQ');
+    assert.equal(editor.props.landing.configuration.video.focal_x,.25);
     assert.notEqual(editor.props.landing.published_configuration.hero.title,'Titular importado','Save does not publish');
     for (const width of [390,430,1440]) {
         await click(width===1440?'Desktop':String(width));
         await until(`document.querySelector('iframe')?.contentWindow?.innerWidth===${width} && !!document.querySelector('iframe')?.contentDocument?.querySelector('h1')`,'Preview viewport');
-        const result = await evaluate(`(()=>{const f=document.querySelector('iframe'),d=f.contentDocument,w=f.contentWindow,p=d.querySelector('.vsl-frame').getBoundingClientRect();return {width:w.innerWidth,overflow:d.documentElement.scrollWidth>w.innerWidth,title:d.querySelector('h1').textContent,closed:d.querySelector('#registro fieldset').disabled,ratio:p.width/p.height,preview:d.body.textContent.includes('Vista previa del borrador')};})()`);
-        assert.equal(result.width,width); assert(!result.overflow); assert(result.title.includes('Titular importado')); assert(result.closed && result.preview); assert(Math.abs(result.ratio-16/9)<.02);
+        const result = await evaluate(`(()=>{const f=document.querySelector('iframe'),d=f.contentDocument,w=f.contentWindow,p=d.querySelector('.vsl-frame').getBoundingClientRect();return {width:w.innerWidth,overflow:d.documentElement.scrollWidth>w.innerWidth,title:d.querySelector('h1').textContent,closed:d.querySelector('#registro fieldset').disabled,ratio:p.width/p.height,poster:d.querySelector('.vsl-frame img')?.style.objectPosition,preview:d.body.textContent.includes('Vista previa del borrador')};})()`);
+        assert.equal(result.width,width); assert(!result.overflow); assert(result.title.includes('Titular importado')); assert(result.closed && result.preview); assert(Math.abs(result.ratio-3/4)<.002);
+        assert.equal(result.poster,'25% 75%','Poster uses configured crop');
         checks.push({name:'real-renderer-preview',...result});
         await screenshot(`preview-${width}`);
     }
@@ -231,7 +241,8 @@ try {
         await click(width===1440?'Desktop':String(width));
         await until(`document.querySelector('iframe')?.contentWindow?.innerWidth===${width}&&!!document.querySelector('iframe')?.contentDocument?.querySelector('[data-activation]')`,'Saved confirmation preview renders');
         const result=await evaluate(`(()=>{const f=document.querySelector('iframe'),d=f.contentDocument;return {overflow:d.documentElement.scrollWidth>f.contentWindow.innerWidth,preview:d.body.textContent.includes('Vista previa del borrador'),activation:d.querySelector('[data-activation]').dataset.activation,title:d.querySelector('h1').textContent,timer:!!d.querySelector('[role=timer]')}})()`);
-        assert(!result.overflow && result.preview && !result.timer); assert.equal(result.activation,'pending');
+        assert(!result.overflow && result.preview && !result.timer);
+        assert(await evaluate(`(()=>{const f=document.querySelector('iframe').contentDocument.querySelector('.vsl-frame').getBoundingClientRect();return Math.abs(f.width/f.height-.75)<.002})()`),'Confirmation preview keeps 3:4'); assert.equal(result.activation,'pending');
         assert.equal(result.title,editor.props.landing.configuration.after_registration.title);
         await evaluate(`document.querySelector('.landing-editor-preview').scrollIntoView({block:'start'});document.querySelector('iframe').contentWindow.scrollTo(0,document.querySelector('iframe').contentDocument.querySelector('main').offsetTop)`);
         await screenshot(`confirmation-preview-${width}`);
@@ -254,7 +265,7 @@ try {
         await until(`!!document.querySelector('iframe')?.contentDocument?.querySelector('[data-landing-template="${template}"]')`,'Template renderer loads');
         let result=await evaluate(`(()=>{const d=document.querySelector('iframe').contentDocument,registration=d.querySelector('.registration-section'),benefits=d.querySelector('#como-funciona');return {template:d.querySelector('[data-landing-template]').dataset.landingTemplate,forms:d.querySelectorAll('#registro').length,video:!!d.querySelector('.vsl-frame'),faq:!!d.querySelector('#faq-title'),registrationFirst:!!(registration.compareDocumentPosition(benefits)&Node.DOCUMENT_POSITION_FOLLOWING),hasUnconfirmedTime:!!d.querySelector('[data-webinar-schedule] time'),benefits:benefits.querySelectorAll('article').length,title:d.querySelector('h1').textContent}})()`);
         assert.equal(result.forms,1); assert(result.title.includes('Titular importado')); assert.equal(result.template,template);
-        assert.equal(result.video,template!=='WAITLIST'); assert.equal(result.registrationFirst,template==='WAITLIST'); assert(!result.hasUnconfirmedTime);
+        assert.equal(result.video,editor.props.landing.configuration.presentation.show_video); assert.equal(result.registrationFirst,template==='WAITLIST'); assert(!result.hasUnconfirmedTime);
         if(template==='WAITLIST') assert(result.benefits<=3);
         checks.push({name:'template-renderer',...result});
         await screenshot(`template-${template.toLowerCase()}-desktop`);
@@ -270,13 +281,13 @@ try {
             assert(await evaluate(`(()=>{const f=document.querySelector('iframe');return f.contentDocument.documentElement.scrollWidth<=f.contentWindow.innerWidth})()`),'No renderer overflow');
         }
         if(template==='WEBINAR') {
-            await evaluate(`document.querySelector('label input[type=checkbox]').click()`);
+            await evaluate(`document.querySelector('#show-main-video').click()`);
             await click('Guardar borrador');
             await until(`!document.querySelector('iframe').contentDocument.querySelector('.vsl-frame')`,'Webinar optional video');
             assert(editor.props.landing.configuration.video.youtube_url,'Hidden video preserved');
         }
         if(template==='WAITLIST') {
-            await evaluate(`document.querySelector('label input[type=checkbox]').click()`);
+            await evaluate(`[...document.querySelectorAll('label')].find(e=>e.textContent.includes('Mostrar FAQ')).querySelector('input').click()`);
             await click('Guardar borrador');
             await until(`!document.querySelector('iframe').contentDocument.querySelector('#faq-title')`,'Waitlist optional FAQ');
         }

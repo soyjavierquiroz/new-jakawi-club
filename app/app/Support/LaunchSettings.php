@@ -68,6 +68,13 @@ class LaunchSettings
         return is_file(public_path(ltrim($value, '/'))) ? $value : null;
     }
 
+    public static function defaultVideoUrl(mixed $value): ?string
+    {
+        $url = self::youtubeUrl($value);
+        // This historical default is known to reject embedding (YouTube 150).
+        return $url === 'https://www.youtube.com/watch?v=P42gDOTL6Ys' ? null : $url;
+    }
+
     /** @return array<string, mixed> */
     public static function publicData(bool $private = false): array
     {
@@ -91,7 +98,7 @@ class LaunchSettings
                 'starts_at' => $date,
                 'zoom_url' => $private ? self::httpsUrl(config('jakawi.event.zoom_url')) : null,
             ] : null,
-            'whatsapp_url' => self::httpsUrl(config('jakawi.whatsapp_url')),
+            'whatsapp_url' => RegistrationNextStep::whatsappGroup(),
         ];
     }
 }

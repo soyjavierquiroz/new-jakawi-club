@@ -34,7 +34,8 @@ class RegistrationController extends Controller
                     abort_unless($landing?->isPublic() && LandingSlug::allowed($landing->slug), 422);
                     $content = LandingContent::withPresentation($landing->published_configuration);
                     $receipt = ['id' => $landing->id, 'slug' => $landing->slug, 'campaign' => $landing->published_campaign,
-                        'content' => $content['after_registration'], 'next_step' => $content['next_step']];
+                        'content' => $content['after_registration'], 'next_step' => $content['next_step'],
+                        'confirmation_video' => $content['confirmation_video']];
                 }
                 if (User::where('email', $data['email'])->exists()) {
                     return;
@@ -101,7 +102,7 @@ class RegistrationController extends Controller
     {
         $content = LandingContent::withPresentation($landing->configuration);
 
-        return $this->renderReceipt($request, ['slug' => $landing->slug, 'content' => $content['after_registration'], 'next_step' => $content['next_step']], true);
+        return $this->renderReceipt($request, ['slug' => $landing->slug, 'content' => $content['after_registration'], 'next_step' => $content['next_step'], 'confirmation_video' => $content['confirmation_video']], true);
     }
 
     private function hasReceipt(Request $request): bool
@@ -128,6 +129,8 @@ class RegistrationController extends Controller
                 'content' => $receipt['content'] ?? LandingContent::confirmationDefaults(),
                 'activation' => $activated ? 'confirmed' : 'pending', 'preview' => $preview,
                 'landing_slug' => $receipt['slug'] ?? null,
+                'video' => LandingContent::confirmationVideo($receipt['confirmation_video'] ?? []),
+                'whatsapp_group_url' => RegistrationNextStep::whatsappGroup(),
                 'next' => RegistrationNextStep::resolve($settings, (bool) $activated),
                 'unavailable' => ($settings['action'] ?? '') === 'whatsapp' && RegistrationNextStep::whatsappGroup() === null,
             ],

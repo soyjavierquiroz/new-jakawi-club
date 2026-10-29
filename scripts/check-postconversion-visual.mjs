@@ -85,7 +85,7 @@ try {
                 const next = after[name];
                 if (!next) continue;
                 value = value.replaceAll(`/build/${entry.file}`, `/build/${next.file}`);
-                for (let i = 0; i < (entry.css || []).length; i++) value = value.replaceAll(`/build/${entry.css[i]}`, `/build/${next.css[i]}`);
+                for (let i = 0; i < Math.min((entry.css || []).length, (next.css || []).length); i++) value = value.replaceAll(`/build/${entry.css[i]}`, `/build/${next.css[i]}`);
             }
             return value;
         };
@@ -103,6 +103,8 @@ try {
         if (stopping) return;
         try {
             const url = new URL(event.request.url);
+            if (url.pathname === '/marketing/poster-fixture.png') { const body=await readFile('/checks/fixtures/poster-fixture.png'); await call('Fetch.fulfillRequest',{requestId:event.requestId,responseCode:200,responseHeaders:[{name:'Content-Type',value:'image/png'}],body:body.toString('base64')}); return; }
+            if (url.href === 'https://www.youtube.com/iframe_api') { await fulfill(event,200,'application/javascript',"window.__vslFixture=true;window.__instances=0;window.__calls=[];window.__vslEvents=[];window.YT={Player:class{constructor(mount,options){window.__instances++;this.muted=true;this.volume=100;this.time=0;window.__vslOptions=options;window.__vslPlayer=this;for(const [name,callback] of Object.entries(options.events))options.events[name]=event=>{window.__vslEvents.push({name,data:event?.data??null});callback(event);};const iframe=document.createElement('iframe');iframe.src='about:blank';mount.replaceWith(iframe);this.iframe=iframe;setTimeout(()=>options.events.onReady({target:this}),30);}playVideo(){window.__calls.push('play');}pauseVideo(){window.__calls.push('pause');window.__vslOptions.events.onStateChange({data:2});}seekTo(time){this.time=time;window.__calls.push('seek:'+time);}mute(){this.muted=true;window.__calls.push('mute');}unMute(){this.muted=false;window.__calls.push('unmute');}isMuted(){return this.muted;}getVolume(){return this.volume;}setVolume(volume){this.volume=volume;}getCurrentTime(){return this.time;}getDuration(){return 90;}destroy(){this.iframe.remove();window.__calls.push('dispose');}}};window.onYouTubeIframeAPIReady?.();"); return; }
             if (url.host === 'chat.whatsapp.com') {
                 groupNavigations.push(url.origin);
                 await fulfill(event, 200, 'text/html', '<h1>Destino aprobado interceptado por la prueba</h1>'); return;
@@ -151,7 +153,7 @@ try {
             catch { /* A navigation may already have cancelled the paused request. */ }
         }
     });
-    await call('Fetch.enable', { patterns: [{ urlPattern: 'https://jakawi.club/*' }, { urlPattern: 'https://chat.whatsapp.com/*' }] });
+    await call('Fetch.enable', { patterns: [{ urlPattern: 'https://jakawi.club/*' }, { urlPattern: 'https://chat.whatsapp.com/*' }, { urlPattern: 'https://www.youtube.com/iframe_api' }] });
     const until = async (expression, label) => {
         for (let i = 0; i < 100; i++) {
             try { if (await evaluate(expression)) return; } catch {}
@@ -165,6 +167,8 @@ try {
         fixturePage.props.errors = {};
         fixturePage.props.launch.registration_open = open;
         fixturePage.props.landing.content.presentation.template = template;
+        fixturePage.props.landing.content.presentation.show_video = template !== 'WAITLIST';
+        fixturePage.props.launch.video_url = 'https://www.youtube.com/watch?v=M7lc1UVf-VE';
         fixturePage.props.referral_code = referral;
         const url = actual ? `https://jakawi.club/?registration_check=${++navigation}` : `https://jakawi.club/__registration/${template}?check=${++navigation}`;
         await call('Page.navigate', { url });
@@ -314,7 +318,7 @@ try {
     };
     for (const width of widths) {
         await call('Emulation.setDeviceMetricsOverride', {width,height:1000,deviceScaleFactor:1,mobile:width<768});
-        for (const kind of ['pending','confirmed','preview']) {
+        for (const kind of ['pending','confirmed','preview','without_video']) {
             await thankYou(kind);
             const result=await evaluate(`({overflow:document.documentElement.scrollWidth>innerWidth,activation:document.querySelector('[data-activation]').dataset.activation,title:document.querySelector('h1').textContent,logo:document.querySelector('.brand-logo').getAttribute('src'),referral:!!document.querySelector('#personal-link'),timer:!!document.querySelector('[role=timer]'),text:document.querySelector('main').textContent,links:[...document.querySelector('main').querySelectorAll('a')].map(a=>a.getAttribute('href'))})`);
             assert(!result.overflow); assert.equal(result.logo,'/jakawi-logo.svg');
@@ -323,7 +327,11 @@ try {
             if(kind!=='confirmed') assert(!result.text.includes('Cuenta activada'));
             if(kind==='pending') assert(!result.links.some(url=>/whatsapp|zoom/.test(url)));
             if(kind==='preview') assert(!result.timer && result.text.includes('Redirección deshabilitada'));
+            const media=await evaluate(`(()=>{const f=document.querySelector('.vsl-frame')?.getBoundingClientRect();return {ratio:f?f.width/f.height:null,iframes:document.querySelectorAll('.vsl-host iframe').length}})()`);
+            if(kind==='without_video'){assert.equal(media.ratio,null);assert.equal(media.iframes,0);}
+            else {assert(Math.abs(media.ratio-.75)<.002);}
             await screenshot(`thanks-${kind}-${width}`);
+            if(kind==='pending'){await evaluate(`document.querySelector('.confirmation-video').scrollIntoView({block:'start',behavior:'instant'})`);await screenshot(`confirmation-video-${width}`);}
             checks.push({name:'backend-receipt-renderer',kind,width,fixture:true,activation:result.activation,overflow:false});
         }
     }
@@ -332,6 +340,7 @@ try {
     await evaluate(`sessionStorage.clear()`);
     await thankYou('whatsapp');
     await until(`!!document.querySelector('[role=timer]')`, 'Configured approved group starts countdown');
+    assert(await evaluate(`(()=>{const a=document.querySelector('a[href*="chat.whatsapp.com"]');return a.textContent==='UNIRME AL GRUPO DE WHATSAPP'&&a.target==='_blank'&&a.rel==='noopener noreferrer'&&getComputedStyle(a).backgroundColor===${JSON.stringify(rgb('community-whatsapp-bg'))}})()`),'Official group button has brand color and safe new tab');
     await screenshot('thanks-whatsapp-countdown-390');
     await evaluate(`[...document.querySelectorAll('button')].find(b=>b.textContent==='Cancelar redirección').click()`);
     await until(`!document.querySelector('[role=timer]')&&document.body.textContent.includes('Redirección cancelada')`, 'Countdown can be cancelled');

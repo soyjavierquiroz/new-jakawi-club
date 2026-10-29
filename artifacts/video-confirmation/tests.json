@@ -1,0 +1,27 @@
+{
+  "postconversion": {
+    "passed": 91,
+    "database": "isolated PostgreSQL schema",
+    "notifications": "fake",
+    "live_test_users": 0
+  },
+  "landing": {
+    "passed": 148,
+    "database": "isolated PostgreSQL schema",
+    "live_test_users": 0
+  },
+  "mvp": {
+    "passed": 73,
+    "database": "isolated PostgreSQL schema",
+    "notifications": "fake",
+    "live_test_users": 0
+  },
+  "units": {
+    "passed": 75,
+    "real_playback": false
+  },
+  "typecheck": "passed",
+  "vite": "passed",
+  "live_accounts_created": 0,
+  "smtp_sent": 0
+}

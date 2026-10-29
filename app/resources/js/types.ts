@@ -7,6 +7,7 @@ export type Launch = {
 };
 export type Member = { name: string; email: string; phone: string | null; city: string | null };
 export type LandingTemplate = 'LEAD_VSL' | 'WEBINAR' | 'WAITLIST';
+export type LandingVideoSettings = { youtube_url: string | null; poster: string | null; aspect_ratio: '3:4'; source_type: 'youtube'; source_aspect_ratio: '9:16' | '3:4' | '16:9'; focal_x: number; focal_y: number };
 
 export type LandingContent = {
     presentation: { template: LandingTemplate; show_video: boolean; show_faq: boolean };
@@ -18,7 +19,8 @@ export type LandingContent = {
     registration: { eyebrow: string; title: string; description: string };
     faq: { eyebrow: string; title: string; items: { question: string; answer: string }[] };
     final: { eyebrow: string; title: string; description: string; cta: string };
-    video: { youtube_url: string | null; poster: string | null; aspect_ratio: '3:4' | '16:9'; source_aspect_ratio: '9:16' | '3:4' | '16:9' };
+    video: LandingVideoSettings;
+    confirmation_video: LandingVideoSettings;
 };
 export type Landing = { id: number; slug: string; content: LandingContent; preview: boolean; revision: number };
 export type LandingRecord = {

@@ -6,7 +6,7 @@ final class RegistrationNextStep
 {
     public static function whatsappGroup(): ?string
     {
-        $url = config('jakawi.whatsapp_url');
+        $url = config('jakawi.whatsapp_group_url');
 
         // Only an operationally approved group invitation; never an editorial URL.
         return is_string($url) && preg_match('~^https://chat\.whatsapp\.com/[A-Za-z0-9]{10,64}$~D', $url) ? $url : null;
