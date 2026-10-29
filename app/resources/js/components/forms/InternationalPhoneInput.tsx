@@ -21,10 +21,10 @@ export function InternationalPhoneInput({ onChange, error, onBlur }: { onChange:
     function close() { dialog.current?.close(); setOpen(false); trigger.current?.focus(); }
     function select(code: CountryCode) { setCountry(code); onChange(normalizePhone(number, code)); close(); }
     return <div>
-        <label className="label" htmlFor="phone">Teléfono / WhatsApp</label>
+        <label className="sr-only" htmlFor="phone">Teléfono / WhatsApp</label>
         <div className="phone-control">
             <button ref={trigger} type="button" className="phone-country" aria-label={`País: ${names.of(country)} +${getCountryCallingCode(country)}. Cambiar país`} aria-haspopup="dialog" aria-expanded={open} onClick={() => { setSearch(''); setActive(0); setOpen(true); dialog.current?.showModal(); input.current?.focus(); }}><Flag country={country} /><span>+{getCountryCallingCode(country)}</span><span aria-hidden="true">⌄</span></button>
-            <input className="input" id="phone" name="phone_national" type="tel" autoComplete="tel-national" inputMode="tel" placeholder={country === 'BO' ? '70000000' : 'Tu número'} maxLength={30} required value={number} onChange={event => { setNumber(event.target.value); onChange(normalizePhone(event.target.value, country)); }} onBlur={onBlur} aria-invalid={!!error} aria-describedby={`phone-help${error ? ' phone-error' : ''}`} />
+            <input className="input" id="phone" name="phone_national" type="tel" autoComplete="tel-national" inputMode="tel" placeholder="WhatsApp" maxLength={30} required value={number} onChange={event => { setNumber(event.target.value); onChange(normalizePhone(event.target.value, country)); }} onBlur={onBlur} aria-invalid={!!error} aria-describedby={`phone-help${error ? ' phone-error' : ''}`} />
         </div>
         <p id="phone-help" className="mt-2 text-xs leading-5 text-text-muted">{names.of(country)} · Incluye el código de área si corresponde. Para otro país, cambia el selector.</p>
         <dialog ref={dialog} className="country-dialog" aria-labelledby="country-title" onCancel={event => { event.preventDefault(); close(); }} onClose={() => setOpen(false)} onClick={event => { if (event.target === dialog.current) close(); }}>

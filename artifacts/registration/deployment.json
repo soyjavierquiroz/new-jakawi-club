@@ -1,0 +1,14 @@
+{
+  "deployed_at": "2026-10-29T08:29:17.427587-04:00",
+  "baseline_sha": "d8cadaec85de70fc431b504b409f90c7a56a7bd0",
+  "previous_manifest_sha256": "717c4ac7f955d1cbec64a4c8949403a49a2aed0c380676b39abb57c0b987ad7a",
+  "manifest_sha256": "43225cd85dd2901d115650840b602fc05e4a67b515bd56544bc4787c0c8bbc7a",
+  "built_files": 19,
+  "previous_chunks_retained": true,
+  "atomic_manifest_replace": true,
+  "restart_service": "app",
+  "migrations": false,
+  "configuration_changed": false,
+  "real_registration_open": false,
+  "mailer": "log"
+}

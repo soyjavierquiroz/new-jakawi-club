@@ -21,7 +21,7 @@ export function MarketingHero({ children, open, compact = false, encounter }: { 
             <p className="text-base leading-relaxed text-text-secondary sm:text-lg">{content.description}</p>
             <p className="mt-4 text-xs font-extrabold tracking-widest">JAKAWI — VIVE MÁS. GASTA MENOS.</p>
             <MarketingCTA location="hero" className="mt-5">{content.cta}</MarketingCTA>
-            <p className="mt-3 text-xs text-text-muted">{open ? 'Registro gratuito en esta etapa.' : 'Estamos preparando la apertura. Los registros aún están cerrados.'}</p>
+            {open && <p className="mt-3 text-xs text-text-muted">Registro gratuito en esta etapa.</p>}
             {encounter}
         </div>
     </section>;

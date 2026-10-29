@@ -1,0 +1,260 @@
+{
+  "stage": "build-next intercepted only in browser",
+  "viewports": [
+    390,
+    1440
+  ],
+  "checks": [
+    {
+      "name": "compact-accessible-closed-form",
+      "width": 390,
+      "template": "LEAD_VSL",
+      "fixture": true,
+      "fields": [
+        {
+          "id": "name",
+          "placeholder": "Tu nombre completo",
+          "label": "Nombre",
+          "associated": true,
+          "hidden": true,
+          "autocomplete": "name",
+          "inputMode": "",
+          "required": true
+        },
+        {
+          "id": "phone",
+          "placeholder": "WhatsApp",
+          "label": "Teléfono / WhatsApp",
+          "associated": true,
+          "hidden": true,
+          "autocomplete": "tel-national",
+          "inputMode": "tel",
+          "required": true
+        },
+        {
+          "id": "email",
+          "placeholder": "Tu correo electrónico",
+          "label": "Correo electrónico",
+          "associated": true,
+          "hidden": true,
+          "autocomplete": "email",
+          "inputMode": "",
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "compact-accessible-closed-form",
+      "width": 390,
+      "template": "WEBINAR",
+      "fixture": true,
+      "fields": [
+        {
+          "id": "name",
+          "placeholder": "Tu nombre completo",
+          "label": "Nombre",
+          "associated": true,
+          "hidden": true,
+          "autocomplete": "name",
+          "inputMode": "",
+          "required": true
+        },
+        {
+          "id": "phone",
+          "placeholder": "WhatsApp",
+          "label": "Teléfono / WhatsApp",
+          "associated": true,
+          "hidden": true,
+          "autocomplete": "tel-national",
+          "inputMode": "tel",
+          "required": true
+        },
+        {
+          "id": "email",
+          "placeholder": "Tu correo electrónico",
+          "label": "Correo electrónico",
+          "associated": true,
+          "hidden": true,
+          "autocomplete": "email",
+          "inputMode": "",
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "compact-accessible-closed-form",
+      "width": 390,
+      "template": "WAITLIST",
+      "fixture": true,
+      "fields": [
+        {
+          "id": "name",
+          "placeholder": "Tu nombre completo",
+          "label": "Nombre",
+          "associated": true,
+          "hidden": true,
+          "autocomplete": "name",
+          "inputMode": "",
+          "required": true
+        },
+        {
+          "id": "phone",
+          "placeholder": "WhatsApp",
+          "label": "Teléfono / WhatsApp",
+          "associated": true,
+          "hidden": true,
+          "autocomplete": "tel-national",
+          "inputMode": "tel",
+          "required": true
+        },
+        {
+          "id": "email",
+          "placeholder": "Tu correo electrónico",
+          "label": "Correo electrónico",
+          "associated": true,
+          "hidden": true,
+          "autocomplete": "email",
+          "inputMode": "",
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "compact-accessible-closed-form",
+      "width": 1440,
+      "template": "LEAD_VSL",
+      "fixture": true,
+      "fields": [
+        {
+          "id": "name",
+          "placeholder": "Tu nombre completo",
+          "label": "Nombre",
+          "associated": true,
+          "hidden": true,
+          "autocomplete": "name",
+          "inputMode": "",
+          "required": true
+        },
+        {
+          "id": "phone",
+          "placeholder": "WhatsApp",
+          "label": "Teléfono / WhatsApp",
+          "associated": true,
+          "hidden": true,
+          "autocomplete": "tel-national",
+          "inputMode": "tel",
+          "required": true
+        },
+        {
+          "id": "email",
+          "placeholder": "Tu correo electrónico",
+          "label": "Correo electrónico",
+          "associated": true,
+          "hidden": true,
+          "autocomplete": "email",
+          "inputMode": "",
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "compact-accessible-closed-form",
+      "width": 1440,
+      "template": "WEBINAR",
+      "fixture": true,
+      "fields": [
+        {
+          "id": "name",
+          "placeholder": "Tu nombre completo",
+          "label": "Nombre",
+          "associated": true,
+          "hidden": true,
+          "autocomplete": "name",
+          "inputMode": "",
+          "required": true
+        },
+        {
+          "id": "phone",
+          "placeholder": "WhatsApp",
+          "label": "Teléfono / WhatsApp",
+          "associated": true,
+          "hidden": true,
+          "autocomplete": "tel-national",
+          "inputMode": "tel",
+          "required": true
+        },
+        {
+          "id": "email",
+          "placeholder": "Tu correo electrónico",
+          "label": "Correo electrónico",
+          "associated": true,
+          "hidden": true,
+          "autocomplete": "email",
+          "inputMode": "",
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "compact-accessible-closed-form",
+      "width": 1440,
+      "template": "WAITLIST",
+      "fixture": true,
+      "fields": [
+        {
+          "id": "name",
+          "placeholder": "Tu nombre completo",
+          "label": "Nombre",
+          "associated": true,
+          "hidden": true,
+          "autocomplete": "name",
+          "inputMode": "",
+          "required": true
+        },
+        {
+          "id": "phone",
+          "placeholder": "WhatsApp",
+          "label": "Teléfono / WhatsApp",
+          "associated": true,
+          "hidden": true,
+          "autocomplete": "tel-national",
+          "inputMode": "tel",
+          "required": true
+        },
+        {
+          "id": "email",
+          "placeholder": "Tu correo electrónico",
+          "label": "Correo electrónico",
+          "associated": true,
+          "hidden": true,
+          "autocomplete": "email",
+          "inputMode": "",
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "phone-country-search-keyboard-e164",
+      "fixture": true
+    },
+    {
+      "name": "consent-required-loading-errors-referral-attribution",
+      "fixture": true,
+      "submissions_intercepted": 1
+    },
+    {
+      "name": "sticky-shared-form-navigation",
+      "fixture": true
+    },
+    {
+      "name": "privacy-link-and-existing-login",
+      "fixture": false
+    }
+  ],
+  "runtime_errors": [],
+  "failed_assets": [],
+  "no_live_accounts": true,
+  "all_browser_mutations_intercepted": true,
+  "real_registration_open": false,
+  "smtp_delivery_tested": false
+}
