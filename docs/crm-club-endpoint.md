@@ -1,36 +1,22 @@
-# Ajuste mínimo del bridge para CLUB
+# CLUB → FluentCRM operativo
 
-Estado comprobado el 29/10/2026: CLUB no llama a CRM y no tiene configuración ni credencial CRM independiente. Su base es PostgreSQL `jakawi_club`. No se ha enviado ningún contacto ni modificado COM/CRM.
+Endpoint: `POST https://crm.jakawi.com/wp-json/jakawi-fluentcrm/v1/club/events`. Contrato v1 `CONTACT_UPSERT`, `source_system=CLUB`, `external_id=users.uuid`, contacto nombre/email/teléfono E.164, atribución landing/campaña/referente UUID/UTMs y estado `pending|activated` con fechas. `marketing.action` admite únicamente `UNCHANGED`. El plugin resuelve esta ruta también con enlaces simples de WordPress, sin cambiar las rutas de COM.
 
-El bridge instalado en CRM expone `POST /wp-json/jakawi-fluentcrm/v1/events`. `Contract.php` solo admite `contact.email/name` e `identity.jakawi_user_id/provider_contact_id` numéricos. No admite teléfono, identidad externa UUID ni estado de activación CLUB. `Adapter.php` busca y protege el campo numérico `jakawi_user_id` de COM. Su autenticación usa un único secreto HMAC. Enviar `users.uuid` de CLUB allí se rechazaría y reutilizar un ID entero local colisionaría con COM. No corresponde reutilizar el secreto de COM.
+Firma HMAC SHA-256 del cuerpo JSON exacto: `timestamp + "\n" + event_id + "\n" + raw_body`. Headers `X-Jakawi-Timestamp`, `X-Jakawi-Event-Id`, `X-Jakawi-Signature`; ventana de cinco minutos y límite 64 KiB. Secreto exclusivo CLUB en archivos privados montados, nunca en Git ni en el payload. No se usa el secreto COM.
 
-La extensión mínima, pendiente de autorización en CRM, puede permanecer en el plugin existente `jakawi-fluentcrm-bridge`:
+CRM reutiliza el writer y transacción del plugin existente, con tabla de recibos exclusiva CLUB para separar `(productor,event_id)`. Resuelve UUID y después email; conflictos responden 409. Añade `source-club` y campos `club_*`, conserva identidad COM, suscripción, bajas, listas, tags y datos comerciales existentes. `club_name` y `club_phone` conservan los datos CLUB incluso si el perfil comercial previo tiene otros valores. Un contacto nuevo queda `transactional`; un pending atrasado no revierte activated. No crea usuarios WordPress/COM.
 
-1. Añadir `POST /wp-json/jakawi-fluentcrm/v1/club/events`, con secreto exclusivo CLUB y la misma firma HMAC del bridge: `timestamp + "\n" + event_id + "\n" + cuerpo JSON exacto`. Mantener ventana de cinco minutos y límite de 64 KiB. No cambiar el contrato ni el secreto de COM.
-2. Validar un contrato acotado con `source_system=CLUB`, `external_id=users.uuid`, teléfono E.164, landing/campaña, referido externo y estado `pending|activated`. Rechazar passwords, tokens y claves desconocidas. Provisionar campos de texto `club_user_uuid`, `club_landing_slug`, `club_campaign`, `club_referrer_uuid` y `club_activation_status`; fechas `club_registered_at` y `club_activated_at`. Teléfono usa el campo nativo del contacto. No escribir `jakawi_user_id` ni campos de membresía COM.
-3. Reutilizar el upsert de FluentCRM: resolver primero `club_user_uuid`, después email normalizado. Si ambos identifican contactos distintos, responder 409. Vincular al contacto existente por email sin crear usuarios WordPress/COM ni sobreescribir su identidad COM. Identificar origen mediante campos CLUB y etiqueta `source-club`. Actualizar los campos CLUB sin borrar etiquetas de otros orígenes.
-4. Reutilizar el recibo de eventos del plugin, con identidad de productor incluida en la deduplicación: `(CLUB,event_id)`, mismo evento/cuerpo devuelve el mismo resultado. Mismo evento con distinto cuerpo responde 409. Serializar el upsert por UUID/email como ya hace el bridge para evitar duplicados concurrentes. Ignorar estados anteriores a la última actualización CLUB; una repetición de `pending` no debe desactivar una cuenta ya activada.
-5. La aceptación de privacidad no concede marketing. Para un contacto nuevo usar `transactional`; conservar bajas, rebotes y consentimientos existentes. CLUB envía `marketing.action=UNCHANGED`; no inicia campañas ni automatizaciones comerciales por esta integración.
+CLUB persiste `users.registration_origin` (landing ID/slug, campaña publicada y UTMs permitidas), junto a UUID, referente y fecha existentes. La procedencia es inmutable. Los históricos mantienen `null` si no hay fuente verificable. No se reconstruye desde el recibo temporal ni se inventan campañas.
 
-Ejemplo sintético del cuerpo propuesto, no enviado:
+Registro y activación encolan snapshots cifrados en `jobs`, cola `crm`, dentro de su transacción PostgreSQL. El worker solo ve filas confirmadas; no hay HTTP al CRM dentro de la petición pública. Usa el mismo `event_id` y cuerpo en reintentos. Doce intentos con backoff; 409/422/configuración inválida quedan visibles en `failed_jobs`, sin bloquear registro. Un HTTP 200 sin respuesta válida se reintenta.
 
-```json
-{
-  "version": 1,
-  "event_id": "11111111-1111-4111-8111-111111111111",
-  "operation": "CONTACT_UPSERT",
-  "occurred_at": "2026-10-29T21:00:00Z",
-  "source_system": "CLUB",
-  "external_id": "22222222-2222-4222-8222-222222222222",
-  "contact": {"name": "Persona de ejemplo", "email": "persona@example.invalid", "phone": "+59170000000"},
-  "attribution": {"landing_slug": "principal", "campaign": "campana_aprobada", "referrer_external_id": null},
-  "activation": {"status": "pending", "registered_at": "2026-10-29T21:00:00Z", "activated_at": null},
-  "marketing": {"action": "UNCHANGED"}
-}
-```
+Entrega operativa: `jakawi-club-crm.timer` ejecuta cada minuto un contenedor efímero limitado mediante `scripts/deliver-crm.sh`; procesa hasta 20 trabajos o 40 segundos, sin worker permanente ni otro servicio web. Usa la cola PostgreSQL existente.
 
-Responder con `{"result_code":"OK","provider_contact_id":123}`; 401 para firma inválida, 422 para datos incompatibles, 409 para conflicto, 429/503 para reintento. La activación envía otro `event_id`, el mismo `external_id`, `status=activated` y su fecha real.
+Operación:
 
-Después de habilitar este contrato y proporcionar autenticación independiente, el cambio CLUB debe emitir tras commit en registro y activación, con envío diferido y fallo aislado. Debe capturar durablemente landing/campaña al registrar: hoy solo existen en el recibo temporal y agregados, no en `users`. Una entrega diferida necesita conservar esa atribución junto al evento y el mismo `event_id` en sus reintentos. No añadir llamadas HTTP dentro de la transacción ni hacer que CRM condicione el registro. Este emisor no se ha construido ni activado para un endpoint que aún no admite el contrato.
+- Estado: `systemctl status jakawi-club-crm.timer` y `php artisan queue:failed` dentro de CLUB.
+- Reintentar un fallo corregido: `php artisan queue:retry UUID_DEL_TRABAJO`. Conserva el evento original.
+- Sincronizar una cuenta existente, sin modificarla ni enviar correo: `php artisan crm:sync-contact email`.
+- Recuperar leads históricos: `php artisan crm:sync-contact --registered`; solo cuentas registradas con aceptación de privacidad y teléfono, sin inventar procedencia.
 
-Fuentes locales consultadas solo en lectura: `crm.jakawi.com/clean-wordpress/wp-content/plugins/jakawi-fluentcrm-bridge/{jakawi-fluentcrm-bridge.php,includes/Contract.php,includes/Adapter.php,includes/SchemaManager.php,includes/EventStore.php}` y `jakawi.com/app/app/Services/Crm/CrmBridgeClient.php`.
+Pruebas: `bash scripts/test-crm-sync.sh` en CLUB; después `bash tests/run.sh` en `/opt/sites/crm.jakawi.com/bridge`. Usan PostgreSQL y tablas WordPress/FluentCRM aisladas, notificaciones falsas y ninguna cuenta LIVE nueva. Evidencia acotada en `artifacts/crm-sync/`.

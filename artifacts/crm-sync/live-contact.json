@@ -1,0 +1,17 @@
+{
+  "contact_id": 11,
+  "one_contact_for_email": true,
+  "one_contact_for_uuid": true,
+  "uuid_matches": true,
+  "name_matches": true,
+  "whatsapp_matches": true,
+  "source_club": true,
+  "source_tag": true,
+  "activated": true,
+  "activation_date_matches": true,
+  "registration_date_matches": true,
+  "subscription_transactional": true,
+  "no_com_identity": true,
+  "no_wordpress_user": true,
+  "historical_origin_not_invented": true
+}

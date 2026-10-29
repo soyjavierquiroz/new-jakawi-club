@@ -32,7 +32,7 @@ class User extends Authenticatable implements MustVerifyEmail
         });
 
         static::updating(function (User $user): void {
-            foreach (['uuid', 'referral_code', 'referred_by_id'] as $attribute) {
+            foreach (['uuid', 'referral_code', 'referred_by_id', 'registration_origin'] as $attribute) {
                 if ($user->isDirty($attribute)) {
                     throw new \LogicException('La identidad y el referente son permanentes.');
                 }
@@ -73,6 +73,7 @@ class User extends Authenticatable implements MustVerifyEmail
             'privacy_accepted_at' => 'datetime',
             'activated_at' => 'datetime',
             'is_marketing_admin' => 'boolean',
+            'registration_origin' => 'array',
         ];
     }
 }

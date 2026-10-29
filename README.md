@@ -56,7 +56,7 @@ python3 scripts/validate-local.py
 
 Los secretos se generan una sola vez; el preparador rechaza estados incompletos y no sobrescribe claves existentes. No hay secretos en Git ni en las imágenes. Mantener los permisos establecidos por el preparador y respaldar este directorio de forma privada. El rol `jakawi_club` utiliza únicamente la base `jakawi_club`.
 
-`APP_DEBUG=false`, correo `log`, sesiones/caché/colas `database`. Las cookies conservan `Secure` porque el destino configurado es HTTPS; la portada se puede validar con HTTP local sin autenticación. No hay worker de colas, scheduler ni servicios adicionales en esta fase.
+`APP_DEBUG=false`, correo `log`, sesiones/caché/colas `database`. Las cookies conservan `Secure` porque el destino configurado es HTTPS; la portada se puede validar con HTTP local sin autenticación. La cola `crm` se atiende cada minuto mediante `jakawi-club-crm.timer` y un contenedor efímero limitado; no hay worker permanente.
 
 Laravel confía en los encabezados `X-Forwarded-For`, `X-Forwarded-Proto` y `X-Forwarded-Port` únicamente desde la subred confirmada de la red Docker `web` (`172.18.0.0/16`). No confía globalmente en cualquier proxy ni necesita forzar el esquema HTTPS. `APP_URL=https://jakawi.club`, `APP_ENV=production` y `APP_DEBUG=false` permanecen sin cambios.
 
@@ -162,7 +162,7 @@ El editor actual separa **LANDING DE CAPTACIÓN** y **PÁGINA DE CONFIRMACIÓN**
 
 Captación usa únicamente **QUIERO SER PARTE DE JAKAWI**, con los CTA repetidos hacia el formulario, enlaces legales y acceso discreto. No muestra WhatsApp ni expone los grupos operativos en su payload público. Confirmación administra grupo específico, fallback de entorno u ocultación; las herencias anteriores siguen resolviéndose para no perder grupos de campañas. El grupo se fija en el recibo y conserva el bounce y la navegación por `ended` real.
 
-Los leads siguen en PostgreSQL CLUB: `users.name/email/phone/uuid/referred_by_id/activated_at/email_verified_at`. Landing/campaña se conservan temporalmente en el recibo y como conteos agregados, sin relación persistente por usuario. No existe sincronización CRM; el bridge actual solo admite identidad numérica COM y CLUB no tiene credencial independiente. Se entrega el [contrato mínimo requerido por CRM](docs/crm-club-endpoint.md), sin modificar COM ni CRM. [Entrega y pruebas focalizadas](artifacts/funnel-editor/REPORT.md).
+Los leads siguen en PostgreSQL CLUB: `users.name/email/phone/uuid/referred_by_id/activated_at/email_verified_at`. `registration_origin` conserva individualmente landing/campaña/UTMs de registros nuevos; los históricos sin fuente permanecen desconocidos. Registro y activación escriben eventos cifrados en la cola `crm`, entregada cada minuto a FluentCRM con HMAC exclusivo CLUB, idempotencia y reintentos. El CRM conserva identidades COM y consentimiento comercial. [Contrato y operación](docs/crm-club-endpoint.md).
 
 `/admin/landings` utiliza las sesiones existentes y exige cuenta activada, correo verificado y permiso `is_marketing_admin`. La columna comienza en `false`, no es asignable desde formularios públicos ni desde JSON editorial. No se crean cuentas administrativas automáticamente. Conceder o revocar el permiso a una cuenta existente:
 

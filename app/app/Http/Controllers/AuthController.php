@@ -137,6 +137,7 @@ class AuthController extends Controller
                     $activatedUser = $user;
                 }
                 $user->save();
+                if ($activation) app(\App\Services\Crm\ClubContact::class)->enqueue($user);
                 // Revoke all other sessions after a password change.
                 DB::table('sessions')->where('user_id', $user->id)->delete();
                 event(new PasswordReset($user));

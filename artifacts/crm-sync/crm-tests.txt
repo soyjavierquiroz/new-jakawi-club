@@ -1,0 +1,32 @@
+PASS ruta CLUB funciona con enlaces simples
+PASS ruta COM no se reescribe
+PASS timestamp vencido rechazado
+PASS secreto COM no autentica CLUB
+PASS passwords y claves desconocidas rechazados
+PASS identidad numérica no sustituye UUID CLUB
+PASS no concede opt-in
+PASS registro real Laravel crea contacto FluentCRM
+PASS UUID y origen guardados
+PASS nombre email WhatsApp en contacto
+PASS procedencia individual transferida
+PASS sin identidad COM ni suscripción comercial
+PASS reenvío idempotente mismo evento
+PASS evento repetido con cuerpo distinto rechazado
+PASS activación actualiza mismo contacto
+PASS estado activado reflejado
+PASS pending atrasado procesado
+PASS pending atrasado no revierte activación
+PASS un contacto por lead
+PASS dos UUID para un email no se fusionan
+PASS contacto existente se vincula por email
+PASS baja identidad COM tags y perfil previos intactos
+PASS datos CLUB conservados sin sobrescribir perfil comercial
+PASS conflicto entre UUID y email protegido
+PASS endpoint COM conserva contrato y evento con mismo UUID independiente
+PASS idempotencia COM conservada
+PASS ningún usuario WordPress creado
+{
+    "passed": 27,
+    "isolated_wordpress_prefix": true,
+    "live_contacts_changed": 0
+}

@@ -75,3 +75,6 @@ credentials.json
 
 /artifacts/funnel-editor/LIVE.json
 /artifacts/funnel-editor/*fixtures.json
+
+/artifacts/crm-sync/crm-payloads.json
+/artifacts/crm-sync/LIVE.json

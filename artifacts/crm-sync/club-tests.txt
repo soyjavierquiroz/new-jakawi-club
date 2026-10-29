@@ -1,0 +1,40 @@
+PASS registro funciona sin contactar CRM
+PASS ninguna llamada CRM durante registro
+PASS procedencia individual persistida
+PASS UTMs preservadas
+PASS referente original preservado
+PASS evento durable en cola existente
+PASS payload de contacto cifrado en cola
+PASS registro emite pending con UUID
+PASS referido externo usa UUID
+PASS sin passwords tokens ni opt-in artificial
+PASS rollback no deja evento para un registro no confirmado
+PASS fallo CRM programa reintento
+PASS payload de contacto cifrado en cola
+PASS reintento conserva event_id
+PASS fallo CRM no altera registro
+PASS HTML con HTTP 200 se reintenta y no se acepta como entrega
+PASS payload de contacto cifrado en cola
+PASS respuesta inválida conserva evento
+PASS firma HMAC del cuerpo exacto
+PASS mismo evento en entrega HTTP reintentada
+PASS entrega satisfactoria elimina trabajo
+PASS activación SES existente conserva flujo
+PASS payload de contacto cifrado en cola
+PASS activación encola actualización del mismo UUID
+PASS evento de activación nuevo con procedencia original
+PASS procedencia no se reatribuye
+PASS conflicto visible en failed_jobs sin reintentos destructivos
+PASS payload de contacto cifrado en cola
+PASS reenvío manual conserva idempotencia
+PASS trabajo recuperado sin duplicación
+PASS email repetido mantiene respuesta genérica
+PASS email repetido no duplica contacto ni evento
+PASS leads históricos se encolan sin inventar procedencia
+PASS sincronizar histórico no modifica estado ni identidad
+{
+    "passed": 34,
+    "isolated_postgresql": true,
+    "notifications": "fake",
+    "live_users_created": 0
+}

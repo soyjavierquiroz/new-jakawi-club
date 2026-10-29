@@ -45,6 +45,16 @@ class WelcomeController extends Controller
 
     private function render(Request $request, ReferralAttribution $referrals, MarketingLanding $landing, bool $preview = false): Response
     {
+        if (!$preview && !$request->session()->has('registration_utms.'.$landing->id)) {
+            $utms = [];
+            foreach (['utm_source','utm_medium','utm_campaign','utm_content','utm_term'] as $key) {
+                $value = $request->query($key);
+                if (is_string($value) && trim($value) !== '') {
+                    $utms[$key] = mb_substr(preg_replace('/[\x00-\x1f<>]/u', '', trim($value)) ?? '', 0, 200);
+                }
+            }
+            if ($utms) $request->session()->put('registration_utms.'.$landing->id, $utms);
+        }
         $content = LandingContent::withPresentation($preview ? $landing->configuration : $landing->published_configuration);
         $launch = LaunchSettings::publicData();
         $launch['video_url'] = $content['video']['youtube_url'];

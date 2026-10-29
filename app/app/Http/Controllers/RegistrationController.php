@@ -28,7 +28,7 @@ class RegistrationController extends Controller
         $created = false;
         $receipt = null;
         try {
-            DB::transaction(function () use ($data, $referrer, $analytics, &$created, &$receipt): void {
+            DB::transaction(function () use ($request, $data, $referrer, $analytics, &$created, &$receipt): void {
                 // Capture the same published landing/campaign used for the conversion.
                 $landing = isset($data['landing_id']) ? MarketingLanding::query()->sharedLock()->find($data['landing_id']) : null;
                 if (isset($data['landing_id'])) {
@@ -49,7 +49,11 @@ class RegistrationController extends Controller
                 }
                 $user->privacy_accepted_at = now();
                 $user->privacy_version = config('jakawi.privacy_version');
+                $user->registration_origin = ['landing_id'=>$landing?->id, 'landing_slug'=>$landing?->slug,
+                    'campaign'=>$landing?->published_campaign,
+                    'utms'=>$landing ? $request->session()->get('registration_utms.'.$landing->id, []) : []];
                 $user->save();
+                app(\App\Services\Crm\ClubContact::class)->enqueue($user);
                 // Confirmed server-side, in the same transaction as the new account.
                 $analytics->record('registration_completed', 'form', $landing?->isPublic() ? $landing : null);
                 $created = true;

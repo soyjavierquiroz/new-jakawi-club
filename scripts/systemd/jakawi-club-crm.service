@@ -1,0 +1,10 @@
+[Unit]
+Description=JAKAWI CLUB CRM delivery queue
+After=docker.service
+Requires=docker.service
+[Service]
+Type=oneshot
+ExecStart=/bin/bash /opt/sites/jakawi.club/scripts/deliver-crm.sh
+TimeoutStartSec=60
+StandardOutput=null
+StandardError=journal

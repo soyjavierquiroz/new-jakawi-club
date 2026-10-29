@@ -1,0 +1,9 @@
+[Unit]
+Description=Deliver JAKAWI CLUB contacts every minute
+[Timer]
+OnBootSec=30s
+OnUnitActiveSec=60s
+AccuracySec=5s
+Unit=jakawi-club-crm.service
+[Install]
+WantedBy=timers.target
