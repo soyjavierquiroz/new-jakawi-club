@@ -28,6 +28,9 @@ assert cmd(['git', 'branch', '--show-current']).strip() == 'main'
 files = {}
 for record in cmd(['git', 'ls-tree', '-r', 'HEAD', 'app']).splitlines():
     meta, path = record.split('\t', 1)
+    # Persistent Docker volumes cover these checkout placeholders at runtime.
+    if path.startswith(('app/storage/', 'app/bootstrap/cache/')):
+        continue
     content = (ROOT / path).read_bytes()
     assert sha1(b'blob ' + str(len(content)).encode() + b'\0' + content).hexdigest() == meta.split()[2]
     files[path.removeprefix('app/')] = sha256(content).hexdigest()
