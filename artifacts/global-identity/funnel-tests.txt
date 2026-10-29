@@ -1,0 +1,40 @@
+PASS PostgreSQL temporal exclusivo CLUB
+PASS guardar borrador aceptado
+PASS guardar no publica el video
+PASS preview usa nuevo video guardado
+PASS público conserva snapshot antes de publicar
+PASS publicación explícita aceptada
+PASS publicar copia snapshot validado
+PASS video efectivo /principal coincide tras publicar
+PASS portada comparte snapshot público
+PASS sin destinos WhatsApp en captación LEAD_VSL
+PASS sin destinos WhatsApp en captación WEBINAR
+PASS sin destinos WhatsApp en captación WAITLIST
+PASS grupo confirmación default
+PASS grupo confirmación custom
+PASS grupo confirmación none
+PASS herencia previa conserva grupo específico de campaña
+PASS sin recibo no hay éxito ficticio gracias
+PASS sin recibo no hay éxito ficticio confirmado
+PASS confirmación inexistente 404
+PASS POST conserva registro y usa URL propia gracias
+PASS lead nombre email teléfono UUID en users
+PASS primer referente y activación pendiente preservados
+PASS landing y campaña fijadas en recibo
+PASS recibos anteriores funcionan en ambas rutas
+PASS grupo efectivo de recibo conserva campaña original
+PASS recibo ligado a landing original
+PASS visitas no suman conversiones
+PASS republicar no altera grupo del recibo
+PASS activación existente funciona
+PASS activación guarda activated_at y email_verified_at
+PASS activación vuelve a confirmación canónica
+PASS email repetido no duplica lead
+PASS email repetido no duplica conversión
+PASS recibo vencido no muestra éxito
+{
+    "passed": 34,
+    "database": "isolated PostgreSQL schema",
+    "notifications": "fake",
+    "live_test_users": 0
+}

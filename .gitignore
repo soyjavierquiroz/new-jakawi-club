@@ -78,3 +78,7 @@ credentials.json
 
 /artifacts/crm-sync/crm-payloads.json
 /artifacts/crm-sync/LIVE.json
+
+/artifacts/global-identity/LIVE.json
+/artifacts/global-identity/*fixtures.json
+/artifacts/global-identity/crm-payloads.json

@@ -1,0 +1,6 @@
+{
+    "passed": 12,
+    "isolated_postgresql": true,
+    "live_users_created": 0,
+    "identity_handoff_tested": false
+}

@@ -1,0 +1,27 @@
+{
+  "schema_checks_passed": 12,
+  "mvp_checks_passed": 73,
+  "funnel_checks_passed": 34,
+  "crm_queue_checks_passed": 34,
+  "total_passed": 153,
+  "isolated_postgresql": true,
+  "test_notifications": "fake",
+  "live_test_users_created": 0,
+  "live_native_pilot_recovery": "passwords.sent",
+  "identity_handoff_tested": false,
+  "frontend_rebuild_required": false,
+  "legacy_checks": {
+    "test_landings": "FAIL: grupo público efectivo: default; reproduced unchanged on d4078a94382c59365544b43b621b75988cd824a7",
+    "validate_local": "FAIL: registration_open expected false; registration was authorized open before this change"
+  },
+  "blocker": "Owner confirmed COM identity endpoint is not implemented or deployed",
+  "deployment_performed": false,
+  "migration_applied_in_production": false,
+  "scope": "local COM-independent preparations, confirmed by owner",
+  "com_delivery_required": [
+    "real endpoint URL",
+    "implemented technical contract",
+    "agreed authentication",
+    "verified LIVE SHA"
+  ]
+}
