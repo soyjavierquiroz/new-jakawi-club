@@ -82,3 +82,9 @@ credentials.json
 /artifacts/global-identity/LIVE.json
 /artifacts/global-identity/*fixtures.json
 /artifacts/global-identity/crm-payloads.json
+
+/artifacts/identity-phase03/LIVE.json
+/artifacts/identity-phase03/*fixtures.json
+/artifacts/identity-phase03/crm-payloads.json
+/artifacts/identity-phase03/browser.json
+/artifacts/identity-phase03/private-*.png

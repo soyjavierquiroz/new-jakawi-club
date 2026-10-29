@@ -1,0 +1,56 @@
+PASS acciones identidad exigen sesión CLUB
+PASS registro público conserva su flujo
+PASS registro no provisiona COM ni crea operaciones
+PASS registro pendiente carece de evidencia de activación
+PASS activación nativa por token consumido funciona
+PASS evidencia durable solo tras activación nativa y consumo del token
+PASS dashboard privado expone estado sin secretos
+PASS firma real cubre método ruta y bytes exactos
+PASS API no comparte cookies ni contraseñas de sesión
+PASS firma real cubre método ruta y bytes exactos
+PASS API no comparte cookies ni contraseñas de sesión
+PASS prueba de activación usa clave independiente
+PASS prueba liga cuenta email y operación
+PASS handoff solo envía datos permitidos
+PASS provisión nueva vuelve al dashboard
+PASS PROVISIONED persiste exactamente UUID emitido por COM
+PASS outbox cifrado conserva bytes originales
+PASS vínculo conserva credenciales roles UUID interno y atribución
+PASS firma real cubre método ruta y bytes exactos
+PASS API no comparte cookies ni contraseñas de sesión
+PASS repetir activación recupera vínculo sin duplicar operación ni provisionar
+PASS firma real cubre método ruta y bytes exactos
+PASS API no comparte cookies ni contraseñas de sesión
+PASS lookup por UUID conserva vínculo después de cambio de email
+PASS revocación deja de mostrar conectado y conserva sujeto histórico
+PASS base de datos impide reasignar un sujeto global
+PASS fixture accede mediante login CLUB nativo
+PASS administrador histórico recibe confirmación real sin inventar evidencia ni handoff
+PASS confirmación privada no reemplaza recuperación nativa
+PASS visitar enlace no consume token ni autoriza conexión
+PASS rechazo de confirmación de email inválida
+PASS confirmación explícita consume token privado
+PASS token de confirmación no se reutiliza
+PASS confirmación conserva token de recuperación independiente
+PASS confirmación conserva cuenta contraseña y permisos
+PASS AUTH_REQUIRED redirige únicamente al consentimiento real de COM
+PASS coincidencia email y operación pendiente nunca vinculan
+PASS solo confirmación autenticada COM completa vínculo existente
+PASS vínculo de administrador conserva todos sus permisos y credenciales
+PASS fixture accede mediante login CLUB nativo
+PASS rechazo de redirección no autorizada sin persistir vínculo
+PASS fixture accede mediante login CLUB nativo
+PASS rechazo de autorización para otra cuenta CLUB
+PASS fixture accede mediante login CLUB nativo
+PASS reintento de transporte conserva bytes y renueva nonce
+PASS reintento no duplica operación y conserva UUID
+PASS fixture accede mediante login CLUB nativo
+PASS 429 respeta Retry-After y conserva operación durable
+PASS reintento posterior al backoff conserva prueba y consentimiento originales
+PASS fixture accede mediante login CLUB nativo
+PASS conflicto mínimo real de COM se conserva sin vincular
+PASS fixture accede mediante login CLUB nativo
+PASS POST identidad exige CSRF real fuera del bypass de pruebas
+PASS fixture accede mediante login CLUB nativo
+PASS cuenta sin correo verificado no inicia identidad
+{"passed":55,"postgresql":"isolated schema","com_responses":"contract fixtures","live_users_created":0,"notifications":"fake"}

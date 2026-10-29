@@ -15,6 +15,7 @@ services:
     working_dir: /var/www/html
     env_file:
       - /srv/sites/jakawi.club/secrets/app.env
+      - /srv/sites/jakawi.club/secrets/com-identity.env
     volumes:
       - ./app:/var/www/html:ro
       - /srv/sites/jakawi.club/storage:/var/www/html/storage

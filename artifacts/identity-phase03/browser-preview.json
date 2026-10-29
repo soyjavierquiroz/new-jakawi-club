@@ -1,0 +1,42 @@
+{
+  "live_assets": false,
+  "checks": [
+    {
+      "name": "private-activation-consent-and-connected-states",
+      "width": 390,
+      "passed": true
+    },
+    {
+      "name": "private-activation-consent-and-connected-states",
+      "width": 1440,
+      "passed": true
+    },
+    {
+      "name": "public-landing-has-no-identity-cta",
+      "passed": true
+    }
+  ],
+  "operations": [
+    {
+      "path": "/cuenta/jakawi/activar",
+      "intercepted": true
+    },
+    {
+      "path": "/cuenta/jakawi/activar",
+      "intercepted": true
+    },
+    {
+      "path": "/medicion",
+      "intercepted": true
+    }
+  ],
+  "viewports": [
+    390,
+    1440
+  ],
+  "runtime_errors": [],
+  "failed_assets": [],
+  "all_mutations_intercepted": true,
+  "no_live_accounts": true,
+  "pilot_impersonated": false
+}

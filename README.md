@@ -1,6 +1,6 @@
 # JAKAWI Launch Engine — jakawi.club
 
-Estado de integración de identidad COM: [preparativos locales](artifacts/global-identity/REPORT.md). La migración preparada añade `users.global_subject_id` UUID nullable y único; permanece pendiente en producción. El servicio y la acción privada dependen de la URL real, contrato implementado, autenticación acordada y SHA LIVE verificado que entregará COM. El registro de leads no provisiona ni vincula cuentas COM.
+Identidad global COM: [Fase 03, operación y pruebas](artifacts/identity-phase03/REPORT.md). La acción **ACTIVAR MI ACCESO A JAKAWI.COM** pertenece exclusivamente al dashboard privado. Usa el contrato técnico real de COM y conserva cuentas, permisos, sesiones y atribución locales. El registro de leads no provisiona ni vincula cuentas COM.
 
 Aplicación Laravel independiente publicada en **https://jakawi.club** mediante Traefik compartido y Let's Encrypt. `https://www.jakawi.club` redirige permanentemente al dominio principal.
 

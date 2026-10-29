@@ -53,6 +53,13 @@ Route::middleware('auth')->group(function (): void {
     Route::patch('/perfil', [DashboardController::class, 'update'])->middleware('verified')->name('profile.update');
 });
 
+Route::prefix('cuenta/jakawi')->middleware(['auth', 'verified'])->group(function (): void {
+    Route::post('/activar', [\App\Http\Controllers\IdentityController::class, 'activate'])->middleware('throttle:6,1')->name('identity.activate');
+    Route::get('/estado', [\App\Http\Controllers\IdentityController::class, 'status'])->middleware('throttle:12,1')->name('identity.status');
+    Route::get('/confirmar-email/{token}', [\App\Http\Controllers\IdentityController::class, 'confirmation'])->middleware('throttle:12,1')->name('identity.email.show');
+    Route::post('/confirmar-email', [\App\Http\Controllers\IdentityController::class, 'confirm'])->middleware('throttle:6,1')->name('identity.email.confirm');
+});
+
 // A server receipt bound to this published landing is required to display thanks.
 Route::get('/{slug}/gracias', [RegistrationController::class, 'confirmed'])
     ->where('slug', \App\Support\LandingSlug::pattern())->name('registration.thanks');

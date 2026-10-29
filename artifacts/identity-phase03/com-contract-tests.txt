@@ -1,0 +1,23 @@
+PASS alta CLUB aislada conserva formulario nativo
+PASS activación CLUB consume token real simulado por notificación
+PASS cliente CLUB provisiona contra autoridad COM aislada real
+PASS UUID generado realmente por COM persiste en CLUB
+PASS repetir bytes contra COM real mantiene resultado idempotente
+PASS segunda acción CLUB no genera otro handoff
+PASS COM real rechaza autenticación de integración inválida
+PASS alta CLUB aislada conserva formulario nativo
+PASS activación CLUB consume token real simulado por notificación
+PASS cuenta COM existente exige autorización real sin vincular por email
+PASS consentimiento COM exige login nativo
+PASS login COM aislado valida CSRF real
+PASS otra cuenta accede con contraseña nativa en COM aislado
+PASS COM real rechaza autorización del titular equivocado
+PASS titular fixture realiza login completo real en COM aislado
+PASS GET de consentimiento muestra acción sin autorizar
+PASS CLUB sigue pendiente antes del consentimiento explícito
+PASS COM real no vincula sin consentimiento enviado
+PASS titular fixture autoriza mediante POST COM con CSRF nativo
+PASS CLUB recupera y persiste vínculo realmente autorizado por COM
+PASS identidad compartida conserva contraseña referente y rol CLUB
+{"passed":21,"com_implementation":"deployed immutable COM image in disposable containers","com_sha":"11e04f3c91fd4096257a01f01c48eba3396f59e2","com_database":"dedicated disposable PostgreSQL","club_database":"isolated schema","live_users_created":0,"pilot_authorization_simulated":false}
+{"original_com_users_unchanged": true, "exactly_one_provisioned_user": true, "new_user_not_admin": true, "new_user_verified": true, "new_links": true, "no_memberships": true, "no_partner_roles": true, "no_crm_deliveries": true}

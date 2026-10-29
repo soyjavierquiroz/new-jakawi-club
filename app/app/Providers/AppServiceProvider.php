@@ -25,6 +25,13 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // This event is emitted inside the native activation-token transaction.
+        // CLI bootstrap and historical timestamps are never backfilled as token evidence.
+        \Illuminate\Support\Facades\Event::listen(\Illuminate\Auth\Events\Verified::class, function ($event): void {
+            if (config('identity.enabled') && request()->routeIs('activation.store')) {
+                app(\App\Services\Identity\ActivationEvidence::class)->record($event->user);
+            }
+        });
         RateLimiter::for('registration', fn (Request $request) => Limit::perMinute(5)->by($request->ip()));
         RateLimiter::for('account-mail', fn (Request $request) => [
             Limit::perMinute(5)->by('ip:'.$request->ip()),

@@ -1,5 +1,7 @@
 # Identidad global CLUB — preparativos locales
 
+**Informe histórico.** Continuación de estos preparativos y estado operativo actual: [Fase 03](../identity-phase03/REPORT.md).
+
 ## Implementado
 
 Migración aditiva preparada, **pendiente en producción**, `2026_10_29_000003_add_global_subject_id_to_users`: añade `users.global_subject_id` UUID nullable y único, sin backfill ni cambios en identificadores, credenciales, roles, referente o atribución. El campo queda fuera de los atributos asignables desde formularios. No hay cambios de dependencias, frontend, SMTP, CRM, registro ni configuración de sesiones.

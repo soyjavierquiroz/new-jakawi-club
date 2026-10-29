@@ -37,7 +37,7 @@ try {
     Notification::fake();
     Http::preventStrayRequests();
     $migration = 'database/migrations/2026_10_29_000003_add_global_subject_id_to_users.php';
-    $previous = array_values(array_diff(glob('database/migrations/*.php'), [$migration]));
+    $previous = array_values(array_diff(glob('database/migrations/*.php'), [$migration, 'database/migrations/2026_10_29_000004_create_club_identity_operations.php']));
     Artisan::call('migrate', ['--path' => $previous, '--force' => true]);
     $admin = User::create(['name' => 'Existing admin', 'email' => 'admin@example.test', 'password' => 'ExistingPassword123']);
     $admin->forceFill(['activated_at' => now(), 'email_verified_at' => now(), 'is_marketing_admin' => true])->save();

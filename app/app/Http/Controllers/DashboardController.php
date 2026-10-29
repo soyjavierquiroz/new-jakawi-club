@@ -20,6 +20,7 @@ class DashboardController extends Controller
             'referral_url' => $user->referralUrl(),
             'invitees_count' => $user->invitees()->count(),
             'launch' => LaunchSettings::publicData(true),
+            'identity' => app(\App\Services\Identity\IdentityLink::class)->state($user),
         ]);
     }
 

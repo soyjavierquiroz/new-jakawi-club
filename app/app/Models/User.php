@@ -32,6 +32,9 @@ class User extends Authenticatable implements MustVerifyEmail
         });
 
         static::updating(function (User $user): void {
+            if ($user->getRawOriginal('global_subject_id') !== null && $user->isDirty('global_subject_id')) {
+                throw new \LogicException('El sujeto global emitido por COM es permanente.');
+            }
             foreach (['uuid', 'referral_code', 'referred_by_id', 'registration_origin'] as $attribute) {
                 if ($user->isDirty($attribute)) {
                     throw new \LogicException('La identidad y el referente son permanentes.');

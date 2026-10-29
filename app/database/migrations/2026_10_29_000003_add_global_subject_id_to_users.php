@@ -16,6 +16,9 @@ return new class extends Migration
 
     public function down(): void
     {
+        if (\Illuminate\Support\Facades\DB::table('users')->whereNotNull('global_subject_id')->exists()) {
+            throw new RuntimeException('Issued global subjects must be retained.');
+        }
         Schema::table('users', function (Blueprint $table): void {
             $table->dropUnique(['global_subject_id']);
             $table->dropColumn('global_subject_id');

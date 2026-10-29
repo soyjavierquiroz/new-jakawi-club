@@ -1,0 +1,17 @@
+{
+  "checks": {
+    "identity_club": 55,
+    "identity_real_com": 21,
+    "mvp": 73,
+    "funnel": 34,
+    "crm": 34
+  },
+  "total": 217,
+  "typescript": "passed",
+  "vite_build": "passed",
+  "com_test_image_sha": "11e04f3c91fd4096257a01f01c48eba3396f59e2",
+  "live_test_users_created": 0,
+  "test_notifications": "fake",
+  "pilot_authorization": "not attempted or simulated",
+  "public_funnel_sources": "unchanged"
+}
