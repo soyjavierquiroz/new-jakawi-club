@@ -1,17 +1,27 @@
 {
-  "validated_at": "2026-10-28T01:52:38.702493-04:00",
+  "validated_at": "2026-10-28T22:55:20.330172-04:00",
   "compose_valid": true,
   "local_http": 200,
   "inertia_http": 200,
   "assets": {
-    "assets/UI-CTbpeYxB.js": 200,
-    "assets/app-CwLwojVN.js": 200,
-    "assets/app-TtcChAtT.css": 200,
-    "assets/Auth-DSiz28jM.js": 200,
-    "assets/Dashboard-C6peDWGz.js": 200,
-    "assets/Privacy-H5V0xDWc.js": 200,
-    "assets/Registered-BAmvIeMK.js": 200,
-    "assets/Welcome-DTwwvuwC.js": 200
+    "assets/UI-DOEeZGCa.js": 200,
+    "assets/instrument-sans-400-normal-DRC__1Mx.woff2": 200,
+    "assets/instrument-sans-500-normal-Dk9ku72i.woff2": 200,
+    "assets/instrument-sans-600-normal-B7fBEWYG.woff2": 200,
+    "assets/montserrat-400-normal-BLhwKU8k.woff2": 200,
+    "assets/montserrat-500-normal-DRFEGfly.woff2": 200,
+    "assets/montserrat-600-normal-UVxSCcoG.woff2": 200,
+    "assets/montserrat-700-normal-BdjcYUrC.woff2": 200,
+    "assets/montserrat-800-normal-axpkC1rd.woff2": 200,
+    "assets/app-DuKQfB9C.js": 200,
+    "assets/app-D6wOzVWA.css": 200,
+    "assets/Auth-D8nLbtXp.js": 200,
+    "assets/Dashboard-Dv5_-Fp4.js": 200,
+    "assets/Privacy-CVaUl_IQ.js": 200,
+    "assets/Registered-nnbvJPWc.js": 200,
+    "assets/Welcome-B1tfsrDt.js": 200,
+    "assets/LandingEditor-CyECcgE2.js": 200,
+    "assets/Landings-DqDDboZl.js": 200
   },
   "app": {
     "php": "8.4.27",
@@ -39,7 +49,9 @@
       "0001_01_01_000000_create_users_table",
       "0001_01_01_000001_create_cache_table",
       "0001_01_01_000002_create_jobs_table",
-      "2026_10_28_000001_extend_users_for_launch"
+      "2026_10_28_000001_extend_users_for_launch",
+      "2026_10_28_000002_create_marketing_event_totals",
+      "2026_10_29_000001_create_marketing_landings"
     ],
     "sessions_written": true,
     "postgres": "16.15"
@@ -93,7 +105,15 @@
   "private_network_internal": true,
   "jakawi_com_up": 200,
   "protected_baseline": {
-    "existing_containers_unchanged": 43,
-    "infrastructure_files_unchanged": 44
+    "container_ids_unchanged": 43,
+    "infrastructure_files_unchanged": 21,
+    "automatic_foreign_restarts_observed": [
+      {
+        "name": "jakawi-worker-1",
+        "before": 0,
+        "after": 4,
+        "started_at": "2026-10-29T01:55:57.804317203Z"
+      }
+    ]
   }
 }

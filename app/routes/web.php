@@ -7,9 +7,25 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ReferralController;
 use App\Http\Controllers\RegistrationController;
 use App\Http\Middleware\RegistrationOpen;
+use App\Http\Middleware\MarketingAdmin;
+use App\Http\Controllers\LandingAdminController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', WelcomeController::class)->name('home');
+Route::get('/l/{slug}', [WelcomeController::class, 'show'])->name('landing.show');
+Route::prefix('admin/landings')->middleware(['auth', 'verified', MarketingAdmin::class])->group(function (): void {
+    Route::get('/', [LandingAdminController::class, 'index'])->name('landings.index');
+    Route::get('/crear', [LandingAdminController::class, 'create'])->name('landings.create');
+    Route::post('/', [LandingAdminController::class, 'store'])->name('landings.store');
+    Route::get('/{landing}/editar', [LandingAdminController::class, 'edit'])->name('landings.edit');
+    Route::put('/{landing}', [LandingAdminController::class, 'update'])->name('landings.update');
+    Route::get('/{landing}/preview', [WelcomeController::class, 'preview'])->name('landings.preview');
+    Route::get('/{landing}/export', [LandingAdminController::class, 'export'])->name('landings.export');
+    Route::post('/{landing}/import', [LandingAdminController::class, 'import'])->name('landings.import');
+    Route::post('/{landing}/duplicar', [LandingAdminController::class, 'duplicate'])->name('landings.duplicate');
+    Route::post('/{landing}/publicar', [LandingAdminController::class, 'publish'])->name('landings.publish');
+    Route::post('/{landing}/archivar', [LandingAdminController::class, 'archive'])->name('landings.archive');
+});
 Route::post('/medicion', MarketingEventController::class)->middleware('throttle:30,1')->name('marketing.event');
 Route::inertia('/privacidad', 'Privacy')->name('privacy');
 Route::get('/r/{code}', [ReferralController::class, 'show'])->middleware('throttle:referral')->name('referral');

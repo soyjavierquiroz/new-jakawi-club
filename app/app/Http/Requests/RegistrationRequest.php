@@ -29,6 +29,7 @@ class RegistrationRequest extends FormRequest
             'phone' => ['required', 'string', 'regex:/^\+[1-9][0-9]{7,14}$/'],
             'privacy' => ['required', 'accepted'],
             'referral_code' => ['nullable', 'string', 'regex:/^[A-Z0-9]{12}$/'],
+            'landing_id' => ['nullable', 'integer', \Illuminate\Validation\Rule::exists('marketing_landings', 'id')->where('status', 'published')],
         ];
     }
 

@@ -1,0 +1,55 @@
+{
+  "checks": [
+    {
+      "name": "real-renderer-preview",
+      "width": 390,
+      "overflow": false,
+      "title": "Titular desde el editor mucho más para vivir.",
+      "closed": true,
+      "ratio": 1.7777777777777777,
+      "preview": true
+    },
+    {
+      "name": "real-renderer-preview",
+      "width": 430,
+      "overflow": false,
+      "title": "Titular desde el editor mucho más para vivir.",
+      "closed": true,
+      "ratio": 1.7777777777777777,
+      "preview": true
+    },
+    {
+      "name": "real-renderer-preview",
+      "width": 1440,
+      "overflow": false,
+      "title": "Titular desde el editor mucho más para vivir.",
+      "closed": true,
+      "ratio": 1.7777777777777777,
+      "preview": true
+    },
+    {
+      "name": "save-preview-publish-independent",
+      "passed": true
+    },
+    {
+      "name": "editor-create-index-mobile",
+      "width": 390,
+      "passed": true
+    }
+  ],
+  "operations": [
+    {
+      "method": "PUT",
+      "path": "/admin/landings/2"
+    },
+    {
+      "method": "POST",
+      "path": "/admin/landings/2/publicar"
+    }
+  ],
+  "preview_metrics": 0,
+  "live_test_users": 0,
+  "backend_fixtures": "real isolated HTTP kernel responses; browser mutations intercepted",
+  "runtime_errors": [],
+  "failed_assets": []
+}

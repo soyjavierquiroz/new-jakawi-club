@@ -93,6 +93,7 @@ try {
     // Exercise the additive migration against an existing legacy account, not just an empty table.
     Artisan::call('migrate', ['--force' => true, '--path' => 'database/migrations/0001_01_01_000000_create_users_table.php']);
     $legacyId = DB::table('users')->insertGetId(['name' => 'Legacy', 'email' => ' LEGACY@example.test ', 'password' => Hash::make('PasswordLegacy123'), 'email_verified_at' => now()]);
+    config(['jakawi.video_url' => null, 'jakawi.video_poster' => null]);
     Artisan::call('migrate', ['--force' => true]);
     $legacy = User::findOrFail($legacyId);
     check($legacy->email === 'legacy@example.test' && $legacy->uuid && $legacy->referral_code && $legacy->activated_at, 'migración compatible con usuarios existentes');

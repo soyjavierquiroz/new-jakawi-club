@@ -7,6 +7,8 @@ import { lookup } from 'node:dns/promises';
 
 const output = '/evidence';
 const providerOnly = process.argv.includes('--real-provider-only');
+const landingBuilder = process.argv.includes('--landing-builder');
+const widths = landingBuilder ? [390, 430, 1440] : [390, 768, 1024, 1440];
 await mkdir(output, { recursive: true });
 const reference = await readFile('/workspace/resources/css/jakawi-theme.css', 'utf8');
 const token = name => reference.match(new RegExp(`--${name}:\\s*(#[a-fA-F0-9]+);`))[1].toLowerCase();
@@ -145,7 +147,7 @@ try {
     };
     const checks = [];
     if (!providerOnly) {
-    for (const width of [390, 768, 1024, 1440]) {
+    for (const width of widths) {
         await call('Emulation.setDeviceMetricsOverride', { width, height: 900, deviceScaleFactor: 1, mobile: width === 390 });
         await navigate('/');
         const result = await evaluate(`(()=>{
@@ -168,6 +170,14 @@ try {
         if (width >= 1024) { assert.equal(geometry.align, 'left'); assert(geometry.headingRight < geometry.mediaLeft); assert(geometry.centerOffset < 2, 'Desktop copy is vertically centered against the player'); }
         else { assert.equal(geometry.align, 'center'); assert(geometry.headingBottom <= geometry.mediaTop && geometry.mediaBottom <= geometry.copyTop); assert(geometry.videoTop < 360, 'Video follows the title without excessive empty space'); }
         if (width === 390) await until(`!document.querySelector('.mobile-sticky-cta').hidden`, 'Mobile sticky appears outside the form');
+        else if (width === 430) {
+            // At this width the taller 3:4 frame intersects the bottom action strip.
+            await until(`document.querySelector('.mobile-sticky-cta').hidden`, 'Sticky protects the video frame at 430 px');
+            await evaluate(`scrollTo({top:document.querySelector('.vsl-frame').getBoundingClientRect().bottom+scrollY+20,behavior:'instant'})`);
+            await until(`!document.querySelector('.mobile-sticky-cta').hidden`, 'Sticky becomes available after leaving the video');
+            await evaluate(`scrollTo({top:0,behavior:'instant'})`);
+            await until(`document.querySelector('.mobile-sticky-cta').hidden`, 'Returning to video suppresses overlapping sticky');
+        }
         else assert(await evaluate(`getComputedStyle(document.querySelector('.mobile-sticky-cta')).display==='none'`), 'No desktop/tablet sticky');
         result.geometry = geometry;
         checks.push({ name: 'landing', width, ...result });
@@ -315,7 +325,7 @@ try {
     // Remove the provider fixture and click the actual deployed player. A datacenter
     // refusal is recorded as a limitation, never treated as successful playback.
     const realPlayback = [];
-    if (approvedVideoId) {
+    if (approvedVideoId && !landingBuilder) {
         await call('Fetch.disable');
         await call('Network.clearBrowserCache');
         await call('Fetch.enable', { patterns: [
@@ -362,7 +372,7 @@ try {
     assert.deepEqual(runtimeErrors, []); assert.deepEqual(failedAssets, []);
     const prior = providerOnly ? JSON.parse(await readFile(`${output}/visual-validation.json`, 'utf8')) : {};
     await writeFile(`${output}/visual-validation.json`, JSON.stringify({ ...prior, checks:providerOnly?prior.checks:checks, configured_video_id: approvedVideoId, configured_video_url: launch.video_url, real_playback: realPlayback, real_provider_failures: providerFailures, browser_api_fixtures: true, no_live_test_accounts: true, live_registration_closed: true, api_loading_error_retry: true, missing_video_state_verified: true, metrics_vocabulary_verified: true, runtime_errors: [...(prior.runtime_errors ?? []),...runtimeErrors], failed_assets: [...(prior.failed_assets ?? []),...failedAssets], real_probe_rerun_separately:providerOnly }, null, 2) + '\n');
-    console.log(providerOnly ? 'Real provider probes complete; prior responsive checks retained.' : `${checks.length} grouped responsive checks passed: geometry, sticky, keyboard/search/country/E.164/form states and VSL lifecycle; 390, 768, 1024, 1440 px.`);
+    console.log(providerOnly ? 'Real provider probes complete; prior responsive checks retained.' : `${checks.length} grouped responsive checks passed: geometry, sticky, keyboard/search/country/E.164/form states and VSL lifecycle; ${widths.join(', ')} px. Real provider probe ${landingBuilder ? 'skipped (existing source unchanged)' : 'included when configured'}.`);
 } catch (error) {
     console.error(browserMessages.find(message => message.includes('FATAL')) || 'Browser check failed; see assertion below.');
     throw error;

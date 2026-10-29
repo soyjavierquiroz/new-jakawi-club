@@ -1,6 +1,7 @@
 <?php
 
 return [
+    'home_landing_slug' => 'principal',
     'registration_open' => (bool) env('JAKAWI_REGISTRATION_OPEN', false),
     'transactional_mail_ready' => (bool) env('JAKAWI_TRANSACTIONAL_MAIL_READY', false),
     'privacy_version' => '2026-10-28',

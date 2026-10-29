@@ -153,3 +153,54 @@ python3 scripts/validate-public.py
 ```
 
 El navegador reutiliza Chromium instalado, sin instalaciones globales. Intercepta los envíos de cuentas y usa fixtures del proveedor para probar estados de video sin crear usuarios LIVE ni publicar un video de prueba. Se comprueba 390, 768, 1024 y 1440 px, además de viewports de poca altura, sticky, foco y movimiento reducido. Cuando hay video configurado, retira la interceptación de YouTube y prueba clics reales en 390 y 1440 px con caché desactivada; solo acredita reproducción si la API real del proveedor informa reproducción y su tiempo avanza. Los rechazos de YouTube se documentan como limitaciones. Se puede repetir únicamente esa sonda con `bash scripts/check-conversion-visual.sh --real-provider-only`, conservando las pruebas responsive del mismo build. Evidencia histórica de la integración: `artifacts/conversion/REPORT.md`; composición responsive: `artifacts/responsive/`; publicación del video: `artifacts/vsl/`.
+
+## Creador de Marketing Landings
+
+`/admin/landings` utiliza las sesiones existentes y exige cuenta activada, correo verificado y permiso `is_marketing_admin`. La columna comienza en `false`, no es asignable desde formularios públicos ni desde JSON editorial. No se crean cuentas administrativas automáticamente. Conceder o revocar el permiso a una cuenta existente:
+
+```bash
+docker compose exec -T --user www-data app php artisan landings:admin correo-del-administrador
+docker compose exec -T --user www-data app php artisan landings:admin correo-del-administrador --revoke
+```
+
+La instalación no tenía usuarios al desplegar este creador. La identidad de la cuenta administrativa queda por definir; el registro público sigue cerrado. El comando rechaza cuentas inexistentes, sin activar o sin verificar. No abrir registros para aprovisionar administradores.
+
+El modelo `MarketingLanding` usa `marketing_landings.configuration` y `published_configuration` JSONB. `LEAD_VSL` reutiliza el renderer, identidad, selector telefónico, formulario y referidos locales. `/l/{slug}` solo expone landings publicadas; `/` busca el slug `principal` definido en `config/jakawi.php`. La migración crea esa portada con el contenido y video locales aprobados, sin cambiar cuentas, precios ni credenciales. El slug queda permanente tras publicar y la portada no se puede archivar.
+
+Crear, guardar, duplicar, importar, previsualizar, publicar y archivar son acciones distintas. Guardar/importar no cambia la versión pública. Duplicar produce otro borrador. Publicar copia exclusivamente el borrador guardado y su campaña a un snapshot público, con bloqueo de fila y revisión para impedir sobrescrituras desde otra ventana. Archivar retira la ruta pública sin borrar datos. La vista previa autenticada utiliza la misma página `Welcome`, en un iframe real a 390, 430 o 1440 px, sin registro ni eventos analíticos.
+
+La importación/exportación usa `jakawi-club-landing-v1`. Ejemplo parcial:
+
+```json
+{
+  "schema": "jakawi-club-landing-v1",
+  "template": "LEAD_VSL",
+  "content": {
+    "hero": { "title": "Tu próximo capítulo empieza aquí" },
+    "video": { "aspect_ratio": "3:4", "source_aspect_ratio": "9:16" }
+  }
+}
+```
+
+Los campos omitidos se conservan; las listas se reemplazan completas. Solo se admiten textos de `seo`, `hero`, `benefits`, `registration`, `faq`, `final` y la configuración `video`. Se rechazan campos desconocidos, HTML, listas incompletas, URLs ajenas a YouTube, posters remotos/inexistentes y documentos de otra versión. El documento no controla slug, campaña, estado, permisos, precios, reglas de negocio, endpoints ni CSS. La exportación representa el borrador persistido, sin metadatos operativos.
+
+YouTube, poster local, marco 3:4/16:9 y proporción original 9:16/3:4/16:9 son independientes. Tras la migración, editar el video de cada landing desde el editor: `JAKAWI_VIDEO_URL` y `JAKAWI_VIDEO_POSTER` proporcionan valores iniciales a landings nuevas, sin sobrescribir snapshots existentes. Los posters siguen usando archivos aprobados de `public/marketing/`.
+
+La campaña es un identificador interno opcional, administrado fuera del JSON editorial. No existe un catálogo previo de campañas en este repositorio. `marketing_landing_event_totals` amplía los agregados existentes por landing/campaña publicada, conserva el histórico al cambiar de campaña y no almacena datos personales. El registro confirmado sigue midiéndose en su transacción original. Los previews no emiten eventos. No hay integraciones con el CMS o APIs de jakawi.com.
+
+Validación focalizada, sin instalaciones ni cuentas de prueba LIVE:
+
+```bash
+bash scripts/test-landings.sh
+bash scripts/test-mvp.sh
+bash scripts/build-frontend.sh
+# Publicar chunks conservando los anteriores y cambiar manifest atómicamente.
+bash scripts/check-landings-visual.sh
+bash scripts/check-landings-responsive.sh --landing-builder
+python3 scripts/validate-local.py
+python3 scripts/validate-public.py
+```
+
+Las pruebas administrativas usan PostgreSQL en un esquema temporal que se elimina al terminar. Generan fixtures HTTP reales para probar el editor en Chromium, con las mutaciones interceptadas en navegador. El responsive comprueba la portada HTTPS real a 390, 430 y 1440 px y reutiliza fixtures de video/formulario sin crear usuarios LIVE. No repite la sonda externa de YouTube: la restricción histórica del proveedor sobre el video aprobado se documenta en `artifacts/vsl/REPORT.md`.
+
+Evidencia: `artifacts/landings/`. [Rollback del creador](artifacts/landings/ROLLBACK.md). Después del commit y push, `python3 scripts/verify-landings-live.py` sella el SHA efectivo, los archivos montados, assets servidos, servicios propios y cierre del registro en `artifacts/landings/LIVE.json`, excluido de Git.

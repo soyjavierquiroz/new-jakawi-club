@@ -91,7 +91,8 @@ assert not any(app[key] for key in ['db_superuser','db_create_database','db_crea
 assert app['connection'] == 'pgsql' and app['mail'] == 'log'
 assert all(app[key] == 'database' for key in ['cache','queue','session'])
 assert app['database_cache_roundtrip'] and app['sessions_written'] and app['independent_key_valid']
-assert len(app['migrations']) == 5
+assert len(app['migrations']) == 6
+assert '2026_10_29_000001_create_marketing_landings' in app['migrations']
 assert '2026_10_28_000002_create_marketing_event_totals' in app['migrations']
 assert '2026_10_28_000001_extend_users_for_launch' in app['migrations']
 

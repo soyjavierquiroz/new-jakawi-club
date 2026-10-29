@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\RegistrationRequest;
 use App\Models\User;
+use App\Models\MarketingLanding;
 use App\Services\AccountMail;
 use App\Services\MarketingAnalytics;
 use App\Services\ReferralAttribution;
@@ -37,7 +38,8 @@ class RegistrationController extends Controller
                 $user->privacy_version = config('jakawi.privacy_version');
                 $user->save();
                 // Confirmed server-side, in the same transaction as the new account.
-                $analytics->record('registration_completed', 'form');
+                $landing = isset($data['landing_id']) ? MarketingLanding::find($data['landing_id']) : null;
+                $analytics->record('registration_completed', 'form', $landing?->isPublic() ? $landing : null);
                 $created = true;
             }, 3);
         } catch (UniqueConstraintViolationException $exception) {

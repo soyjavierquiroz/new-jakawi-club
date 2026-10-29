@@ -3,8 +3,8 @@ import { useEffect, useRef, type FormEvent } from 'react';
 import { Arrow, ErrorText, Flash } from '../UI';
 import { InternationalPhoneInput } from './InternationalPhoneInput';
 
-export function RegistrationForm({ open, referralCode }: { open: boolean; referralCode: string | null }) {
-    const form = useForm({ name: '', phone: '', email: '', privacy: false, referral_code: referralCode || '' });
+export function RegistrationForm({ open, referralCode, landingId }: { open: boolean; referralCode: string | null; landingId?: number }) {
+    const form = useForm({ name: '', phone: '', email: '', privacy: false, referral_code: referralCode || '', ...(landingId ? { landing_id: landingId } : {}) });
     const phoneValue = useRef('');
     const errorFocus = useRef<string | null>(null);
     useEffect(() => {

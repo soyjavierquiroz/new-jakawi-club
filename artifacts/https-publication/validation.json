@@ -1,5 +1,5 @@
 {
-  "validated_at": "2026-10-28T01:52:41.158616-04:00",
+  "validated_at": "2026-10-28T22:56:37.398024-04:00",
   "dns": {
     "1.1.1.1/jakawi.club": [
       "167.71.107.80"
@@ -58,6 +58,19 @@
       "status": 403,
       "valid_csrf": true,
       "registration_closed": true
+    },
+    "https://jakawi.club/medicion": {
+      "status": 204,
+      "valid_csrf": true,
+      "same_session_repeated_request": true
+    },
+    "https://jakawi.club/marketing/flags/BO.svg": {
+      "status": 200,
+      "local_bytes_match": true
+    },
+    "https://jakawi.club/marketing/flags/ES.svg": {
+      "status": 200,
+      "local_bytes_match": true
     }
   },
   "tls": {
@@ -94,35 +107,75 @@
   },
   "inertia_http": 200,
   "assets": {
-    "assets/UI-CTbpeYxB.js": {
+    "assets/UI-DOEeZGCa.js": {
       "status": 200,
       "content_type": "application/javascript; charset=utf-8"
     },
-    "assets/app-CwLwojVN.js": {
+    "assets/instrument-sans-400-normal-DRC__1Mx.woff2": {
+      "status": 200,
+      "content_type": "font/woff2"
+    },
+    "assets/instrument-sans-500-normal-Dk9ku72i.woff2": {
+      "status": 200,
+      "content_type": "font/woff2"
+    },
+    "assets/instrument-sans-600-normal-B7fBEWYG.woff2": {
+      "status": 200,
+      "content_type": "font/woff2"
+    },
+    "assets/montserrat-400-normal-BLhwKU8k.woff2": {
+      "status": 200,
+      "content_type": "font/woff2"
+    },
+    "assets/montserrat-500-normal-DRFEGfly.woff2": {
+      "status": 200,
+      "content_type": "font/woff2"
+    },
+    "assets/montserrat-600-normal-UVxSCcoG.woff2": {
+      "status": 200,
+      "content_type": "font/woff2"
+    },
+    "assets/montserrat-700-normal-BdjcYUrC.woff2": {
+      "status": 200,
+      "content_type": "font/woff2"
+    },
+    "assets/montserrat-800-normal-axpkC1rd.woff2": {
+      "status": 200,
+      "content_type": "font/woff2"
+    },
+    "assets/app-DuKQfB9C.js": {
       "status": 200,
       "content_type": "application/javascript; charset=utf-8"
     },
-    "assets/app-TtcChAtT.css": {
+    "assets/app-D6wOzVWA.css": {
       "status": 200,
       "content_type": "text/css"
     },
-    "assets/Auth-DSiz28jM.js": {
+    "assets/Auth-D8nLbtXp.js": {
       "status": 200,
       "content_type": "application/javascript; charset=utf-8"
     },
-    "assets/Dashboard-C6peDWGz.js": {
+    "assets/Dashboard-Dv5_-Fp4.js": {
       "status": 200,
       "content_type": "application/javascript; charset=utf-8"
     },
-    "assets/Privacy-H5V0xDWc.js": {
+    "assets/Privacy-CVaUl_IQ.js": {
       "status": 200,
       "content_type": "application/javascript; charset=utf-8"
     },
-    "assets/Registered-BAmvIeMK.js": {
+    "assets/Registered-nnbvJPWc.js": {
       "status": 200,
       "content_type": "application/javascript; charset=utf-8"
     },
-    "assets/Welcome-DTwwvuwC.js": {
+    "assets/Welcome-B1tfsrDt.js": {
+      "status": 200,
+      "content_type": "application/javascript; charset=utf-8"
+    },
+    "assets/LandingEditor-CyECcgE2.js": {
+      "status": 200,
+      "content_type": "application/javascript; charset=utf-8"
+    },
+    "assets/Landings-DqDDboZl.js": {
       "status": 200,
       "content_type": "application/javascript; charset=utf-8"
     }
@@ -179,11 +232,19 @@
   "traefik_backend_reachable": true,
   "dedicated_dynamic_file_matches_repository": true,
   "protected_baseline": {
-    "foreign_containers_unchanged": 40,
+    "foreign_container_ids_and_networks_unchanged": 40,
+    "automatic_foreign_restarts_observed": [
+      {
+        "name": "jakawi-worker-1",
+        "before": 0,
+        "after": 5,
+        "started_at": "2026-10-29T02:56:01.845704699Z"
+      }
+    ],
     "app_and_db_ids_and_networks_unchanged": true,
     "db_lifecycle_unchanged": true,
     "app_restart_allowed_for_opcache_deployment": true,
-    "existing_traefik_files_unchanged": 19,
+    "existing_traefik_files_unchanged": 21,
     "project_credentials_unchanged": true
   },
   "jakawi_com_up": 200

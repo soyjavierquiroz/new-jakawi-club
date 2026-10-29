@@ -27,6 +27,7 @@ class HandleInertiaRequests extends Middleware
         return [
             ...parent::share($request),
             'signed_in' => (bool) $request->user(),
+            'can_manage_landings' => $request->user()?->is_marketing_admin === true && $request->user()?->hasVerifiedEmail() && $request->user()?->activated_at !== null,
             'status' => fn () => $request->session()->get('status'),
         ];
     }

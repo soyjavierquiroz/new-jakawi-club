@@ -5,6 +5,9 @@
 @source '../js/**/*.tsx';
 @source '../views/**/*.blade.php';
 
+.landing-preview-scroll { max-width: 100%; overflow: auto; border: 1px solid var(--border); border-radius: var(--radius-control); background: var(--surface-subtle); }
+.landing-preview-frame { display: block; height: 820px; min-width: 390px; border: 0; margin-inline: auto; background: var(--background); }
+
 @layer base {
     html { color-scheme: light; background: var(--background); scroll-behavior: smooth; scroll-padding-top: 1.5rem; }
     body { margin: 0; font-family: var(--font-discovery); color: var(--foreground); -webkit-font-smoothing: antialiased; }

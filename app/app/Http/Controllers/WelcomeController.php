@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Services\ReferralAttribution;
+use App\Models\MarketingLanding;
 use App\Support\LaunchSettings;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -12,9 +13,36 @@ class WelcomeController extends Controller
 {
     public function __invoke(Request $request, ReferralAttribution $referrals): Response
     {
+        $landing = MarketingLanding::where('slug', config('jakawi.home_landing_slug'))->firstOrFail();
+        abort_unless($landing->isPublic(), 404);
+        return $this->render($request, $referrals, $landing);
+    }
+
+    public function show(Request $request, ReferralAttribution $referrals, string $slug): Response
+    {
+        $landing = MarketingLanding::where('slug', $slug)->firstOrFail();
+        abort_unless($landing->isPublic(), 404);
+        return $this->render($request, $referrals, $landing);
+    }
+
+    public function preview(Request $request, ReferralAttribution $referrals, MarketingLanding $landing): Response
+    {
+        return $this->render($request, $referrals, $landing, true);
+    }
+
+    private function render(Request $request, ReferralAttribution $referrals, MarketingLanding $landing, bool $preview = false): Response
+    {
+        $content = $preview ? $landing->configuration : $landing->published_configuration;
+        $launch = LaunchSettings::publicData();
+        $launch['video_url'] = $content['video']['youtube_url'];
+        $launch['video_poster'] = $content['video']['poster'];
+        if ($preview) {
+            $launch['registration_open'] = false;
+        }
         return Inertia::render('Welcome', [
-            'launch' => LaunchSettings::publicData(),
-            'referral_code' => $referrals->current($request)?->referral_code,
+            'launch' => $launch,
+            'landing' => ['id' => $landing->id, 'slug' => $landing->slug, 'content' => $content, 'preview' => $preview, 'revision' => $landing->revision],
+            'referral_code' => $preview ? null : $referrals->current($request)?->referral_code,
             'referral_preference' => $request->cookie('jakawi_referral_consent'),
         ]);
     }
