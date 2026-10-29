@@ -10,7 +10,9 @@ export type LandingTemplate = 'LEAD_VSL' | 'WEBINAR' | 'WAITLIST';
 export type LandingVideoSettings = { youtube_url: string | null; poster: string | null; aspect_ratio: '3:4'; source_type: 'youtube'; source_aspect_ratio: '9:16' | '3:4' | '16:9'; focal_x: number; focal_y: number };
 
 export type LandingContent = {
-    presentation: { template: LandingTemplate; show_video: boolean; show_faq: boolean };
+    presentation: { template: LandingTemplate; show_video: boolean; show_faq: boolean; show_confirmation_video: boolean };
+    whatsapp_group: { mode: 'default' | 'custom' | 'none'; url: string | null };
+    confirmation_whatsapp_group: { mode: 'inherit' | 'custom' | 'none'; url: string | null };
     after_registration: { title: string; message: string; instructions: string; cta_label: string };
     next_step: { action: 'none' | 'recover' | 'account' | 'home' | 'whatsapp'; redirect_seconds: 0 | 5 | 10 | 15 | 30 | 60 };
     seo: { title: string; description: string };

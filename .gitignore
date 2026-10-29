@@ -62,3 +62,7 @@ credentials.json
 /artifacts/postconversion/LIVE.json
 
 /artifacts/video-confirmation/LIVE.json
+
+/artifacts/campaigns/LIVE.json
+/artifacts/campaigns/*fixtures.json
+/artifacts/campaigns/browser-debug.json

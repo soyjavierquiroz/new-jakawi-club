@@ -10,6 +10,7 @@ use App\Services\MarketingAnalytics;
 use App\Services\ReferralAttribution;
 use App\Support\LandingContent;
 use App\Support\LandingSlug;
+use App\Support\LaunchSettings;
 use App\Support\RegistrationNextStep;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Http\RedirectResponse;
@@ -35,7 +36,7 @@ class RegistrationController extends Controller
                     $content = LandingContent::withPresentation($landing->published_configuration);
                     $receipt = ['id' => $landing->id, 'slug' => $landing->slug, 'campaign' => $landing->published_campaign,
                         'content' => $content['after_registration'], 'next_step' => $content['next_step'],
-                        'confirmation_video' => $content['confirmation_video']];
+                        ...$this->confirmationSnapshot($content)];
                 }
                 if (User::where('email', $data['email'])->exists()) {
                     return;
@@ -65,6 +66,7 @@ class RegistrationController extends Controller
         $request->session()->regenerate();
         $request->session()->put('welcome_expires_at', now()->addMinutes(15)->timestamp);
         $request->session()->put('registration_receipt', $receipt);
+        $request->session()->put('registration_confirmation_snapshot', $receipt ? null : $this->confirmationSnapshot(LandingContent::defaults()));
         $request->session()->put('registration_email_digest', hash_hmac('sha256', $data['email'], config('app.key')));
         $referrals->forget($request);
 
@@ -102,7 +104,16 @@ class RegistrationController extends Controller
     {
         $content = LandingContent::withPresentation($landing->configuration);
 
-        return $this->renderReceipt($request, ['slug' => $landing->slug, 'content' => $content['after_registration'], 'next_step' => $content['next_step'], 'confirmation_video' => $content['confirmation_video']], true);
+        return $this->renderReceipt($request, ['slug' => $landing->slug, 'content' => $content['after_registration'], 'next_step' => $content['next_step'], ...$this->confirmationSnapshot($content)], true);
+    }
+
+    private function confirmationSnapshot(array $content): array
+    {
+        $video = LandingContent::confirmationVideo($content['confirmation_video']);
+        if (! $content['presentation']['show_confirmation_video']) {
+            $video['youtube_url'] = null;
+        }
+        return ['confirmation_video' => $video, 'whatsapp_group_url' => RegistrationNextStep::confirmationGroup($content)];
     }
 
     private function hasReceipt(Request $request): bool
@@ -110,13 +121,28 @@ class RegistrationController extends Controller
         if ($request->session()->get('welcome_expires_at', 0) > now()->timestamp) {
             return true;
         }
-        $request->session()->forget(['welcome_expires_at', 'registration_receipt', 'registration_email_digest']);
+        $request->session()->forget(['welcome_expires_at', 'registration_receipt', 'registration_email_digest', 'registration_confirmation_snapshot']);
 
         return false;
     }
 
     private function renderReceipt(Request $request, ?array $receipt = null, bool $preview = false): Response
     {
+        if ($receipt === null) {
+            $receipt = $request->session()->get('registration_confirmation_snapshot') ?? $this->confirmationSnapshot(LandingContent::defaults());
+            $request->session()->put('registration_confirmation_snapshot', $receipt);
+        }
+        // Legacy receipts are frozen on first read too. Explicit null stays hidden.
+        if ($receipt !== null && ! array_key_exists('whatsapp_group_url', $receipt)) {
+            $receipt['whatsapp_group_url'] = RegistrationNextStep::whatsappGroup();
+            $receipt['confirmation_video'] = LandingContent::confirmationVideo($receipt['confirmation_video'] ?? []);
+            if (! $preview) {
+                $request->session()->put('registration_receipt', $receipt);
+            }
+        }
+        $groupUrl = RegistrationNextStep::validGroupUrl($receipt['whatsapp_group_url'] ?? null);
+        $video = $receipt['confirmation_video'] ?? LandingContent::videoDefaults();
+        $video['youtube_url'] = LaunchSettings::youtubeUrl($video['youtube_url']);
         $user = $request->user();
         $digest = $request->session()->get('registration_email_digest');
         $activated = ! $preview && $user?->hasVerifiedEmail() && $user->activated_at
@@ -129,10 +155,10 @@ class RegistrationController extends Controller
                 'content' => $receipt['content'] ?? LandingContent::confirmationDefaults(),
                 'activation' => $activated ? 'confirmed' : 'pending', 'preview' => $preview,
                 'landing_slug' => $receipt['slug'] ?? null,
-                'video' => LandingContent::confirmationVideo($receipt['confirmation_video'] ?? []),
-                'whatsapp_group_url' => RegistrationNextStep::whatsappGroup(),
-                'next' => RegistrationNextStep::resolve($settings, (bool) $activated),
-                'unavailable' => ($settings['action'] ?? '') === 'whatsapp' && RegistrationNextStep::whatsappGroup() === null,
+                'video' => $video,
+                'whatsapp_group_url' => $groupUrl,
+                'next' => RegistrationNextStep::resolve($settings, (bool) $activated, $groupUrl),
+                'unavailable' => ($settings['action'] ?? '') === 'whatsapp' && $groupUrl === null,
             ],
         ]);
     }

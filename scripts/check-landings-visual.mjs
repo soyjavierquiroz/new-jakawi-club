@@ -83,6 +83,12 @@ try {
         for (let i = 0; i < Math.min((entry.css || []).length, (next.css || []).length); i++) html = html.replaceAll(`/build/${entry.css[i]}`, `/build/${next.css[i]}`);
     }
     const fixtures = JSON.parse(await readFile('/evidence/browser-fixtures.json', 'utf8'));
+    const campaigns = JSON.parse(await readFile('/evidence/campaign-fixtures.json', 'utf8'));
+    const defaultGroup = campaigns.landings.default.props.launch.whatsapp_url;
+    const effectiveGroup = (content, confirmation = false) => {
+        const group = confirmation ? content.confirmation_whatsapp_group : content.whatsapp_group;
+        return group.mode === 'custom' ? group.url : group.mode === 'default' ? defaultGroup : group.mode === 'inherit' ? effectiveGroup(content) : null;
+    };
     const operations = [], validations = [], metrics = [], checks = [];
     let editor = structuredClone(fixtures.editor);
     const base = `/admin/landings/${editor.props.landing.id}`;
@@ -134,10 +140,15 @@ try {
                     page.props.landing.revision = editor.props.landing.revision;
                     page.props.launch.video_url = page.props.landing.content.video.youtube_url;
                     page.props.launch.video_poster = page.props.landing.content.video.poster;
+                    page.props.launch.whatsapp_url = effectiveGroup(page.props.landing.content);
                 }
                 if (url.pathname.endsWith('/preview/confirmado')) {
                     page.props.confirmation.content = structuredClone(editor.props.landing.configuration.after_registration);
-                    page.props.confirmation.video = structuredClone(editor.props.landing.configuration.confirmation_video);
+                    const content = editor.props.landing.configuration;
+                    page.props.confirmation.video = structuredClone(content.confirmation_video);
+                    if (!content.presentation.show_confirmation_video) page.props.confirmation.video.youtube_url = null;
+                    page.props.confirmation.whatsapp_group_url = effectiveGroup(content, true);
+                    page.props.confirmation.next = content.next_step.action === 'whatsapp' ? (effectiveGroup(content, true) ? {url:effectiveGroup(content, true),external:true,redirect_seconds:content.next_step.redirect_seconds} : null) : fixtures.confirmation_preview.props.confirmation.next;
                 }
                 page.url = url.pathname;
             }
@@ -318,6 +329,60 @@ try {
     assert(await evaluate('document.documentElement.scrollWidth<=innerWidth'));
     assert(await evaluate(`document.body.textContent.includes('PORTADA PRINCIPAL')`));
     checks.push({name:'create-tools-and-home-index',passed:true});
+    await call('Emulation.setDeviceMetricsOverride',{width:1440,height:1000,deviceScaleFactor:1,mobile:false});
+    await navigate(base+'/editar');
+    await until('!!document.getElementById("content.whatsapp_group.mode")','Campaign WhatsApp controls render');
+    const ownGroup='https://chat.whatsapp.com/LandingGroupFixture1234';
+    for (const mode of ['custom','none','default']) {
+        await evaluate(`document.querySelectorAll('details').forEach(d=>d.open=true)`);
+        await setField('content.whatsapp_group.mode',mode,'HTMLSelectElement');
+        if(mode==='custom') {
+            await until('!!document.getElementById("content.whatsapp_group.url")','Own group URL appears');
+            await setField('content.whatsapp_group.url','https://chat.whatsapp.com.evil.test/ApprovedGroupFixture123','HTMLInputElement');
+            assert(!await evaluate('document.getElementById("content.whatsapp_group.url").checkValidity()'),'Similar domain fails browser validation');
+            await setField('content.whatsapp_group.url',ownGroup,'HTMLInputElement');
+            assert(await evaluate('document.getElementById("content.whatsapp_group.url").checkValidity()'),'Invitation passes browser validation');
+        } else assert(!await evaluate('!!document.getElementById("content.whatsapp_group.url")'));
+        await setField('content.confirmation_whatsapp_group.mode','inherit','HTMLSelectElement');
+        await click('Guardar borrador');
+        await until('document.body.textContent.includes("Borrador guardado · revisión")','Campaign group saved');
+        await until(`!!document.querySelector('iframe')?.contentDocument?.querySelector('#registro')`,'Campaign landing preview loads');
+        const expected=mode==='custom'?ownGroup:mode==='default'?defaultGroup:null;
+        assert.equal(await evaluate(`document.querySelector('iframe').contentDocument.querySelector('a[href*="chat.whatsapp.com"]')?.getAttribute('href')||null`),expected,'Landing preview uses saved effective group');
+        await click('Después del registro');
+        await until(`!!document.querySelector('iframe')?.contentDocument?.querySelector('[data-activation]')`,'Campaign confirmation preview loads');
+        const preview=await evaluate(`(()=>{const d=document.querySelector('iframe').contentDocument;return {buttons:[...d.querySelectorAll('button')].filter(b=>b.textContent==='UNIRME AL GRUPO DE WHATSAPP').length,text:d.body.textContent}})()`);
+        assert.equal(preview.buttons,expected?1:0); if(expected) assert(preview.text.includes(expected));
+        await click('Landing');
+        checks.push({name:'campaign-editor-saved-group',mode,passed:true});
+    }
+    await evaluate(`document.querySelectorAll('details').forEach(d=>d.open=true)`);
+    await setField('content.confirmation_whatsapp_group.mode','custom','HTMLSelectElement');
+    await until('!!document.getElementById("content.confirmation_whatsapp_group.url")','Different confirmation URL appears');
+    await setField('content.confirmation_whatsapp_group.url','https://chat.whatsapp.com/ConfirmGroupFixture1234','HTMLInputElement');
+    await click('EXPORTAR JSON');
+    assert(!await evaluate(`document.querySelector('#editorial-output').value.includes('chat.whatsapp.com')`),'Browser export excludes group URLs');
+    await click('Cerrar');
+    const savedVideo=editor.props.landing.configuration.confirmation_video.youtube_url;
+    await evaluate(`document.getElementById('show-confirmation-video').click()`);
+    await click('Guardar borrador');
+    await until('document.body.textContent.includes("Borrador guardado · revisión")','Different confirmation and video visibility saved');
+    assert.equal(editor.props.landing.configuration.confirmation_video.youtube_url,savedVideo,'Hiding confirmation preserves configured video');
+    await click('Después del registro');
+    await until(`!!document.querySelector('iframe')?.contentDocument?.querySelector('[data-activation]')`,'Hidden video preview loads');
+    assert(!await evaluate(`!!document.querySelector('iframe').contentDocument.querySelector('.vsl-frame')`),'Hidden confirmation video is absent');
+    assert(await evaluate(`document.querySelector('iframe').contentDocument.body.textContent.includes('https://chat.whatsapp.com/ConfirmGroupFixture1234')`),'Different confirmation group is effective');
+    await evaluate(`document.getElementById('content.whatsapp_group.mode').closest('details').scrollIntoView({block:'start'})`);
+    await screenshot('campaign-editor-1440');
+    for(const width of [390,430]) {
+        await call('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:false});
+        await click('Editor');
+        await evaluate(`document.querySelectorAll('details').forEach(d=>d.open=true);document.getElementById('content.confirmation_whatsapp_group.mode').closest('details').scrollIntoView({block:'start'})`);
+        assert(await evaluate('document.documentElement.scrollWidth<=innerWidth'),'Campaign controls fit mobile');
+        await screenshot(`campaign-editor-${width}`);
+        checks.push({name:'campaign-editor-mobile-controls',width,passed:true});
+    }
+    checks.push({name:'different-confirmation-group-hidden-video-export',passed:true});
     assert.deepEqual(runtimeErrors,[]); assert.deepEqual(failedAssets,[]);
     await writeFile(`${output}/editor-visual.json`,JSON.stringify({checks,operations,validations,preview_metrics:metrics.length,live_test_users:0,backend_fixtures:'real isolated HTTP kernel responses; browser mutations intercepted',runtime_errors:runtimeErrors,failed_assets:failedAssets},null,2)+'\n');
     console.log(`${checks.length} editor/preview groups passed; 390, 430, 768, 1440 px; no LIVE writes.`);

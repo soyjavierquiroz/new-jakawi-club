@@ -7,6 +7,12 @@ import { lookup } from 'node:dns/promises';
 
 const output = '/evidence';
 const confirmations = JSON.parse(await readFile('/evidence/confirmation-fixtures.json', 'utf8'));
+const campaigns = JSON.parse(await readFile('/evidence/campaign-fixtures.json', 'utf8'));
+const receipts = JSON.parse(await readFile('/evidence/campaign-receipt-fixtures.json', 'utf8'));
+for(const [name,page] of Object.entries(receipts)) {
+    confirmations['campaign-'+name]=structuredClone(page);
+    if(confirmations['campaign-'+name].props.confirmation.next) confirmations['campaign-'+name].props.confirmation.next.redirect_seconds=0;
+}
 const widths = [390, 430, 1440];
 const live = process.argv.includes('--live');
 await mkdir(output, { recursive: true });
@@ -353,6 +359,32 @@ try {
     await until(`location.host==='chat.whatsapp.com'&&document.body.textContent.includes('interceptado')`, 'Countdown navigates only to approved group');
     assert.equal(groupNavigations.length,beforeGroup+1);
     checks.push({name:'approved-group-countdown-redirect',fixture:true,real_external_navigation:false});
+    for(const width of widths) {
+        await call('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:width<768});
+        for(const [mode,page] of Object.entries(campaigns.landings)) {
+            fixturePage=structuredClone(page);
+            const url=`https://jakawi.club/__registration/campaign-${mode}?check=${++navigation}`;
+            await call('Page.navigate',{url});
+            await until(`location.href===${JSON.stringify(url)}&&document.readyState==='complete'&&!!document.querySelector('#registro')`,'Campaign landing renders');
+            const expected=page.props.launch.whatsapp_url;
+            const result=await evaluate(`(()=>{const links=[...document.querySelectorAll('a[href*="chat.whatsapp.com"]')];const f=document.querySelector('.vsl-frame')?.getBoundingClientRect();return {overflow:document.documentElement.scrollWidth>innerWidth,links:links.map(a=>({url:a.href,target:a.target,rel:a.rel,color:getComputedStyle(a).backgroundColor})),ratio:f?f.width/f.height:null}})()`);
+            assert(!result.overflow); assert.equal(result.links.length,expected?1:0);
+            if(expected) {assert.equal(result.links[0].url,expected);assert.equal(result.links[0].target,'_blank');assert.equal(result.links[0].rel,'noopener noreferrer');assert.equal(result.links[0].color,rgb('community-whatsapp-bg'));}
+            assert(Math.abs(result.ratio-.75)<.002);
+            await evaluate(`document.querySelector('.community-whatsapp-cta')?.scrollIntoView({block:'center'})`);
+            await screenshot(`campaign-${mode}-${width}`);
+            checks.push({name:'campaign-public-group',mode,width,passed:true});
+        }
+        for(const [name,page] of Object.entries(receipts)) {
+            await thankYou('campaign-'+name);
+            const expected=page.props.confirmation.whatsapp_group_url;
+            const result=await evaluate(`(()=>{const links=[...document.querySelectorAll('a[href*="chat.whatsapp.com"]')];const f=document.querySelector('.vsl-frame')?.getBoundingClientRect();return {overflow:document.documentElement.scrollWidth>innerWidth,urls:links.map(a=>a.href),ratio:f?f.width/f.height:null,timer:!!document.querySelector('[role=timer]')}})()`);
+            assert(!result.overflow && !result.timer);assert.deepEqual(result.urls,expected?[expected]:[]);
+            if(page.props.confirmation.video.youtube_url) assert(Math.abs(result.ratio-.75)<.002); else assert.equal(result.ratio,null);
+            if(name.endsWith('inherit')) await screenshot(`campaign-thanks-${name}-${width}`);
+            checks.push({name:'campaign-frozen-confirmation',mode:name,width,passed:true});
+        }
+    }
     assert.deepEqual(runtimeErrors, []); assert.deepEqual(failedAssets, []);
     assert(!metrics.some(event => event.event === 'registration_completed'));
     const report = { group_navigations_intercepted: groupNavigations.length, stage: live ? 'LIVE assets and HTTPS page; open/template cases use browser fixtures' : 'build-next intercepted only in browser', viewports: widths, checks,

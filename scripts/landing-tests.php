@@ -237,6 +237,7 @@ try {
     check($import['configuration']['after_registration']['title'] === 'Gracias importadas' && $import['configuration']['next_step'] === $next['next_step'] && $landing->fresh()->configuration === $next && $landing->fresh()->published_configuration === $savedPublic, 'importación de gracias no persiste ni publica y conserva destino');
     $legacy = $home->configuration; unset($legacy['presentation']);
     check(App\Support\LandingContent::withPresentation($legacy)['presentation']['template'] === 'LEAD_VSL', 'snapshots anteriores compatibles sin migración');
+    require '/tests/campaigns-admin-tests.php';
     file_put_contents('/evidence/browser-fixtures.json', json_encode([
         'invalid_import' => payload(http('POST', '/admin/landings/import', ['editorial_json' => json_encode(['schema' => App\Support\LandingContent::SCHEMA, 'content' => ['hero' => ['title' => null]]])])),
         'editor' => payload(http('GET', $base.'/editar', [], true)),

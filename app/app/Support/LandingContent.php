@@ -17,7 +17,7 @@ class LandingContent
     public static function defaults(): array
     {
         return [
-            'presentation' => ['template' => 'LEAD_VSL', 'show_video' => true, 'show_faq' => true],
+            'presentation' => self::presentationDefaults(),
             'seo' => ['title' => 'Tu ciudad tiene mucho más para vivir', 'description' => 'Conoce el comienzo de JAKAWI en Cochabamba. Una nueva forma de descubrir tu ciudad. Vive más. Gasta menos.'],
             'hero' => ['eyebrow' => 'COCHABAMBA / PRELANZAMIENTO', 'title' => 'Tu ciudad tiene', 'emphasis' => 'mucho más', 'ending' => 'para vivir.', 'description' => 'Estamos preparando JAKAWI, una nueva forma de descubrir experiencias, lugares y oportunidades para disfrutar más de Cochabamba.', 'cta' => 'QUIERO SER PARTE'],
             'benefits' => ['eyebrow' => 'EL COMIENZO ES CONTIGO', 'title' => 'Las mejores historias empiezan siendo parte.', 'description' => 'Esto es lo que podrás hacer al sumarte, cuando abramos los registros.', 'items' => [
@@ -39,6 +39,8 @@ class LandingContent
             'next_step' => ['action' => 'recover', 'redirect_seconds' => 0],
             'video' => self::videoDefaults(LaunchSettings::defaultVideoUrl(config('jakawi.video_url')), LaunchSettings::videoPoster(config('jakawi.video_poster'))),
             'confirmation_video' => self::videoDefaults(),
+            'whatsapp_group' => ['mode' => 'default', 'url' => null],
+            'confirmation_whatsapp_group' => ['mode' => 'inherit', 'url' => null],
         ];
     }
 
@@ -51,6 +53,11 @@ class LandingContent
     {
         return ['youtube_url' => $url, 'poster' => $poster, 'aspect_ratio' => '3:4',
             'source_type' => 'youtube', 'source_aspect_ratio' => '9:16', 'focal_x' => 0.5, 'focal_y' => 0.5];
+    }
+
+    private static function presentationDefaults(): array
+    {
+        return ['template' => 'LEAD_VSL', 'show_video' => true, 'show_faq' => true, 'show_confirmation_video' => true];
     }
 
     public static function confirmationVideo(array $video = []): array
@@ -71,9 +78,16 @@ class LandingContent
     /** Legacy snapshots gain presentation defaults in memory, without database writes. */
     public static function withPresentation(array $content): array
     {
-        $content = ['presentation' => ['template' => 'LEAD_VSL', 'show_video' => true, 'show_faq' => true], 'after_registration' => self::confirmationDefaults(), 'next_step' => ['action' => 'recover', 'redirect_seconds' => 0], ...$content];
+        $content = ['after_registration' => self::confirmationDefaults(), 'next_step' => ['action' => 'recover', 'redirect_seconds' => 0],
+            'whatsapp_group' => ['mode' => 'default', 'url' => null], 'confirmation_whatsapp_group' => ['mode' => 'inherit', 'url' => null], ...$content];
+        if (! isset($content['presentation']) || is_array($content['presentation'])) {
+            $content['presentation'] = [...self::presentationDefaults(), ...($content['presentation'] ?? [])];
+        }
         foreach (['video', 'confirmation_video'] as $key) {
             $video = $content[$key] ?? [];
+            if (! is_array($video)) {
+                continue;
+            }
             // Retire the rejected seed from legacy snapshots without rewriting them.
             if (! isset($video['source_type']) && LaunchSettings::youtubeUrl($video['youtube_url'] ?? null) === 'https://www.youtube.com/watch?v=P42gDOTL6Ys') {
                 $video['youtube_url'] = null;
@@ -122,11 +136,16 @@ class LandingContent
         if (! $partial) {
             $content = self::withPresentation($content);
         }
-        $rules = ['content' => ['required', 'array:seo,hero,benefits,registration,faq,final,video,confirmation_video,presentation,after_registration,next_step']];
-        $rules['content.presentation'] = [$presence, 'array:template,show_video,show_faq'];
+        $rules = ['content' => ['required', 'array:seo,hero,benefits,registration,faq,final,video,confirmation_video,presentation,after_registration,next_step,whatsapp_group,confirmation_whatsapp_group']];
+        $rules['content.presentation'] = [$presence, 'array:template,show_video,show_faq,show_confirmation_video'];
         $rules['content.presentation.template'] = [$presence, Rule::in(self::TEMPLATES)];
-        foreach (['show_video', 'show_faq'] as $key) {
+        foreach (['show_video', 'show_faq', 'show_confirmation_video'] as $key) {
             $rules['content.presentation.'.$key] = [$presence, 'boolean:strict'];
+        }
+        foreach (['whatsapp_group' => 'default', 'confirmation_whatsapp_group' => 'inherit'] as $section => $default) {
+            $rules['content.'.$section] = [$presence, 'array:mode,url'];
+            $rules['content.'.$section.'.mode'] = [$presence, Rule::in([$default, 'custom', 'none'])];
+            $rules['content.'.$section.'.url'] = [$partial ? 'sometimes' : 'present', 'nullable', 'string', 'max:500'];
         }
         $sections = [
             'seo' => ['title', 'description'], 'hero' => ['eyebrow', 'title', 'emphasis', 'ending', 'description', 'cta'],
@@ -168,6 +187,13 @@ class LandingContent
             }
         }
         Validator::make(['content' => $content], $rules)->after(function ($validator) use ($content): void {
+            foreach (['whatsapp_group', 'confirmation_whatsapp_group'] as $section) {
+                $url = $content[$section]['url'] ?? null;
+                if ((($content[$section]['mode'] ?? '') === 'custom' || $url !== null)
+                    && RegistrationNextStep::validGroupUrl($url) === null) {
+                    $validator->errors()->add('content.'.$section.'.url', 'Usa una invitación HTTPS de chat.whatsapp.com, sin parámetros ni redirecciones.');
+                }
+            }
             foreach (['video', 'confirmation_video'] as $section) {
                 foreach (['youtube_url', 'poster'] as $key) {
                     $value = $content[$section][$key] ?? null;

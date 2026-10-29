@@ -1,0 +1,22 @@
+{
+  "checks": {
+    "landings": 267,
+    "confirmation": 130,
+    "mvp": 73,
+    "vsl_phone_units": 75
+  },
+  "total_php_and_units": 545,
+  "browser_groups": 63,
+  "editor_groups": 22,
+  "viewports": [
+    390,
+    430,
+    1440
+  ],
+  "typecheck": "passed",
+  "vite": "passed",
+  "isolated_postgresql": true,
+  "smtp_messages_sent": 0,
+  "live_accounts_created": 0,
+  "real_playback": "provider intercepted; approved sources and physical devices pending"
+}

@@ -1,6 +1,6 @@
 import { Head, Link, useForm } from '@inertiajs/react';
 import { useEffect } from 'react';
-import { Footer, Header } from '../components/UI';
+import { Community, Footer, Header } from '../components/UI';
 import { RegistrationForm } from '../components/forms/RegistrationForm';
 import { LandingVideo } from '../components/media/jakawi-vsl-player';
 import { MarketingBenefits, MarketingFAQ, MarketingFinalCTA, MarketingHero } from '../components/marketing/primitives';
@@ -23,7 +23,7 @@ export default function Welcome({ landing, launch, referral_code, referral_prefe
         <MarketingHero open={launch.registration_open} compact={waitlist || webinar} encounter={encounter}>{video}</MarketingHero>
         {!waitlist && <MarketingBenefits />}
         <section className="registration-section" aria-labelledby="registration-title"><div className="shell grid items-start gap-9 py-14 lg:grid-cols-2 lg:gap-20 lg:py-20">
-            <div className="lg:pt-6"><p className="eyebrow">{content.registration.eyebrow}</p><h2 id="registration-title" className="section-title mt-5">{content.registration.title}</h2><p className="mt-6 max-w-md text-lg leading-relaxed text-text-secondary">{content.registration.description}</p><div className="mt-8 space-y-4 border-t border-border pt-6 text-sm leading-7"><p><strong>Registro gratuito en esta etapa.</strong><br />La activación de tu cuenta se realiza por correo electrónico.</p><p className="text-text-secondary">Tu invitación personal estará disponible después de activar la cuenta.</p></div><div id="en-vivo">{launch.event && <div className="mt-8 border-t border-border pt-6"><p className="eyebrow">PRÓXIMOS ENCUENTROS</p><p className="mt-3 text-sm leading-7"><strong>{launch.event.title}</strong><br /><time dateTime={launch.event.starts_at}>{new Intl.DateTimeFormat('es-BO', { dateStyle: 'long', timeStyle: 'short', timeZone: 'America/La_Paz' }).format(new Date(launch.event.starts_at))} (Bolivia)</time></p></div>}</div></div>
+            <div className="lg:pt-6"><p className="eyebrow">{content.registration.eyebrow}</p><h2 id="registration-title" className="section-title mt-5">{content.registration.title}</h2><p className="mt-6 max-w-md text-lg leading-relaxed text-text-secondary">{content.registration.description}</p><div className="mt-8 space-y-4 border-t border-border pt-6 text-sm leading-7"><p><strong>Registro gratuito en esta etapa.</strong><br />La activación de tu cuenta se realiza por correo electrónico.</p><p className="text-text-secondary">Tu invitación personal estará disponible después de activar la cuenta.</p></div>{launch.whatsapp_url && <div className="mt-8 border-t border-border pt-6"><Community launch={launch} /></div>}<div id="en-vivo">{launch.event && <div className="mt-8 border-t border-border pt-6"><p className="eyebrow">PRÓXIMOS ENCUENTROS</p><p className="mt-3 text-sm leading-7"><strong>{launch.event.title}</strong><br /><time dateTime={launch.event.starts_at}>{new Intl.DateTimeFormat('es-BO', { dateStyle: 'long', timeStyle: 'short', timeZone: 'America/La_Paz' }).format(new Date(launch.event.starts_at))} (Bolivia)</time></p></div>}</div></div>
             <RegistrationForm open={launch.registration_open} referralCode={referral_code} landingId={landing.id} />
         </div></section>
         {waitlist && <MarketingBenefits compact />}

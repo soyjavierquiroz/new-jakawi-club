@@ -157,6 +157,9 @@ try {
     check(App\Support\LandingContent::confirmationVideo()['youtube_url'] === null, 'sin URL no inventa video');
     check(LaunchSettings::defaultVideoUrl('https://youtu.be/P42gDOTL6Ys') === null, 'error 150 histórico nunca se usa como default');
     config(['jakawi.whatsapp_group_url' => 'https://chat.whatsapp.com/ApprovedGroupFixture123']);
+    check(payload(http('GET', '/principal/confirmado', [], true))['props']['confirmation']['whatsapp_group_url'] === null, 'recibo sin grupo permanece sin grupo tras cambiar fallback');
+    freshBrowser(); app('cache')->flush();
+    http('POST', '/registro', $request);
     $whatsapp = payload(http('GET', '/principal/confirmado', [], true));
     check($whatsapp['props']['confirmation']['next'] === ['url' => config('jakawi.whatsapp_group_url'), 'external' => true, 'redirect_seconds' => 10], 'CTA y contador resueltos solo desde grupo operativo aprobado');
     foreach (['https://evil.example/group', 'javascript:alert(1)', 'https://chat.whatsapp.com.evil.example/test', 'https://user@chat.whatsapp.com/ApprovedGroupFixture123', 'https://chat.whatsapp.com/ApprovedGroupFixture123?redirect=https://evil.example'] as $bad) {
@@ -266,6 +269,7 @@ try {
         && ! DB::table('password_reset_tokens')->where('email', $clockUser->email)->exists(), 'activación consume token y verifica cuenta atómicamente');
     freshBrowser(); app('cache')->flush();
     check(http('POST', '/activar', $clockCredentials)->getStatusCode() === 422, 'enlace consumido no se puede reutilizar');
+    require '/tests/campaigns-receipt-tests.php';
     file_put_contents('/evidence/confirmation-fixtures.json', json_encode(['pending' => $pending, 'whatsapp' => $whatsapp, 'confirmed' => $confirmed, 'preview' => $preview, 'without_video' => $withoutVideo], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
     config(['mail.default' => 'log']); freshBrowser();
     check(http('POST', '/registro', $request)->getStatusCode() === 403, 'registro cerrado al terminar con log');
