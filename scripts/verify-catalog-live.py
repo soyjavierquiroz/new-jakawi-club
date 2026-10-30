@@ -90,6 +90,6 @@ result={'verified_at':datetime.now(ZoneInfo('America/La_Paz')).isoformat(),'live
 'protected_tables_unchanged':True,'protected_source_unchanged':True,'web_db_not_restarted':True,'previous_chunks_preserved':True,
 'catalog_timer_active_enabled':True,'sync_interval_minutes':10,'live_fixtures':0,
 'mounted_source_files_verified':len(expected),'https_assets_verified':len(assets),
-'isolated_tests':json.loads((OUT/'tests.json').read_text()),'browser':browser}
+'isolated_tests':json.loads((OUT/'tests.json').read_text()),'attribution_tests':json.loads((OUT/'attribution/tests.json').read_text()),'local_validation':json.loads((OUT/'validation.json').read_text()),'browser':browser}
 (OUT/'LIVE.json').write_text(json.dumps(result,indent=2,ensure_ascii=False)+'\n')
 print(json.dumps(result,indent=2,ensure_ascii=False))

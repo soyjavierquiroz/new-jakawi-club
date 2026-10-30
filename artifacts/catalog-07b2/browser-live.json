@@ -1,0 +1,43 @@
+{
+  "live_assets": true,
+  "data": "isolated HTTP kernel fixtures",
+  "checks": [
+    {
+      "width": 390,
+      "explore": true,
+      "server_filters": true,
+      "server_pagination": true,
+      "on_demand": true,
+      "personal_links": true,
+      "clipboard": true,
+      "whatsapp": true,
+      "history": true,
+      "conversions_preserved": true,
+      "commissions_preserved": true,
+      "admin_pause": true,
+      "public_original_information": true,
+      "no_overflow": true
+    },
+    {
+      "width": 1440,
+      "explore": true,
+      "server_filters": true,
+      "server_pagination": true,
+      "on_demand": true,
+      "personal_links": true,
+      "clipboard": true,
+      "whatsapp": true,
+      "history": true,
+      "conversions_preserved": true,
+      "commissions_preserved": true,
+      "admin_pause": true,
+      "public_original_information": true,
+      "no_overflow": true
+    }
+  ],
+  "runtime_errors": [],
+  "failed_assets": [],
+  "intercepted_submissions": 4,
+  "no_live_mutations": true,
+  "no_live_session": true
+}
