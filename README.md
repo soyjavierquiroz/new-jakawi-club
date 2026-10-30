@@ -1,5 +1,13 @@
 # JAKAWI Launch Engine — jakawi.club
 
+Kit de copywriting preparado sin desplegar: «Crear con IA» en listado y editor de
+landings ofrece prompt maestro, ejemplo WEBINAR, contrato v3 y ZIP. Las descargas
+reutilizan los permisos administrativos y los tres archivos de `docs/landings/`.
+El servicio `app` necesita el montaje de solo lectura `./docs/landings:/var/www/docs/landings:ro`
+preparado en Compose; al desplegar posteriormente será necesario recrear solo app
+para aplicar ese montaje y regenerar la caché de rutas. Sin extensión ZIP, la UI
+mantiene las tres descargas individuales. No hay dependencias ni APIs nuevas.
+
 Enlaces cortos permanentes Dossis 43: [Fase 07A](docs/integrations/club-short-links-07a.md).
 Catálogo sincronizado COM y captación CLUB en `/afiliados`: Explorar, Mis enlaces, Historial y Mis resultados.
 [Clics agregados y resultados verificables](docs/integrations/club-affiliate-results.md).

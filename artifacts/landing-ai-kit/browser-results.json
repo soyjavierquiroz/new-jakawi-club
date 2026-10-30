@@ -1,0 +1,26 @@
+{
+  "checks": [
+    "ai-kit-index-create-editor-actions-responsive-390",
+    "ai-kit-index-create-editor-actions-responsive-1440",
+    "ai-kit-zip-unavailable-keeps-three-individual-downloads",
+    "responsive-390-cta-sticky-no-date-no-whatsapp",
+    "shared-player-3x4-390-fixture-only",
+    "responsive-430-cta-sticky-no-date-no-whatsapp",
+    "shared-player-3x4-430-fixture-only",
+    "responsive-1440-cta-sticky-no-date-no-whatsapp",
+    "shared-player-3x4-1440-fixture-only",
+    "saved-order-visibility-bolivia-date-countdown-preview-no-analytics",
+    "elapsed-countdown-never-restarts",
+    "registration-error-preserves-data-e164-referral-single-submit",
+    "editor-390-tabs-date-layout-export-no-write",
+    "editor-1440-tabs-date-layout-export-no-write",
+    "v3-new-complete-import-activates-composition-no-seed-export-equivalent-no-save",
+    "v3-existing-patch-independent-videos-groups-brief-errors-no-save",
+    "v3-saved-previews-date-countdown-order-visibility-confirmation-player-whatsapp-only-after",
+    "reusable-new-webinar-seed-no-save-no-publication"
+  ],
+  "passed": 18,
+  "live_assets": false,
+  "live_registrations": 0,
+  "provider_playback_verified": false
+}

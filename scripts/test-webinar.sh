@@ -27,6 +27,7 @@ docker run --rm --name jakawi-club-webinar-tests --network jakawi-club-private \
     --volume /opt/sites/jakawi.club/app/public/build:/var/www/html/public/build:ro \
     --volume "$source_dir/scripts:/tests:ro" \
     --volume "$source_dir/docs:/reference:ro" \
+    --volume "$source_dir/docs/landings:/var/www/docs/landings:ro" \
     --volume "$source_dir/scripts/fixtures:/var/www/html/public/marketing:ro" \
     --volume "$evidence_dir:/evidence" \
     --tmpfs /var/www/html/storage:rw,mode=1777,size=32m \

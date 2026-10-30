@@ -19,6 +19,7 @@ services:
       - /srv/sites/jakawi.club/secrets/com-oidc.env
     volumes:
       - ./app:/var/www/html:ro
+      - ./docs/landings:/var/www/docs/landings:ro
       - /srv/sites/jakawi.club/storage:/var/www/html/storage
       - /srv/sites/jakawi.club/bootstrap-cache:/var/www/html/bootstrap/cache
       - /srv/sites/jakawi.club/secrets/crm-hmac:/run/secrets/crm_club_hmac:ro

@@ -107,6 +107,7 @@ try {
         ['GET', '/admin/landings/'.$home->id.'/preview'], ['GET', '/admin/landings/'.$home->id.'/preview/confirmado'], ['GET', '/admin/landings/'.$home->id.'/export'],
         ['POST', '/admin/landings'], ['PUT', '/admin/landings/'.$home->id],
     ];
+    foreach (['prompt', 'example', 'schema', 'kit'] as $document) $protected[] = ['GET', '/admin/landings/crear-con-ia/'.$document];
     foreach (['import', 'publicar', 'duplicar', 'archivar'] as $action) $protected[] = ['POST', '/admin/landings/'.$home->id.'/'.$action];
     foreach ($protected as [$method, $url]) check(http($method, $url)->getStatusCode() === 401, 'invitado sin acceso: '.$method.' '.$url);
     $admin = new User(['name' => 'Editor aislado', 'email' => 'editor@example.test', 'password' => 'PasswordEditor123']);
@@ -121,6 +122,7 @@ try {
     $admin->email_verified_at = now(); $admin->activated_at = null; $admin->save();
     check(http('GET', '/admin/landings')->getStatusCode() === 403, 'admin sin activar bloqueado');
     $admin->activated_at = now(); $admin->save();
+    require '/tests/landing-ai-kit-tests.php';
 
     $content = App\Support\LandingContent::defaults();
     $data = ['title' => 'Campaña de prueba', 'slug' => 'campana-prueba', 'campaign' => 'cocha_2026', 'configuration' => $content, 'status' => 'published', 'is_marketing_admin' => true];

@@ -35,6 +35,7 @@ Route::get('/l/{slug}', [WelcomeController::class, 'legacy'])->name('landing.leg
 Route::prefix('admin/landings')->middleware(['auth', 'verified', MarketingAdmin::class])->group(function (): void {
     Route::get('/', [LandingAdminController::class, 'index'])->name('landings.index');
     Route::get('/crear', [LandingAdminController::class, 'create'])->name('landings.create');
+    Route::get('/crear-con-ia/{document}', [\App\Http\Controllers\LandingAiKitController::class, 'download'])->name('landings.ai-kit');
     Route::post('/', [LandingAdminController::class, 'store'])->name('landings.store');
     Route::post('/import', [LandingAdminController::class, 'import'])->name('landings.import-local');
     Route::get('/{landing}/editar', [LandingAdminController::class, 'edit'])->name('landings.edit');

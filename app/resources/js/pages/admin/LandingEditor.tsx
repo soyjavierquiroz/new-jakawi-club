@@ -3,6 +3,7 @@ import { useEffect, useRef, useState, type FormEvent, type ReactNode } from 'rea
 import { ErrorText, PageFrame } from '../../components/UI';
 import { aiBrief, editorialJSON, sameConfiguration } from '../../lib/landing-editorial';
 import type { LandingContent, LandingRecord, LandingTemplate } from '../../types';
+import { LandingAiKit } from '../../components/admin/LandingAiKit';
 import { statusLabel } from './Landings';
 
 type Value = string | null | { [key: string]: Value } | Value[];
@@ -67,8 +68,8 @@ function SavedPreview({ landing, width, confirmation }: { landing: LandingRecord
     return <div ref={container} className="landing-preview-scroll"><div className="landing-preview-stage" style={{ height: 900 * scale }}><iframe key={`${landing.id}-${landing.revision}-${confirmation}`} title={`Vista previa real a ${width} px`} className="landing-preview-frame" style={{ width, height: 900, transform: `scale(${scale})` }} src={`/admin/landings/${landing.id}/preview${confirmation ? '/confirmado' : ''}?revision=${landing.revision}`} /></div></div>;
 }
 
-type Props = { landing: LandingRecord | null; defaults: LandingContent | null; webinar_defaults: LandingContent; home_slug: string; registration_open: boolean; whatsapp_group_available: boolean; confirmation_video_default_url: string | null; metrics?: { event: string; campaign: string; total: number }[] };
-export default function LandingEditor({ landing, defaults, webinar_defaults, home_slug, registration_open, whatsapp_group_available, confirmation_video_default_url, metrics = [] }: Props) {
+type Props = { ai_kit_zip_available?: boolean; landing: LandingRecord | null; defaults: LandingContent | null; webinar_defaults: LandingContent; home_slug: string; registration_open: boolean; whatsapp_group_available: boolean; confirmation_video_default_url: string | null; metrics?: { event: string; campaign: string; total: number }[] };
+export default function LandingEditor({ ai_kit_zip_available = false, landing, defaults, webinar_defaults, home_slug, registration_open, whatsapp_group_available, confirmation_video_default_url, metrics = [] }: Props) {
     const initial = () => ({ title: landing?.title || '', slug: landing?.slug || '', campaign: landing?.campaign || '', configuration: landing?.configuration || defaults!, revision: landing?.revision || 1 });
     const form = useForm(initial());
     const operation = useForm({ revision: landing?.revision || 1 });
@@ -182,6 +183,7 @@ export default function LandingEditor({ landing, defaults, webinar_defaults, hom
             <button type="button" className="btn btn-secondary" disabled={busy} onClick={() => { setImportErrors({}); setTool('import'); }}>IMPORTAR JSON</button>
             <button type="button" className="btn btn-secondary" onClick={() => setTool('export')}>EXPORTAR JSON</button>
         </div>
+        <LandingAiKit zipAvailable={ai_kit_zip_available} />
         {notice && <p className="message mb-5" role="status">{notice}</p>}
         {!!Object.keys(errors).length && <div role="alert" className="message mb-6"><p className="font-bold">Revisa los campos:</p><ul className="mt-2 list-inside list-disc">{Object.entries(errors).map(([path, error]) => <li key={path}><strong>{path}</strong>: {error}</li>)}</ul></div>}
         <div className="editor-mobile-tabs mb-4" role="group" aria-label="Panel del editor"><button className="btn btn-secondary" aria-pressed={mobileView === 'editor'} onClick={() => setMobileView('editor')}>Editor</button><button className="btn btn-secondary" aria-pressed={mobileView === 'preview'} onClick={() => setMobileView('preview')}>Preview</button></div>

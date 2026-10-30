@@ -154,6 +154,27 @@ try {
     };
     const screenshot = async name => { const shot = await call('Page.captureScreenshot',{format:'png'}); await writeFile(`${output}/${name}.png`,Buffer.from(shot.data,'base64')); };
     await call('Network.setCookie',{name:'XSRF-TOKEN',value:'webinar-browser-fixture',domain:'jakawi.club',path:'/',secure:true});
+    for (const width of [390, 1440]) {
+        await call('Emulation.setDeviceMetricsOverride',{width,height:900,deviceScaleFactor:1,mobile:width<768});
+        for (const fixture of [historical.index, historical.create, fixtures.editor]) {
+            await navigate(fixture);
+            assert(await evaluate('!!document.querySelector("[data-landing-ai-kit] summary")'));
+            await evaluate('document.querySelector("[data-landing-ai-kit] summary").click()');
+            assert.deepEqual(await evaluate('[...document.querySelectorAll("[data-landing-ai-kit] a")].map(a=>a.getAttribute("href"))'),
+                ['prompt','example','schema','kit'].map(name=>`/admin/landings/crear-con-ia/${name}`));
+            assert(await evaluate('document.documentElement.scrollWidth<=innerWidth+1'));
+            if (fixture.component === 'admin/LandingEditor') {
+                assert(await evaluate(`document.querySelector('[aria-label="Herramientas editoriales"]').nextElementSibling.matches('[data-landing-ai-kit]')`));
+            }
+        }
+        checks.push(`ai-kit-index-create-editor-actions-responsive-${width}`);
+    }
+    await navigate(historical.create, p=>{p.props.ai_kit_zip_available=false;});
+    await evaluate('document.querySelector("[data-landing-ai-kit] summary").click()');
+    assert.equal(await evaluate('document.querySelectorAll("[data-landing-ai-kit] a").length'),3);
+    assert(await evaluate('document.querySelector("[data-landing-ai-kit] button").disabled'));
+    assert(await evaluate('document.querySelector("[data-landing-ai-kit]").textContent.includes("tres archivos individuales")'));
+    checks.push('ai-kit-zip-unavailable-keeps-three-individual-downloads');
     for (const width of [390,430,1440]) {
         await call('Emulation.setDeviceMetricsOverride',{width,height:900,deviceScaleFactor:1,mobile:width<768});
         await navigate(fixtures.empty, p => {p.props.launch.registration_open=true;p.props.landing.preview=false;p.props.launch.video_url=null;});
