@@ -31,3 +31,9 @@ usuarios/secretos, fuentes ajenas, salud y assets HTTPS. Sello final LIVE.json i
 Pruebas previas: 419 landings + 134 postconversion PASS; TypeScript/build PASS;
 23 grupos de navegador PASS con assets nuevos, sin mutaciones LIVE.
 Se corrigió el tamaño de días del countdown para cifras largas antes del despliegue.
+
+Código desplegado: `2b4ef11570e0c9f5b123776e85edbedb776e881e`.
+LIVE: 26 grupos PASS, incluidos contador fechado a 390/430/1440, home/principal
+y login. Solo app reiniciada, 20 assets nuevos, chunks anteriores conservados.
+Contenido, snapshots, usuarios, tablas comerciales y secretos intactos.
+Cero registros, correos reales o publicaciones de campañas.
