@@ -153,4 +153,5 @@ file_put_contents('/evidence/json-v3-fixtures.json', json_encode([
     'dated' => $v3SavedPreview, 'dated_confirmation' => $v3SavedConfirmation, 'errors' => $v3Errors,
 ], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
 require '/tests/benefit-icons-tests.php';
+require '/tests/registration-copy-tests.php';
 config(['jakawi.video_url' => null, 'jakawi.confirmation_video_url' => null]);

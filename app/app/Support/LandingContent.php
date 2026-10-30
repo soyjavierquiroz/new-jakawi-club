@@ -31,7 +31,7 @@ class LandingContent
                 ['title' => 'Una comunidad por descubrir', 'description' => 'Participa en la comunidad cuando esté disponible. Un espacio para acompañar juntos el comienzo de JAKAWI.'],
                 ['title' => 'Invitar a alguien más', 'description' => 'Una vez activada tu cuenta, tendrás un enlace personal para compartir tu invitación.'],
             ]],
-            'registration' => ['eyebrow' => 'TU PRÓXIMO PASO', 'title' => 'Las buenas cosas se comparten.', 'description' => 'Una cuenta. Una invitación personal. Y una ciudad con mucho por descubrir juntos.'],
+            'registration' => [...self::registrationDefaults(), 'eyebrow' => 'TU PRÓXIMO PASO', 'title' => 'Las buenas cosas se comparten.', 'description' => 'Una cuenta. Una invitación personal. Y una ciudad con mucho por descubrir juntos.'],
             'faq' => ['eyebrow' => 'TODO CLARO, DESDE EL INICIO', 'title' => 'Antes de dar el paso.', 'items' => [
                 ['question' => '¿Qué es JAKAWI?', 'answer' => 'JAKAWI es una comunidad en preparación que empieza en Cochabamba. Este espacio permite conocer el lanzamiento, crear tu cuenta cuando abramos los registros e invitar a otras personas.'],
                 ['question' => '¿Registrarse tiene costo?', 'answer' => 'El registro y la membresía de esta etapa son gratuitos. No hay pagos, compras ni comisiones disponibles en esta etapa.'],
@@ -78,13 +78,23 @@ class LandingContent
                 ['title' => 'Participa en el webinar', 'description' => 'Consulta la fecha confirmada y las indicaciones del encuentro cuando estén disponibles.'],
             ]],
         ];
-        $content['registration'] = ['eyebrow' => 'TU PRÓXIMO PASO', 'title' => 'Reserva tu lugar gratis.', 'description' => 'Regístrate para acompañar el prelanzamiento de JAKAWI.'];
+        $content['registration'] = [...self::registrationDefaults(), 'eyebrow' => 'TU PRÓXIMO PASO', 'title' => 'Reserva tu lugar gratis.', 'description' => 'Regístrate para acompañar el prelanzamiento de JAKAWI.'];
         $content['faq']['items'] = [
             ['question' => '¿Tiene costo?', 'answer' => 'El registro y el webinar de esta etapa son gratuitos.'],
             ['question' => '¿Cuándo es el webinar?', 'answer' => 'La fecha y la hora se mostrarán aquí cuando estén confirmadas. Si aún no aparecen, el encuentro sigue en preparación.'],
             ['question' => '¿Qué pasa después del registro?', 'answer' => 'Verás la página de confirmación y el grupo de WhatsApp si está habilitado. Si tu cuenta es nueva, recibirás las indicaciones de activación por correo. Tu enlace personal estará disponible después de activar la cuenta.'],
         ];
         return $content;
+    }
+
+    /** Copy only: field identities, actions and consent remain owned by the real form. */
+    public static function registrationDefaults(): array
+    {
+        return ['form_title' => 'Tu lugar en JAKAWI', 'form_subtitle' => '',
+            'name_placeholder' => 'Tu nombre completo', 'phone_placeholder' => 'WhatsApp',
+            'email_placeholder' => 'Tu correo electrónico', 'submit_label' => null,
+            'submit_microcopy' => '', 'existing_account_label' => '¿Ya tienes cuenta?',
+            'existing_account_link_label' => 'Ingresa aquí'];
     }
 
     public static function confirmationDefaults(): array
@@ -128,6 +138,9 @@ class LandingContent
         }
         if (! isset($content['presentation']) || is_array($content['presentation'])) {
             $content['presentation'] = [...self::presentationDefaults(), ...($content['presentation'] ?? [])];
+        }
+        if (isset($content['registration']) && is_array($content['registration'])) {
+            $content['registration'] = [...self::registrationDefaults(), ...$content['registration']];
         }
         foreach (['video', 'confirmation_video'] as $key) {
             $video = $content[$key] ?? [];
@@ -217,6 +230,7 @@ class LandingContent
             'date_format' => ':attribute debe ser una fecha válida con formato YYYY-MM-DDTHH:mm:ss-04:00.',
             'regex' => ':attribute tiene un formato inválido; la fecha requiere el huso -04:00 de Bolivia.',
             'not_regex' => ':attribute no admite < ni >.',
+            'content.registration.*.not_regex' => ':attribute solo admite texto plano, sin HTML ni URLs.',
             'content.after_registration.*.not_regex' => ':attribute no admite < ni > ni afirmar cuenta activada, correo verificado o correo enviado; el servidor confirma esos estados.',
         ])->after(function (\Illuminate\Validation\Validator $validator): void {
             foreach ($validator->failed() as $path => $failures) {
@@ -283,7 +297,7 @@ class LandingContent
         }
         $sections = [
             'seo' => ['title', 'description'], 'hero' => ['eyebrow', 'title', 'emphasis', 'ending', 'description', 'cta'],
-            'benefits' => ['eyebrow', 'title', 'description', 'items'], 'registration' => ['eyebrow', 'title', 'description'],
+            'benefits' => ['eyebrow', 'title', 'description', 'items'], 'registration' => ['eyebrow', 'title', 'description', ...array_keys(self::registrationDefaults())],
             'faq' => ['eyebrow', 'title', 'items'], 'final' => ['eyebrow', 'title', 'description', 'cta'],
             'after_registration' => ['title', 'message', 'instructions', 'cta_label'],
         ];
@@ -294,6 +308,11 @@ class LandingContent
                     $rules['content.'.$section.'.'.$key] = $text;
                 }
             }
+        }
+        foreach (array_keys(self::registrationDefaults()) as $key) {
+            $rules['content.registration.'.$key] = ['sometimes',
+                ...(in_array($key, ['submit_label', 'form_subtitle', 'submit_microcopy']) ? ['nullable'] : ['required']),
+                'string', 'max:1200', 'not_regex:~[<>]|[a-z][a-z0-9+.-]*://|(?:javascript|data|mailto|tel):|//|www\\.|\\b[a-z0-9-]+\\.[a-z]{2,}(?:\\b|/)~iu'];
         }
         $rules['content.next_step'] = [$presence, 'array:action,redirect_seconds'];
         $rules['content.next_step.action'] = [$presence, Rule::in(['none', 'recover', 'account', 'home', 'whatsapp'])];
@@ -357,6 +376,14 @@ class LandingContent
         foreach (['video', 'confirmation_video'] as $section) {
             if (isset($content[$section]['youtube_url'])) {
                 $content[$section]['youtube_url'] = LaunchSettings::youtubeUrl($content[$section]['youtube_url']);
+            }
+        }
+        if (is_string($content['registration']['submit_label'] ?? null) && trim($content['registration']['submit_label']) === '') {
+            $content['registration']['submit_label'] = null;
+        }
+        foreach (['form_subtitle', 'submit_microcopy'] as $key) {
+            if (array_key_exists($key, $content['registration'] ?? []) && $content['registration'][$key] === null) {
+                $content['registration'][$key] = '';
             }
         }
         return $content;

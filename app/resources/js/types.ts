@@ -23,7 +23,7 @@ export type LandingContent = {
     seo: { title: string; description: string };
     hero: { eyebrow: string; title: string; emphasis: string; ending: string; description: string; cta: string };
     benefits: { eyebrow: string; title: string; description: string; items: { title: string; description: string; icon?: BenefitIconName }[] };
-    registration: { eyebrow: string; title: string; description: string };
+    registration: { eyebrow: string; title: string; description: string; form_title?: string; form_subtitle?: string; name_placeholder?: string; phone_placeholder?: string; email_placeholder?: string; submit_label?: string | null; submit_microcopy?: string; existing_account_label?: string; existing_account_link_label?: string };
     faq: { eyebrow: string; title: string; items: { question: string; answer: string }[] };
     final: { eyebrow: string; title: string; description: string; cta: string };
     video: LandingVideoSettings;

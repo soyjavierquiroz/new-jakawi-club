@@ -520,6 +520,59 @@ try {
     assert.deepEqual(await evaluate(`[...document.querySelectorAll('${iconSelector} svg')].map(e=>e.dataset.benefitIcon)`),['compass','calendar','star']);
     checks.push('benefits-visual-editor-select-export-automatic-add-item-and-render');
 
+    // Form editorial copy: use actual PHP controller/JSON fixtures and the shared renderer.
+    const copyFixtures = JSON.parse(await readFile('/evidence/registration-copy-fixtures.json','utf8'));
+    const copyFields = ['form_title','form_subtitle','name_placeholder','phone_placeholder','email_placeholder','submit_label','submit_microcopy','existing_account_label','existing_account_link_label'];
+    for (const width of [390,430,1440]) {
+        await call('Emulation.setDeviceMetricsOverride',{width,height:900,deviceScaleFactor:1,mobile:width<768});
+        for (const preview of [false,true]) {
+            await navigate(preview?copyFixtures.preview:copyFixtures.public);
+            const expected = copyFixtures.content.registration;
+            assert.equal(await evaluate('document.querySelector("#registration-form-title").textContent'),expected.form_title);
+            assert.equal(await evaluate('document.querySelector("#registro > p.text-sm").textContent'),expected.form_subtitle);
+            assert.deepEqual(await evaluate('["name","phone","email"].map(id=>document.getElementById(id).placeholder)'),[expected.name_placeholder,expected.phone_placeholder,expected.email_placeholder]);
+            assert.equal(await evaluate('document.querySelector("#registro button[type=submit]").textContent.trim()'),expected.submit_label);
+            assert.equal(await evaluate('document.querySelector("[data-submit-microcopy]").textContent'),expected.submit_microcopy);
+            assert.equal(await evaluate(`document.querySelector('#registro a[href="/login"]').textContent`),expected.existing_account_link_label);
+            assert(await evaluate(`document.querySelector('#registro a[href="/login"]').parentElement.textContent.includes(${JSON.stringify(expected.existing_account_label)})`));
+            assert(await evaluate('document.querySelector("#registro input[name=privacy]").required'));
+            assert.equal(await evaluate(`document.querySelector('#registro a[href="/privacidad"]').getAttribute("href")`),'/privacidad');
+            assert(await evaluate('document.documentElement.scrollWidth<=innerWidth+1'));
+            assert(await evaluate(`[...document.querySelectorAll('[data-marketing-cta]')].every(e=>e.textContent.trim()===${JSON.stringify(expected.submit_label)})`));
+            await evaluate('document.getElementById("registro").scrollIntoView({block:"center",behavior:"instant"})');
+            await screenshot(`registration-copy-${preview?'preview':'public-fixture'}-${width}`);
+        }
+        checks.push(`registration-copy-nine-fields-preview-public-sticky-${width}`);
+    }
+    for (const template of ['WEBINAR','LEAD_VSL','WAITLIST']) {
+        await navigate(copyFixtures.public,p=>{
+            p.props.landing.content.presentation.template=template;
+            for(const key of copyFields) delete p.props.landing.content.registration[key];
+            p.props.landing.content.hero.cta='CTA WEBINAR HISTÓRICO';
+        });
+        const expected = template==='WEBINAR'?'CTA WEBINAR HISTÓRICO':'QUIERO SER PARTE DE JAKAWI';
+        assert.equal(await evaluate('document.querySelector("#registro button[type=submit]").textContent.trim()'),expected);
+        assert.equal(await evaluate('document.querySelector("#registration-form-title").textContent'),'Tu lugar en JAKAWI');
+        assert.deepEqual(await evaluate('["name","phone","email"].map(id=>document.getElementById(id).placeholder)'),['Tu nombre completo','WhatsApp','Tu correo electrónico']);
+        assert.equal(await evaluate('document.querySelectorAll("[data-submit-microcopy]").length'),0);
+        assert(await evaluate(`[...document.querySelectorAll('[data-marketing-cta]')].every(e=>e.textContent.trim()===${JSON.stringify(expected)})`));
+    }
+    checks.push('registration-copy-historical-three-template-fallbacks');
+    await navigate(copyFixtures.editor);
+    await evaluate(`[...document.querySelectorAll('details')].find(e=>e.querySelector('summary')?.textContent==='Registro').open=true`);
+    for (const key of copyFields) {
+        assert.equal(await evaluate(`document.getElementById('content.registration.${key}').value`),copyFixtures.content.registration[key]);
+        await fill(`content.registration.${key}`,`Copy editado ${key}`,'HTMLTextAreaElement');
+    }
+    const editedCopy = await exportIcons();
+    for (const key of copyFields) assert.equal(editedCopy.content.registration[key],`Copy editado ${key}`);
+    assert.equal(editedCopy.content.registration.description,copyFixtures.content.registration.description,'Exterior description is independent');
+    await fill('content.registration.submit_label','','HTMLTextAreaElement');
+    assert.equal((await exportIcons()).content.registration.submit_label,null,'Clear restores automatic CTA');
+    await navigate(copyFixtures.preview,p=>{p.props.landing.content=editedCopy.content;});
+    assert.equal(await evaluate('document.querySelector("#registro button[type=submit]").textContent.trim()'),'Copy editado submit_label');
+    checks.push('registration-copy-admin-edit-nine-fields-export-render-and-clear');
+
     assert.equal(writes.length,0,'No browser mutation reaches LIVE');
     assert.deepEqual(runtimeErrors,[]);assert.deepEqual(failedAssets,[]);
     checks.push('reusable-new-webinar-seed-no-save-no-publication');

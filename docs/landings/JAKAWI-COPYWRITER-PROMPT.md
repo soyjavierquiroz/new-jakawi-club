@@ -31,7 +31,7 @@ enlaces, cifras, descuentos, garantías, urgencia ni promesas de resultados.
   tres pasos, introducción al registro, FAQ y cierre; completa también la página
   de confirmación posterior al registro.
 - Mantén un único objetivo y CTA hacia el formulario existente. En WEBINAR
-  completo `hero.cta` controla los CTA compartidos. No añadas destinos alternativos.
+  completo `registration.submit_label` controla los CTA compartidos; sin valor explícito utiliza `hero.cta`. Mantén ambos coherentes. No añadas destinos alternativos.
 - Conserva WhatsApp exclusivamente después del registro. No prometas un grupo
   si no hay enlace aprobado ni coloques enlaces de WhatsApp en la captación.
 - Respeta el estado real del registro. Los textos no lo habilitan. La activación,
@@ -39,6 +39,15 @@ enlaces, cifras, descuentos, garantías, urgencia ni promesas de resultados.
   realizadas en los textos de confirmación.
 - Nombre interno y slug se configuran en el administrador; no pertenecen al JSON.
   Tampoco incluyas campaña, publicación, permisos, secretos ni datos de usuarios.
+
+Configura en `content.registration` el título y subtítulo internos (`form_title`,
+`form_subtitle`), los tres placeholders (`name_placeholder`, `phone_placeholder`,
+`email_placeholder`), `submit_label`, `submit_microcopy`, `existing_account_label`
+y `existing_account_link_label`. El subtítulo es independiente de `description`
+exterior. Usa copy propio de la campaña y el mismo CTA que `hero.cta`. Solo textos
+planos sin HTML ni URLs; el enlace de cuenta conserva su destino interno. Los
+nueve campos son opcionales para documentos históricos. `submit_label: null`
+restaura el CTA automático; subtítulo y microcopy admiten cadena vacía.
 
 ## Configuración completa
 

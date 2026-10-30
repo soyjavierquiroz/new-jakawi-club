@@ -11,7 +11,7 @@ export const REGISTRATION_CTA = 'QUIERO SER PARTE DE JAKAWI';
 
 export function useRegistrationCTA() {
     const content = useContext(LandingContext)?.content;
-    return content?.presentation.template === 'WEBINAR' ? content.hero.cta : REGISTRATION_CTA;
+    return content?.registration.submit_label || (content?.presentation.template === 'WEBINAR' ? content.hero.cta : REGISTRATION_CTA);
 }
 
 export function MarketingCTA({ location, className = '' }: { location: 'hero' | 'benefits' | 'final'; className?: string }) {

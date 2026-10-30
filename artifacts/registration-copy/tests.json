@@ -1,0 +1,14 @@
+{
+  "passed": {
+    "landings": 577,
+    "mvp": 73,
+    "postconversion": 134,
+    "copy_contract": 21
+  },
+  "total": 805,
+  "database": "isolated PostgreSQL schemas",
+  "notifications": "fake",
+  "live_test_users": 0,
+  "typescript": "PASS",
+  "vite_build": "PASS"
+}

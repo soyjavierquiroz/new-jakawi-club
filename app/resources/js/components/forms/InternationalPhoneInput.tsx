@@ -7,7 +7,7 @@ const countries = getCountries().map(code => ({ code, name: names.of(code) || co
 const Flag = ({ country }: { country: string }) => <img src={`/marketing/flags/${country}.svg`} alt="" width="24" height="16" loading="lazy" className="country-flag" />;
 const searchable = (value: string) => value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
 
-export function InternationalPhoneInput({ onChange, error, onBlur }: { onChange: (phone: string) => void; error?: string; onBlur: () => void }) {
+export function InternationalPhoneInput({ onChange, error, onBlur, placeholder = 'WhatsApp' }: { placeholder?: string; onChange: (phone: string) => void; error?: string; onBlur: () => void }) {
     const [country, setCountry] = useState<CountryCode>('BO');
     const [number, setNumber] = useState('');
     const [search, setSearch] = useState('');
@@ -24,7 +24,7 @@ export function InternationalPhoneInput({ onChange, error, onBlur }: { onChange:
         <label className="sr-only" htmlFor="phone">Teléfono / WhatsApp</label>
         <div className="phone-control">
             <button ref={trigger} type="button" className="phone-country" aria-label={`País: ${names.of(country)} +${getCountryCallingCode(country)}. Cambiar país`} aria-haspopup="dialog" aria-expanded={open} onClick={() => { setSearch(''); setActive(0); setOpen(true); dialog.current?.showModal(); input.current?.focus(); }}><Flag country={country} /><span>+{getCountryCallingCode(country)}</span><span aria-hidden="true">⌄</span></button>
-            <input className="input" id="phone" name="phone_national" type="tel" autoComplete="tel-national" inputMode="tel" placeholder="WhatsApp" maxLength={30} required value={number} onChange={event => { setNumber(event.target.value); onChange(normalizePhone(event.target.value, country)); }} onBlur={onBlur} aria-invalid={!!error} aria-describedby={error ? 'phone-error' : undefined} />
+            <input className="input" id="phone" name="phone_national" type="tel" autoComplete="tel-national" inputMode="tel" placeholder={placeholder} maxLength={30} required value={number} onChange={event => { setNumber(event.target.value); onChange(normalizePhone(event.target.value, country)); }} onBlur={onBlur} aria-invalid={!!error} aria-describedby={error ? 'phone-error' : undefined} />
         </div>
         <dialog ref={dialog} className="country-dialog" aria-labelledby="country-title" onCancel={event => { event.preventDefault(); close(); }} onClose={() => setOpen(false)} onClick={event => { if (event.target === dialog.current) close(); }}>
             <div className="country-dialog-content">

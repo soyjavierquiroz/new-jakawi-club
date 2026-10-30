@@ -288,6 +288,30 @@ Pruebas actuales: `bash scripts/test-conversion-unit.sh`, `bash scripts/test-lan
 
 El video aprobado ha devuelto error 150 también en el origen. Esta implementación conserva su ID, host y parámetros documentados; no garantiza autorización de inserción. Las pruebas físicas Safari/iPhone y Android permanecen diferenciadas de Chromium.
 
+### Copy y CTA del formulario por landing
+
+La sección existente **Registro** permite editar nueve textos de
+`content.registration`: `form_title`, `form_subtitle`, `name_placeholder`,
+`phone_placeholder`, `email_placeholder`, `submit_label`, `submit_microcopy`,
+`existing_account_label` y `existing_account_link_label`. Título y subtítulo
+internos son independientes de la introducción exterior. El CTA explícito se
+comparte con los botones hacia registro y el sticky móvil. Sin él, WEBINAR usa
+`hero.cta`; LEAD_VSL y WAITLIST conservan su CTA histórico. Los snapshots antiguos
+reciben defaults en memoria; no se actualiza contenido publicado automáticamente.
+
+El contrato v3, ejemplo, prompt maestro y descargas **Crear con IA** incluyen los
+campos opcionales. Guardar, previsualizar y publicar conservan sus operaciones
+existentes. Solo textos planos sin HTML ni URLs; el POST, campos técnicos,
+consentimiento, acceso interno, atribución y confirmación siguen en el formulario
+real. No hay migraciones ni dependencias nuevas.
+
+Pruebas y operación: [informe de copy del formulario](artifacts/registration-copy/REPORT.md).
+Validación aislada con `scripts/test-webinar.sh landings`, `mvp` y `postconversion`;
+TypeScript/build con `scripts/build-frontend.sh`; navegador con
+`scripts/check-webinar-visual.sh` y `--live`, usando
+`JAKAWI_EVIDENCE_DIR=/opt/sites/jakawi.club/artifacts/registration-copy`.
+Sello final: `python3 scripts/verify-registration-copy-live.py`.
+
 ### Formulario compacto de captación
 
 LEAD_VSL, WEBINAR y WAITLIST comparten los placeholders `Tu nombre completo`, `WhatsApp` y `Tu correo electrónico`, con labels asociados visualmente ocultos. Se conserva el selector internacional con Bolivia +591, las validaciones y E.164, sin la ayuda de código de área. El texto de privacidad es `Acepto el acuerdo de privacidad`, con enlace local a `/privacidad`; comienza marcado por solicitud expresa del propietario y se puede desmarcar. El backend conserva `required|accepted` y registra fecha y versión de la aceptación; el estado inicial no acredita un clic afirmativo individual. No suscribe a marketing ni cambia las preferencias opcionales.

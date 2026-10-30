@@ -166,3 +166,7 @@ credentials.json
 
 /artifacts/webinar-numbers/LIVE.json
 /artifacts/webinar-numbers/*.png
+
+/artifacts/registration-copy/LIVE.json
+/artifacts/registration-copy/*fixtures.json
+/artifacts/registration-copy/*.png

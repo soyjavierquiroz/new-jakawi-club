@@ -51,7 +51,7 @@ obligatorio solo al crear un WEBINAR completo.
 | `hero` | `eyebrow`, `title`, `emphasis`, `ending`, `description`, `cta` | Texto; titular = title + emphasis + ending |
 | `benefits` | `eyebrow`, `title`, `description`, `items` | Textos y lista de 1–8 elementos |
 | `benefits.items[]` | `title`, `description`, `icon` (opcional) | Ambos textos obligatorios; icono de la lista cerrada |
-| `registration` | `eyebrow`, `title`, `description` | Texto; introducción al formulario existente |
+| `registration` | `eyebrow`, `title`, `description` | Texto; introducción exterior. Admite nueve campos opcionales de copy del formulario, descritos al final |
 | `faq` | `eyebrow`, `title`, `items` | Textos y lista de 1–8 elementos |
 | `faq.items[]` | `question`, `answer` | Ambos textos obligatorios |
 | `final` | `eyebrow`, `title`, `description`, `cta` | Texto; cierre |
@@ -76,15 +76,15 @@ migración. Los JSON antiguos sin `icon` siguen siendo válidos. Un parche que o
 incluidos sus iconos. Importación, exportación y previews conservan el valor.
 
 En WEBINAR completo se muestran únicamente los primeros **tres beneficios**.
-`hero.cta` se utiliza en los CTA de captación y en el botón de registro.
+`registration.submit_label` controla los CTA hacia registro; en WEBINAR,
+sin valor explícito, utiliza `hero.cta`.
 `final.cta` y `after_registration.cta_label` se conservan por compatibilidad, pero
-no controlan botones independientes. En LEAD_VSL/WAITLIST los CTA mantienen su
-etiqueta fija actual. El título visible del evento es distinto de `seo.title`.
+no controlan botones independientes. En LEAD_VSL/WAITLIST, sin CTA explícito, se conserva la etiqueta histórica. El título visible del evento es distinto de `seo.title`.
 
 Los cuatro textos de `after_registration` rechazan la expresión regular
 `/(?:cuenta\s+(?:est[aá]\s+)?activada|correo\s+(?:est[aá]\s+)?verificado|correo\s+enviado)/iu`.
 No afirmar activación, verificación ni entrega de correo. El servidor muestra el
-estado real. Los textos auxiliares fijos, etiquetas de formulario, privacidad,
+estado real. Las etiquetas accesibles fijas de los campos, privacidad,
 identidad visual y mensajes del sistema no forman parte del contrato.
 El antiguo título predeterminado `Gracias por dar el siguiente paso.` se normaliza
 a `¡Felicidades por dar el siguiente paso!`; la instrucción heredada predeterminada
@@ -238,3 +238,37 @@ Un POST aceptado fija los textos y medios/grupo efectivos en el recibo temporal
 de 15 minutos. Cambiar o republicar la landing no modifica un recibo vigente.
 El acceso a `/{slug}/gracias` exige el recibo de esa landing. Importar contenido
 no registra personas ni envía mensajes.
+
+## Copy del formulario existente (`content.registration`)
+
+Además de `eyebrow`, `title` y `description` de la introducción exterior, admite
+estos nueve campos opcionales. No crea otro formulario ni cambia su acción.
+
+| Campo | Predeterminado para documentos históricos |
+| --- | --- |
+| `form_title` | Tu lugar en JAKAWI |
+| `form_subtitle` | Cadena vacía; sin subtítulo |
+| `name_placeholder` | Tu nombre completo |
+| `phone_placeholder` | WhatsApp |
+| `email_placeholder` | Tu correo electrónico |
+| `submit_label` | `null`: automático |
+| `submit_microcopy` | Cadena vacía; sin microcopy |
+| `existing_account_label` | ¿Ya tienes cuenta? |
+| `existing_account_link_label` | Ingresa aquí |
+
+Son textos planos de hasta 1200 caracteres, sin HTML ni URLs (incluidos dominios,
+protocolos y enlaces `www`). Si se proporcionan, no pueden estar vacíos salvo
+`form_subtitle`, `submit_microcopy` y `submit_label` (vacío o solo espacios se normaliza a `null` y usa el CTA automático). `form_subtitle` y `submit_microcopy` también admiten `null`, normalizado a cadena
+vacía. `submit_label` admite `null` para volver
+al CTA automático: `hero.cta` en WEBINAR, `QUIERO SER PARTE DE JAKAWI` en LEAD_VSL y
+WAITLIST. El CTA explícito tiene prioridad en el formulario y en todos los botones
+hacia registro, incluido el sticky móvil. Esta regla sustituye la precedencia
+anterior exclusiva de `hero.cta` en WEBINAR. Usa el mismo texto en ambos campos
+cuando sean explícitos. `form_subtitle` es independiente de `description`.
+
+Omitir campos en un parche conserva el valor existente; en documentos históricos
+o nuevos sin estos campos se aplican los defaults en memoria. v1/v2 conservan
+compatibilidad. Exportar incluye estos campos; importar no guarda ni publica.
+La preview y el público usan el mismo componente. El enlace de acceso conserva
+`/login`; privacidad conserva su consentimiento y `/privacidad`. No se admiten
+nombres técnicos, destinos, endpoints, validaciones ni acciones adicionales.

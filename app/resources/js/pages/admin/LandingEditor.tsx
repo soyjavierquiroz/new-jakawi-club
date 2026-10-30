@@ -11,6 +11,7 @@ type Value = string | null | { [key: string]: Value } | Value[];
 const labels: Record<string, string> = {
     webinar: 'Contenido del webinar', opportunity: 'Problema / oportunidad', early: 'Beneficios de participar desde el comienzo', steps: 'Cómo funciona', seo: 'Buscadores', hero: 'Mensaje', benefits: 'Beneficios', registration: 'Introducción al registro', faq: 'Preguntas frecuentes', final: 'Cierre', video: 'Video VSL',
     message: 'Mensaje de confirmación', instructions: 'Instrucción de revisar correo', cta_label: 'Texto del botón siguiente', title: 'Título', description: 'Descripción', eyebrow: 'Antetítulo', emphasis: 'Texto destacado', ending: 'Final del titular', cta: 'Texto del botón',
+    form_title: 'Título del formulario', form_subtitle: 'Subtítulo del formulario (opcional)', name_placeholder: 'Placeholder del nombre', phone_placeholder: 'Placeholder del teléfono', email_placeholder: 'Placeholder del email', submit_label: 'CTA del formulario (vacío: automático)', submit_microcopy: 'Microcopy debajo del botón (opcional)', existing_account_label: 'Texto de cuenta existente', existing_account_link_label: 'Texto del enlace de acceso',
     icon: 'Icono', items: 'Elementos', question: 'Pregunta', answer: 'Respuesta', youtube_url: 'URL de YouTube', poster: 'Poster local (opcional)', aspect_ratio: 'Marco del reproductor', source_aspect_ratio: 'Proporción del video original',
 };
 
@@ -31,9 +32,11 @@ function Fields({ value, path, onChange }: { value: Value; path: string; onChang
         }} />)}</div>;
     }
     const options = key === 'icon' ? [['', 'Automático (icono actual)'], ...benefitIconOptions] : key === 'source_aspect_ratio' ? ['9:16', '3:4', '16:9'].map(option => [option, option]) : null;
-    const optional = key === 'poster' || key === 'youtube_url';
+    const optional = ['poster', 'youtube_url', 'submit_label', 'form_subtitle', 'submit_microcopy'].includes(key);
+    const nullable = ['poster', 'youtube_url', 'submit_label'].includes(key);
     return <div><label className="label" htmlFor={path}>{labels[key] || key}</label>{options ? <select className="input" id={path} value={value || ''} onChange={event => onChange(event.target.value)}>{options.map(([option, label]) => <option key={option} value={option}>{label}</option>)}</select> :
-        <textarea className="input" id={path} rows={key === 'description' || key === 'answer' ? 3 : 2} maxLength={optional ? 500 : 1200} required={!optional} value={value || ''} onChange={event => onChange(optional && !event.target.value ? null : event.target.value)} />}
+        <textarea className="input" id={path} rows={key === 'description' || key === 'answer' ? 3 : 2} maxLength={['poster', 'youtube_url'].includes(key) ? 500 : 1200} required={!optional} value={value || ''} onChange={event => onChange(nullable && !event.target.value ? null : event.target.value)} />}
+        {key === 'submit_label' && <p className="mt-2 text-xs text-text-secondary">Vacío usa el CTA del hero en WEBINAR y el CTA histórico en las demás plantillas. Los botones hacia registro y el sticky comparten esta acción. Solo texto, sin HTML ni URLs.</p>}
         {key === 'poster' && <p className="mt-2 text-xs text-text-secondary">Archivo PNG, JPEG o WebP existente en /marketing/. Vacío conserva el estado sin poster.</p>}
     </div>;
 }
