@@ -79,7 +79,7 @@ export function MobileStickyCTA({ targetId = 'registro' }: { targetId?: string }
         return () => { stop?.(); mobile.removeEventListener('change', bind); };
     }, [targetId, webinar]);
 
-    return <div className="mobile-sticky-space"><aside className="mobile-sticky-cta" aria-label="Sé parte de JAKAWI" hidden={!visible}>
+    return <div className={`mobile-sticky-space ${webinar ? 'webinar-sticky' : ''}`}><aside className="mobile-sticky-cta" aria-label="Sé parte de JAKAWI" hidden={!visible}>
         <a href={`#${targetId}`} className="btn btn-primary w-full" data-marketing-cta="sticky" onClick={event => { if (focusRegistration(targetId, event)) trackMarketing('cta_click', 'final'); }}>{label}<Arrow /></a>
     </aside></div>;
 }

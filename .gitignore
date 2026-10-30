@@ -147,3 +147,7 @@ credentials.json
 /artifacts/webinar-hero/LIVE.json
 /artifacts/webinar-hero/*fixtures.json
 /artifacts/webinar-hero/*.png
+
+/artifacts/webinar-mobile/LIVE.json
+/artifacts/webinar-mobile/*fixtures.json
+/artifacts/webinar-mobile/*.png

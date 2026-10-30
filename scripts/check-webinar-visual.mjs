@@ -176,8 +176,18 @@ try {
             assert(Math.abs(layout.iframe.width/layout.frame.width-3.16049383)<.02);
             assert(Math.abs(layout.iframe.height/layout.frame.height-4/3)<.02);
             if(width<768){
-                assert(layout.cta.bottom<height-85,'Main CTA above fold and clear of sticky');
-                assert(layout.cta.bottom<layout.media.y,'CTA precedes video');
+                assert(layout.heading.bottom<=layout.media.y,'Headline directly before video');
+                assert(layout.media.bottom<=layout.copy.y,'Description follows video');
+                assert(await evaluate('getComputedStyle(document.querySelector("[data-marketing-cta=hero]")).display==="none"'),'Hero CTA hidden only on mobile');
+                assert(await evaluate('document.querySelector(".site-header").getBoundingClientRect().height<=57'),'Compact header');
+                assert(await evaluate('document.querySelector(".site-header nav a").getBoundingClientRect().height>=44'),'Accessible account target');
+                assert.equal(await evaluate('document.querySelector("[data-marketing-cta=sticky]").textContent.trim()'),publishedContent.hero.cta);
+                assert(await evaluate('document.querySelector("[data-marketing-cta=sticky]").getBoundingClientRect().height<=52'),'Compact sticky');
+                assert(await evaluate('getComputedStyle(document.querySelector("[data-marketing-cta=sticky]")).animationName==="none"'),'Reduced motion stops bounce');
+                await call('Emulation.setEmulatedMedia',{features:[{name:'prefers-reduced-motion',value:'no-preference'}]});
+                assert(await evaluate('getComputedStyle(document.querySelector("[data-marketing-cta=sticky]")).animationName==="webinar-sticky-bounce" && getComputedStyle(document.querySelector("[data-marketing-cta=sticky]")).animationDuration==="7s"'),'Periodic soft bounce');
+                await call('Emulation.setEmulatedMedia',{features:[{name:'prefers-reduced-motion',value:'reduce'}]});
+                assert(await evaluate('parseFloat(getComputedStyle(document.documentElement).scrollPaddingBottom)>=document.querySelector(".mobile-sticky-cta").getBoundingClientRect().height'),'Safe clearance for content and controls');
                 await until('!document.querySelector(".mobile-sticky-cta").hidden','WEBINAR sticky visible before video interaction');
                 await evaluate('document.querySelector(".hero-media").scrollIntoView({block:"center",behavior:"instant"})');
                 for(const state of ['ready','buffering','playing','paused','error']){
@@ -185,6 +195,8 @@ try {
                     await pause(50);
                     assert(await evaluate('!document.querySelector(".mobile-sticky-cta").hidden'),`Sticky remains available over video state ${state}`);
                 }
+                await evaluate('document.querySelector(".vsl-frame").scrollIntoView({block:"end",behavior:"instant"})');
+                assert(await evaluate('document.querySelector(".vsl-frame").getBoundingClientRect().bottom<=document.querySelector(".mobile-sticky-cta").getBoundingClientRect().top'),'Player controls can clear sticky safely');
                 if (!preview) { // Preview deliberately disables registration inputs.
                     await evaluate('document.querySelector("#name").focus()');
                     await until('document.querySelector(".mobile-sticky-cta").hidden','Keyboard/form focus still hides sticky');
@@ -192,18 +204,21 @@ try {
                 await evaluate('document.activeElement.blur();window.scrollTo({top:0,behavior:"instant"})');
             }else{
                 assert(layout.heading.right<layout.media.x && layout.copy.right<layout.media.x,'Desktop text left / video right');
+                assert(await evaluate('getComputedStyle(document.querySelector("[data-marketing-cta=hero]")).display!=="none"'),'Desktop hero CTA preserved');
                 assert(layout.frame.y<180 && layout.frame.bottom<height,'Desktop full frame in first screen');
                 assert(layout.frame.width>=380,'Desktop video stays prominent');
             }
             await screenshot(`hero-${width}-${preview?'preview':'public'}`);
         }
-        checks.push(`webinar-hero-${width}-columns-cta-first-3x4-cover-sticky`);
+        checks.push(`webinar-hero-${width}-columns-video-first-3x4-cover-sticky`);
     }
     for(const template of ['LEAD_VSL','WAITLIST']){
         await call('Emulation.setDeviceMetricsOverride',{width:390,height:900,deviceScaleFactor:1,mobile:true});
         await navigate(fixtures.empty,p=>{p.props.landing.content.presentation.template=template;p.props.landing.content.video.source_aspect_ratio='3:4';p.props.launch.video_url='https://www.youtube.com/watch?v=M7lc1UVf-VE';});
         await until('!!document.querySelector(".vsl-host iframe")','Other template video mounts');
         assert.equal(await evaluate('!!document.querySelector(".webinar-hero")'),false);
+        assert.equal(await evaluate('!!document.querySelector(".webinar-mobile-header, .webinar-sticky")'),false);
+        assert(await evaluate('getComputedStyle(document.querySelector("[data-marketing-cta=hero]")).display!=="none"'));
         assert.equal(await evaluate('document.querySelector("[data-marketing-video-frame]").dataset.marketingVideoFrame'),'native-vertical');
         checks.push(`unchanged-${template}-hero-and-framing`);
     }
@@ -241,7 +256,7 @@ try {
         assert.equal(await evaluate(`document.querySelectorAll('a[href*="chat.whatsapp.com"]').length`),0);
         assert(await evaluate('[...document.querySelectorAll(".brand-logo")].every(e=>e.complete && e.naturalWidth>0)'));
         await screenshot(`webinar-${width}`);
-        await evaluate('document.querySelector("[data-marketing-cta=hero]").click()');
+        await evaluate(`document.querySelector('[data-marketing-cta=${width<768?'sticky':'hero'}]').click()`);
         await until('document.activeElement.id==="registro"','Hero CTA focuses shared form');
         if (width<768) {
             await evaluate('document.querySelector("#name").focus()');
