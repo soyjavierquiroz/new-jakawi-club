@@ -12,6 +12,8 @@ use App\Http\Controllers\LandingAdminController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('admin')->middleware(['auth', 'verified', MarketingAdmin::class])->group(function (): void {
+    Route::get('/ofertas-comerciales', [\App\Http\Controllers\CommercialOfferAdminController::class, 'index'])->name('commercial-offers.index');
+    Route::put('/ofertas-comerciales/{offer}', [\App\Http\Controllers\CommercialOfferAdminController::class, 'update'])->middleware('throttle:30,1');
     Route::get('/reglas-comisiones', [\App\Http\Controllers\CommissionAdminController::class, 'rules'])->name('commissions.rules');
     Route::post('/reglas-comisiones', [\App\Http\Controllers\CommissionAdminController::class, 'storeRule'])->middleware('throttle:30,1');
     Route::post('/reglas-comisiones/{rule}/estado', [\App\Http\Controllers\CommissionAdminController::class, 'ruleStatus'])->whereNumber('rule')->middleware('throttle:30,1');
@@ -44,7 +46,7 @@ Route::prefix('admin/landings')->middleware(['auth', 'verified', MarketingAdmin:
 });
 Route::post('/medicion', MarketingEventController::class)->middleware('throttle:30,1')->name('marketing.event');
 Route::inertia('/privacidad', 'Privacy')->name('privacy');
-Route::get('/r/{code}', [ReferralController::class, 'show'])->middleware('throttle:referral')->name('referral');
+Route::get('/r/{code}', [ReferralController::class, 'show'])->where('code', '[A-Z0-9]{12}')->middleware('throttle:referral')->name('referral');
 Route::post('/preferencias', [ReferralController::class, 'preferences'])->middleware('throttle:30,1')->name('preferences');
 Route::get('/bienvenida', [RegistrationController::class, 'welcome'])->name('welcome');
 

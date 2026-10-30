@@ -10,7 +10,7 @@ use Inertia\Response;
 
 class AffiliateController extends Controller
 {
-    public function __invoke(Request $request, AffiliateConversions $conversions): Response
+    public function __invoke(Request $request, AffiliateConversions $conversions, \App\Services\AffiliateShortLinks $links): Response
     {
         $user = $request->user();
         // Existing account creation and legacy backfill issue permanent codes.
@@ -26,10 +26,7 @@ class AffiliateController extends Controller
             });
 
         return Inertia::render('Affiliates', [
-            'campaign' => [
-                'name' => 'Dossis 43 — Café y antojo',
-                'personal_url' => 'https://jakawi.com/l/dossis-43-cafe-y-antojo?'.http_build_query(['club_ref' => $user->referral_code]),
-            ],
+            'campaign' => $links->campaign($user, \Illuminate\Support\Facades\DB::table('commercial_offers')->where('key', 'dossis-43')->firstOrFail()),
             'conversions' => $operations,
             'commission_entries' => \Illuminate\Support\Facades\DB::table('commission_ledger')
                 ->where('affiliate_uuid', $user->uuid)->where('affiliate_code', $user->referral_code)

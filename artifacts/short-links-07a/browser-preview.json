@@ -1,0 +1,39 @@
+{
+  "live_assets": false,
+  "data": "isolated HTTP kernel fixtures",
+  "checks": [
+    {
+      "width": 390,
+      "paused": true,
+      "finished": true,
+      "missing": true,
+      "short_link": true,
+      "clipboard": true,
+      "whatsapp": true,
+      "history": true,
+      "conversions_preserved": true,
+      "admin_update": true,
+      "associated_links": true,
+      "no_overflow": true
+    },
+    {
+      "width": 1440,
+      "paused": true,
+      "finished": true,
+      "missing": true,
+      "short_link": true,
+      "clipboard": true,
+      "whatsapp": true,
+      "history": true,
+      "conversions_preserved": true,
+      "admin_update": true,
+      "associated_links": true,
+      "no_overflow": true
+    }
+  ],
+  "runtime_errors": [],
+  "failed_assets": [],
+  "intercepted_admin_submissions": 2,
+  "no_live_mutations": true,
+  "no_live_session": true
+}

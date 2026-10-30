@@ -85,7 +85,7 @@ try {
     $r=web('GET','/afiliados'); $empty=payload($r);
     check($r->getStatusCode()===200 && $empty['component']==='Affiliates','verified activated member eligible without COM identity provisioning');
     check(preg_match('/^[A-Z0-9]{12}$/D',$a->referral_code)===1,'existing account mechanism issues real permanent code');
-    check($empty['props']['campaign']['personal_url']==='https://jakawi.com/l/dossis-43-cafe-y-antojo?club_ref='.$a->referral_code,'personal link uses authenticated affiliate code');
+    check($empty['props']['campaign']['long_url']==='https://jakawi.com/l/dossis-43-cafe-y-antojo?club_ref='.$a->referral_code,'personal link uses authenticated affiliate code');
     check($empty['props']['conversions']['total']===0,'honest empty state');
     $dashboard=payload(web('GET','/dashboard'));
     check($dashboard['props']['can_access_affiliates']===true,'private dashboard exposes affiliate navigation');

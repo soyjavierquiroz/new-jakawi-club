@@ -12,6 +12,9 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
         then: function (): void {
+            // Commercial links are stateless; 12-character CLUB invitations keep their web route.
+            \Illuminate\Support\Facades\Route::get('/r/{shortCode}', \App\Http\Controllers\ShortLinkController::class)
+                ->where('shortCode', '(?![A-Z0-9]{12}$)[A-Za-z0-9]+')->name('short-link');
             // Machine-only receiver: no browser session, CSRF exemption or CRM hooks.
             \Illuminate\Support\Facades\Route::post('/internal/commercial/events', \App\Http\Controllers\CommercialEventController::class)
                 ->middleware(\App\Http\Middleware\AuthenticateCommercialEvent::class)->name('commercial.receive');

@@ -32,3 +32,18 @@ Artisan::command('commissions:sync', function (): int {
     $this->info('Eventos existentes evaluados: '.$count.'. No se aprobaron comisiones ni se ejecutaron pagos.');
     return 0;
 })->purpose('Sincronizar candidatos idempotentes desde eventos COM existentes');
+
+// Issue links only for real, eligible CLUB accounts; reruns reuse the same pair.
+Artisan::command('short-links:prepare-pilot', function (): int {
+    $links = app(App\Services\AffiliateShortLinks::class);
+    $count = 0;
+    App\Models\User::whereNotNull('activated_at')->whereNotNull('email_verified_at')
+        ->orderBy('id')->chunkById(100, function ($users) use ($links, &$count): void {
+            foreach ($users as $user) {
+                $links->forAffiliate($user, 'dossis-43');
+                $count++;
+            }
+        });
+    $this->info('Enlaces permanentes Dossis 43 disponibles: '.$count.'. Sin eventos ni conversiones.');
+    return 0;
+})->purpose('Preparar enlaces Dossis 43 para afiliados CLUB existentes');

@@ -17,7 +17,7 @@ type Props = {
     economic_cutoff?: string;
     commission_entries?: Pagination<{ id: number; com_reference_type: string; com_reference_id: string; status: string; amount: string | null; currency: string | null; review_required: boolean; eligible: boolean; rule_id: number | null; created_at: string }>;
     economics?: { pending: number; approved: number; review: number; currencies: { currency: string; pending: string; approved: string; review: string }[] };
-    campaign: { name: string; personal_url: string };
+    campaign: { name: string; personal_url: string; long_url: string; status: 'active' | 'paused' | 'finished' };
     conversions: { data: Conversion[]; total: number; current_page: number; last_page: number; prev_page_url: string | null; next_page_url: string | null };
 };
 const dates = new Intl.DateTimeFormat('es-BO', { dateStyle: 'medium', timeStyle: 'short', timeZone: 'America/La_Paz' });
@@ -45,13 +45,16 @@ export default function Affiliates({ campaign, conversions, economics, commissio
         </div>
         <div className="my-8 grid gap-5 lg:grid-cols-[2fr_1fr]">
             <article className="feature-card min-w-0">
-                <p className="eyebrow">PARTNER</p><h2 className="mt-3 text-2xl font-extrabold tracking-tight">{campaign.name}</h2>
-                <label htmlFor="affiliate-link" className="mb-3 mt-6 block text-sm font-semibold">Tu enlace personal completo</label>
+                <p className="eyebrow">{campaign.status === 'finished' ? 'HISTORIAL DE ENLACES' : 'PARTNER'}</p><h2 className="mt-3 text-2xl font-extrabold tracking-tight">{campaign.name}</h2>
+                <p className="mt-3 text-sm font-semibold">Estado: {campaign.status === 'active' ? 'Activa' : campaign.status === 'paused' ? 'Pausada' : 'Finalizada'}</p>
+                {campaign.status !== 'active' && <p className="mt-2 text-sm text-text-secondary">{campaign.status === 'finished' ? 'Esta oferta ha finalizado. Tu enlace se conserva en el historial.' : 'Esta oferta no está disponible por ahora. Tu enlace se conserva.'}</p>}
+                <label htmlFor="affiliate-link" className="mb-3 mt-6 block text-sm font-semibold">Tu enlace corto permanente</label>
                 <textarea ref={input} id="affiliate-link" readOnly rows={3} value={campaign.personal_url} className="input w-full resize-none break-all text-sm" onFocus={event => event.target.select()} />
                 <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
                     <button type="button" className="btn btn-primary" onClick={() => void copy()}>COPIAR ENLACE <Arrow /></button>
                     <a href={whatsapp} target="_blank" rel="noopener noreferrer" className="btn community-whatsapp-cta text-center"><CommunityWhatsAppIcon /> COMPARTIR POR WHATSAPP</a>
                 </div>
+                <details className="mt-5 text-sm"><summary className="font-semibold">Ver destino comercial vigente</summary><p className="mt-3 break-all text-text-secondary">{campaign.long_url}</p></details>
                 <p role="status" aria-live="polite" className="mt-3 min-h-5 text-sm text-text-secondary">{message}</p>
             </article>
             <aside className="rounded-card border border-border bg-surface-subtle p-7">
