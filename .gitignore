@@ -181,3 +181,5 @@ credentials.json
 /artifacts/capture-cards/*fixtures.json
 /artifacts/capture-cards/*.png
 /artifacts/capture-cards/*.html
+
+/artifacts/capture-cards/browser-live.json
