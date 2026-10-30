@@ -32,6 +32,8 @@ Route::post('/afiliados/enlaces/{offer}', [\App\Http\Controllers\AffiliateContro
 
 Route::get('/', WelcomeController::class)->name('home');
 Route::get('/l/{slug}', [WelcomeController::class, 'legacy'])->name('landing.legacy');
+Route::post('/media/uploads', [\App\Http\Controllers\MediaUploadController::class, 'store'])->middleware(['auth', 'verified', MarketingAdmin::class, 'throttle:12,1']);
+
 Route::prefix('admin/landings')->middleware(['auth', 'verified', MarketingAdmin::class])->group(function (): void {
     Route::get('/', [LandingAdminController::class, 'index'])->name('landings.index');
     Route::get('/crear', [LandingAdminController::class, 'create'])->name('landings.create');

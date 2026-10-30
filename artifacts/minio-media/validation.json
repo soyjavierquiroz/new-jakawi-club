@@ -1,0 +1,15 @@
+{
+  "media_and_catalog_http_checks": 147,
+  "landing_editor_contract_checks": 578,
+  "typescript": "passed",
+  "frontend_build": "passed",
+  "browser_viewports": [
+    390,
+    1440
+  ],
+  "browser_preview": "passed",
+  "live_test_accounts": 0,
+  "live_test_landings": 0,
+  "live_storage_test": "pending exclusive CLUB credentials",
+  "deployment": "not activated"
+}

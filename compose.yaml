@@ -17,6 +17,8 @@ services:
       - /srv/sites/jakawi.club/secrets/app.env
       - /srv/sites/jakawi.club/secrets/com-identity.env
       - /srv/sites/jakawi.club/secrets/com-oidc.env
+      - /srv/sites/jakawi.club/secrets/media.env
+      - /srv/sites/jakawi.club/secrets/imgproxy.env
     volumes:
       - ./app:/var/www/html:ro
       - ./docs/landings:/var/www/docs/landings:ro

@@ -1,0 +1,39 @@
+{
+  "live_assets": false,
+  "checks": [
+    {
+      "width": 390,
+      "drag_drop": true,
+      "select_file": true,
+      "immediate_preview": true,
+      "progress": true,
+      "multipart_csrf": true,
+      "token_save": true,
+      "remove": true,
+      "server_failure": true,
+      "validation": true,
+      "catalog_signed_image": true,
+      "affiliate_link": true,
+      "no_overflow": true
+    },
+    {
+      "width": 1440,
+      "drag_drop": true,
+      "select_file": true,
+      "immediate_preview": true,
+      "progress": true,
+      "multipart_csrf": true,
+      "token_save": true,
+      "remove": true,
+      "server_failure": true,
+      "validation": true,
+      "catalog_signed_image": true,
+      "affiliate_link": true,
+      "no_overflow": true
+    }
+  ],
+  "no_live_mutations": true,
+  "no_live_accounts": true,
+  "runtime_errors": [],
+  "failed_assets": []
+}

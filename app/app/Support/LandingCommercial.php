@@ -22,13 +22,19 @@ final class LandingCommercial
         return self::resolve($content, $publicName);
     }
 
+    public static function socialImage(array $content): ?string
+    {
+        return app(\App\Services\MediaUrl::class)->url($content['commercial']['image'] ?? null, 'social')
+            ?? LaunchSettings::videoPoster($content['video']['poster'] ?? null);
+    }
+
     public static function resolve(array $content, string $publicName): array
     {
         return [
             'name' => self::text($content['seo']['title'] ?? null, 160) ?: self::text($publicName, 160) ?: 'JAKAWI CLUB',
             'short_description' => self::text($content['commercial']['description'] ?? null, 200)
                 ?: self::text($content['hero']['description'] ?? null, 200),
-            'image_url' => LaunchSettings::videoPoster($content['commercial']['image'] ?? null)
+            'image_url' => app(\App\Services\MediaUrl::class)->url($content['commercial']['image'] ?? null, 'card')
                 ?? LaunchSettings::videoPoster($content['video']['poster'] ?? null),
         ];
     }

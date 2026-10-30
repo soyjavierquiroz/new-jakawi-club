@@ -47,6 +47,17 @@ return [
             'report' => false,
         ],
 
+        'minio-media' => [
+            'driver' => 's3',
+            'key' => env('MEDIA_AWS_ACCESS_KEY_ID'),
+            'secret' => env('MEDIA_AWS_SECRET_ACCESS_KEY'),
+            'region' => env('MEDIA_AWS_DEFAULT_REGION', 'us-east-1'),
+            'bucket' => env('MEDIA_AWS_BUCKET', 'jakawi-media'),
+            'endpoint' => env('MEDIA_AWS_ENDPOINT', 'https://myminioback.kuruk.in'),
+            'use_path_style_endpoint' => env('MEDIA_AWS_USE_PATH_STYLE_ENDPOINT', true),
+            'visibility' => 'private', 'throw' => true, 'report' => false,
+            'http' => ['connect_timeout' => 5, 'timeout' => 20], 'retries' => 1,
+        ],
         's3' => [
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),

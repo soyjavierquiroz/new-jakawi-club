@@ -31,6 +31,8 @@ class LandingAdminController extends Controller
     public function edit(MarketingLanding $landing): Response
     {
         return Inertia::render('admin/LandingEditor', [
+            'commercial_image_url' => app(\App\Services\MediaUrl::class)->url($landing->configuration['commercial']['image'] ?? null, 'thumbnail'),
+            'commercial_card_url' => app(\App\Services\MediaUrl::class)->url($landing->configuration['commercial']['image'] ?? null, 'card'),
             'landing' => [...$landing->toArray(), 'configuration' => LandingContent::withPresentation($landing->configuration), 'published_configuration' => $landing->published_configuration ? LandingContent::withPresentation($landing->published_configuration) : null], 'defaults' => null, 'webinar_defaults' => LandingContent::webinarDefaults(), 'ai_kit_zip_available' => LandingAiKitController::zipAvailable(), 'home_slug' => config('jakawi.home_landing_slug'), 'registration_open' => LaunchSettings::registrationOpen(), 'whatsapp_group_available' => RegistrationNextStep::whatsappGroup() !== null,
             'metrics' => DB::table('marketing_landing_event_totals')->where('landing_id', $landing->id)
                 ->select('event', 'campaign')->selectRaw('SUM(total) AS total')->groupBy('event', 'campaign')->get(),
@@ -41,7 +43,12 @@ class LandingAdminController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $data = $this->editorData($request);
-        $landing = MarketingLanding::create([...$data, 'status' => 'draft']);
+        $landing = DB::transaction(function () use ($request, $data): MarketingLanding {
+            $landing = MarketingLanding::create([...$data, 'status' => 'draft']);
+            $landing->configuration = $this->mediaConfiguration($request, $landing, $data['configuration']);
+            $landing->save();
+            return $landing;
+        });
         return redirect()->route('landings.edit', $landing)->with('status', 'Borrador creado. Puedes previsualizarlo antes de publicar.');
     }
 
@@ -50,6 +57,7 @@ class LandingAdminController extends Controller
         DB::transaction(function () use ($request, $landing): void {
             $locked = $this->lock($request, $landing);
             $data = $this->editorData($request, $locked);
+            $data['configuration'] = $this->mediaConfiguration($request, $locked, $data['configuration']);
             $locked->fill($data);
             $locked->revision++;
             $locked->save();
@@ -97,6 +105,11 @@ class LandingAdminController extends Controller
     {
         DB::transaction(function () use ($request, $landing): void {
             $locked = $this->lock($request, $landing);
+            if ($locked->published_configuration !== null) {
+                $snapshot = json_encode($locked->published_configuration, JSON_THROW_ON_ERROR);
+                DB::table('marketing_landing_snapshots')->insertOrIgnore(['landing_id' => $locked->id,
+                    'snapshot_hash' => hash('sha256', $snapshot), 'configuration' => $snapshot, 'created_at' => now()]);
+            }
             $locked->published_configuration = LandingContent::validate($locked->configuration);
             $locked->published_configuration = [...$locked->published_configuration, 'commercial' => [...$locked->published_configuration['commercial'], 'public_name' => \App\Support\LandingCommercial::text($locked->title, 120)]];
             $locked->published_campaign = $locked->campaign;
@@ -127,12 +140,32 @@ class LandingAdminController extends Controller
 
     private function lock(Request $request, MarketingLanding $landing): MarketingLanding
     {
+        DB::statement('LOCK TABLE marketing_landings IN ROW EXCLUSIVE MODE');
         $data = $request->validate(['revision' => ['required', 'integer', 'min:1']]);
         $locked = MarketingLanding::query()->lockForUpdate()->findOrFail($landing->id);
         if ($locked->revision !== (int) $data['revision']) {
             throw ValidationException::withMessages(['revision' => 'El borrador cambió en otra ventana. Recarga antes de continuar.']);
         }
         return $locked;
+    }
+
+    private function mediaConfiguration(Request $request, MarketingLanding $landing, array $configuration): array
+    {
+        $image = $configuration['commercial']['image'] ?? null;
+        if ($request->filled('commercial_image_upload') && $request->boolean('commercial_image_remove')) {
+            throw ValidationException::withMessages(['commercial_image_upload' => 'Selecciona subir o quitar la imagen.']);
+        }
+        if ($request->filled('commercial_image_upload')) {
+            $image = app(\App\Services\MediaUploadService::class)->promote($request->string('commercial_image_upload')->toString(), $request->user()->id, $landing->id);
+        } elseif ($request->boolean('commercial_image_remove')) {
+            $image = null;
+        } elseif (app(\App\Services\MediaUploadService::class)->isMediaKey($image)
+            && $image !== ($landing->configuration['commercial']['image'] ?? null)
+            && !app(\App\Services\MediaReferences::class)->contains($image)) {
+            throw ValidationException::withMessages(['commercial_image_upload' => 'Selecciona una imagen mediante el control de subida.']);
+        }
+        $configuration['commercial']['image'] = $image;
+        return $configuration;
     }
 
     private function editorData(Request $request, ?MarketingLanding $landing = null): array
@@ -142,6 +175,8 @@ class LandingAdminController extends Controller
             'slug' => ['required', 'string', 'max:100', 'regex:/^[a-z0-9]+(?:-[a-z0-9]+)*$/D', Rule::unique('marketing_landings', 'slug')->ignore($landing?->id)],
             'campaign' => ['nullable', 'string', 'max:80', 'regex:/^[a-zA-Z0-9_-]+$/D'],
             'configuration' => ['required', 'array'],
+            'commercial_image_upload' => ['nullable', 'string', 'max:8192'],
+            'commercial_image_remove' => ['sometimes', 'boolean'],
         ]);
         if (! LandingSlug::allowed($data['slug'])) {
             throw ValidationException::withMessages(['slug' => 'Este slug está reservado para una ruta del sitio.']);
@@ -149,6 +184,7 @@ class LandingAdminController extends Controller
         if (($landing?->published_at !== null || $landing?->isHome()) && $data['slug'] !== $landing->slug) {
             throw ValidationException::withMessages(['slug' => 'El slug es permanente después de publicar para conservar enlaces y analítica.']);
         }
+        unset($data['commercial_image_upload'], $data['commercial_image_remove']);
         $data['configuration'] = LandingContent::validate($data['configuration']);
         $data['template'] = $data['configuration']['presentation']['template'];
         return $data;

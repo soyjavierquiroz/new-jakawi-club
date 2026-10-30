@@ -66,6 +66,7 @@ class WelcomeController extends Controller
             $launch['registration_open'] = false;
         }
         $social = \App\Support\LandingCommercial::forLanding($landing, $preview);
+        $social['image_url'] = \App\Support\LandingCommercial::socialImage($preview ? $landing->configuration : $landing->published_configuration);
         return Inertia::render('Welcome', [
             'launch' => $launch,
             'landing' => ['id' => $landing->id, 'slug' => $landing->slug, 'content' => $content, 'preview' => $preview, 'revision' => $landing->revision, 'social' => $social],

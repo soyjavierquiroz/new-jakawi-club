@@ -412,3 +412,7 @@ Evidencia y diagnóstico CRM de solo lectura: [informe](artifacts/confirmation-s
 ### Presentación comercial de captación
 
 La sección **IMAGEN Y PRESENTACIÓN COMERCIAL** de la pestaña de captación reutiliza los medios locales de `/marketing/` y permite una imagen 16:9 y descripción breve opcionales. La tarjeta y sus metadatos sociales usan exclusivamente el snapshot publicado; guardar borrador conserva el catálogo. Sin medios propios, usa poster/hero publicados y finalmente marca JAKAWI, sin extracciones de YouTube. [Implementación, pruebas y operación](artifacts/capture-cards/REPORT.md).
+
+### Upload de imágenes MinIO de CLUB
+
+Implementación preparada en `artifacts/minio-media/REPORT.md`: componente de subida en captación, objetos privados bajo `club/*`, URLs firmadas imgproxy y GC con referencias históricas. La activación exige una credencial MinIO exclusiva de CLUB; [provisionamiento privado y política](artifacts/minio-media/PROVISIONING.md). Pruebas aisladas: `scripts/test-media.sh`, `scripts/test-media.sh landings`, `scripts/build-frontend.sh` y `scripts/check-media-visual.sh`. El smoke `scripts/check-media-storage.sh` usa exactamente un objeto temporal LIVE y lo elimina; no ejecutar despliegue hasta que pase.

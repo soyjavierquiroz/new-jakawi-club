@@ -183,3 +183,10 @@ credentials.json
 /artifacts/capture-cards/*.html
 
 /artifacts/capture-cards/browser-live.json
+
+/artifacts/minio-media/*fixtures.json
+/artifacts/minio-media/*.png
+/artifacts/minio-media/*.html
+/artifacts/minio-media/LIVE.json
+/artifacts/minio-media/browser-live.json
+/artifacts/minio-media/storage-live.json

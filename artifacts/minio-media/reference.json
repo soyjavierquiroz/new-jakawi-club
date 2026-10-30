@@ -1,0 +1,12 @@
+{
+  "source": "JAKAWI.COM, read only",
+  "files": {
+    "resources/js/components/media/image-upload.tsx": "bc1515cfc1d703939c281d58258ab850a4e214bcb0c3b33e390f1f443b24c0c1",
+    "app/Http/Controllers/MediaUploadController.php": "cf2abbc75ffbbb18001bc3a22832c22653efacf5a5d9b4ca79b2fe7aaca2730d",
+    "app/Services/MediaUploadService.php": "a804e9139e2e430889f79a34b3fff7b9153b85cfe3459da93cd77794c6cbfe25",
+    "app/Services/MediaUrl.php": "dcc867baeee0410d5d66f028f36f5d995ffbd3ccc393bb60218297926e196129",
+    "config/media.php": "dc0c636f31094775fd9a5cc9cf8566bc01538949d421911089e403a7b2745352",
+    "config/filesystems.php": "1dd362a608c3d8a73b45736f8c3cccd8e585b63d6434131a29850f86404610c2",
+    "app/Console/Commands/MediaGcCommand.php": "668abf8c4ad1d05178d3f4408fea9e98149d2422004c37884c5621f9a1c59437"
+  }
+}

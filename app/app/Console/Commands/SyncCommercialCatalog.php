@@ -22,6 +22,7 @@ final class SyncCommercialCatalog extends Command
             $result = self::FAILURE;
         }
         $catalog->syncClub();
+        $this->call('schedule:run');
         return $result;
     }
 }

@@ -5,6 +5,7 @@ import { aiBrief, editorialJSON, sameConfiguration } from '../../lib/landing-edi
 import type { LandingContent, LandingRecord, LandingTemplate } from '../../types';
 import { benefitIconOptions } from '../../lib/benefit-icons';
 import { LandingAiKit } from '../../components/admin/LandingAiKit';
+import { ImageUpload } from '../../components/media/ImageUpload';
 import { ClubCardImage } from '../../components/ClubCardPresentation';
 import { statusLabel } from './Landings';
 
@@ -81,12 +82,14 @@ function SavedPreview({ landing, width, confirmation }: { landing: LandingRecord
     return <div ref={container} className="landing-preview-scroll"><div className="landing-preview-stage" style={{ height: 900 * scale }}><iframe key={`${landing.id}-${landing.revision}-${confirmation}`} title={`Vista previa real a ${width} px`} className="landing-preview-frame" style={{ width, height: 900, transform: `scale(${scale})` }} src={`/admin/landings/${landing.id}/preview${confirmation ? '/confirmado' : ''}?revision=${landing.revision}`} /></div></div>;
 }
 
-type Props = { ai_kit_zip_available?: boolean; landing: LandingRecord | null; defaults: LandingContent | null; webinar_defaults: LandingContent; home_slug: string; registration_open: boolean; whatsapp_group_available: boolean; confirmation_video_default_url: string | null; metrics?: { event: string; campaign: string; total: number }[] };
-export default function LandingEditor({ ai_kit_zip_available = false, landing, defaults, webinar_defaults, home_slug, registration_open, whatsapp_group_available, confirmation_video_default_url, metrics = [] }: Props) {
-    const initial = () => ({ title: landing?.title || '', slug: landing?.slug || '', campaign: landing?.campaign || '', configuration: landing?.configuration || defaults!, revision: landing?.revision || 1 });
+type Props = { commercial_image_url?: string | null; commercial_card_url?: string | null; ai_kit_zip_available?: boolean; landing: LandingRecord | null; defaults: LandingContent | null; webinar_defaults: LandingContent; home_slug: string; registration_open: boolean; whatsapp_group_available: boolean; confirmation_video_default_url: string | null; metrics?: { event: string; campaign: string; total: number }[] };
+export default function LandingEditor({ commercial_image_url = null, commercial_card_url = null, ai_kit_zip_available = false, landing, defaults, webinar_defaults, home_slug, registration_open, whatsapp_group_available, confirmation_video_default_url, metrics = [] }: Props) {
+    const initial = () => ({ title: landing?.title || '', slug: landing?.slug || '', campaign: landing?.campaign || '', configuration: landing?.configuration || defaults!, revision: landing?.revision || 1, commercial_image_upload: '', commercial_image_remove: false });
     const form = useForm(initial());
     const operation = useForm({ revision: landing?.revision || 1 });
     const [width, setWidth] = useState(390);
+    const [uploadBusy, setUploadBusy] = useState(false);
+    const [uploadPreview, setUploadPreview] = useState<string | null>(null);
     const [stage, setStage] = useState<'landing' | 'confirmation'>('landing');
     const confirmationPreview = stage === 'confirmation';
     const [tool, setTool] = useState<'import' | 'export' | 'brief' | null>(null);
@@ -101,7 +104,7 @@ export default function LandingEditor({ ai_kit_zip_available = false, landing, d
         const next = initial();
         form.setData(next); form.setDefaults(next);
         operation.setData('revision', next.revision);
-        setNotice('');
+        setNotice(''); setUploadPreview(null);
     }, [landing?.id, landing?.revision]);
     useEffect(() => {
         if (tool) dialog.current?.showModal();
@@ -114,6 +117,7 @@ export default function LandingEditor({ ai_kit_zip_available = false, landing, d
     }, [form.isDirty]);
     function save(event: FormEvent) {
         event.preventDefault();
+        if (uploadBusy) return;
         if (landing) form.put(`/admin/landings/${landing.id}`, { preserveScroll: true, onError: focusErrors });
         else form.post('/admin/landings', { onError: focusErrors });
     }
@@ -145,9 +149,9 @@ export default function LandingEditor({ ai_kit_zip_available = false, landing, d
         } catch { setImportErrors({ editorial_json: ['No se pudo validar el JSON. Revisa tu conexión y sesión.'] }); }
         finally { setImporting(false); }
     }
-    const busy = form.processing || operation.processing || importing;
+    const busy = uploadBusy || form.processing || operation.processing || importing;
     const saved = !!landing && !form.isDirty;
-    const pendingPublication = !!landing && (landing.status !== 'published' || !sameConfiguration(landing.configuration, landing.published_configuration ? { ...landing.published_configuration, presentation: landing.published_configuration.presentation ?? { template: 'LEAD_VSL', show_video: true, show_faq: true } } : null) || landing.campaign !== landing.published_campaign);
+    const pendingPublication = !!landing && (landing.status !== 'published' || !sameConfiguration(landing.configuration, landing.published_configuration ? { ...landing.published_configuration, commercial: { ...landing.published_configuration.commercial, public_name: landing.configuration.commercial?.public_name ?? null }, presentation: landing.published_configuration.presentation ?? { template: 'LEAD_VSL', show_video: true, show_faq: true } } : null) || landing.campaign !== landing.published_campaign || (!!landing.published_configuration?.commercial?.public_name && landing.title !== landing.published_configuration.commercial.public_name));
     const errors = { ...form.errors, ...operation.errors };
     const content = form.data.configuration;
     // Present legacy inherited settings in this single confirmation control.
@@ -186,7 +190,7 @@ export default function LandingEditor({ ai_kit_zip_available = false, landing, d
             {landing?.status === 'published' && <details className="mt-2 text-xs text-text-secondary" data-published-video><summary>Video publicado de captación</summary><p className="mt-2 break-all">{publishedVideo || 'oculto o sin URL'}</p></details>}
         </section>
         <div className="editor-stage-tabs mb-5" role="tablist" aria-label="Etapas del embudo">
-            {([['landing', 'LANDING DE CAPTACIÓN'], ['confirmation', 'PÁGINA DE CONFIRMACIÓN']] as const).map(([value, label], index) => <button key={value} id={`stage-${value}`} type="button" role="tab" aria-selected={stage === value} aria-controls="stage-fields" tabIndex={stage === value ? 0 : -1} className="btn btn-secondary" onClick={() => setStage(value)} onKeyDown={event => { if (['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) { event.preventDefault(); const next = event.key === 'Home' ? 'landing' : event.key === 'End' ? 'confirmation' : index === 0 ? 'confirmation' : 'landing'; setStage(next); document.getElementById(`stage-${next}`)?.focus(); } }}>{label}</button>)}
+            {([['landing', 'LANDING DE CAPTACIÓN'], ['confirmation', 'PÁGINA DE CONFIRMACIÓN']] as const).map(([value, label], index) => <button key={value} id={`stage-${value}`} disabled={busy} type="button" role="tab" aria-selected={stage === value} aria-controls="stage-fields" tabIndex={stage === value ? 0 : -1} className="btn btn-secondary" onClick={() => setStage(value)} onKeyDown={event => { if (['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) { event.preventDefault(); const next = event.key === 'Home' ? 'landing' : event.key === 'End' ? 'confirmation' : index === 0 ? 'confirmation' : 'landing'; setStage(next); document.getElementById(`stage-${next}`)?.focus(); } }}>{label}</button>)}
         </div>
         <div className="editor-page-urls mb-5" aria-label="URLs de la campaña">
             {[[landingURL, 'Landing'], [confirmationURL, 'Confirmación']].map(([url, label]) => <div key={label} className="rounded-card border border-border p-4"><p className="text-sm font-bold">{label}</p><p className="my-2 break-all text-xs">{url}</p><button type="button" className="text-xs font-semibold underline" onClick={() => void copy(url)}>Copiar URL de {label.toLowerCase()}</button></div>)}
@@ -221,10 +225,11 @@ export default function LandingEditor({ ai_kit_zip_available = false, landing, d
 </>}{content.presentation.template === 'WAITLIST' && <><p className="text-sm">Hero compacto, formulario primero y hasta tres beneficios. El video principal es opcional y se configura en Video y medios.</p><label className="checkbox-label"><input type="checkbox" className="checkbox" checked={content.presentation.show_faq} onChange={event => presentation({ show_faq: event.target.checked })} />Mostrar FAQ en la lista de espera</label></>}</Group>
                         <Group title="IMAGEN Y PRESENTACIÓN COMERCIAL" open>
                             <p className="text-sm text-text-secondary">Se usa en el catálogo y al compartir. El título procede de Buscadores; vacío usa el nombre público al publicar.</p>
-                            <div><label htmlFor="commercial-image" className="label">Imagen promocional de tarjeta (opcional)</label><input id="commercial-image" className="input" maxLength={500} placeholder="/marketing/imagen.webp" value={content.commercial?.image || ''} onChange={event => form.setData('configuration', { ...content, commercial: { ...content.commercial, description: content.commercial?.description || null, image: event.target.value || null } })} /><p className="mt-2 text-xs text-text-secondary">Recomendado 16:9. Archivo PNG, JPEG o WebP existente en /marketing/, igual que los posters. Sin imagen se usa el poster publicado; si falta, la marca JAKAWI.</p></div>
+                            <ImageUpload key={`${landing?.id || 'new'}-${landing?.revision || 1}`} currentUrl={form.data.commercial_image_remove ? null : uploadPreview || commercial_image_url} disabled={form.processing || operation.processing} error={form.errors.commercial_image_upload || (form.errors as Record<string, string>)['content.commercial.image']} onBusy={setUploadBusy} onChange={(token, remove, preview) => { setUploadPreview(preview); form.setData(data => ({ ...data, commercial_image_upload: token, commercial_image_remove: remove })); }} />
+                            <p className="text-xs text-text-secondary">La imagen se conserva al guardar el borrador. Solo Publicar cambios actualiza la tarjeta pública. Sin imagen se usa el poster publicado o la marca JAKAWI.</p>
                             <div><label htmlFor="commercial-description" className="label">Descripción corta comercial (opcional)</label><textarea id="commercial-description" className="input" rows={3} maxLength={320} value={content.commercial?.description || ''} onChange={event => form.setData('configuration', { ...content, commercial: { ...content.commercial, image: content.commercial?.image || null, description: event.target.value || null } })} /><p className="mt-2 text-xs text-text-secondary">Vacía usa la descripción del hero. Solo texto; se resume para la tarjeta.</p></div>
                             <div data-commercial-preview className="mx-auto max-w-sm overflow-hidden rounded-card border border-border bg-surface">
-                                <ClubCardImage image={content.commercial?.image || content.video.poster} title={content.seo.title.trim() || form.data.title || 'JAKAWI CLUB'} />
+                                <ClubCardImage image={uploadPreview || (!form.data.commercial_image_remove ? commercial_card_url : null) || content.video.poster} title={content.seo.title.trim() || form.data.title || 'JAKAWI CLUB'} />
                                 <div className="p-5"><p className="text-xs font-semibold">Captación · CLUB · Promocionable</p><h3 className="mt-2 line-clamp-2 break-words text-xl font-extrabold">{content.seo.title.trim() || form.data.title || 'JAKAWI CLUB'}</h3><p className="mt-3 line-clamp-3 text-sm text-text-secondary">{(content.commercial?.description?.trim() || content.hero.description).slice(0, 200)}{(content.commercial?.description?.trim() || content.hero.description).length > 200 ? '…' : ''}</p></div>
                             </div>
                             <p className="text-xs text-text-secondary">Preview del borrador actual. Guardar borrador no cambia el catálogo; Publicar cambios actualiza su versión pública.</p>

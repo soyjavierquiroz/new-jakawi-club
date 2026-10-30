@@ -47,3 +47,8 @@ Artisan::command('short-links:prepare-pilot', function (): int {
     $this->info('Enlaces permanentes Dossis 43 disponibles: '.$count.'. Sin eventos ni conversiones.');
     return 0;
 })->purpose('Preparar enlaces Dossis 43 para afiliados CLUB existentes');
+
+// Reuse the existing CLUB catalog timer and process; no new worker or container.
+Illuminate\Support\Facades\Schedule::call(function (): void {
+    if (Artisan::call('media:gc') !== 0) throw new RuntimeException('No se pudo completar GC de CLUB.');
+})->name('club-media-gc')->dailyAt('03:20')->timezone('America/La_Paz')->withoutOverlapping(120);

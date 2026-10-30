@@ -282,7 +282,7 @@ try {
     check(App\Support\LandingCommercial::text('<b>Hola</b> &amp; ciudad\n segura',200)==='Hola & ciudad\n segura','legacy text is stripped and entities decoded');
     $legacyHtml=web('GET','/',[],false)->getContent();
     check(str_contains($legacyHtml,'https://jakawi.club/marketing/club-card.png'),'historical social image has local brand fallback');
-    foreach (['https://i.ytimg.com/vi/anything/default.jpg','/marketing/missing.png','/marketing/../private.png'] as $invalidImage) {
+    foreach (['javascript:alert(1)','/marketing/missing.png','/marketing/../private.png'] as $invalidImage) {
         $invalid=$draft;$invalid['commercial']['image']=$invalidImage;
         $beforeInvalid=$landing->fresh()->configuration;
         web('PUT',$base,[...$data,'revision'=>$landing->revision,'configuration'=>$invalid]);
@@ -298,6 +298,7 @@ try {
     check(DB::table('commercial_offers')->where('source','com')->orderBy('key')->get()->toJson()===$comAfter,'CLUB sync does not modify COM cards');
     $captureCards=['own'=>$ownCard,'poster'=>$posterCard,'legacy'=>$legacyCard,'editor'=>$editor,'preview'=>$preview];
     file_put_contents('/evidence/capture-cards-fixtures.json',json_encode($captureCards,JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE));
+    if (getenv('JAKAWI_MEDIA_TESTS') === '1') require '/tests/media-tests.php';
     // Enough isolated opportunities to exercise actual server pagination.
     $many=$items;for($id=10;$id<=24;$id++)$many[]=item($id);
     feed($many,5);sync();

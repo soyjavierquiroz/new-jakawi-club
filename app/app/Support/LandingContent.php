@@ -350,8 +350,8 @@ class LandingContent
         }
         self::validator(['content' => $content], $rules)->after(function ($validator) use ($content, $partial): void {
             $image = $content['commercial']['image'] ?? null;
-            if ($image !== null && LaunchSettings::videoPoster($image) === null) {
-                $validator->errors()->add('content.commercial.image', 'Selecciona una imagen PNG, JPEG o WebP existente en /marketing/.');
+            if ($image !== null && !app(\App\Services\MediaUrl::class)->validReference($image)) {
+                $validator->errors()->add('content.commercial.image', 'Selecciona una imagen válida desde el control de subida.');
             }
             if (isset($content['presentation']['webinar'])) {
                 if (($content['presentation']['webinar']['starts_at'] ?? null) === '') {
