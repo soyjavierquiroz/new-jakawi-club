@@ -1,0 +1,28 @@
+{
+  "live_assets": true,
+  "admin_data": "isolated HTTP kernel fixtures",
+  "checks": [
+    {
+      "width": 390,
+      "seven_columns": true,
+      "source_reference": true,
+      "verified_referral": true,
+      "filters_work": true,
+      "empty_state": true,
+      "no_overflow": true
+    },
+    {
+      "width": 1440,
+      "seven_columns": true,
+      "source_reference": true,
+      "verified_referral": true,
+      "filters_work": true,
+      "empty_state": true,
+      "no_overflow": true
+    }
+  ],
+  "runtime_errors": [],
+  "failed_assets": [],
+  "no_mutations": true,
+  "no_live_session": true
+}
