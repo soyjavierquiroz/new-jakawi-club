@@ -1,0 +1,67 @@
+{
+  "checked_at": "2026-10-30T18:03:14.400029-04:00",
+  "tls": {
+    "protocol": "TLSv1.3",
+    "chain_and_hostname_verified": true,
+    "issuer": [
+      [
+        [
+          "countryName",
+          "US"
+        ]
+      ],
+      [
+        [
+          "organizationName",
+          "Let's Encrypt"
+        ]
+      ],
+      [
+        [
+          "commonName",
+          "YE1"
+        ]
+      ]
+    ],
+    "san": [
+      [
+        "DNS",
+        "crm.jakawi.com"
+      ]
+    ],
+    "valid_from_utc": "Oct 26 14:56:57 2026 GMT",
+    "valid_until_utc": "Jan 24 14:56:56 2027 GMT"
+  },
+  "http_admin_redirect": 301,
+  "https_admin_status": 401,
+  "https_login_status": 401,
+  "realm": "JAKAWI CRM privado",
+  "basic_auth_intentional": true,
+  "active_nginx_config_mount_confirmed": true,
+  "https_forwarded_proxy_matches_current_traefik_ip": true,
+  "wp_home_and_siteurl_https": true,
+  "previous_authenticated_verification": {
+    "date": "2026-10-29T22:26:22.008643+00:00",
+    "checks": {
+      "gate_login_form": {
+        "passed": true,
+        "status": 200
+      },
+      "wordpress_login": {
+        "passed": true,
+        "status": 200
+      },
+      "fluentcrm_admin_html": {
+        "passed": true,
+        "status": 200
+      }
+    }
+  },
+  "current_authenticated_access_tested": false,
+  "credentials_requested_or_used": false,
+  "configuration_changed": false,
+  "browser_warning_reproduced": false,
+  "active_nginx_syntax_valid": true,
+  "basic_password_file_readable_by_nginx_worker": true,
+  "basic_password_file_contents_read": false
+}

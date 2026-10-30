@@ -1,0 +1,91 @@
+{
+  "mode": "reproduce",
+  "checks": [
+    {
+      "width": 390,
+      "path": "/principal/gracias",
+      "starting_scroll": 10767,
+      "y": 446,
+      "x": 0,
+      "title": "¡Felicidades por dar el siguiente paso!",
+      "video": true,
+      "whatsapp": true,
+      "email": true,
+      "restoration": "manual",
+      "autofocus": false
+    },
+    {
+      "width": 390,
+      "path": "/principal/confirmado",
+      "starting_scroll": 10767,
+      "y": 446,
+      "x": 0,
+      "title": "¡Felicidades por dar el siguiente paso!",
+      "video": true,
+      "whatsapp": true,
+      "email": true,
+      "restoration": "manual",
+      "autofocus": false
+    },
+    {
+      "width": 390,
+      "path": "/bienvenida",
+      "starting_scroll": 10767,
+      "y": 360,
+      "x": 0,
+      "title": "Otra edición",
+      "video": true,
+      "whatsapp": true,
+      "email": true,
+      "restoration": "manual",
+      "autofocus": false
+    },
+    {
+      "width": 1440,
+      "path": "/principal/gracias",
+      "starting_scroll": 8717,
+      "y": 413,
+      "x": 0,
+      "title": "¡Felicidades por dar el siguiente paso!",
+      "video": true,
+      "whatsapp": true,
+      "email": true,
+      "restoration": "manual",
+      "autofocus": false
+    },
+    {
+      "width": 1440,
+      "path": "/principal/confirmado",
+      "starting_scroll": 8717,
+      "y": 413,
+      "x": 0,
+      "title": "¡Felicidades por dar el siguiente paso!",
+      "video": true,
+      "whatsapp": true,
+      "email": true,
+      "restoration": "manual",
+      "autofocus": false
+    },
+    {
+      "width": 1440,
+      "path": "/bienvenida",
+      "starting_scroll": 8717,
+      "y": 363,
+      "x": 0,
+      "title": "Otra edición",
+      "video": true,
+      "whatsapp": true,
+      "email": true,
+      "restoration": "manual",
+      "autofocus": false
+    }
+  ],
+  "submissions": 6,
+  "redirects": 6,
+  "other_mutations_intercepted": 0,
+  "runtime_errors": [],
+  "failed_assets": [],
+  "no_live_registration": true,
+  "server_generated_receipts": true,
+  "registration_open": true
+}

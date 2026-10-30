@@ -394,3 +394,17 @@ Importar solo modifica el formulario; guardar y publicar siguen separados.
 Implementación, archivos, pruebas aisladas y límites: [WEBINAR MVP](artifacts/webinar/REPORT.md).
 
 WEBINAR integrado sobre main vigente y desplegado exclusivamente en CLUB: [informe y pruebas del despliegue](artifacts/webinar-release/REPORT.md). No se creó ni publicó contenido WEBINAR automáticamente.
+
+### Scroll después del registro
+
+El formulario conserva el scroll únicamente si el servidor devuelve errores de validación
+(`preserveScroll: 'errors'`). Un registro exitoso usa el reinicio de scroll nativo de
+Inertia al llegar a `Registered` y fija inmediatamente `scrollY=0` en `onSuccess`
+para evitar la animación del `scroll-behavior: smooth` de la landing, tanto en `/{slug}/gracias` como en
+`/{slug}/confirmado` y `/bienvenida`. No se modifica la restauración global,
+el foco de errores ni la protección por recibo. Regresión focalizada:
+`bash scripts/check-confirmation-scroll.sh --preview` antes de publicar los assets,
+y el mismo comando sin opciones para verificar los assets LIVE. Requiere fixtures
+frescos de `scripts/test-postconversion.sh` con `JAKAWI_EVIDENCE_DIR` apuntando a
+`artifacts/confirmation-scroll`; todas las mutaciones del navegador se interceptan.
+Evidencia y diagnóstico CRM de solo lectura: [informe](artifacts/confirmation-scroll/REPORT.md).

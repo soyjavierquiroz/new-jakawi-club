@@ -24,7 +24,13 @@ export function RegistrationForm({ open, referralCode, landingId }: { open: bool
         if (!phoneValue.current) { form.setError('phone', 'Revisa el número y el país seleccionado.'); document.getElementById('phone')?.focus(); return; }
         form.transform(data => ({ ...data, phone: phoneValue.current, referral_code: referralCode || '' }));
         submitting.current = true;
-        form.post('/registro', { preserveScroll: true, onFinish: () => { submitting.current = false; }, onError: errors => { errorFocus.current = Object.keys(errors)[0] || null; } });
+        form.post('/registro', {
+            preserveScroll: 'errors',
+            // Confirmation must open at the top even with the landing's smooth scrolling.
+            onSuccess: page => { if (page.component === 'Registered') window.scrollTo({ top: 0, left: 0, behavior: 'instant' }); },
+            onFinish: () => { submitting.current = false; },
+            onError: errors => { errorFocus.current = Object.keys(errors)[0] || null; },
+        });
     }
     return <div id="registro" tabIndex={-1} role="region" aria-labelledby="registration-form-title" className="registration-form rounded-card border border-border bg-surface p-6 shadow-editorial sm:p-9">
         <Flash />

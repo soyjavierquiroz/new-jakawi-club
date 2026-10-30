@@ -170,3 +170,9 @@ credentials.json
 /artifacts/registration-copy/LIVE.json
 /artifacts/registration-copy/*fixtures.json
 /artifacts/registration-copy/*.png
+
+/artifacts/confirmation-scroll/LIVE.json
+/artifacts/confirmation-scroll/*fixtures.json
+/artifacts/confirmation-scroll/*.png
+/artifacts/confirmation-scroll/browser-live.json
+/artifacts/confirmation-scroll/validation.json

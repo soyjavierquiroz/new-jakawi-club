@@ -1,0 +1,140 @@
+PASS PostgreSQL aislado, sin usuarios LIVE
+PASS sin recibo no afirma conversión: principal
+PASS sin recibo no afirma conversión: webinar
+PASS sin recibo no afirma conversión: fundadores
+PASS no crea gracias para landing inexistente
+PASS namespace protegido: admin
+PASS namespace protegido: registro
+PASS namespace protegido: activar
+PASS namespace protegido: confirmado
+PASS namespace protegido: medicion
+PASS preview de gracias requiere autenticación
+PASS log bloquea registro aun con banderas true
+PASS log no crea cuenta ni token
+PASS rechazo no genera recibo
+PASS backend rechaza consentimiento no aceptado
+PASS backend rechaza consentimiento no aceptado
+PASS backend rechaza consentimiento no aceptado
+PASS backend rechaza consentimiento no aceptado
+PASS backend rechaza consentimiento no aceptado
+PASS validación fallida no genera recibo
+PASS backend dirige a gracias de landing de origen
+PASS aceptación guarda fecha y versión existentes
+PASS referente original y activación pendiente
+PASS gracias pendiente no afirma activación ni expone invitación
+PASS recibo vinculado sin datos de cuenta
+PASS sin grupo aprobado no muestra enlace ni contador
+PASS recibo conserva campaña publicada
+PASS conversión real de kernel transaccional con landing y campaña
+PASS refrescar gracias no cuenta conversiones
+PASS recibo no sirve para otra landing
+PASS bienvenida existente reutiliza landing de sesión
+PASS recibo conserva snapshot confirmado ante cambios editoriales
+PASS recibo conserva video específico
+PASS confirmación usa default operativo
+PASS video específico tiene prioridad sobre default
+PASS sin URL no inventa video
+PASS default aprobado no se excluye por ID ni por fallos observados del proveedor
+PASS recibo sin grupo permanece sin grupo tras cambiar fallback
+PASS CTA y contador resueltos solo desde grupo operativo aprobado
+PASS destino de grupo inválido rechazado
+PASS destino de grupo inválido rechazado
+PASS destino de grupo inválido rechazado
+PASS destino de grupo inválido rechazado
+PASS destino de grupo inválido rechazado
+PASS activación existente consume el token sin reemplazo
+PASS activación misma sesión vuelve a landing original
+PASS solo cuenta activada y verificada muestra confirmación e invitación
+PASS activar y refrescar no altera conversiones ni referente
+PASS activated_at sin verificación no basta
+PASS verificación sin activated_at no basta
+PASS recibo vence y elimina atribución temporal
+PASS email existente recibe respuesta genérica sin otra conversión
+PASS email existente conserva referente inmutable
+PASS query no puede fabricar confirmación
+PASS landing inexistente rechazada
+PASS snapshots antiguos reciben defaults solo en memoria
+PASS URL publicada heredada se conserva al añadir metadatos y marco 3:4
+PASS video explicativo rechaza proveedor, encuadre o URL inseguros: source_type
+PASS video explicativo rechaza proveedor, encuadre o URL inseguros: focal_x
+PASS video explicativo rechaza proveedor, encuadre o URL inseguros: focal_y
+PASS video explicativo rechaza proveedor, encuadre o URL inseguros: youtube_url
+PASS video explicativo rechaza proveedor, encuadre o URL inseguros: poster
+PASS JSON v1 anterior sigue importable
+PASS JSON v2 parcial conserva textos omitidos y operaciones
+PASS export v3 excluye destino y contador heredados
+PASS JSON rechaza operaciones, enlaces ejecutables o afirmación de activación
+PASS JSON rechaza operaciones, enlaces ejecutables o afirmación de activación
+PASS JSON rechaza operaciones, enlaces ejecutables o afirmación de activación
+PASS JSON rechaza operaciones, enlaces ejecutables o afirmación de activación
+PASS JSON rechaza operaciones, enlaces ejecutables o afirmación de activación
+PASS JSON rechaza operaciones, enlaces ejecutables o afirmación de activación
+PASS JSON rechaza operaciones, enlaces ejecutables o afirmación de activación
+PASS JSON rechaza operaciones, enlaces ejecutables o afirmación de activación
+PASS controles operativos validados por allowlist
+PASS controles operativos validados por allowlist
+PASS controles operativos validados por allowlist
+PASS acción cuenta distingue activación
+PASS registro conserva referente y UTM: webinar
+PASS registro reutiliza activación existente: webinar
+PASS registro usa gracias de origen: webinar
+PASS registro conserva referente y UTM: fundadores
+PASS registro reutiliza activación existente: fundadores
+PASS registro usa gracias de origen: fundadores
+PASS login ajeno al recibo no afirma activación de su solicitud
+PASS preview usa renderer real sin acreditar conversión ni activación
+PASS preview no suma conversiones
+PASS regresión UTC: mostrar hora Bolivia no cambia timestamp del broker
+PASS ruta y parámetros correctos; GET no consume token
+PASS reproduce token cuatro horas antiguo sin activar cuenta
+PASS reemisión segura invalida enlace anterior
+PASS token de activación no se consume en recuperación
+PASS broker acepta token antes de 60 minutos
+PASS broker rechaza token después de 60 minutos
+PASS activación consume token y verifica cuenta atómicamente
+PASS enlace consumido no se puede reutilizar
+PASS recibo aceptado default/inherit
+PASS grupo y contador del recibo default/inherit
+PASS video específico, fallback u oculto del recibo default/inherit
+PASS snapshot inmutable incluso null y fallback default/inherit
+PASS recibo aceptado default/custom
+PASS grupo y contador del recibo default/custom
+PASS video específico, fallback u oculto del recibo default/custom
+PASS snapshot inmutable incluso null y fallback default/custom
+PASS recibo aceptado default/none
+PASS grupo y contador del recibo default/none
+PASS video específico, fallback u oculto del recibo default/none
+PASS snapshot inmutable incluso null y fallback default/none
+PASS recibo aceptado custom/inherit
+PASS grupo y contador del recibo custom/inherit
+PASS video específico, fallback u oculto del recibo custom/inherit
+PASS snapshot inmutable incluso null y fallback custom/inherit
+PASS recibo aceptado custom/custom
+PASS grupo y contador del recibo custom/custom
+PASS video específico, fallback u oculto del recibo custom/custom
+PASS snapshot inmutable incluso null y fallback custom/custom
+PASS recibo aceptado custom/none
+PASS grupo y contador del recibo custom/none
+PASS video específico, fallback u oculto del recibo custom/none
+PASS snapshot inmutable incluso null y fallback custom/none
+PASS recibo aceptado none/inherit
+PASS grupo y contador del recibo none/inherit
+PASS video específico, fallback u oculto del recibo none/inherit
+PASS snapshot inmutable incluso null y fallback none/inherit
+PASS recibo aceptado none/custom
+PASS grupo y contador del recibo none/custom
+PASS video específico, fallback u oculto del recibo none/custom
+PASS snapshot inmutable incluso null y fallback none/custom
+PASS recibo aceptado none/none
+PASS grupo y contador del recibo none/none
+PASS video específico, fallback u oculto del recibo none/none
+PASS snapshot inmutable incluso null y fallback none/none
+PASS matriz de recibos y refrescos no duplica conversiones
+PASS sin fuente no inventa video posterior en recibo
+PASS registro cerrado al terminar con log
+{
+    "passed": 134,
+    "database": "isolated PostgreSQL schema",
+    "notifications": "fake",
+    "live_test_users": 0
+}
