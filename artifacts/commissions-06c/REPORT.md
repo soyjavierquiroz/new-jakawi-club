@@ -45,3 +45,8 @@ Verificación de despliegue: `check-commissions-visual.sh --live` y
 código montado, assets HTTPS, migración y `/up`. Respaldo privado en
 `/srv/sites/jakawi.club/rollback-commissions-06c/`; rollback solo de código/manifest,
 conservando tablas y auditoría. [Operación exacta](../../docs/economics/commissions-06c.md).
+
+Publicación completada: migración aditiva aplicada de forma aislada, cachés
+regeneradas, assets previos conservados y solo `app` reiniciado. La sincronización
+recuperó 0 eventos. Chromium con assets LIVE pasó ambas resoluciones y los envíos
+administrativos permanecieron interceptados. `/up` HTTPS devuelve 200.

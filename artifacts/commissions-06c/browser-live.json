@@ -1,0 +1,37 @@
+{
+  "live_assets": true,
+  "data": "isolated HTTP kernel fixtures",
+  "checks": [
+    {
+      "width": 390,
+      "rules_form": true,
+      "decimal_string": true,
+      "bolivia_effective_date": true,
+      "no_defaults": true,
+      "ledger": true,
+      "approval_guard": true,
+      "reconciliation_evidence": true,
+      "affiliate_detail": true,
+      "exact_currency_totals": true,
+      "no_overflow": true
+    },
+    {
+      "width": 1440,
+      "rules_form": true,
+      "decimal_string": true,
+      "bolivia_effective_date": true,
+      "no_defaults": true,
+      "ledger": true,
+      "approval_guard": true,
+      "reconciliation_evidence": true,
+      "affiliate_detail": true,
+      "exact_currency_totals": true,
+      "no_overflow": true
+    }
+  ],
+  "runtime_errors": [],
+  "failed_assets": [],
+  "intercepted_admin_submissions": 4,
+  "no_live_mutations": true,
+  "no_live_session": true
+}
