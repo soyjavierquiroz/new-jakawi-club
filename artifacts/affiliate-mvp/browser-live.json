@@ -1,0 +1,34 @@
+{
+  "live_assets": true,
+  "data": "isolated HTTP kernel fixtures",
+  "checks": [
+    {
+      "width": 390,
+      "private_navigation": true,
+      "real_personal_link": true,
+      "clipboard_copy": true,
+      "clipboard_fallback": true,
+      "whatsapp_share": true,
+      "verified_conversions": true,
+      "bolivia_time": true,
+      "no_overflow": true,
+      "empty_state": true
+    },
+    {
+      "width": 1440,
+      "private_navigation": true,
+      "real_personal_link": true,
+      "clipboard_copy": true,
+      "clipboard_fallback": true,
+      "whatsapp_share": true,
+      "verified_conversions": true,
+      "bolivia_time": true,
+      "no_overflow": true,
+      "empty_state": true
+    }
+  ],
+  "runtime_errors": [],
+  "failed_assets": [],
+  "no_mutations": true,
+  "no_live_session": true
+}

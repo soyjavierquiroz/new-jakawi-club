@@ -31,3 +31,8 @@ venta real: al iniciar el trabajo no existían eventos comerciales LIVE.
 Sin migraciones, dependencias nuevas ni cambios de compose. Solo CLUB; no cambia
 COM, CRM, SES, SSO ni landings. No comisiones, saldos ni obligaciones económicas.
 [Contrato y operación](../../docs/integrations/club-affiliates-mvp.md).
+
+Publicación completada: assets conservados y manifest publicado al final; cachés
+regeneradas y solo `app` reiniciado. Repetición de Chromium con assets LIVE
+correcta en ambos tamaños: `browser-live.json` y `affiliate-live-*.png`. `/up`
+HTTPS responde 200. Sin sesiones, usuarios ni conversiones LIVE de prueba.
