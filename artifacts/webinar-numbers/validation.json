@@ -1,0 +1,134 @@
+{
+  "validated_at": "2026-10-30T16:01:20.965566-04:00",
+  "compose_valid": true,
+  "local_http": 200,
+  "inertia_http": 200,
+  "assets": {
+    "assets/CatalogOffer-Bpg14qGz.js": 200,
+    "assets/CommissionUI-BCs2lZyp.js": 200,
+    "assets/CommunityWhatsAppIcon-IbDZ4k0a.js": 200,
+    "assets/UI-CCqPSf5b.js": 200,
+    "assets/benefit-icons-B12ohweQ.js": 200,
+    "assets/jakawi-vsl-player-2d7t62wQ.js": 200,
+    "assets/jakawi-vsl-player-C8cD6k4R.css": 200,
+    "assets/app-nH51HLMG.css": 200,
+    "assets/instrument-sans-400-normal-DRC__1Mx.woff2": 200,
+    "assets/instrument-sans-500-normal-Dk9ku72i.woff2": 200,
+    "assets/instrument-sans-600-normal-B7fBEWYG.woff2": 200,
+    "assets/montserrat-400-normal-BLhwKU8k.woff2": 200,
+    "assets/montserrat-500-normal-DRFEGfly.woff2": 200,
+    "assets/montserrat-600-normal-UVxSCcoG.woff2": 200,
+    "assets/montserrat-700-normal-BdjcYUrC.woff2": 200,
+    "assets/montserrat-800-normal-axpkC1rd.woff2": 200,
+    "assets/app-BOwm8JwV.js": 200,
+    "assets/Affiliates-CK6S3-qt.js": 200,
+    "assets/Auth-CUViYqwG.js": 200,
+    "assets/Dashboard-CrXmq4HV.js": 200,
+    "assets/IdentityEmailConfirmation-BjN2GBCP.js": 200,
+    "assets/Privacy-E4nQIEQ7.js": 200,
+    "assets/Registered-1ZE4jaDB.js": 200,
+    "assets/Welcome-Cyk-r1SM.js": 200,
+    "assets/CommercialConversions-BBiFGVaq.js": 200,
+    "assets/CommercialOffers-pId1Vz4g.js": 200,
+    "assets/CommissionLedger-v25NabI-.js": 200,
+    "assets/CommissionRules-C1UuwxJc.js": 200,
+    "assets/LandingEditor-3ITa0cTf.js": 200,
+    "assets/Landings-B8qqkEbu.js": 200
+  },
+  "app": {
+    "php": "8.4.27",
+    "laravel": "13.39.0",
+    "inertia": "v3.5.2",
+    "environment": "production",
+    "debug": false,
+    "url": "https://jakawi.club",
+    "name": "JAKAWI Launch Engine",
+    "db": {
+      "database": "jakawi_club",
+      "username": "jakawi_club"
+    },
+    "db_superuser": false,
+    "db_create_database": false,
+    "db_create_role": false,
+    "connection": "pgsql",
+    "cache": "database",
+    "queue": "database",
+    "session": "database",
+    "registration_open": true,
+    "mail": "smtp",
+    "independent_key_valid": true,
+    "database_cache_roundtrip": true,
+    "migrations": [
+      "0001_01_01_000000_create_users_table",
+      "0001_01_01_000001_create_cache_table",
+      "0001_01_01_000002_create_jobs_table",
+      "2026_10_28_000001_extend_users_for_launch",
+      "2026_10_28_000002_create_marketing_event_totals",
+      "2026_10_29_000001_create_marketing_landings",
+      "2026_10_29_000002_add_registration_origin",
+      "2026_10_29_000003_add_global_subject_id_to_users",
+      "2026_10_29_000004_create_club_identity_operations",
+      "2026_10_30_000001_create_commercial_events",
+      "2026_10_30_000002_create_commission_engine",
+      "2026_10_30_000003_simplify_commission_approval",
+      "2026_10_30_000004_create_affiliate_short_links",
+      "2026_10_30_000005_extend_commercial_catalog",
+      "2026_10_30_000006_create_affiliate_link_daily_clicks"
+    ],
+    "sessions_written": true,
+    "postgres": "16.15"
+  },
+  "containers": {
+    "jakawi-club-app": {
+      "status": "running",
+      "health": "healthy",
+      "memory_limit_mib": 256,
+      "restart_count": 0,
+      "networks": [
+        "jakawi-club-egress",
+        "jakawi-club-private"
+      ],
+      "ports": {
+        "9000/tcp": null
+      }
+    },
+    "jakawi-club-web": {
+      "status": "running",
+      "health": "healthy",
+      "memory_limit_mib": 48,
+      "restart_count": 0,
+      "networks": [
+        "jakawi-club-egress",
+        "jakawi-club-private",
+        "web"
+      ],
+      "ports": {
+        "80/tcp": [
+          {
+            "HostIp": "127.0.0.1",
+            "HostPort": "18082"
+          }
+        ]
+      }
+    },
+    "jakawi-club-db": {
+      "status": "running",
+      "health": "healthy",
+      "memory_limit_mib": 192,
+      "restart_count": 0,
+      "networks": [
+        "jakawi-club-private"
+      ],
+      "ports": {
+        "5432/tcp": null
+      }
+    }
+  },
+  "private_network_internal": true,
+  "jakawi_com_up": 200,
+  "protected_baseline": {
+    "scope": "CLUB only",
+    "container_ids_unchanged": 3,
+    "web_db_not_restarted": true
+  }
+}

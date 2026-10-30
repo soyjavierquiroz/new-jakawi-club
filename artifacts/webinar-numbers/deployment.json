@@ -1,0 +1,8 @@
+{
+  "source_sha": "b84a7ea8e85d04881e9a69ee8c242aac70a16e45",
+  "new_assets": 20,
+  "manifest_published_last": true,
+  "old_chunks_preserved": true,
+  "only_app_restart": true,
+  "migrations": false
+}

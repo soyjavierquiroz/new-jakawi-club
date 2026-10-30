@@ -24,3 +24,10 @@ assets previos. Despliegue conservando chunks anteriores y publicando manifest a
 final; solo app se reinicia. La validación final usa ese baseline nuevo para
 proteger contenido publicado, fuentes ajenas, secretos y contenedores web/DB.
 El sello final se genera en `LIVE.json` excluido de Git.
+
+Verificación posterior nueva: PASS sobre assets HTTPS realmente desplegados.
+24 indicadores en `/` y `/principal`, 390/1440 px: participación temprana y cómo
+funciona muestran fondo `rgb(255, 200, 61)` y números `rgb(17, 17, 17)`. Geometría
+idéntica al baseline. Revisadas visualmente las capturas LIVE de ambas secciones
+en escritorio y móvil. TypeScript, Vite y validador local PASS. Veinte assets nuevos,
+chunks previos conservados y únicamente app reiniciada.
