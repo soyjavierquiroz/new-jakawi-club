@@ -154,6 +154,60 @@ try {
     };
     const screenshot = async name => { const shot = await call('Page.captureScreenshot',{format:'png'}); await writeFile(`${output}/${name}.png`,Buffer.from(shot.data,'base64')); };
     await call('Network.setCookie',{name:'XSRF-TOKEN',value:'webinar-browser-fixture',domain:'jakawi.club',path:'/',secure:true});
+    for (const [width, height] of [[390,667], [430,740], [1440,900]]) {
+        await call('Emulation.setDeviceMetricsOverride',{width,height,deviceScaleFactor:1,mobile:width<768});
+        for (const preview of [false, true]) {
+            // Real published copy/media settings, rendered without sending visits or registrations.
+            await navigate(fixtures.empty, p=>{
+                p.props.landing.content=structuredClone(publishedContent);
+                p.props.landing.preview=preview;
+                p.props.launch.registration_open=!preview;
+                p.props.launch.video_url=publishedContent.video.youtube_url;
+                p.props.launch.video_poster=publishedContent.video.poster;
+            });
+            await until('!!document.querySelector(".webinar-hero .vsl-host iframe")','WEBINAR player ready for geometry');
+            const layout=await evaluate(`(()=>{
+                const rect=s=>{const r=document.querySelector(s).getBoundingClientRect();return {x:r.x,y:r.y,right:r.right,bottom:r.bottom,width:r.width,height:r.height}};
+                return {heading:rect('.hero-heading'),copy:rect('.hero-copy'),cta:rect('[data-marketing-cta=hero]'),media:rect('.hero-media'),frame:rect('.vsl-frame'),iframe:rect('.vsl-host iframe'),kind:document.querySelector('[data-marketing-video-frame]').dataset.marketingVideoFrame,overflow:document.documentElement.scrollWidth>innerWidth+1};
+            })()`);
+            assert.equal(layout.overflow,false);
+            assert(Math.abs(layout.frame.width/layout.frame.height-.75)<.01);
+            assert.equal(layout.kind,'embedded-vertical','WEBINAR portrait metadata selects existing embedded crop');
+            assert(Math.abs(layout.iframe.width/layout.frame.width-3.16049383)<.02);
+            assert(Math.abs(layout.iframe.height/layout.frame.height-4/3)<.02);
+            if(width<768){
+                assert(layout.cta.bottom<height-85,'Main CTA above fold and clear of sticky');
+                assert(layout.cta.bottom<layout.media.y,'CTA precedes video');
+                await until('!document.querySelector(".mobile-sticky-cta").hidden','WEBINAR sticky visible before video interaction');
+                await evaluate('document.querySelector(".hero-media").scrollIntoView({block:"center",behavior:"instant"})');
+                for(const state of ['ready','buffering','playing','paused','error']){
+                    await evaluate(`document.querySelector('[data-vsl-state]').dataset.vslState=${JSON.stringify(state)}`);
+                    await pause(50);
+                    assert(await evaluate('!document.querySelector(".mobile-sticky-cta").hidden'),`Sticky remains available over video state ${state}`);
+                }
+                if (!preview) { // Preview deliberately disables registration inputs.
+                    await evaluate('document.querySelector("#name").focus()');
+                    await until('document.querySelector(".mobile-sticky-cta").hidden','Keyboard/form focus still hides sticky');
+                }
+                await evaluate('document.activeElement.blur();window.scrollTo({top:0,behavior:"instant"})');
+            }else{
+                assert(layout.heading.right<layout.media.x && layout.copy.right<layout.media.x,'Desktop text left / video right');
+                assert(layout.frame.y<180 && layout.frame.bottom<height,'Desktop full frame in first screen');
+                assert(layout.frame.width>=380,'Desktop video stays prominent');
+            }
+            await screenshot(`hero-${width}-${preview?'preview':'public'}`);
+        }
+        checks.push(`webinar-hero-${width}-columns-cta-first-3x4-cover-sticky`);
+    }
+    for(const template of ['LEAD_VSL','WAITLIST']){
+        await call('Emulation.setDeviceMetricsOverride',{width:390,height:900,deviceScaleFactor:1,mobile:true});
+        await navigate(fixtures.empty,p=>{p.props.landing.content.presentation.template=template;p.props.landing.content.video.source_aspect_ratio='3:4';p.props.launch.video_url='https://www.youtube.com/watch?v=M7lc1UVf-VE';});
+        await until('!!document.querySelector(".vsl-host iframe")','Other template video mounts');
+        assert.equal(await evaluate('!!document.querySelector(".webinar-hero")'),false);
+        assert.equal(await evaluate('document.querySelector("[data-marketing-video-frame]").dataset.marketingVideoFrame'),'native-vertical');
+        checks.push(`unchanged-${template}-hero-and-framing`);
+    }
+    const heroVisits = metrics.filter(m=>m.event==='landing_visit').length;
     for (const width of [390, 1440]) {
         await call('Emulation.setDeviceMetricsOverride',{width,height:900,deviceScaleFactor:1,mobile:width<768});
         for (const fixture of [historical.index, historical.create, fixtures.editor]) {
@@ -211,7 +265,7 @@ try {
     const clock = await evaluate('document.querySelector("[data-webinar-countdown]").textContent');
     await pause(1200);
     assert.notEqual(await evaluate('document.querySelector("[data-webinar-countdown]").textContent'),clock);
-    assert.equal(metrics.filter(m=>m.event==='landing_visit').length,6,'Only public fixtures emit visits; previews do not');
+    assert.equal(metrics.filter(m=>m.event==='landing_visit').length,6+heroVisits,'Only public fixtures emit visits; previews do not');
     checks.push('saved-order-visibility-bolivia-date-countdown-preview-no-analytics');
     await navigate(fixtures.empty, p => {p.props.landing.content.presentation.webinar.starts_at='2020-01-01T19:30:00-04:00';p.props.launch.video_url=null;});
     assert(await evaluate('!document.querySelector("[data-webinar-countdown]") && !!document.querySelector("[data-webinar-elapsed]")'));

@@ -1,0 +1,8 @@
+{
+  "landings_php_passed": 419,
+  "postconversion_php_passed": 134,
+  "typescript": "PASS",
+  "vite_build": "PASS",
+  "browser_preview_groups": 23,
+  "local_validator": "Historical catalog baseline expects older app container ID; unchanged current baseline captured separately and verified at deployment."
+}

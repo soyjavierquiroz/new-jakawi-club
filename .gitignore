@@ -143,3 +143,7 @@ credentials.json
 /artifacts/landing-ai-kit-release/*fixtures.json
 /artifacts/landing-ai-kit-release/**/*.png
 /artifacts/landing-ai-kit-release/*.png
+
+/artifacts/webinar-hero/LIVE.json
+/artifacts/webinar-hero/*fixtures.json
+/artifacts/webinar-hero/*.png

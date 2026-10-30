@@ -18,8 +18,10 @@ export function MarketingCTA({ location, className = '' }: { location: 'hero' | 
 }
 
 export function MarketingHero({ children, open, compact = false, encounter }: { children?: ReactNode; open: boolean; compact?: boolean; encounter?: ReactNode }) {
-    const content = useContext(LandingContext)!.content.hero;
-    return <section className={`conversion-hero shell ${compact ? 'compact-hero' : ''} ${!children ? 'hero-without-media' : ''}`} aria-labelledby="hero-title">
+    const landing = useContext(LandingContext)!.content;
+    const content = landing.hero;
+    const webinar = landing.presentation.template === 'WEBINAR';
+    return <section className={`conversion-hero shell ${webinar ? 'webinar-hero' : ''} ${compact ? 'compact-hero' : ''} ${!children ? 'hero-without-media' : ''}`} aria-labelledby="hero-title">
         <div className="hero-heading">
             <p className="eyebrow hero-eyebrow"><span aria-hidden="true" className="size-2 rounded-chip bg-brand" /> {content.eyebrow}</p>
             <h1 id="hero-title" className="conversion-title">{content.title} <span className="hero-emphasis">{content.emphasis}</span> {content.ending}</h1>

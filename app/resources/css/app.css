@@ -172,6 +172,28 @@
 .compact-hero .hero-media { margin-inline: auto; }
 .hero-without-media { grid-template-columns: minmax(0, 1fr); grid-template-areas: 'heading' 'copy'; grid-template-rows: auto auto; row-gap: 1.5rem; padding-bottom: 2.5rem; }
 .hero-without-media .hero-heading, .hero-without-media .hero-copy { width: 100%; max-width: 46rem; margin-inline: auto; padding-top: 0; }
+/* WEBINAR prioritizes the registration action before media on small screens. */
+.webinar-hero { grid-template-areas: 'heading' 'copy' 'media'; gap: 1rem; padding-block: 1.25rem 2rem; }
+.webinar-hero.hero-without-media { grid-template-areas: 'heading' 'copy'; }
+.webinar-hero .conversion-title { font-size: clamp(2rem, 8.5vw, 2.75rem); margin-top: .75rem; }
+.webinar-hero .hero-copy > p:first-child { font-size: 1rem; line-height: 1.5; }
+.webinar-hero .hero-copy > p:nth-child(2) { display: none; }
+.webinar-hero .hero-copy > .btn { margin-top: 1rem; }
+.webinar-hero .hero-media { max-width: 26rem; scroll-margin-block: 6rem; }
+@media (min-width: 1024px) {
+    .webinar-hero:not(.hero-without-media) {
+        grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+        grid-template-areas: '. media' 'heading media' 'copy media' '. media';
+        grid-template-rows: 1fr auto auto 1fr;
+        column-gap: 3rem; row-gap: 0; padding-block: 2rem; text-align: left;
+    }
+    .webinar-hero:not(.hero-without-media) .hero-heading,
+    .webinar-hero:not(.hero-without-media) .hero-copy { width: 100%; max-width: none; margin-inline: 0; }
+    .webinar-hero:not(.hero-without-media) .hero-eyebrow { justify-content: flex-start; }
+    .webinar-hero .conversion-title { font-size: clamp(3rem, 4.2vw, 4.25rem); }
+    .webinar-hero:not(.hero-without-media) .hero-copy { padding-top: 1.25rem; }
+    .webinar-hero .hero-media { width: min(100%, 30rem, calc((100svh - 10rem) * .75)); max-width: 30rem; margin-left: auto; margin-right: 0; }
+}
 @media (max-width: 768px) {
     [data-mobile-view="editor"] > .landing-editor-preview, [data-mobile-view="preview"] > .landing-editor-content { display: none; }
 }

@@ -17,7 +17,11 @@ export default function Welcome({ landing, launch, referral_code, referral_prefe
     const template = content.presentation.template;
     const waitlist = template === 'WAITLIST';
     const webinar = template === 'WEBINAR';
-    const video = content.presentation.show_video && launch.video_url ? <LandingVideo key={launch.video_url} video={content.video} url={launch.video_url} poster={launch.video_poster} onEvent={event => { if (event.type === 'playing' && !landing.preview) trackMarketing('video_start', 'video', landing.id); }} /> : null;
+    // WEBINAR portrait embeds use the existing vertical cover crop, including legacy 3:4 metadata.
+    // This is a template presentation only: persisted media, focal points and confirmation stay intact.
+    const heroVideo = webinar && content.video.source_aspect_ratio === '3:4'
+        ? { ...content.video, source_aspect_ratio: '9:16' as const } : content.video;
+    const video = content.presentation.show_video && launch.video_url ? <LandingVideo key={launch.video_url} video={heroVideo} url={launch.video_url} poster={launch.video_poster} onEvent={event => { if (event.type === 'playing' && !landing.preview) trackMarketing('video_start', 'video', landing.id); }} /> : null;
     const completeWebinar = webinar && !!content.presentation.webinar && !!content.webinar;
     const registration = <section className="registration-section" aria-labelledby="registration-title"><div className="shell grid items-start gap-9 py-14 lg:grid-cols-2 lg:gap-20 lg:py-20"><div><p className="eyebrow">{content.registration.eyebrow}</p><h2 id="registration-title" className="section-title mt-5">{content.registration.title}</h2><p className="mt-6 text-lg leading-relaxed text-text-secondary">{content.registration.description}</p><p className="mt-6 text-sm text-text-secondary">Registro gratuito. Activa tu cuenta por correo para acceder a tu invitación personal.</p></div><RegistrationForm open={launch.registration_open} referralCode={referral_code} landingId={landing.id} /></div></section>;
     const encounter = webinar && launch.event ? <div className="message mt-6" data-webinar-schedule><p className="font-bold">{launch.event.title}</p><time dateTime={launch.event.starts_at}>{new Intl.DateTimeFormat('es-BO', { dateStyle: 'long', timeStyle: 'short', timeZone: 'America/La_Paz' }).format(new Date(launch.event.starts_at))} (Bolivia)</time></div> : undefined;

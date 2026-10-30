@@ -1,10 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { Arrow } from '../UI';
 import { focusRegistration } from './registration-navigation';
-import { useLandingTracking } from './LandingContext';
+import { LandingContext, useLandingTracking } from './LandingContext';
 import { useRegistrationCTA } from './primitives';
 
 export function MobileStickyCTA({ targetId = 'registro' }: { targetId?: string }) {
+    const webinar = useContext(LandingContext)?.content.presentation.template === 'WEBINAR';
     const trackMarketing = useLandingTracking();
     const label = useRegistrationCTA();
     const [visible, setVisible] = useState(false);
@@ -38,7 +39,7 @@ export function MobileStickyCTA({ targetId = 'registro' }: { targetId?: string }
                 const videoState = player?.dataset.vslState;
                 const videoActive = playerVisible && !!videoState && !['unavailable', 'poster', 'ended', 'error'].includes(videoState);
                 const dialogOpen = !!document.querySelector('dialog[open], [aria-modal="true"]');
-                setVisible(!formVisible && !editing && !keyboard && !dialogOpen && !document.fullscreenElement && !videoActive && !playerAtBottom && !player?.contains(active));
+                setVisible(!formVisible && !editing && !keyboard && !dialogOpen && !document.fullscreenElement && (webinar || (!videoActive && !playerAtBottom && !player?.contains(active))));
             };
             // Watch only the bottom strip occupied by the CTA, without a scroll listener.
             const resized = () => {
@@ -76,7 +77,7 @@ export function MobileStickyCTA({ targetId = 'registro' }: { targetId?: string }
         bind();
         mobile.addEventListener('change', bind);
         return () => { stop?.(); mobile.removeEventListener('change', bind); };
-    }, [targetId]);
+    }, [targetId, webinar]);
 
     return <div className="mobile-sticky-space"><aside className="mobile-sticky-cta" aria-label="Sé parte de JAKAWI" hidden={!visible}>
         <a href={`#${targetId}`} className="btn btn-primary w-full" data-marketing-cta="sticky" onClick={event => { if (focusRegistration(targetId, event)) trackMarketing('cta_click', 'final'); }}>{label}<Arrow /></a>
