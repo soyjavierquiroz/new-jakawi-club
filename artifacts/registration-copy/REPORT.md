@@ -46,3 +46,13 @@ el commit funcional mediante Git, restaurar únicamente su manifest previo y
 reiniciar app. Los chunks antiguos siguen disponibles. No revertir tablas,
 secretos ni infraestructura. Sin incidencias funcionales abiertas en la validación
 previa.
+
+Despliegue completado con código funcional `9964decaeb2a15bba432784abf88d45e772d66be`:
+30 assets copiados conservando los anteriores y manifest publicado al final.
+35 grupos de Chromium con assets HTTPS LIVE PASS, incluidos los nueve campos,
+editor/export/render, las tres plantillas y home/principal con registro abierto.
+Validación local PASS; app/web/db saludables; IDs de contenedores intactos y web/db
+sin reinicio. Contrastados antes/después: todas las filas y snapshots de landings,
+las nueve tablas protegidas, secretos y fuentes ajenas a la entrega sin cambios.
+Sin altas LIVE, publicaciones editoriales automáticas ni correos reales.
+Sin incidencias funcionales nuevas. El SHA final de Git/LIVE se sella en LIVE.json.

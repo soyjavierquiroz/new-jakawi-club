@@ -1,0 +1,26 @@
+{
+  "baseline_sha": "a0f64050b63bd70c28a6fea32e8365c2aef95737",
+  "implementation_sha": "9964decaeb2a15bba432784abf88d45e772d66be",
+  "assets_copied": 30,
+  "manifest_published_last": true,
+  "old_assets_preserved": true,
+  "only_app_restarted": true,
+  "secrets_unchanged": true,
+  "unrelated_source_unchanged": true,
+  "published_content_and_all_landing_rows_unchanged": true,
+  "protected_tables_unchanged": [
+    "marketing_landings",
+    "migrations",
+    "users",
+    "commercial_events",
+    "commercial_event_conflicts",
+    "commission_rules",
+    "commission_ledger",
+    "commission_audit",
+    "affiliate_short_links"
+  ],
+  "registration_open": true,
+  "debug": false,
+  "live_test_users": 0,
+  "real_emails_sent": 0
+}
