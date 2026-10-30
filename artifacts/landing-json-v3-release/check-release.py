@@ -145,6 +145,13 @@ echo json_encode($r);
     for old in (PRIVATE/'build').rglob('*'):
         if old.is_file() and old.name != 'manifest.json':
             assert old.read_bytes() == (ROOT/'app/public/build'/old.relative_to(PRIVATE/'build')).read_bytes(), 'Old asset removed'
+    browser = json.loads((OUT/'browser-live.json').read_text())
+    commercial_browser = json.loads((OUT/'results/browser-live.json').read_text())
+    assert browser['live_assets'] and browser['passed'] == 18 and browser['live_registrations'] == 0
+    assert commercial_browser['live_assets'] and commercial_browser['no_live_mutations'] and commercial_browser['no_live_test_clicks']
+    assert not commercial_browser['runtime_errors'] and not commercial_browser['failed_assets']
+    local = json.loads((OUT/'validation.json').read_text())
+    assert local['app']['registration_open'] and local['local_http'] == local['inertia_http'] == 200
     result = {'verified_at': datetime.now(ZoneInfo('America/La_Paz')).isoformat(), 'original_commit': ORIGINAL,
               'baseline_sha': baseline['sha'], 'live_sha': head, 'origin_main_synced': True, 'tree_clean': True,
               'schema': state['schema'], 'live_runtime_import_export_roundtrip': True, 'editor_available': True,
@@ -153,6 +160,8 @@ echo json_encode($r);
               'unrelated_source_unchanged': True, 'secrets_unchanged': True, 'only_app_restarted': True,
               'services': {n: c['health'] for n, c in cs.items()}, 'health': health,
               'mounted_files_verified': len(mounted), 'https_assets_verified': len(assets), 'old_assets_preserved': True,
+              'browser_live_groups': browser['passed'], 'commercial_browser_widths': [c['width'] for c in commercial_browser['checks']],
+              'local_validation_passed': True,
               'live_test_registrations': 0, 'landings_created_or_published': 0, 'real_emails_sent': 0}
     (OUT/'LIVE.json').write_text(json.dumps(result, indent=2, ensure_ascii=False)+'\n')
     print(json.dumps(result, ensure_ascii=False))

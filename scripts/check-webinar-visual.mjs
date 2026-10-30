@@ -67,6 +67,10 @@ try {
 
     let html = await (await fetch('https://jakawi.club/')).text();
     const pattern = /(<script\b[^>]*data-page="app"[^>]*>)([\s\S]*?)(<\/script>)/;
+    const publishedContent = JSON.parse(html.match(pattern)[2]).props.landing.content;
+    const publishedTemplate = publishedContent.presentation.template;
+    const publishedSections = publishedTemplate === 'WEBINAR' && publishedContent.presentation.webinar && publishedContent.webinar
+        ? publishedContent.presentation.webinar.sections.filter(section => section.visible || section.id === 'registration').map(section => section.id) : [];
     const oldManifest = JSON.parse(await readFile('/live-build/manifest.json', 'utf8'));
     const nextManifest = live ? oldManifest : JSON.parse(await readFile('/workspace/public/build-next/manifest.json', 'utf8'));
     for (const [name, entry] of Object.entries(oldManifest)) {
@@ -289,7 +293,8 @@ try {
                 await until('document.readyState==="complete" && !!document.querySelector("#registro")','Existing public landing loads');
                 await until('!document.querySelector("#registro fieldset").disabled','Existing registration remains open');
                 assert(await evaluate('document.documentElement.scrollWidth<=innerWidth+1'));
-                assert.equal(await evaluate('document.querySelectorAll("[data-webinar-section]").length'),0);
+                assert.equal(await evaluate('document.querySelector("main[data-landing-template]").dataset.landingTemplate'),publishedTemplate);
+                assert.deepEqual(await evaluate('[...document.querySelectorAll("[data-webinar-section]")].map(section=>section.dataset.webinarSection)'),publishedSections);
             }
             await screenshot(`existing-home-live-${width}`);
             checks.push(`existing-home-principal-live-open-${width}`);

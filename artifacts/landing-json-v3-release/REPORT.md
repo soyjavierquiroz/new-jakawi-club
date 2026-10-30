@@ -35,6 +35,9 @@ externos simulados:
 | Total PHP | **796 PASS** |
 | TypeScript y Vite en contenedores limitados | PASS |
 | Chromium con build preparado | **15 grupos PASS** |
+| Chromium con assets LIVE: editor, importador, exportador, ambas previews y páginas públicas | **18 grupos PASS** |
+| Afiliados/resultados con assets LIVE a 390/1440 px | PASS, sin errores JS ni assets fallidos |
+| `python3 scripts/validate-local.py` posterior | PASS |
 
 Evidencia: [tests.json](tests.json) y [browser-results.json](browser-results.json).
 Los fixtures y capturas no se versionan. No se instalaron dependencias ni se
@@ -63,3 +66,30 @@ escribirla, roundtrip, disponibilidad del editor y registro abierto. Compara
 landings/snapshots, tablas protegidas, fuentes ajenas, secretos, contenedores,
 documentos oficiales y assets HTTPS con el baseline. No crea sesiones de prueba
 administrativas, registros de personas, publicaciones ni correos.
+
+## Verificación posterior
+
+El runtime LIVE admite el ejemplo v3 en memoria y exporta v3 con roundtrip
+equivalente. El controlador del editor responde correctamente; Chromium verifica
+su interfaz con fixtures administrativos y assets HTTPS reales. Las páginas `/`
+y `/principal` reales conservan su composición publicada y el registro abierto.
+No se usa una cuenta administrativa LIVE ni se envían formularios a producción.
+
+Se verifican **423 archivos montados** contra Git y **29 assets HTTPS** byte a
+byte; todos los chunks anteriores permanecen disponibles. Los tres servicios
+CLUB están saludables y `/up` público/local devuelve 200. Los hashes de todas
+las filas de landings, borradores y snapshots publicados, usuarios, migraciones,
+eventos comerciales, comisiones y enlaces siguen idénticos al baseline.
+Los secretos y las fuentes ajenas al importador también permanecen intactos.
+
+Incidencia de prueba: el runner anterior suponía que la portada no era WEBINAR.
+La portada ya tenía composición WEBINAR en el baseline previo. Se corrigió solo
+esa expectativa para comparar con la plantilla y las secciones publicadas reales;
+la prueba completa con assets LIVE pasó después. No hubo regresión de aplicación
+ni se modificó contenido editorial para hacer pasar la comprobación.
+
+Evidencia adicional: [browser-live.json](browser-live.json),
+[navegador comercial](results/browser-live.json), [validación local](validation.json),
+[deployment.json](deployment.json) y `LIVE.json` generado por `check-release.py`.
+El commit de cierre contiene únicamente pruebas, documentación y evidencia;
+mantiene exactamente los archivos de aplicación desplegados.
