@@ -1,0 +1,10 @@
+[Unit]
+Description=JAKAWI CLUB complete commercial catalog sync
+After=docker.service
+Requires=docker.service
+[Service]
+Type=oneshot
+ExecStart=/bin/bash /opt/sites/jakawi.club/scripts/sync-catalog.sh
+TimeoutStartSec=8min
+StandardOutput=journal
+StandardError=journal

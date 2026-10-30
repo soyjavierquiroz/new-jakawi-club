@@ -1,0 +1,8 @@
+[Unit]
+Description=Refresh JAKAWI CLUB commercial catalog every ten minutes
+[Timer]
+OnCalendar=*:0/10
+Persistent=true
+Unit=jakawi-club-catalog.service
+[Install]
+WantedBy=timers.target

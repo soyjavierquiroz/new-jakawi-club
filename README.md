@@ -1,7 +1,9 @@
 # JAKAWI Launch Engine — jakawi.club
 
 Enlaces cortos permanentes Dossis 43: [Fase 07A](docs/integrations/club-short-links-07a.md).
-Gestión manual en `/admin/ofertas-comerciales`; enlace principal en `/afiliados`.
+Catálogo sincronizado COM y captación CLUB en `/afiliados`: Explorar, Mis enlaces e Historial.
+Administración y pausa local en `/admin/ofertas-comerciales`.
+[Fase 07B2: contrato, sincronización cada diez minutos y operación](docs/integrations/club-catalog-07b2.md).
 
 Afiliados: **MIS ENLACES** y **MIS CONVERSIONES** en el dashboard privado,
 panel `/afiliados`. Enlace Dossis 43 con código CLUB real y operaciones COM

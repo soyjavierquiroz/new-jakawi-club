@@ -77,6 +77,7 @@ try {
     DB::statement('CREATE SCHEMA '.$schema);
     config(['database.connections.pgsql.search_path'=>$schema,'commercial.secret_file'=>'/tmp/commercial-test-secret','identity.enabled'=>false]);
     DB::purge('pgsql');
+    check(DB::selectOne('select current_schema() as name')->name===$schema && User::resolveConnection()->selectOne('select current_schema() as name')->name===$schema,'isolated connections verified before fixture writes');
     Artisan::call('migrate',['--force'=>true]);
     Notification::fake(); Http::preventStrayRequests(); Http::fake();
     check(web('GET','/afiliados')->isRedirect('https://jakawi.club/login'),'guest denied');
@@ -85,7 +86,7 @@ try {
     $r=web('GET','/afiliados'); $empty=payload($r);
     check($r->getStatusCode()===200 && $empty['component']==='Affiliates','verified activated member eligible without COM identity provisioning');
     check(preg_match('/^[A-Z0-9]{12}$/D',$a->referral_code)===1,'existing account mechanism issues real permanent code');
-    check($empty['props']['campaign']['long_url']==='https://jakawi.com/l/dossis-43-cafe-y-antojo?club_ref='.$a->referral_code,'personal link uses authenticated affiliate code');
+    check(DB::table('affiliate_short_links')->count()===0,'catalog visit does not automatically generate personal links');
     check($empty['props']['conversions']['total']===0,'honest empty state');
     $dashboard=payload(web('GET','/dashboard'));
     check($dashboard['props']['can_access_affiliates']===true,'private dashboard exposes affiliate navigation');

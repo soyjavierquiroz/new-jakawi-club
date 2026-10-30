@@ -1,8 +1,8 @@
-import { Head, Link } from '@inertiajs/react';
-import { useRef, useState } from 'react';
+import { Head, Link, router } from '@inertiajs/react';
+import { useState, type FormEvent } from 'react';
 import { commissionStatus, EconomicCutoff, EconomicPages, economicDate, type Pagination } from '../components/CommissionUI';
-import { Arrow, PageFrame } from '../components/UI';
-import { CommunityWhatsAppIcon } from '../components/CommunityWhatsAppIcon';
+import { PageFrame } from '../components/UI';
+import { OfferCard, catalogTypes, type CatalogOffer } from '../components/CatalogOffer';
 
 type Conversion = {
     occurred_at: string;
@@ -17,53 +17,42 @@ type Props = {
     economic_cutoff?: string;
     commission_entries?: Pagination<{ id: number; com_reference_type: string; com_reference_id: string; status: string; amount: string | null; currency: string | null; review_required: boolean; eligible: boolean; rule_id: number | null; created_at: string }>;
     economics?: { pending: number; approved: number; review: number; currencies: { currency: string; pending: string; approved: string; review: string }[] };
-    campaign: { name: string; personal_url: string; long_url: string; status: 'active' | 'paused' | 'finished' };
+    tab: 'explore' | 'links' | 'history';
+    filters: { q?: string; type?: string; city?: string; availability?: string };
+    offers: Pagination<CatalogOffer>;
+    cities: string[];
+    quick_links: { name: string; url: string }[];
     conversions: { data: Conversion[]; total: number; current_page: number; last_page: number; prev_page_url: string | null; next_page_url: string | null };
 };
 const dates = new Intl.DateTimeFormat('es-BO', { dateStyle: 'medium', timeStyle: 'short', timeZone: 'America/La_Paz' });
 
-export default function Affiliates({ campaign, conversions, economics, commission_entries, economic_cutoff }: Props) {
-    const input = useRef<HTMLTextAreaElement>(null);
-    const [message, setMessage] = useState('');
-    async function copy() {
-        try {
-            await navigator.clipboard.writeText(campaign.personal_url);
-            setMessage('¡Enlace copiado!');
-        } catch {
-            input.current?.focus();
-            input.current?.select();
-            setMessage('Selecciona y copia el enlace.');
-        }
+export default function Affiliates({ tab, filters, offers, cities, quick_links, conversions, economics, commission_entries, economic_cutoff }: Props) {
+    const [search, setSearch] = useState(filters.q || '');
+    function apply(event: FormEvent<HTMLFormElement>) {
+        event.preventDefault();
+        const data = Object.fromEntries(new FormData(event.currentTarget).entries()) as Record<string, string>;
+        router.get('/afiliados', { ...data, tab: 'explore' }, { preserveState: true });
     }
-    const whatsapp = `https://wa.me/?text=${encodeURIComponent(`${campaign.name}\n${campaign.personal_url}`)}`;
-
-    return <><Head title="Mis enlaces y conversiones" /><PageFrame>
+    return <><Head title="Catálogo de oportunidades" /><PageFrame>
         <Link href="/dashboard" className="text-sm font-semibold underline underline-offset-4">Volver a mi cuenta</Link>
-        <div className="mt-8 flex flex-wrap items-end justify-between gap-6">
-            <div><p className="eyebrow">MI ESPACIO DE AFILIADO</p><h1 className="mt-3 text-3xl font-extrabold tracking-tight sm:text-5xl">MIS ENLACES</h1><p className="mt-4 max-w-xl text-text-secondary">Comparte tu enlace personal y consulta las conversiones verificadas de tus recomendaciones.</p></div>
-            <a href="#mis-conversiones" className="text-sm font-semibold underline underline-offset-4">Mis conversiones ↓</a>
-        </div>
-        <div className="my-8 grid gap-5 lg:grid-cols-[2fr_1fr]">
-            <article className="feature-card min-w-0">
-                <p className="eyebrow">{campaign.status === 'finished' ? 'HISTORIAL DE ENLACES' : 'PARTNER'}</p><h2 className="mt-3 text-2xl font-extrabold tracking-tight">{campaign.name}</h2>
-                <p className="mt-3 text-sm font-semibold">Estado: {campaign.status === 'active' ? 'Activa' : campaign.status === 'paused' ? 'Pausada' : 'Finalizada'}</p>
-                {campaign.status !== 'active' && <p className="mt-2 text-sm text-text-secondary">{campaign.status === 'finished' ? 'Esta oferta ha finalizado. Tu enlace se conserva en el historial.' : 'Esta oferta no está disponible por ahora. Tu enlace se conserva.'}</p>}
-                <label htmlFor="affiliate-link" className="mb-3 mt-6 block text-sm font-semibold">Tu enlace corto permanente</label>
-                <textarea ref={input} id="affiliate-link" readOnly rows={3} value={campaign.personal_url} className="input w-full resize-none break-all text-sm" onFocus={event => event.target.select()} />
-                <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-                    <button type="button" className="btn btn-primary" onClick={() => void copy()}>COPIAR ENLACE <Arrow /></button>
-                    <a href={whatsapp} target="_blank" rel="noopener noreferrer" className="btn community-whatsapp-cta text-center"><CommunityWhatsAppIcon /> COMPARTIR POR WHATSAPP</a>
-                </div>
-                <details className="mt-5 text-sm"><summary className="font-semibold">Ver destino comercial vigente</summary><p className="mt-3 break-all text-text-secondary">{campaign.long_url}</p></details>
-                <p role="status" aria-live="polite" className="mt-3 min-h-5 text-sm text-text-secondary">{message}</p>
-            </article>
-            <aside className="rounded-card border border-border bg-surface-subtle p-7">
-                <p className="text-xs font-semibold tracking-widest text-text-secondary">CONVERSIONES CONFIRMADAS</p>
-                <p data-conversion-count className="my-4 text-6xl font-extrabold">{conversions.total}</p>
-                <p className="text-sm text-text-secondary">Total de tus operaciones COM confirmadas. Cada referencia comercial se cuenta una sola vez.</p>
-                <p className="mt-5 border-t border-border pt-4 text-sm text-text-secondary">Las comisiones requieren una operación posterior al corte, referente verificado, regla activa y aprobación manual. No hay pagos automáticos.</p>
-            </aside>
-        </div>
+        <div className="mb-8 mt-8"><p className="eyebrow">MI ESPACIO DE AFILIADO</p><h1 className="mt-3 text-3xl font-extrabold tracking-tight sm:text-5xl">OPORTUNIDADES</h1><p className="mt-4 max-w-2xl text-text-secondary">Descubre oportunidades, comparte tus enlaces y sigue tus resultados.</p></div>
+        <nav data-catalog-tab={tab} aria-label="Catálogo de afiliados" className="mb-7 grid grid-cols-3 gap-2 border-b border-border pb-4 text-center text-sm font-bold">
+            {([['explore', 'EXPLORAR'], ['links', 'MIS ENLACES'], ['history', 'HISTORIAL']] as const).map(([value, label]) => <Link key={value} href={`/afiliados?tab=${value}`} aria-current={tab === value ? 'page' : undefined} className={`rounded-control px-2 py-3 ${tab === value ? 'bg-ink text-surface' : 'bg-surface-subtle text-text-secondary'}`}>{label}</Link>)}
+        </nav>
+        {tab === 'explore' && <form onSubmit={apply} className="mb-7 grid grid-cols-2 gap-4 rounded-card border border-border bg-surface-subtle p-4 lg:grid-cols-[2fr_1fr_1fr_1fr_auto]">
+            <div className="col-span-2 min-w-0 lg:col-span-1"><label htmlFor="catalog-search" className="label">Buscar por nombre o Partner</label><input id="catalog-search" name="q" type="search" maxLength={120} value={search} onChange={event => setSearch(event.target.value)} placeholder="¿Qué quieres recomendar?" className="input w-full" /></div>
+            <div><label htmlFor="catalog-type" className="label">Tipo</label><select id="catalog-type" name="type" defaultValue={filters.type || ''} className="input w-full min-w-0"><option value="">Todos</option>{Object.entries(catalogTypes).map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></div>
+            <div><label htmlFor="catalog-city" className="label">Ciudad</label><select id="catalog-city" name="city" defaultValue={filters.city || ''} className="input w-full min-w-0"><option value="">Todas</option>{cities.map(city => <option key={city}>{city}</option>)}</select></div>
+            <div><label htmlFor="catalog-availability" className="label">Disponibilidad</label><select id="catalog-availability" name="availability" defaultValue={filters.availability || ''} className="input w-full min-w-0"><option value="">Todas</option><option value="active">Promocionables</option><option value="upcoming">Próximamente</option><option value="paused">No disponibles</option></select></div>
+            <button className="btn btn-primary self-end" type="submit">BUSCAR</button>
+        </form>}
+        {tab === 'links' && quick_links.length > 0 && <aside className="mb-7 rounded-card bg-surface-subtle p-4"><h2 className="text-sm font-bold">ACCESO RÁPIDO</h2><div className="mt-3 flex flex-wrap gap-4">{quick_links.map(link => <a key={link.url} className="text-sm font-semibold underline" href={link.url} target="_blank" rel="noopener noreferrer">{link.name}</a>)}</div></aside>}
+        {tab === 'history' && <p className="mb-6 text-sm text-text-secondary">Tus ofertas finalizadas o retiradas conservan sus enlaces permanentes y sus resultados históricos.</p>}
+        <p className="mb-4 text-sm text-text-secondary" data-offer-total>{offers.total} {tab === 'explore' ? 'oportunidades' : 'enlaces personales'}</p>
+        {offers.data.length ? <div className="grid items-stretch gap-5 sm:grid-cols-2 xl:grid-cols-3">{offers.data.map(offer => <OfferCard key={offer.key} offer={offer} />)}</div> : <div className="feature-card"><p className="font-semibold">{tab === 'explore' ? 'No encontramos oportunidades con estos filtros.' : tab === 'links' ? 'Todavía no has generado enlaces. Explora y elige una oportunidad.' : 'Todavía no tienes ofertas finalizadas o retiradas.'}</p></div>}
+        <EconomicPages page={offers} />
+        {tab !== 'explore' && <>
+        <aside className="feature-card mt-8"><p className="text-sm font-semibold">CONVERSIONES CONFIRMADAS</p><p data-conversion-count className="mt-3 text-4xl font-extrabold">{conversions.total}</p><p className="mt-3 text-sm text-text-secondary">Operaciones COM confirmadas para tu código CLUB. Cada referencia se cuenta una sola vez.</p></aside>
         {economics && <section id="mis-comisiones" className="my-10">
             <h2 className="text-2xl font-extrabold tracking-tight">MIS COMISIONES</h2>{economic_cutoff && <EconomicCutoff value={economic_cutoff} />}
             <div className="my-5 grid gap-4 sm:grid-cols-3"><article className="feature-card"><p className="text-sm text-text-secondary">Pendientes de evaluación</p><p data-pending-commissions className="mt-3 text-3xl font-bold">{economics.pending}</p></article><article className="feature-card"><p className="text-sm text-text-secondary">Comisiones aprobadas</p><p data-approved-commissions className="mt-3 text-3xl font-bold">{economics.approved}</p></article><article className="feature-card"><p className="text-sm text-text-secondary">Requieren revisión</p><p className="mt-3 text-3xl font-bold">{economics.review}</p></article></div>
@@ -94,5 +83,6 @@ export default function Affiliates({ campaign, conversions, economics, commissio
                 </nav>}
             </>}
         </section>
+        </>}
     </PageFrame></>;
 }

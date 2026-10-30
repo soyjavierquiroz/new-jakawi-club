@@ -2,7 +2,8 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 source_dir="$(pwd)"
-mkdir -p artifacts/affiliate-mvp
+evidence_dir="${JAKAWI_EVIDENCE_DIR:-${source_dir}/artifacts/affiliate-mvp}"
+mkdir -p "$evidence_dir"
 docker run --rm --name jakawi-club-affiliate-tests --network jakawi-club-private \
     --memory 256m --memory-swap 320m --cpus 0.65 --pids-limit 96 \
     --env-file /srv/sites/jakawi.club/secrets/app.env \
@@ -13,7 +14,7 @@ docker run --rm --name jakawi-club-affiliate-tests --network jakawi-club-private
     --volume /opt/sites/jakawi.club/app/vendor:/var/www/html/vendor:ro \
     --volume /opt/sites/jakawi.club/app/public/build:/var/www/html/public/build:ro \
     --volume "$source_dir/scripts:/tests:ro" \
-    --volume "$source_dir/artifacts/affiliate-mvp:/evidence" \
+    --volume "$evidence_dir:/evidence" \
     --tmpfs /var/www/html/storage:rw,mode=1777,size=32m \
     --tmpfs /var/www/html/bootstrap/cache:rw,mode=1777,size=8m \
     jakawi-club-php:8.4-base-v1 php /tests/affiliate-tests.php

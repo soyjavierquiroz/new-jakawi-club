@@ -67,14 +67,4 @@ final class AffiliateShortLinks
         return rtrim(config('app.url'), '/').'/r/'.$code;
     }
 
-    public function campaign(User $user, object $offer): array
-    {
-        $link = $this->forAffiliate($user, $offer->key);
-
-        return [
-            'name' => $offer->name, 'status' => $offer->status,
-            'personal_url' => $this->url($link->code),
-            'long_url' => $this->destination($offer->destination_url, $link->referral_code),
-        ];
-    }
 }

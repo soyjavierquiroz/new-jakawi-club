@@ -115,3 +115,8 @@ credentials.json
 /artifacts/webinar-release/LIVE.json
 /artifacts/webinar-release/**/*fixtures.json
 /artifacts/webinar-release/*fixtures.json
+
+/artifacts/catalog-07b2/LIVE.json
+/artifacts/catalog-07b2/*fixtures.json
+/artifacts/catalog-07b2/*fixture.html
+/artifacts/catalog-07b2/**/*fixtures.json

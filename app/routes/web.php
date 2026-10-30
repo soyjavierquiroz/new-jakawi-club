@@ -27,6 +27,9 @@ Route::get('/admin/conversiones-com', \App\Http\Controllers\CommercialAdminContr
 Route::get('/afiliados', \App\Http\Controllers\AffiliateController::class)
     ->middleware(['auth', 'verified', \App\Http\Middleware\ActiveAffiliate::class])->name('affiliates.index');
 
+Route::post('/afiliados/enlaces/{offer}', [\App\Http\Controllers\AffiliateController::class, 'generate'])
+    ->middleware(['auth', 'verified', \App\Http\Middleware\ActiveAffiliate::class, 'throttle:30,1'])->name('affiliates.generate');
+
 Route::get('/', WelcomeController::class)->name('home');
 Route::get('/l/{slug}', [WelcomeController::class, 'legacy'])->name('landing.legacy');
 Route::prefix('admin/landings')->middleware(['auth', 'verified', MarketingAdmin::class])->group(function (): void {

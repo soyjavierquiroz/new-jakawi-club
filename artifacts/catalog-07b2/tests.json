@@ -1,0 +1,11 @@
+{
+    "passed": 75,
+    "postgresql": "schema isolation verified before writes",
+    "live_fixtures": 0,
+    "multipage": true,
+    "atomic_failure": true,
+    "permanent_dossis_link": true,
+    "on_demand": true,
+    "affiliate_privacy": true,
+    "club_referral_verified": true
+}
