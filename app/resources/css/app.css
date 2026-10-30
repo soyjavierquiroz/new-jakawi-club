@@ -237,8 +237,7 @@ main[data-landing-template=WEBINAR] .section-space { padding-block: 2.5rem; }
 main[data-landing-template=WEBINAR] .section-title { font-size: clamp(2rem, 3.5vw, 3rem); line-height: 1.12; }
 main[data-landing-template=WEBINAR] .feature-card { padding: 1.5rem; }
 main[data-landing-template=WEBINAR] .feature-card p { font-size: 1rem; line-height: 1.65; }
-.webinar-benefit-icon { display: inline-grid; width: 44px; height: 44px; place-items: center; border-radius: 50%; background: var(--brand-subtle); color: var(--ink); }
-main[data-landing-template=WEBINAR] #como-funciona .feature-card:nth-child(even) .webinar-benefit-icon { background: var(--cream); outline: 1px solid var(--border); }
+.webinar-benefit-icon { display: inline-grid; width: 44px; height: 44px; place-items: center; border-radius: 50%; background: var(--reward); color: var(--ink); }
 .webinar-event-card { background: var(--surface-raised); border-top: 4px solid var(--success); }
 .webinar-event-details { display: flex; flex-wrap: wrap; gap: .875rem 1.5rem; margin-top: 1.5rem; }
 .webinar-event-details p, .webinar-date-pending > p:first-child { display: flex; align-items: center; gap: .625rem; font-weight: 600; }

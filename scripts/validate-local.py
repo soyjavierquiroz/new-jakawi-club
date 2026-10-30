@@ -128,7 +128,7 @@ assert len(private['Containers']) == 3
 
 # Check only this CLUB release; old cross-project snapshots are outside scope.
 protected = None
-baseline_path = Path('/srv/sites/jakawi.club/rollback-catalog-07b2/baseline.json')
+baseline_path = Path(os.environ.get('JAKAWI_BASELINE_PATH', '/srv/sites/jakawi.club/rollback-catalog-07b2/baseline.json'))
 if baseline_path.exists():
     baseline = json.loads(baseline_path.read_text())
     for container in inspected:

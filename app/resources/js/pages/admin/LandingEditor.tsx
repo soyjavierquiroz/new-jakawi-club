@@ -3,6 +3,7 @@ import { useEffect, useRef, useState, type FormEvent, type ReactNode } from 'rea
 import { ErrorText, PageFrame } from '../../components/UI';
 import { aiBrief, editorialJSON, sameConfiguration } from '../../lib/landing-editorial';
 import type { LandingContent, LandingRecord, LandingTemplate } from '../../types';
+import { benefitIconOptions } from '../../lib/benefit-icons';
 import { LandingAiKit } from '../../components/admin/LandingAiKit';
 import { statusLabel } from './Landings';
 
@@ -10,7 +11,7 @@ type Value = string | null | { [key: string]: Value } | Value[];
 const labels: Record<string, string> = {
     webinar: 'Contenido del webinar', opportunity: 'Problema / oportunidad', early: 'Beneficios de participar desde el comienzo', steps: 'Cómo funciona', seo: 'Buscadores', hero: 'Mensaje', benefits: 'Beneficios', registration: 'Introducción al registro', faq: 'Preguntas frecuentes', final: 'Cierre', video: 'Video VSL',
     message: 'Mensaje de confirmación', instructions: 'Instrucción de revisar correo', cta_label: 'Texto del botón siguiente', title: 'Título', description: 'Descripción', eyebrow: 'Antetítulo', emphasis: 'Texto destacado', ending: 'Final del titular', cta: 'Texto del botón',
-    items: 'Elementos', question: 'Pregunta', answer: 'Respuesta', youtube_url: 'URL de YouTube', poster: 'Poster local (opcional)', aspect_ratio: 'Marco del reproductor', source_aspect_ratio: 'Proporción del video original',
+    icon: 'Icono', items: 'Elementos', question: 'Pregunta', answer: 'Respuesta', youtube_url: 'URL de YouTube', poster: 'Poster local (opcional)', aspect_ratio: 'Marco del reproductor', source_aspect_ratio: 'Proporción del video original',
 };
 
 function Fields({ value, path, onChange }: { value: Value; path: string; onChange: (value: Value) => void }) {
@@ -19,11 +20,19 @@ function Fields({ value, path, onChange }: { value: Value; path: string; onChang
     if (Array.isArray(value)) return <div className="space-y-4">{value.map((item, index) => <fieldset className="rounded-card border border-border p-4" key={index}>
         <legend className="px-2 text-sm font-bold">Elemento {index + 1}</legend><Fields value={item} path={`${path}.${index}`} onChange={next => onChange(value.map((entry, i) => i === index ? next : entry))} />
         {!fixedItems && <button type="button" className="btn btn-secondary mt-4" disabled={value.length <= 1} onClick={() => onChange(value.filter((_, i) => i !== index))}>Quitar elemento</button>}
-    </fieldset>)}{!fixedItems && <button type="button" className="btn btn-secondary" disabled={value.length >= 8} onClick={() => onChange([...value, Object.fromEntries(Object.keys(value[0] || {}).map(name => [name, '']))])}>Añadir elemento</button>}</div>;
-    if (value !== null && typeof value === 'object') return <div className="space-y-5">{Object.entries(value).filter(([name]) => !(path === 'content.after_registration' && name === 'cta_label') && !(['content.hero', 'content.final'].includes(path) && name === 'cta')).map(([name, entry]) => <Fields key={name} value={entry} path={`${path}.${name}`} onChange={next => onChange({ ...value, [name]: next })} />)}</div>;
-    const options = key === 'source_aspect_ratio' ? ['9:16', '3:4', '16:9'] : null;
+    </fieldset>)}{!fixedItems && <button type="button" className="btn btn-secondary" disabled={value.length >= 8} onClick={() => onChange([...value, Object.fromEntries(Object.keys(value[0] || {}).filter(name => name !== 'icon' || path !== 'content.benefits.items').map(name => [name, '']))])}>Añadir elemento</button>}</div>;
+    if (value !== null && typeof value === 'object') {
+        const benefitItem = /^content\.benefits\.items\.\d+$/.test(path);
+        const fields = benefitItem ? { ...value, icon: value.icon ?? '' } : value;
+        return <div className="space-y-5">{Object.entries(fields).filter(([name]) => !(path === 'content.after_registration' && name === 'cta_label') && !(['content.hero', 'content.final'].includes(path) && name === 'cta')).map(([name, entry]) => <Fields key={name} value={entry} path={`${path}.${name}`} onChange={next => {
+            const updated = { ...value, [name]: next };
+            if (benefitItem && name === 'icon' && next === '') delete updated.icon;
+            onChange(updated);
+        }} />)}</div>;
+    }
+    const options = key === 'icon' ? [['', 'Automático (icono actual)'], ...benefitIconOptions] : key === 'source_aspect_ratio' ? ['9:16', '3:4', '16:9'].map(option => [option, option]) : null;
     const optional = key === 'poster' || key === 'youtube_url';
-    return <div><label className="label" htmlFor={path}>{labels[key] || key}</label>{options ? <select className="input" id={path} value={value || ''} onChange={event => onChange(event.target.value)}>{options.map(option => <option key={option}>{option}</option>)}</select> :
+    return <div><label className="label" htmlFor={path}>{labels[key] || key}</label>{options ? <select className="input" id={path} value={value || ''} onChange={event => onChange(event.target.value)}>{options.map(([option, label]) => <option key={option} value={option}>{label}</option>)}</select> :
         <textarea className="input" id={path} rows={key === 'description' || key === 'answer' ? 3 : 2} maxLength={optional ? 500 : 1200} required={!optional} value={value || ''} onChange={event => onChange(optional && !event.target.value ? null : event.target.value)} />}
         {key === 'poster' && <p className="mt-2 text-xs text-text-secondary">Archivo PNG, JPEG o WebP existente en /marketing/. Vacío conserva el estado sin poster.</p>}
     </div>;

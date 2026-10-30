@@ -50,7 +50,7 @@ obligatorio solo al crear un WEBINAR completo.
 | `seo` | `title`, `description` | Texto; título del documento y metadescripción |
 | `hero` | `eyebrow`, `title`, `emphasis`, `ending`, `description`, `cta` | Texto; titular = title + emphasis + ending |
 | `benefits` | `eyebrow`, `title`, `description`, `items` | Textos y lista de 1–8 elementos |
-| `benefits.items[]` | `title`, `description` | Ambos textos obligatorios |
+| `benefits.items[]` | `title`, `description`, `icon` (opcional) | Ambos textos obligatorios; icono de la lista cerrada |
 | `registration` | `eyebrow`, `title`, `description` | Texto; introducción al formulario existente |
 | `faq` | `eyebrow`, `title`, `items` | Textos y lista de 1–8 elementos |
 | `faq.items[]` | `question`, `answer` | Ambos textos obligatorios |
@@ -62,6 +62,18 @@ obligatorio solo al crear un WEBINAR completo.
 | `webinar.early.items[]` | `title`, `description` | Ambos textos obligatorios |
 | `webinar.steps` | `title`, `items` | Texto y lista de exactamente 3 elementos |
 | `webinar.steps.items[]` | `title`, `description` | Ambos textos obligatorios |
+
+`benefits.items[].icon` es un string opcional: `play`, `users`, `gift`,
+`compass`, `calendar`, `star`, `heart`, `arrow-right`, `lightbulb` o `megaphone`.
+Son iconos Lucide locales existentes; se rechazan valores vacíos, `null`, nombres
+arbitrarios, SVG, objetos, componentes y código. En WEBINAR se muestran los
+primeros tres beneficios con círculo amarillo JAKAWI `#FFC83D` e icono `#111111`.
+Omitir `icon` conserva el fallback por posición (reproducir, flecha, reiniciar);
+«Automático (icono actual)» en el editor elimina la propiedad. LEAD_VSL y WAITLIST
+conservan sus indicadores numéricos. No se cambia el esquema ni se requiere una
+migración. Los JSON antiguos sin `icon` siguen siendo válidos. Un parche que omite
+`benefits` conserva la lista actual; al enviar `items`, reemplaza la lista completa,
+incluidos sus iconos. Importación, exportación y previews conservan el valor.
 
 En WEBINAR completo se muestran únicamente los primeros **tres beneficios**.
 `hero.cta` se utiliza en los CTA de captación y en el botón de registro.

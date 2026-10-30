@@ -1,3 +1,5 @@
+import type { BenefitIconName } from './lib/benefit-icons';
+
 export type Launch = {
     registration_open: boolean;
     video_url: string | null;
@@ -20,7 +22,7 @@ export type LandingContent = {
     next_step: { action: 'none' | 'recover' | 'account' | 'home' | 'whatsapp'; redirect_seconds: 0 | 5 | 10 | 15 | 30 | 60 };
     seo: { title: string; description: string };
     hero: { eyebrow: string; title: string; emphasis: string; ending: string; description: string; cta: string };
-    benefits: { eyebrow: string; title: string; description: string; items: { title: string; description: string }[] };
+    benefits: { eyebrow: string; title: string; description: string; items: { title: string; description: string; icon?: BenefitIconName }[] };
     registration: { eyebrow: string; title: string; description: string };
     faq: { eyebrow: string; title: string; items: { question: string; answer: string }[] };
     final: { eyebrow: string; title: string; description: string; cta: string };

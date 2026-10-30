@@ -14,6 +14,8 @@ class LandingContent
     public const TEMPLATES = ['LEAD_VSL', 'WEBINAR', 'WAITLIST'];
     public const EDITORIAL = ['seo', 'hero', 'benefits', 'registration', 'faq', 'final', 'after_registration', 'webinar'];
     public const EDITORIAL_V3 = [...self::EDITORIAL, 'presentation', 'video', 'confirmation_video', 'whatsapp_group', 'confirmation_whatsapp_group'];
+    public const BENEFIT_ICONS = ['play', 'users', 'gift', 'compass', 'calendar', 'star', 'heart', 'arrow-right', 'lightbulb', 'megaphone'];
+
     public const WEBINAR_SECTIONS = ['hero', 'event', 'benefits', 'opportunity', 'early', 'steps', 'registration', 'faq', 'final'];
 
     /** The local LEAD_VSL defaults shared by the existing administrative and public flows. */
@@ -301,7 +303,10 @@ class LandingContent
         }
         foreach (['benefits' => ['title', 'description'], 'faq' => ['question', 'answer']] as $section => $keys) {
             $rules['content.'.$section.'.items'] = [$presence, 'array', 'list', 'min:1', 'max:8'];
-            $rules['content.'.$section.'.items.*'] = ['required', 'array:'.implode(',', $keys)];
+            $rules['content.'.$section.'.items.*'] = ['required', 'array:'.implode(',', $section === 'benefits' ? [...$keys, 'icon'] : $keys)];
+            if ($section === 'benefits') {
+                $rules['content.benefits.items.*.icon'] = ['sometimes', 'required', 'string', Rule::in(self::BENEFIT_ICONS)];
+            }
             foreach ($keys as $key) {
                 $rules['content.'.$section.'.items.*.'.$key] = ['required', 'string', 'max:1200', 'not_regex:/[<>]/u'];
             }

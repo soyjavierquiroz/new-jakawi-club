@@ -458,6 +458,68 @@ try {
         await until('!!document.querySelector("#jakawi-login")','Existing JAKAWI SSO login remains available');
         checks.push('existing-sso-login-live');
     }
+
+    // Configurable benefits: real PHP fixtures + browser-only edits; never mutate LIVE.
+    const iconNames = ['play','users','gift','compass','calendar','star','heart','arrow-right','lightbulb','megaphone'];
+    const iconSelector = '#como-funciona .webinar-benefit-icon';
+    for (const width of [390,1440]) {
+        await call('Emulation.setDeviceMetricsOverride',{width,height:900,deviceScaleFactor:1,mobile:width<768});
+        for (const preview of [false,true]) {
+            await navigate(v3.preview,p=>{p.props.landing.preview=preview;});
+            assert.deepEqual(await evaluate(`[...document.querySelectorAll('${iconSelector} svg')].map(e=>e.dataset.benefitIcon)`),['play','users','gift']);
+            assert.deepEqual(await evaluate(`[...document.querySelectorAll('${iconSelector} svg')].map(e=>e.firstElementChild.tagName)`),['polygon','path','rect']);
+            assert(await evaluate(`[...document.querySelectorAll('${iconSelector}')].every(e=>getComputedStyle(e).backgroundColor==='rgb(255, 200, 61)' && getComputedStyle(e).color==='rgb(17, 17, 17)' && getComputedStyle(e).borderRadius==='50%' && e.querySelector('svg').getAttribute('stroke')==='currentColor')`));
+            assert.equal(await evaluate(`document.querySelectorAll('${iconSelector}').length`),3);
+            assert(await evaluate('document.documentElement.scrollWidth<=innerWidth+1'));
+            await evaluate(`document.querySelector('#como-funciona').scrollIntoView({block:'start',behavior:'instant'})`);
+            await screenshot(`benefit-icons-${preview?'preview':'public-fixture'}-${width}`);
+        }
+    }
+    checks.push('benefits-three-selected-lucide-icons-yellow-black-public-preview-mobile-desktop');
+    for (let offset=0;offset<iconNames.length;offset+=3) {
+        const selected = [0,1,2].map(i=>iconNames[(offset+i)%iconNames.length]);
+        await navigate(v3.preview,p=>p.props.landing.content.benefits.items.forEach((item,i)=>item.icon=selected[i]));
+        assert.deepEqual(await evaluate(`[...document.querySelectorAll('${iconSelector} svg')].map(e=>e.dataset.benefitIcon)`),selected);
+    }
+    await navigate(fixtures.empty);
+    const fallbackShapes = await evaluate(`[...document.querySelectorAll('${iconSelector} svg')].map(e=>e.outerHTML)`);
+    assert.equal(fallbackShapes.length,3);
+    assert(fallbackShapes[0].includes('<polygon') && fallbackShapes[1].includes('M5 12h14m-6-6') && fallbackShapes[2].includes('M3 12a9'));
+    await navigate(v3.preview,p=>p.props.landing.content.benefits.items.forEach(item=>delete item.icon));
+    assert.deepEqual(await evaluate(`[...document.querySelectorAll('${iconSelector} svg')].map(e=>e.outerHTML)`),fallbackShapes);
+    await navigate(v3.preview,p=>p.props.landing.content.benefits.items.forEach(item=>item.icon='constructor'));
+    assert.deepEqual(await evaluate(`[...document.querySelectorAll('${iconSelector} svg')].map(e=>e.outerHTML)`),fallbackShapes);
+    checks.push('benefits-all-ten-icons-and-exact-legacy-fallback-safe-unknown-name');
+    for (const template of ['LEAD_VSL','WAITLIST']) {
+        await navigate(v3.preview,p=>{p.props.landing.content.presentation.template=template;});
+        assert.equal(await evaluate(`document.querySelectorAll('${iconSelector}, [data-benefit-icon]').length`),0);
+        assert.deepEqual(await evaluate(`[...document.querySelectorAll('#como-funciona .benefit-number')].map(e=>e.textContent)`),['01','02','03']);
+    }
+    checks.push('benefits-lead-vsl-waitlist-numeric-indicators-unchanged');
+    await navigate(v3.editor);
+    await evaluate(`[...document.querySelectorAll('details')].find(e=>e.querySelector('summary')?.textContent==='Beneficios').open=true`);
+    assert.deepEqual(await evaluate(`[0,1,2].map(i=>document.getElementById('content.benefits.items.'+i+'.icon').value)`),['play','users','gift']);
+    assert.deepEqual(await evaluate(`[...document.getElementById('content.benefits.items.0.icon').options].map(o=>o.value)`),['',...iconNames]);
+    for (const [i,name] of ['compass','calendar','star'].entries()) await fill(`content.benefits.items.${i}.icon`,name,'HTMLSelectElement');
+    const exportIcons = async () => {
+        await evaluate(`[...document.querySelectorAll('button')].find(b=>b.textContent==='EXPORTAR JSON').click()`);
+        const doc = JSON.parse(await evaluate('document.querySelector("#editorial-output").value'));
+        await evaluate(`[...document.querySelectorAll('button')].find(b=>b.textContent==='Cerrar').click()`);
+        return doc;
+    };
+    const selectedDoc = await exportIcons();
+    assert.deepEqual(selectedDoc.content.benefits.items.map(item=>item.icon),['compass','calendar','star']);
+    assert.deepEqual(selectedDoc.content.benefits.items.map(({icon,...text})=>text),v3.document.content.benefits.items.map(({icon,...text})=>text));
+    await fill('content.benefits.items.0.icon','','HTMLSelectElement');
+    assert(!Object.hasOwn((await exportIcons()).content.benefits.items[0],'icon'),'Automatic removes optional property');
+    await evaluate(`[...[...document.querySelectorAll('details')].find(e=>e.querySelector('summary')?.textContent==='Beneficios').querySelectorAll('button')].find(b=>b.textContent==='Añadir elemento').click()`);
+    // New benefits have no invalid empty icon.
+    assert.equal(await evaluate('document.getElementById("content.benefits.items.3.icon").value'),'');
+    assert(!Object.hasOwn((await exportIcons()).content.benefits.items[3],'icon'));
+    await navigate(v3.preview,p=>{p.props.landing.content=selectedDoc.content;});
+    assert.deepEqual(await evaluate(`[...document.querySelectorAll('${iconSelector} svg')].map(e=>e.dataset.benefitIcon)`),['compass','calendar','star']);
+    checks.push('benefits-visual-editor-select-export-automatic-add-item-and-render');
+
     assert.equal(writes.length,0,'No browser mutation reaches LIVE');
     assert.deepEqual(runtimeErrors,[]);assert.deepEqual(failedAssets,[]);
     checks.push('reusable-new-webinar-seed-no-save-no-publication');

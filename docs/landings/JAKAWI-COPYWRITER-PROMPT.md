@@ -47,6 +47,12 @@ la configuración editorial del ejemplo, ambas etapas y la activación explícit
 de la composición WEBINAR conforme al contrato. Conserva los nueve IDs de sección,
 su orden y visibilidad explícitos; registro siempre visible.
 
+Puedes elegir `benefits.items[].icon` entre `play`, `users`, `gift`, `compass`,
+`calendar`, `star`, `heart`, `arrow-right`, `lightbulb` y `megaphone`. Es opcional:
+omítelo para conservar el icono automático por posición. No uses `null`, cadenas
+vacías, nombres arbitrarios, SVG, componentes ni código. WEBINAR muestra los
+primeros tres iconos; LEAD_VSL y WAITLIST conservan indicadores numéricos.
+
 Sin fecha confirmada utiliza `starts_at: null`. Respeta el formato y huso del
 contrato si el responsable proporciona una fecha. No inventes una fecha para
 activar el countdown.

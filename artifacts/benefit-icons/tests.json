@@ -1,0 +1,10 @@
+{
+  "php_checks": 455,
+  "php_isolation": "disposable PostgreSQL schema",
+  "live_test_users": 0,
+  "typescript": "PASS",
+  "vite": "PASS",
+  "new_dependencies": 0,
+  "browser_preview_groups": 27,
+  "live_mutations": 0
+}

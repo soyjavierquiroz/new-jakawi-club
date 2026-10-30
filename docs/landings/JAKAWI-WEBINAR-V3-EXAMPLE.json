@@ -21,15 +21,18 @@
       "items": [
         {
           "title": "Qué es JAKAWI",
-          "description": "Conoce la propuesta que estamos preparando para descubrir y disfrutar más de Cochabamba."
+          "description": "Conoce la propuesta que estamos preparando para descubrir y disfrutar más de Cochabamba.",
+          "icon": "play"
         },
         {
           "title": "Cómo participar",
-          "description": "Entiende cómo crear tu cuenta gratuita y qué necesitas para acceder a tu invitación personal."
+          "description": "Entiende cómo crear tu cuenta gratuita y qué necesitas para acceder a tu invitación personal.",
+          "icon": "users"
         },
         {
           "title": "Cuáles son los próximos pasos",
-          "description": "Descubre cómo acompañar el prelanzamiento y dónde consultar las indicaciones del encuentro."
+          "description": "Descubre cómo acompañar el prelanzamiento y dónde consultar las indicaciones del encuentro.",
+          "icon": "gift"
         }
       ]
     },

@@ -159,3 +159,7 @@ credentials.json
 /artifacts/webinar-refinement/LIVE.json
 /artifacts/webinar-refinement/*fixtures.json
 /artifacts/webinar-refinement/*.png
+
+/artifacts/benefit-icons/LIVE.json
+/artifacts/benefit-icons/*fixtures.json
+/artifacts/benefit-icons/*.png
