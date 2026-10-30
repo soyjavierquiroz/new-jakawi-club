@@ -1,0 +1,7 @@
+{
+  "source_sha": "7bba7f40f61829983dbdb7534e9ae81fbf6dd5e2",
+  "baseline_sha": "48b382f1b5920c884bed5c9ae6b7a71d2d7cbd21",
+  "new_asset_files": 20,
+  "only_app_restart": true,
+  "migrations": false
+}

@@ -29,3 +29,9 @@ El SHA final y las comprobaciones quedan en `LIVE.json` (no versionado).
 TypeScript y build: PASS. Navegador previo: 23 grupos PASS.
 `validate-local.py` encuentra el ID histórico anterior de app; la línea base de
 esta entrega comprueba el contenedor vigente y la integridad del resto del stack.
+
+Desplegado: `7bba7f40f61829983dbdb7534e9ae81fbf6dd5e2` (código).
+Navegador con assets LIVE: **26 grupos PASS**, incluidos home/principal y login.
+553 checks PHP, TypeScript y build aprobados. Solo app reiniciada, sin migraciones;
+20 assets nuevos, conservados los chunks anteriores. No se modificó contenido
+editorial, usuarios, configuración comercial ni secretos; cero registros/correos reales.
