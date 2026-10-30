@@ -171,15 +171,24 @@ try {
                 return {heading:rect('.hero-heading'),copy:rect('.hero-copy'),cta:rect('[data-marketing-cta=hero]'),media:rect('.hero-media'),frame:rect('.vsl-frame'),iframe:rect('.vsl-host iframe'),kind:document.querySelector('[data-marketing-video-frame]').dataset.marketingVideoFrame,overflow:document.documentElement.scrollWidth>innerWidth+1};
             })()`);
             assert.equal(layout.overflow,false);
+            assert.equal(await evaluate('!!document.querySelector("[data-webinar-event-bar]")'),false);
+            assert.equal(await evaluate('getComputedStyle(document.querySelector("[data-vsl-progress] > div")).backgroundColor'),'rgb(36, 180, 126)');
+            if(publishedContent.presentation.webinar?.starts_at){
+                assert.equal(await evaluate('document.querySelector("[data-webinar-hero-date] time").dateTime'),publishedContent.presentation.webinar.starts_at);
+                assert(await evaluate('parseFloat(getComputedStyle(document.querySelector("[data-webinar-hero-date]")).fontSize)<=13'));
+            }
+
             assert(Math.abs(layout.frame.width/layout.frame.height-.75)<.01);
             assert.equal(layout.kind,'embedded-vertical','WEBINAR portrait metadata selects existing embedded crop');
             assert(Math.abs(layout.iframe.width/layout.frame.width-3.16049383)<.02);
             assert(Math.abs(layout.iframe.height/layout.frame.height-4/3)<.02);
             if(width<768){
                 assert(layout.heading.bottom<=layout.media.y,'Headline directly before video');
+                if(publishedContent.presentation.webinar?.starts_at) assert(await evaluate('getComputedStyle(document.querySelector("[data-webinar-hero-date]")).display==="none"'));
+
                 assert(layout.media.bottom<=layout.copy.y,'Description follows video');
                 assert(await evaluate('getComputedStyle(document.querySelector("[data-marketing-cta=hero]")).display==="none"'),'Hero CTA hidden only on mobile');
-                assert(await evaluate('document.querySelector(".site-header").getBoundingClientRect().height<=57'),'Compact header');
+                assert(await evaluate('document.querySelector(".site-header").getBoundingClientRect().height<=49'),'Compact header');
                 assert(await evaluate('document.querySelector(".site-header nav a").getBoundingClientRect().height>=44'),'Accessible account target');
                 assert.equal(await evaluate('document.querySelector("[data-marketing-cta=sticky]").textContent.trim()'),publishedContent.hero.cta);
                 assert(await evaluate('document.querySelector("[data-marketing-cta=sticky]").getBoundingClientRect().height<=52'),'Compact sticky');
@@ -205,6 +214,13 @@ try {
             }else{
                 assert(layout.heading.right<layout.media.x && layout.copy.right<layout.media.x,'Desktop text left / video right');
                 assert(await evaluate('getComputedStyle(document.querySelector("[data-marketing-cta=hero]")).display!=="none"'),'Desktop hero CTA preserved');
+                assert(await evaluate('document.querySelector(".site-header").getBoundingClientRect().height<=61'),'Compact desktop header');
+                assert(await evaluate('document.querySelector(".site-header nav a").getBoundingClientRect().height>=44'));
+                if(publishedContent.presentation.webinar?.starts_at){
+                    assert(await evaluate('getComputedStyle(document.querySelector("[data-webinar-hero-date]")).display!=="none"'));
+                    assert(await evaluate('document.querySelector("[data-marketing-cta=hero]").nextElementSibling.matches("[data-webinar-hero-date]")'));
+                }
+
                 assert(layout.frame.y<240 && layout.frame.bottom<height,'Desktop full frame in first screen');
                 assert(layout.frame.width>=380,'Desktop video stays prominent');
             }
@@ -248,9 +264,8 @@ try {
         await call('Emulation.setDeviceMetricsOverride',{width,height:900,deviceScaleFactor:1,mobile:width<768});
         await navigate(fixtures.empty, p => {p.props.launch.registration_open=true;p.props.landing.preview=false;p.props.launch.video_url=null;});
         assert.equal(await evaluate('!!document.querySelector("[data-webinar-countdown]")'),false);
+        assert.equal(await evaluate('!!document.querySelector("[data-webinar-hero-date], [data-webinar-event-bar]")'),false);
         assert.equal(await evaluate('document.querySelector("#webinar-event-title").textContent'),'Próximo webinar en vivo');
-        assert(await evaluate('document.querySelector(".webinar-event-bar").textContent.includes("WEBINAR GRATUITO · PRÓXIMAMENTE")'));
-        assert.equal(await evaluate('getComputedStyle(document.querySelector(".webinar-event-bar")).backgroundColor'),'rgb(36, 180, 126)');
         assert(await evaluate('document.querySelector(".webinar-date-pending").textContent.includes("Fecha por confirmar")'));
         assert.equal(await evaluate('document.querySelectorAll(".webinar-benefit-icon svg").length'),3);
         assert.equal(await evaluate('getComputedStyle(document.querySelector("[data-webinar-section=opportunity]")).backgroundColor'),'rgb(17, 17, 17)');
@@ -263,8 +278,6 @@ try {
             await evaluate(`document.querySelector(${JSON.stringify(selector)}).scrollIntoView({block:"start",behavior:"instant"})`);
             await screenshot(`visual-${width}-${selector.replaceAll(/[^a-z]/g,'')}`);
         }
-        await evaluate('document.querySelector(".webinar-event-bar a").click()');
-        await until('document.activeElement.id==="registro"','Event bar focuses the unique shared form');
         await evaluate('document.activeElement.blur();window.scrollTo({top:0,behavior:"instant"})');
 
         assert(await evaluate('document.documentElement.scrollWidth<=innerWidth+1'));
@@ -295,8 +308,6 @@ try {
     assert.deepEqual(await evaluate('[...document.querySelectorAll("[data-webinar-section]")].map(e=>e.dataset.webinarSection)'),['final','faq','registration','steps','early','benefits','event','hero']);
     assert(await evaluate('document.querySelector("[data-webinar-schedule] time").textContent.includes("19:30")'));
     assert.equal(await evaluate('document.querySelector("[data-webinar-schedule] time").dateTime'),'2030-11-10T19:30:00-04:00');
-    assert.equal(await evaluate('document.querySelector(".webinar-event-bar time").dateTime'),'2030-11-10T19:30:00-04:00');
-    assert(await evaluate('document.querySelector(".webinar-event-bar time").textContent.includes("19:30")'));
     assert.equal(await evaluate('document.querySelectorAll(".webinar-event-details svg").length'),3);
     assert.equal(await evaluate('document.querySelectorAll("[data-webinar-countdown] > div").length'),4);
     assert(await evaluate('[...document.querySelectorAll("[data-webinar-countdown] > div")].every(e=>e.scrollWidth<=e.clientWidth)'), 'Countdown digits fit their cells');
@@ -307,6 +318,8 @@ try {
         await call('Emulation.setDeviceMetricsOverride',{width,height:900,deviceScaleFactor:1,mobile:width<768});
         assert(await evaluate('document.documentElement.scrollWidth<=innerWidth+1'));
         assert(await evaluate('[...document.querySelectorAll("[data-webinar-countdown] > div")].every(e=>e.scrollWidth<=e.clientWidth)'), 'Countdown cells fit at every target width');
+        assert(await evaluate(`(()=>{const cells=[...document.querySelectorAll('[data-webinar-countdown] > div')];const styles=cells.map(e=>{const s=getComputedStyle(e.firstElementChild);return [s.fontSize,s.fontWeight,s.lineHeight,s.letterSpacing].join('|')});return new Set(styles).size===1 && new Set(cells.map(e=>e.getBoundingClientRect().height)).size===1 && new Set(cells.map(e=>getComputedStyle(e).backgroundColor)).size===1 && getComputedStyle(cells[0]).backgroundColor!=='rgb(255, 248, 242)'})()`),'Uniform numbers and yellow countdown cells');
+
         await evaluate('document.querySelector("[data-webinar-schedule]").scrollIntoView({block:"start",behavior:"instant"})');
         await screenshot(`visual-dated-countdown-${width}`);
     }
@@ -402,8 +415,6 @@ try {
     checks.push('v3-existing-patch-independent-videos-groups-brief-errors-no-save');
     await navigate(v3.dated);
     assert.equal(await evaluate('document.querySelector("[data-webinar-schedule] time").dateTime'),'2030-11-10T19:30:00-04:00');
-    assert.equal(await evaluate('document.querySelector(".webinar-event-bar time").dateTime'),'2030-11-10T19:30:00-04:00');
-    assert(await evaluate('document.querySelector(".webinar-event-bar time").textContent.includes("19:30")'));
     assert.equal(await evaluate('document.querySelectorAll(".webinar-event-details svg").length'),3);
     assert.equal(await evaluate('document.querySelectorAll("[data-webinar-countdown] > div").length'),4);
     assert(await evaluate('[...document.querySelectorAll("[data-webinar-countdown] > div")].every(e=>e.scrollWidth<=e.clientWidth)'), 'Countdown digits fit their cells');
@@ -414,6 +425,8 @@ try {
         await call('Emulation.setDeviceMetricsOverride',{width,height:900,deviceScaleFactor:1,mobile:width<768});
         assert(await evaluate('document.documentElement.scrollWidth<=innerWidth+1'));
         assert(await evaluate('[...document.querySelectorAll("[data-webinar-countdown] > div")].every(e=>e.scrollWidth<=e.clientWidth)'), 'Countdown cells fit at every target width');
+        assert(await evaluate(`(()=>{const cells=[...document.querySelectorAll('[data-webinar-countdown] > div')];const styles=cells.map(e=>{const s=getComputedStyle(e.firstElementChild);return [s.fontSize,s.fontWeight,s.lineHeight,s.letterSpacing].join('|')});return new Set(styles).size===1 && new Set(cells.map(e=>e.getBoundingClientRect().height)).size===1 && new Set(cells.map(e=>getComputedStyle(e).backgroundColor)).size===1 && getComputedStyle(cells[0]).backgroundColor!=='rgb(255, 248, 242)'})()`),'Uniform numbers and yellow countdown cells');
+
         await evaluate('document.querySelector("[data-webinar-schedule]").scrollIntoView({block:"start",behavior:"instant"})');
         await screenshot(`visual-dated-countdown-${width}`);
     }

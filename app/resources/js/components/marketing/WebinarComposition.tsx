@@ -1,6 +1,5 @@
 import { useContext, useEffect, useState, type ReactNode } from 'react';
-import { LandingContext, useLandingTracking } from './LandingContext';
-import { focusRegistration } from './registration-navigation';
+import { LandingContext } from './LandingContext';
 import { Arrow } from '../UI';
 import { MarketingBenefits, MarketingFAQ, MarketingFinalCTA, MarketingHero } from './primitives';
 
@@ -8,19 +7,10 @@ function EventIcon({ kind = 'calendar' }: { kind?: 'calendar' | 'clock' | 'onlin
     return <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{kind === 'calendar' ? <><rect x="3" y="5" width="18" height="16" rx="2" /><path d="M16 3v4M8 3v4M3 11h18" /></> : kind === 'clock' ? <><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></> : <><rect x="3" y="4" width="18" height="13" rx="2" /><path d="M8 21h8M12 17v4" /></>}</svg>;
 }
 
-const boliviaDate = (value: string, compact = false) => new Intl.DateTimeFormat('es-BO', {
-    ...(compact ? { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' } : { dateStyle: 'full', timeStyle: 'short' }),
+const boliviaDate = (value: string) => new Intl.DateTimeFormat('es-BO', {
+    dateStyle: 'full', timeStyle: 'short',
     hourCycle: 'h23', timeZone: 'America/La_Paz',
 }).format(new Date(value));
-
-export function WebinarEventBar({ startsAt }: { startsAt: string | null }) {
-    const track = useLandingTracking();
-    const dated = startsAt && Number.isFinite(Date.parse(startsAt));
-    return <div className="webinar-event-bar" data-webinar-event-bar><div className="shell">
-        <p><EventIcon />{dated ? <time dateTime={startsAt}>{boliviaDate(startsAt, true)} · Bolivia</time> : <span>WEBINAR GRATUITO · PRÓXIMAMENTE</span>}</p>
-        <a href="#registro" onClick={event => { if (focusRegistration('registro', event)) track('cta_click', 'hero'); }}>Reservar lugar<Arrow /></a>
-    </div></div>;
-}
 
 function WebinarEvent({ title, startsAt }: { title: string; startsAt: string | null }) {
     const [now, setNow] = useState(Date.now);
@@ -54,7 +44,7 @@ export function WebinarComposition({ open, video, registration }: { open: boolea
     return <>{settings.sections.filter(section => section.visible || section.id === 'registration').map(({ id }) => {
         let block: ReactNode;
         switch (id) {
-            case 'hero': block = <MarketingHero open={open} compact encounter={<p className="mt-5 font-bold">Webinar gratuito de prelanzamiento</p>}>{video}</MarketingHero>; break;
+            case 'hero': block = <MarketingHero open={open} compact startsAt={settings.starts_at}>{video}</MarketingHero>; break;
             case 'event': block = <WebinarEvent title={settings.title} startsAt={settings.starts_at} />; break;
             case 'benefits': block = <MarketingBenefits compact />; break;
             case 'registration': block = registration; break;

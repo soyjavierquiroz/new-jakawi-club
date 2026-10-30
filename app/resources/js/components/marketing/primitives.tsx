@@ -18,10 +18,11 @@ export function MarketingCTA({ location, className = '' }: { location: 'hero' | 
     return <a href="#registro" className={`btn btn-primary ${className}`} data-marketing-cta={location} onClick={event => { if (focusRegistration('registro', event)) trackMarketing('cta_click', location); }}>{label}<Arrow /></a>;
 }
 
-export function MarketingHero({ children, open, compact = false, encounter }: { children?: ReactNode; open: boolean; compact?: boolean; encounter?: ReactNode }) {
+export function MarketingHero({ children, open, compact = false, startsAt }: { children?: ReactNode; open: boolean; compact?: boolean; startsAt?: string | null }) {
     const landing = useContext(LandingContext)!.content;
     const content = landing.hero;
     const webinar = landing.presentation.template === 'WEBINAR';
+    const dated = webinar && startsAt && Number.isFinite(Date.parse(startsAt));
     return <section className={`conversion-hero shell ${webinar ? 'webinar-hero' : ''} ${compact ? 'compact-hero' : ''} ${!children ? 'hero-without-media' : ''}`} aria-labelledby="hero-title">
         <div className="hero-heading">
             <p className="eyebrow hero-eyebrow"><span aria-hidden="true" className="size-2 rounded-chip bg-brand" /> {content.eyebrow}</p>
@@ -32,8 +33,7 @@ export function MarketingHero({ children, open, compact = false, encounter }: { 
             <p className="text-base leading-relaxed text-text-secondary sm:text-lg">{content.description}</p>
             <p className="mt-4 text-xs font-extrabold tracking-widest">JAKAWI — VIVE MÁS. GASTA MENOS.</p>
             <MarketingCTA location="hero" className="mt-5" />
-            {open && <p className="mt-3 text-xs text-text-muted">Registro gratuito en esta etapa.</p>}
-            {encounter}
+            {dated ? <p className="webinar-hero-date" data-webinar-hero-date><time dateTime={startsAt}>{new Intl.DateTimeFormat('es-BO', { dateStyle: 'long', timeStyle: 'short', hourCycle: 'h23', timeZone: 'America/La_Paz' }).format(new Date(startsAt))} · Bolivia</time></p> : open && <p className="mt-3 text-xs text-text-muted">Registro gratuito en esta etapa.</p>}
         </div>
     </section>;
 }

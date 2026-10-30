@@ -155,3 +155,7 @@ credentials.json
 /artifacts/webinar-visual/LIVE.json
 /artifacts/webinar-visual/*fixtures.json
 /artifacts/webinar-visual/*.png
+
+/artifacts/webinar-refinement/LIVE.json
+/artifacts/webinar-refinement/*fixtures.json
+/artifacts/webinar-refinement/*.png
