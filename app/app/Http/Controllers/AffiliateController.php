@@ -20,14 +20,15 @@ class AffiliateController extends Controller
         // Never replace an identity or invent an unregistered fallback code.
         abort_unless(is_string($user->referral_code) && preg_match('/^[A-Z0-9]{12}$/D', $user->referral_code), 409);
         $filters = $request->validate([
-            'tab' => ['sometimes', Rule::in(['explore', 'links', 'history'])],
+            'tab' => ['sometimes', Rule::in(['explore', 'links', 'history', 'results'])],
             'q' => ['nullable', 'string', 'max:120'], 'city' => ['nullable', 'string', 'max:190'],
             'type' => ['nullable', Rule::in(['benefit', 'experience', 'acquisition'])],
             'availability' => ['nullable', Rule::in(['active', 'upcoming', 'paused'])],
         ]);
         $tab = $filters['tab'] ?? 'explore';
         $personal = DB::table('affiliate_short_links')->where('affiliate_id', $user->id);
-        $offers = $catalog->query()->leftJoinSub($personal, 'personal', 'personal.offer_key', '=', 'catalog.key');
+        $offers = $catalog->query()->leftJoinSub($personal, 'personal', 'personal.offer_key', '=', 'catalog.key')
+            ->leftJoinSub(app(\App\Services\AffiliateLinkClicks::class)->byLink($user), 'clicks', 'clicks.link_code', '=', 'personal.code');
         if ($tab === 'explore') {
             $offers->where('catalog_present', true)->whereNotIn('effective_state', ['finished', 'retired']);
             if ($q = $filters['q'] ?? null) {
@@ -41,11 +42,11 @@ class AffiliateController extends Controller
             if ($tab === 'history') $offers->whereIn('effective_state', ['finished', 'retired']);
         }
         $offerPage = $offers->orderBy('name')->orderBy('catalog.key')
-            ->paginate(12, ['catalog.*', 'personal.code'], 'offer_page')->withQueryString()
-            ->through(fn (object $offer): array => [...$catalog->present($offer), 'personal_url' => $offer->code ? $links->url($offer->code) : null]);
+            ->paginate(12, ['catalog.*', 'personal.code', DB::raw('coalesce(clicks.clicks_total, 0) AS clicks_total'), DB::raw('coalesce(clicks.clicks_7_days, 0) AS clicks_7_days')], 'offer_page')->withQueryString()
+            ->through(fn (object $offer): array => [...$catalog->present($offer), 'personal_url' => $offer->code ? $links->url($offer->code) : null, 'clicks_total' => (int) $offer->clicks_total, 'clicks_7_days' => (int) $offer->clicks_7_days]);
         $operations = $conversions->confirmed($user)
             ->orderByDesc('occurred_at')->orderBy('com_reference_type')->orderBy('com_reference_id')
-            ->paginate(25, ['occurred_at', 'partner_name', 'partner_id', 'event_type', 'conversion_status', 'com_reference_type', 'com_reference_id'])->withQueryString()
+            ->paginate(25, ['occurred_at', 'partner_name', 'partner_id', 'event_type', 'conversion_status', 'com_reference_type', 'com_reference_id'])->withQueryString()->appends('tab', 'results')->fragment('mis-conversiones')
             ->through(function (object $operation): array {
                 $operation->occurred_at = Carbon::parse($operation->occurred_at)->utc()->toIso8601String();
 
@@ -53,6 +54,7 @@ class AffiliateController extends Controller
             });
 
         return Inertia::render('Affiliates', [
+            'results' => app(\App\Services\AffiliateResults::class)->summary($user),
             'tab' => $tab, 'filters' => $filters, 'offers' => $offerPage,
             'cities' => DB::table('commercial_offers')->where('catalog_present', true)
                 ->selectRaw('DISTINCT jsonb_array_elements_text(cities) AS city')->orderBy('city')->pluck('city'),
@@ -62,7 +64,7 @@ class AffiliateController extends Controller
             'conversions' => $operations,
             'commission_entries' => \Illuminate\Support\Facades\DB::table('commission_ledger')
                 ->where('affiliate_uuid', $user->uuid)->where('affiliate_code', $user->referral_code)
-                ->orderByDesc('id')->paginate(25, ['id','com_reference_type','com_reference_id','status','amount','currency','review_required','eligible','rule_id','created_at','approved_at'], 'commission_page')->withQueryString(),
+                ->orderByDesc('id')->paginate(25, ['id','com_reference_type','com_reference_id','status','amount','currency','review_required','eligible','rule_id','created_at','approved_at'], 'commission_page')->withQueryString()->appends('tab', 'results')->fragment('mis-comisiones'),
             'economic_cutoff' => config('commissions.economic_cutoff'),
             'economics' => app(\App\Services\Commissions\CommissionEngine::class)->summary($user),
         ]);

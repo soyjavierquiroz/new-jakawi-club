@@ -120,3 +120,8 @@ credentials.json
 /artifacts/catalog-07b2/*fixtures.json
 /artifacts/catalog-07b2/*fixture.html
 /artifacts/catalog-07b2/**/*fixtures.json
+
+/artifacts/affiliate-results/LIVE.json
+/artifacts/affiliate-results/*fixtures.json
+/artifacts/affiliate-results/*fixture.html
+/artifacts/affiliate-results/**/*fixtures.json

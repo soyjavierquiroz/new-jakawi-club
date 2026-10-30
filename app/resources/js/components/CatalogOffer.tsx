@@ -7,7 +7,7 @@ export type CatalogOffer = {
     short_description: string | null; image_url: string | null; partners: { id: number; name: string }[];
     cities: string[]; category: string | null; effective_state: string; availability_status: string;
     publication_status: string; landing_status: string; starts_at: string | null; ends_at: string | null;
-    personal_url?: string | null; destination_url: string; last_synced_at: string | null; local_paused: boolean;
+    clicks_total?: number; clicks_7_days?: number; personal_url?: string | null; destination_url: string; last_synced_at: string | null; local_paused: boolean;
 };
 export const catalogStates: Record<string, string> = { active: 'Promocionable', upcoming: 'Próximamente', paused: 'No disponible', finished: 'Finalizada', retired: 'Retirada del catálogo' };
 export const catalogTypes: Record<string, string> = { benefit: 'Beneficio', experience: 'Experiencia', acquisition: 'Captación' };
@@ -33,6 +33,7 @@ export function OfferCard({ offer }: { offer: CatalogOffer }) {
             {offer.availability_status === 'scheduled' && <p className="mt-3 text-xs text-text-secondary">Sesión programada. La disponibilidad de cupos y las reservas se consultan en COM.</p>}
             <div className="mt-auto pt-5">
                 {offer.personal_url ? <>
+                    <p data-offer-clicks className="mb-4 text-sm font-semibold">{offer.clicks_total ?? 0} clics · {offer.clicks_7_days ?? 0} en los últimos 7 días</p>
                     <label className="label" htmlFor={`link-${offer.key}`}>Tu enlace permanente</label>
                     <input id={`link-${offer.key}`} data-personal-link readOnly value={offer.personal_url} className="input w-full min-w-0 text-sm" onFocus={event => event.target.select()} />
                     <div className="mt-3 flex flex-wrap gap-3">
