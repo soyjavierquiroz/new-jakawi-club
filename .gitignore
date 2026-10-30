@@ -97,3 +97,6 @@ credentials.json
 
 /artifacts/commercial-phase05/LIVE.json
 /artifacts/commercial-phase05/*fixtures.json
+
+/artifacts/affiliate-mvp/LIVE.json
+/artifacts/affiliate-mvp/*fixtures.json

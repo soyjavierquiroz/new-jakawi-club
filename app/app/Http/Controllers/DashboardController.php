@@ -17,6 +17,7 @@ class DashboardController extends Controller
 
         return Inertia::render('Dashboard', [
             'member' => $user->only('name', 'email', 'phone', 'city'),
+            'can_access_affiliates' => $user->activated_at !== null && $user->hasVerifiedEmail(),
             'referral_url' => $user->referralUrl(),
             'invitees_count' => $user->invitees()->count(),
             'launch' => LaunchSettings::publicData(true),

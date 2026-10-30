@@ -1,5 +1,9 @@
 # JAKAWI Launch Engine — jakawi.club
 
+Afiliados: **MIS ENLACES** y **MIS CONVERSIONES** en el dashboard privado,
+panel `/afiliados`. Enlace Dossis 43 con código CLUB real y operaciones COM
+confirmadas únicas por referencia, sin comisiones. [Contrato y operación del MVP](docs/integrations/club-affiliates-mvp.md).
+
 Recepción comercial COM → CLUB: [Fase 05](artifacts/commercial-phase05/REPORT.md).
 Receptor HMAC exclusivo `POST /internal/commercial/events`, idempotente y sin altas
 de usuarios ni efectos CRM. Panel privado **CONVERSIONES COM** en
