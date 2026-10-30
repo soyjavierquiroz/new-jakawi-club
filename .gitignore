@@ -163,3 +163,6 @@ credentials.json
 /artifacts/benefit-icons/LIVE.json
 /artifacts/benefit-icons/*fixtures.json
 /artifacts/benefit-icons/*.png
+
+/artifacts/webinar-numbers/LIVE.json
+/artifacts/webinar-numbers/*.png

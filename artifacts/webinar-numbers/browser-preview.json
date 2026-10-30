@@ -1,0 +1,655 @@
+{
+  "mode": "preview",
+  "live_assets": false,
+  "actual_public_pages": true,
+  "measurements": [
+    {
+      "path": "/",
+      "width": 390,
+      "sections": [
+        {
+          "id": "early",
+          "items": [
+            {
+              "number": "01",
+              "background": "rgb(255, 200, 61)",
+              "color": "rgb(17, 17, 17)",
+              "geometry": {
+                "width": 40,
+                "height": 40,
+                "radius": "16px",
+                "fontSize": "12px",
+                "fontWeight": "800",
+                "borderWidth": "0px",
+                "padding": "0px",
+                "cardWidth": 358,
+                "cardHeight": 225.171875,
+                "cardDisplay": "list-item",
+                "cardColumns": "none"
+              }
+            },
+            {
+              "number": "02",
+              "background": "rgb(255, 200, 61)",
+              "color": "rgb(17, 17, 17)",
+              "geometry": {
+                "width": 40,
+                "height": 40,
+                "radius": "16px",
+                "fontSize": "12px",
+                "fontWeight": "800",
+                "borderWidth": "0px",
+                "padding": "0px",
+                "cardWidth": 358,
+                "cardHeight": 251.5625,
+                "cardDisplay": "list-item",
+                "cardColumns": "none"
+              }
+            },
+            {
+              "number": "03",
+              "background": "rgb(255, 200, 61)",
+              "color": "rgb(17, 17, 17)",
+              "geometry": {
+                "width": 40,
+                "height": 40,
+                "radius": "16px",
+                "fontSize": "12px",
+                "fontWeight": "800",
+                "borderWidth": "0px",
+                "padding": "0px",
+                "cardWidth": 358,
+                "cardHeight": 305.953125,
+                "cardDisplay": "list-item",
+                "cardColumns": "none"
+              }
+            }
+          ]
+        },
+        {
+          "id": "steps",
+          "items": [
+            {
+              "number": "01",
+              "background": "rgb(255, 200, 61)",
+              "color": "rgb(17, 17, 17)",
+              "geometry": {
+                "width": 44,
+                "height": 44,
+                "radius": "50%",
+                "fontSize": "12px",
+                "fontWeight": "800",
+                "borderWidth": "1px",
+                "padding": "0px",
+                "cardWidth": 358,
+                "cardHeight": 181.5625,
+                "cardDisplay": "grid",
+                "cardColumns": "44px 298px"
+              }
+            },
+            {
+              "number": "02",
+              "background": "rgb(255, 200, 61)",
+              "color": "rgb(17, 17, 17)",
+              "geometry": {
+                "width": 44,
+                "height": 44,
+                "radius": "50%",
+                "fontSize": "12px",
+                "fontWeight": "800",
+                "borderWidth": "1px",
+                "padding": "0px",
+                "cardWidth": 358,
+                "cardHeight": 179.953125,
+                "cardDisplay": "grid",
+                "cardColumns": "44px 298px"
+              }
+            },
+            {
+              "number": "03",
+              "background": "rgb(255, 200, 61)",
+              "color": "rgb(17, 17, 17)",
+              "geometry": {
+                "width": 44,
+                "height": 44,
+                "radius": "50%",
+                "fontSize": "12px",
+                "fontWeight": "800",
+                "borderWidth": "1px",
+                "padding": "0px",
+                "cardWidth": 358,
+                "cardHeight": 153.5625,
+                "cardDisplay": "grid",
+                "cardColumns": "44px 298px"
+              }
+            }
+          ]
+        }
+      ],
+      "allNumeric": [
+        {
+          "number": "01",
+          "background": "rgb(255, 200, 61)",
+          "color": "rgb(17, 17, 17)"
+        },
+        {
+          "number": "02",
+          "background": "rgb(255, 200, 61)",
+          "color": "rgb(17, 17, 17)"
+        },
+        {
+          "number": "03",
+          "background": "rgb(255, 200, 61)",
+          "color": "rgb(17, 17, 17)"
+        },
+        {
+          "number": "01",
+          "background": "rgb(255, 200, 61)",
+          "color": "rgb(17, 17, 17)"
+        },
+        {
+          "number": "02",
+          "background": "rgb(255, 200, 61)",
+          "color": "rgb(17, 17, 17)"
+        },
+        {
+          "number": "03",
+          "background": "rgb(255, 200, 61)",
+          "color": "rgb(17, 17, 17)"
+        }
+      ],
+      "stylesheets": [
+        "https://jakawi.club/build/assets/app-nH51HLMG.css",
+        "https://jakawi.club/build/assets/jakawi-vsl-player-C8cD6k4R.css"
+      ],
+      "overflow": false
+    },
+    {
+      "path": "/",
+      "width": 1440,
+      "sections": [
+        {
+          "id": "early",
+          "items": [
+            {
+              "number": "01",
+              "background": "rgb(255, 200, 61)",
+              "color": "rgb(17, 17, 17)",
+              "geometry": {
+                "width": 40,
+                "height": 40,
+                "radius": "16px",
+                "fontSize": "12px",
+                "fontWeight": "800",
+                "borderWidth": "0px",
+                "padding": "0px",
+                "cardWidth": 349.328125,
+                "cardHeight": 305.953125,
+                "cardDisplay": "list-item",
+                "cardColumns": "none"
+              }
+            },
+            {
+              "number": "02",
+              "background": "rgb(255, 200, 61)",
+              "color": "rgb(17, 17, 17)",
+              "geometry": {
+                "width": 40,
+                "height": 40,
+                "radius": "16px",
+                "fontSize": "12px",
+                "fontWeight": "800",
+                "borderWidth": "0px",
+                "padding": "0px",
+                "cardWidth": 349.328125,
+                "cardHeight": 305.953125,
+                "cardDisplay": "list-item",
+                "cardColumns": "none"
+              }
+            },
+            {
+              "number": "03",
+              "background": "rgb(255, 200, 61)",
+              "color": "rgb(17, 17, 17)",
+              "geometry": {
+                "width": 40,
+                "height": 40,
+                "radius": "16px",
+                "fontSize": "12px",
+                "fontWeight": "800",
+                "borderWidth": "0px",
+                "padding": "0px",
+                "cardWidth": 349.34375,
+                "cardHeight": 305.953125,
+                "cardDisplay": "list-item",
+                "cardColumns": "none"
+              }
+            }
+          ]
+        },
+        {
+          "id": "steps",
+          "items": [
+            {
+              "number": "01",
+              "background": "rgb(255, 200, 61)",
+              "color": "rgb(17, 17, 17)",
+              "geometry": {
+                "width": 44,
+                "height": 44,
+                "radius": "50%",
+                "fontSize": "12px",
+                "fontWeight": "800",
+                "borderWidth": "1px",
+                "padding": "0px",
+                "cardWidth": 341.328125,
+                "cardHeight": 205.5625,
+                "cardDisplay": "block",
+                "cardColumns": "44px minmax(0px, 1fr)"
+              }
+            },
+            {
+              "number": "02",
+              "background": "rgb(255, 200, 61)",
+              "color": "rgb(17, 17, 17)",
+              "geometry": {
+                "width": 44,
+                "height": 44,
+                "radius": "50%",
+                "fontSize": "12px",
+                "fontWeight": "800",
+                "borderWidth": "1px",
+                "padding": "0px",
+                "cardWidth": 341.328125,
+                "cardHeight": 205.5625,
+                "cardDisplay": "block",
+                "cardColumns": "44px minmax(0px, 1fr)"
+              }
+            },
+            {
+              "number": "03",
+              "background": "rgb(255, 200, 61)",
+              "color": "rgb(17, 17, 17)",
+              "geometry": {
+                "width": 44,
+                "height": 44,
+                "radius": "50%",
+                "fontSize": "12px",
+                "fontWeight": "800",
+                "borderWidth": "1px",
+                "padding": "0px",
+                "cardWidth": 341.34375,
+                "cardHeight": 205.5625,
+                "cardDisplay": "block",
+                "cardColumns": "44px minmax(0px, 1fr)"
+              }
+            }
+          ]
+        }
+      ],
+      "allNumeric": [
+        {
+          "number": "01",
+          "background": "rgb(255, 200, 61)",
+          "color": "rgb(17, 17, 17)"
+        },
+        {
+          "number": "02",
+          "background": "rgb(255, 200, 61)",
+          "color": "rgb(17, 17, 17)"
+        },
+        {
+          "number": "03",
+          "background": "rgb(255, 200, 61)",
+          "color": "rgb(17, 17, 17)"
+        },
+        {
+          "number": "01",
+          "background": "rgb(255, 200, 61)",
+          "color": "rgb(17, 17, 17)"
+        },
+        {
+          "number": "02",
+          "background": "rgb(255, 200, 61)",
+          "color": "rgb(17, 17, 17)"
+        },
+        {
+          "number": "03",
+          "background": "rgb(255, 200, 61)",
+          "color": "rgb(17, 17, 17)"
+        }
+      ],
+      "stylesheets": [
+        "https://jakawi.club/build/assets/app-nH51HLMG.css",
+        "https://jakawi.club/build/assets/jakawi-vsl-player-C8cD6k4R.css"
+      ],
+      "overflow": false
+    },
+    {
+      "path": "/principal",
+      "width": 390,
+      "sections": [
+        {
+          "id": "early",
+          "items": [
+            {
+              "number": "01",
+              "background": "rgb(255, 200, 61)",
+              "color": "rgb(17, 17, 17)",
+              "geometry": {
+                "width": 40,
+                "height": 40,
+                "radius": "16px",
+                "fontSize": "12px",
+                "fontWeight": "800",
+                "borderWidth": "0px",
+                "padding": "0px",
+                "cardWidth": 358,
+                "cardHeight": 225.171875,
+                "cardDisplay": "list-item",
+                "cardColumns": "none"
+              }
+            },
+            {
+              "number": "02",
+              "background": "rgb(255, 200, 61)",
+              "color": "rgb(17, 17, 17)",
+              "geometry": {
+                "width": 40,
+                "height": 40,
+                "radius": "16px",
+                "fontSize": "12px",
+                "fontWeight": "800",
+                "borderWidth": "0px",
+                "padding": "0px",
+                "cardWidth": 358,
+                "cardHeight": 251.5625,
+                "cardDisplay": "list-item",
+                "cardColumns": "none"
+              }
+            },
+            {
+              "number": "03",
+              "background": "rgb(255, 200, 61)",
+              "color": "rgb(17, 17, 17)",
+              "geometry": {
+                "width": 40,
+                "height": 40,
+                "radius": "16px",
+                "fontSize": "12px",
+                "fontWeight": "800",
+                "borderWidth": "0px",
+                "padding": "0px",
+                "cardWidth": 358,
+                "cardHeight": 305.953125,
+                "cardDisplay": "list-item",
+                "cardColumns": "none"
+              }
+            }
+          ]
+        },
+        {
+          "id": "steps",
+          "items": [
+            {
+              "number": "01",
+              "background": "rgb(255, 200, 61)",
+              "color": "rgb(17, 17, 17)",
+              "geometry": {
+                "width": 44,
+                "height": 44,
+                "radius": "50%",
+                "fontSize": "12px",
+                "fontWeight": "800",
+                "borderWidth": "1px",
+                "padding": "0px",
+                "cardWidth": 358,
+                "cardHeight": 181.5625,
+                "cardDisplay": "grid",
+                "cardColumns": "44px 298px"
+              }
+            },
+            {
+              "number": "02",
+              "background": "rgb(255, 200, 61)",
+              "color": "rgb(17, 17, 17)",
+              "geometry": {
+                "width": 44,
+                "height": 44,
+                "radius": "50%",
+                "fontSize": "12px",
+                "fontWeight": "800",
+                "borderWidth": "1px",
+                "padding": "0px",
+                "cardWidth": 358,
+                "cardHeight": 179.953125,
+                "cardDisplay": "grid",
+                "cardColumns": "44px 298px"
+              }
+            },
+            {
+              "number": "03",
+              "background": "rgb(255, 200, 61)",
+              "color": "rgb(17, 17, 17)",
+              "geometry": {
+                "width": 44,
+                "height": 44,
+                "radius": "50%",
+                "fontSize": "12px",
+                "fontWeight": "800",
+                "borderWidth": "1px",
+                "padding": "0px",
+                "cardWidth": 358,
+                "cardHeight": 153.5625,
+                "cardDisplay": "grid",
+                "cardColumns": "44px 298px"
+              }
+            }
+          ]
+        }
+      ],
+      "allNumeric": [
+        {
+          "number": "01",
+          "background": "rgb(255, 200, 61)",
+          "color": "rgb(17, 17, 17)"
+        },
+        {
+          "number": "02",
+          "background": "rgb(255, 200, 61)",
+          "color": "rgb(17, 17, 17)"
+        },
+        {
+          "number": "03",
+          "background": "rgb(255, 200, 61)",
+          "color": "rgb(17, 17, 17)"
+        },
+        {
+          "number": "01",
+          "background": "rgb(255, 200, 61)",
+          "color": "rgb(17, 17, 17)"
+        },
+        {
+          "number": "02",
+          "background": "rgb(255, 200, 61)",
+          "color": "rgb(17, 17, 17)"
+        },
+        {
+          "number": "03",
+          "background": "rgb(255, 200, 61)",
+          "color": "rgb(17, 17, 17)"
+        }
+      ],
+      "stylesheets": [
+        "https://jakawi.club/build/assets/app-nH51HLMG.css",
+        "https://jakawi.club/build/assets/jakawi-vsl-player-C8cD6k4R.css"
+      ],
+      "overflow": false
+    },
+    {
+      "path": "/principal",
+      "width": 1440,
+      "sections": [
+        {
+          "id": "early",
+          "items": [
+            {
+              "number": "01",
+              "background": "rgb(255, 200, 61)",
+              "color": "rgb(17, 17, 17)",
+              "geometry": {
+                "width": 40,
+                "height": 40,
+                "radius": "16px",
+                "fontSize": "12px",
+                "fontWeight": "800",
+                "borderWidth": "0px",
+                "padding": "0px",
+                "cardWidth": 349.328125,
+                "cardHeight": 305.953125,
+                "cardDisplay": "list-item",
+                "cardColumns": "none"
+              }
+            },
+            {
+              "number": "02",
+              "background": "rgb(255, 200, 61)",
+              "color": "rgb(17, 17, 17)",
+              "geometry": {
+                "width": 40,
+                "height": 40,
+                "radius": "16px",
+                "fontSize": "12px",
+                "fontWeight": "800",
+                "borderWidth": "0px",
+                "padding": "0px",
+                "cardWidth": 349.328125,
+                "cardHeight": 305.953125,
+                "cardDisplay": "list-item",
+                "cardColumns": "none"
+              }
+            },
+            {
+              "number": "03",
+              "background": "rgb(255, 200, 61)",
+              "color": "rgb(17, 17, 17)",
+              "geometry": {
+                "width": 40,
+                "height": 40,
+                "radius": "16px",
+                "fontSize": "12px",
+                "fontWeight": "800",
+                "borderWidth": "0px",
+                "padding": "0px",
+                "cardWidth": 349.34375,
+                "cardHeight": 305.953125,
+                "cardDisplay": "list-item",
+                "cardColumns": "none"
+              }
+            }
+          ]
+        },
+        {
+          "id": "steps",
+          "items": [
+            {
+              "number": "01",
+              "background": "rgb(255, 200, 61)",
+              "color": "rgb(17, 17, 17)",
+              "geometry": {
+                "width": 44,
+                "height": 44,
+                "radius": "50%",
+                "fontSize": "12px",
+                "fontWeight": "800",
+                "borderWidth": "1px",
+                "padding": "0px",
+                "cardWidth": 341.328125,
+                "cardHeight": 205.5625,
+                "cardDisplay": "block",
+                "cardColumns": "44px minmax(0px, 1fr)"
+              }
+            },
+            {
+              "number": "02",
+              "background": "rgb(255, 200, 61)",
+              "color": "rgb(17, 17, 17)",
+              "geometry": {
+                "width": 44,
+                "height": 44,
+                "radius": "50%",
+                "fontSize": "12px",
+                "fontWeight": "800",
+                "borderWidth": "1px",
+                "padding": "0px",
+                "cardWidth": 341.328125,
+                "cardHeight": 205.5625,
+                "cardDisplay": "block",
+                "cardColumns": "44px minmax(0px, 1fr)"
+              }
+            },
+            {
+              "number": "03",
+              "background": "rgb(255, 200, 61)",
+              "color": "rgb(17, 17, 17)",
+              "geometry": {
+                "width": 44,
+                "height": 44,
+                "radius": "50%",
+                "fontSize": "12px",
+                "fontWeight": "800",
+                "borderWidth": "1px",
+                "padding": "0px",
+                "cardWidth": 341.34375,
+                "cardHeight": 205.5625,
+                "cardDisplay": "block",
+                "cardColumns": "44px minmax(0px, 1fr)"
+              }
+            }
+          ]
+        }
+      ],
+      "allNumeric": [
+        {
+          "number": "01",
+          "background": "rgb(255, 200, 61)",
+          "color": "rgb(17, 17, 17)"
+        },
+        {
+          "number": "02",
+          "background": "rgb(255, 200, 61)",
+          "color": "rgb(17, 17, 17)"
+        },
+        {
+          "number": "03",
+          "background": "rgb(255, 200, 61)",
+          "color": "rgb(17, 17, 17)"
+        },
+        {
+          "number": "01",
+          "background": "rgb(255, 200, 61)",
+          "color": "rgb(17, 17, 17)"
+        },
+        {
+          "number": "02",
+          "background": "rgb(255, 200, 61)",
+          "color": "rgb(17, 17, 17)"
+        },
+        {
+          "number": "03",
+          "background": "rgb(255, 200, 61)",
+          "color": "rgb(17, 17, 17)"
+        }
+      ],
+      "stylesheets": [
+        "https://jakawi.club/build/assets/app-nH51HLMG.css",
+        "https://jakawi.club/build/assets/jakawi-vsl-player-C8cD6k4R.css"
+      ],
+      "overflow": false
+    }
+  ],
+  "runtime_errors": [],
+  "failed_assets": [],
+  "live_mutations": 0,
+  "passed": true
+}
