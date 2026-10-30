@@ -1,0 +1,10 @@
+{
+    "passed": 72,
+    "postgresql": "isolated schema",
+    "live_users_created": 0,
+    "live_events_created": 0,
+    "concurrency": true,
+    "historical_data_unchanged": true,
+    "public_sessions": 0,
+    "outbound_http": 0
+}

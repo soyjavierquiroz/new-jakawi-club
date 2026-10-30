@@ -6,6 +6,7 @@ import assert from 'node:assert/strict';
 import { lookup } from 'node:dns/promises';
 
 const output = '/evidence';
+const live = process.argv.includes('--live');
 await mkdir(output, { recursive: true });
 const addresses = await Promise.all(['jakawi.club'].map(async host => `MAP ${host} ${(await lookup(host, { family: 4 })).address}`));
 const chrome = spawn('/browser/chrome', ['--headless=new', '--hide-scrollbars', '--no-sandbox', '--single-process', '--no-zygote', '--num-raster-threads=1', '--disable-background-networking', '--disable-extensions', '--disable-gpu', '--disable-dev-shm-usage', '--no-proxy-server', `--host-resolver-rules=${addresses.join(',')}`, '--remote-debugging-port=9222', '--user-data-dir=/tmp/jakawi-visual', '--no-first-run', '--no-default-browser-check'], { stdio: ['ignore', 'ignore', 'pipe'] });
@@ -67,7 +68,7 @@ try {
     let html = await (await fetch('https://jakawi.club/')).text();
     const pattern = /(<script\b[^>]*data-page="app"[^>]*>)([\s\S]*?)(<\/script>)/;
     const oldManifest = JSON.parse(await readFile('/live-build/manifest.json', 'utf8'));
-    const nextManifest = JSON.parse(await readFile('/workspace/public/build-next/manifest.json', 'utf8'));
+    const nextManifest = live ? oldManifest : JSON.parse(await readFile('/workspace/public/build-next/manifest.json', 'utf8'));
     for (const [name, entry] of Object.entries(oldManifest)) {
         const next = nextManifest[name];
         if (!next) continue;
@@ -83,6 +84,7 @@ try {
         try {
             const url = new URL(event.request.url);
             if (url.href === 'https://www.youtube.com/iframe_api') { await fulfill(event,200,'application/javascript',"window.YT={Player:class{constructor(mount,options){this.muted=true;const iframe=document.createElement('iframe');iframe.src='about:blank';mount.replaceWith(iframe);this.iframe=iframe;setTimeout(()=>options.events.onReady({target:this}),30);}playVideo(){}pauseVideo(){}seekTo(){}mute(){this.muted=true;}unMute(){this.muted=false;}isMuted(){return this.muted;}getVolume(){return 100;}setVolume(){}getCurrentTime(){return 0;}getDuration(){return 90;}destroy(){this.iframe.remove();}}};window.onYouTubeIframeAPIReady?.();"); return; }
+            if (url.pathname.startsWith('/build/') && live) { await call('Fetch.continueRequest', { requestId: event.requestId }); return; }
             if (url.pathname.startsWith('/build/')) {
                 const file = '/workspace/public/build-next/' + url.pathname.slice('/build/'.length);
                 const body = await readFile(file);
@@ -95,6 +97,9 @@ try {
             if (url.pathname === '/medicion') { metrics.push(JSON.parse(event.request.postData)); await fulfill(event,204,'application/json'); return; }
             if (url.pathname === '/registro') { submissions.push(JSON.parse(event.request.postData)); heldSubmission = event; return; }
             if (event.request.method !== 'GET') { writes.push(url.pathname); await fulfill(event,204,'application/json'); return; }
+            if (live && ['/', '/principal', '/login'].includes(url.pathname)) {
+                await call('Fetch.continueRequest', { requestId: event.requestId }); return;
+            }
             const response = structuredClone(page);
             if (url.pathname.includes('/preview')) {
                 Object.assign(response, structuredClone(fixtures.empty));
@@ -205,11 +210,28 @@ try {
     await evaluate('[...document.querySelectorAll("button")].find(b=>b.textContent==="Usar contenido inicial WEBINAR").click()');
     assert.equal(await evaluate('document.getElementById("content.hero.description").value'),fixtures.empty.props.landing.content.hero.description);
     assert.equal(await evaluate('document.querySelector("#webinar-starts-at").value'),'');
+    if (live) {
+        for (const width of [390,1440]) {
+            await call('Emulation.setDeviceMetricsOverride',{width,height:900,deviceScaleFactor:1,mobile:width<768});
+            for (const path of ['/', '/principal']) {
+                await call('Page.navigate', {url:'https://jakawi.club'+path});
+                await until('document.readyState==="complete" && !!document.querySelector("#registro")','Existing public landing loads');
+                await until('!document.querySelector("#registro fieldset").disabled','Existing registration remains open');
+                assert(await evaluate('document.documentElement.scrollWidth<=innerWidth+1'));
+                assert.equal(await evaluate('document.querySelectorAll("[data-webinar-section]").length'),0);
+            }
+            await screenshot(`existing-home-live-${width}`);
+            checks.push(`existing-home-principal-live-open-${width}`);
+        }
+        await call('Page.navigate', {url:'https://jakawi.club/login'});
+        await until('!!document.querySelector("#jakawi-login")','Existing JAKAWI SSO login remains available');
+        checks.push('existing-sso-login-live');
+    }
     assert.equal(writes.length,0,'No browser mutation reaches LIVE');
     assert.deepEqual(runtimeErrors,[]);assert.deepEqual(failedAssets,[]);
     checks.push('reusable-new-webinar-seed-no-save-no-publication');
-    await writeFile(`${output}/browser-results.json`,JSON.stringify({checks,passed:checks.length,live_registrations:0,provider_playback_verified:false},null,2));
-    console.log(JSON.stringify({passed:checks.length,live_registrations:0,provider_playback_verified:false}));
+    await writeFile(`${output}/browser-results.json`,JSON.stringify({checks,passed:checks.length,live_assets:live,live_registrations:0,provider_playback_verified:false},null,2));
+    console.log(JSON.stringify({passed:checks.length,live_assets:live,live_registrations:0,provider_playback_verified:false}));
 } finally {
     socket?.close(); chrome.kill('SIGTERM');
 }

@@ -111,3 +111,7 @@ credentials.json
 /artifacts/short-links-07a/*fixtures.json
 /artifacts/short-links-07a/*fixture.html
 /artifacts/webinar/*fixtures.json
+
+/artifacts/webinar-release/LIVE.json
+/artifacts/webinar-release/**/*fixtures.json
+/artifacts/webinar-release/*fixtures.json

@@ -99,7 +99,8 @@ try {
     check(http('GET', '/l/principal?utm_source=historico')->getStatusCode() === 301 && str_ends_with(http('GET', '/l/principal?utm_source=historico')->headers->get('Location'), '/principal?utm_source=historico'), 'alias histórico 301 conserva query');
     check(http('GET', '/l/no-existe')->getStatusCode() === 404, 'alias inexistente no redirige');
     check(http('GET', '/login', [], true)->getStatusCode() === 200 && http('GET', '/registro')->getStatusCode() === 405 && http('GET', '/up')->getStatusCode() === 200, 'login registro y up conservan comportamiento');
-    check(http('GET', '/r/no-existe')->isRedirect(), 'referido inválido conserva redirección existente');
+    check(http('GET', '/r/no-existe')->getStatusCode() === 404, 'código fuera del namespace de referidos conserva 404 vigente');
+    check(http('GET', '/r/ZZZZZZZZZZZZ')->isRedirect(), 'referido de 12 caracteres inexistente conserva redirección existente');
     $protected = [
         ['POST', '/admin/landings/import'],
         ['GET', '/admin/landings'], ['GET', '/admin/landings/crear'], ['GET', '/admin/landings/'.$home->id.'/editar'],

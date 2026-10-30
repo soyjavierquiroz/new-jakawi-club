@@ -1,0 +1,7 @@
+{
+    "passed": 55,
+    "postgresql": "isolated schema",
+    "com_responses": "contract fixtures",
+    "live_users_created": 0,
+    "notifications": "fake"
+}
