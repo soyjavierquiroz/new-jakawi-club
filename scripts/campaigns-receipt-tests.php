@@ -19,7 +19,7 @@ foreach (['principal' => 'default', 'webinar' => 'custom', 'fundadores' => 'none
         $receiptContent['next_step'] = ['action' => 'whatsapp', 'redirect_seconds' => 10];
         $campaignOrigin->update(['configuration' => $receiptContent, 'published_configuration' => $receiptContent, 'published_campaign' => 'receipt_'.$landingMode]);
         freshBrowser(); app('cache')->flush();
-        check(http('POST', '/registro', registration('clock@example.test', ['landing_id' => $campaignOrigin->id]))->isRedirect('https://jakawi.club/'.$campaignSlug.'/confirmado'), 'recibo aceptado '.$landingMode.'/'.$confirmationMode);
+        check(http('POST', '/registro', registration('clock@example.test', ['landing_id' => $campaignOrigin->id]))->isRedirect('https://jakawi.club/'.$campaignSlug.'/gracias'), 'recibo aceptado '.$landingMode.'/'.$confirmationMode);
         $receiptPage = payload(http('GET', '/'.$campaignSlug.'/confirmado', [], true));
         $expectedGroup = match ($confirmationMode) {
             'custom' => 'https://chat.whatsapp.com/ConfirmGroupFixture1234',

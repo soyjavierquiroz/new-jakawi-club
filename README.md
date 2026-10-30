@@ -337,3 +337,16 @@ Guardar modifica exclusivamente el borrador; publicar copia la configuración al
 El video principal y el de confirmación conservan URL, poster local, crop, reproductor oficial y marco fijo 3:4. Ambos tienen un control para mostrar/ocultar; ocultarlos conserva sus medios guardados. El video de confirmación usa URL específica, después `JAKAWI_CONFIRMATION_VIDEO_URL`, y después ningún video. Los grupos, medios y visibilidad quedan fuera del JSON editorial `jakawi-club-landing-v2`, con importación v1 compatible. No hay migraciones ni dependencias nuevas.
 
 Pruebas focalizadas y evidencia: [informe de campañas](artifacts/campaigns/REPORT.md). Ejecutar secuencialmente los runners existentes con `JAKAWI_EVIDENCE_DIR=/opt/sites/jakawi.club/artifacts/campaigns`: `scripts/test-landings.sh`, `scripts/test-postconversion.sh`, `scripts/check-landings-visual.sh` y `scripts/check-postconversion-visual.sh` (también `--live` tras desplegar). TypeScript/Vite: `bash scripts/build-frontend.sh`. Los fixtures usan esquemas PostgreSQL temporales y navegador interceptado; no crean campañas/cuentas LIVE ni envían correo. `python3 scripts/verify-campaigns-live.py` sella Git/LIVE después del push, verifica ambos `/up` y loopback, assets y código montado, entorno intacto, tablas protegidas y registro cerrado. El sello `artifacts/campaigns/LIVE.json` se excluye de Git para evitar autorreferencia.
+
+### WEBINAR de prelanzamiento
+
+La composición completa WEBINAR se habilita explícitamente desde el editor; las
+landings históricas conservan su presentación. Al crear, elegir WEBINAR y pulsar
+**Usar contenido inicial WEBINAR**, editar, guardar borrador y revisar ambas pestañas.
+La fecha confirmada es propia de la landing, en `America/La_Paz`; sin fecha no hay
+countdown. Secciones ordenables mediante subir/bajar y visibilidad, con formulario
+siempre disponible. El JSON v2 admite los textos opcionales `content.webinar`, pero
+fecha, orden, visibilidad y medios se gestionan desde los controles existentes.
+No se crean ejemplos en LIVE ni se publica al guardar.
+
+Implementación, archivos, pruebas aisladas y límites: [WEBINAR MVP](artifacts/webinar/REPORT.md).

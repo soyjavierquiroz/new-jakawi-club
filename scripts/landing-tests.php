@@ -255,6 +255,7 @@ try {
     $home->update(['published_configuration' => $publishedLegacy]);
     check(payload(http('GET', '/principal', [], true))['props']['launch']['video_url'] === null, 'ausencia explícita de video de campaña no recibe fallback de otra campaña');
     $home->update(['published_configuration' => $originalHome]);
+    require '/tests/webinar-tests.php';
     require '/tests/campaigns-admin-tests.php';
     file_put_contents('/evidence/browser-fixtures.json', json_encode([
         'invalid_import' => payload(http('POST', '/admin/landings/import', ['editorial_json' => json_encode(['schema' => App\Support\LandingContent::SCHEMA, 'content' => ['hero' => ['title' => null]]])])),

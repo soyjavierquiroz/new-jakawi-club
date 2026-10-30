@@ -1,11 +1,14 @@
 import { Link, useForm } from '@inertiajs/react';
 import { useEffect, useRef, type FormEvent } from 'react';
 import { Arrow, ErrorText, Flash } from '../UI';
+import { useRegistrationCTA } from '../marketing/primitives';
 import { InternationalPhoneInput } from './InternationalPhoneInput';
 
 export function RegistrationForm({ open, referralCode, landingId }: { open: boolean; referralCode: string | null; landingId?: number }) {
+    const cta = useRegistrationCTA();
     const form = useForm({ name: '', phone: '', email: '', privacy: true, referral_code: referralCode || '', ...(landingId ? { landing_id: landingId } : {}) });
     const phoneValue = useRef('');
+    const submitting = useRef(false);
     const errorFocus = useRef<string | null>(null);
     useEffect(() => {
         if (!form.processing && errorFocus.current && Object.keys(form.errors).length) {
@@ -15,10 +18,11 @@ export function RegistrationForm({ open, referralCode, landingId }: { open: bool
     }, [form.processing, form.errors]);
     function submit(event: FormEvent) {
         event.preventDefault();
-        if (!open || form.processing) return;
+        if (!open || form.processing || submitting.current) return;
         if (!phoneValue.current) { form.setError('phone', 'Revisa el número y el país seleccionado.'); document.getElementById('phone')?.focus(); return; }
         form.transform(data => ({ ...data, phone: phoneValue.current, referral_code: referralCode || '' }));
-        form.post('/registro', { preserveScroll: true, onError: errors => { errorFocus.current = Object.keys(errors)[0] || null; } });
+        submitting.current = true;
+        form.post('/registro', { preserveScroll: true, onFinish: () => { submitting.current = false; }, onError: errors => { errorFocus.current = Object.keys(errors)[0] || null; } });
     }
     return <div id="registro" tabIndex={-1} role="region" aria-labelledby="registration-form-title" className="registration-form rounded-card border border-border bg-surface p-6 shadow-editorial sm:p-9">
         <Flash />
@@ -32,7 +36,7 @@ export function RegistrationForm({ open, referralCode, landingId }: { open: bool
                 <input type="hidden" name="referral_code" value={form.data.referral_code} />
                 <label className="checkbox-label"><input className="checkbox" id="privacy" type="checkbox" name="privacy" required checked={form.data.privacy} onChange={event => form.setData('privacy', event.target.checked)} aria-invalid={!!form.errors.privacy} aria-describedby={form.errors.privacy ? 'privacy-error' : undefined} /><span>Acepto el <Link href="/privacidad" className="underline underline-offset-2">acuerdo de privacidad</Link></span></label>
                 <ErrorText id="privacy-error">{form.errors.privacy}</ErrorText><ErrorText>{form.errors.referral_code}</ErrorText>
-                <button className="btn btn-primary w-full" disabled={!open || form.processing} aria-busy={form.processing} aria-describedby={!open ? 'registration-status' : undefined} type="submit">{form.processing ? 'Un momento…' : 'QUIERO SER PARTE DE JAKAWI'}<Arrow /></button>
+                <button className="btn btn-primary w-full" disabled={!open || form.processing} aria-busy={form.processing} aria-describedby={!open ? 'registration-status' : undefined} type="submit">{form.processing ? 'Un momento…' : cta}<Arrow /></button>
             </fieldset>
         </form>
         {!open && <p id="registration-status" role="status" className="mt-3 text-center text-xs text-text-muted">Registro no disponible.</p>}

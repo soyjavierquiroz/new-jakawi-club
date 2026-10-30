@@ -2,10 +2,11 @@ import { useEffect, useState } from 'react';
 import { Arrow } from '../UI';
 import { focusRegistration } from './registration-navigation';
 import { useLandingTracking } from './LandingContext';
-import { REGISTRATION_CTA } from './primitives';
+import { useRegistrationCTA } from './primitives';
 
 export function MobileStickyCTA({ targetId = 'registro' }: { targetId?: string }) {
     const trackMarketing = useLandingTracking();
+    const label = useRegistrationCTA();
     const [visible, setVisible] = useState(false);
 
     useEffect(() => {
@@ -78,6 +79,6 @@ export function MobileStickyCTA({ targetId = 'registro' }: { targetId?: string }
     }, [targetId]);
 
     return <div className="mobile-sticky-space"><aside className="mobile-sticky-cta" aria-label="Sé parte de JAKAWI" hidden={!visible}>
-        <a href={`#${targetId}`} className="btn btn-primary w-full" data-marketing-cta="sticky" onClick={event => { if (focusRegistration(targetId, event)) trackMarketing('cta_click', 'final'); }}>{REGISTRATION_CTA}<Arrow /></a>
+        <a href={`#${targetId}`} className="btn btn-primary w-full" data-marketing-cta="sticky" onClick={event => { if (focusRegistration(targetId, event)) trackMarketing('cta_click', 'final'); }}>{label}<Arrow /></a>
     </aside></div>;
 }

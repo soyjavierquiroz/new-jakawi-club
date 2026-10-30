@@ -11,7 +11,8 @@ class LandingContent
     public const SCHEMA = 'jakawi-club-landing-v2';
     public const LEGACY_SCHEMA = 'jakawi-club-landing-v1';
     public const TEMPLATES = ['LEAD_VSL', 'WEBINAR', 'WAITLIST'];
-    public const EDITORIAL = ['seo', 'hero', 'benefits', 'registration', 'faq', 'final', 'after_registration'];
+    public const EDITORIAL = ['seo', 'hero', 'benefits', 'registration', 'faq', 'final', 'after_registration', 'webinar'];
+    public const WEBINAR_SECTIONS = ['hero', 'event', 'benefits', 'opportunity', 'early', 'steps', 'registration', 'faq', 'final'];
 
     /** The local LEAD_VSL template; editorial data never includes operational settings. */
     public static function defaults(): array
@@ -42,6 +43,44 @@ class LandingContent
             'whatsapp_group' => ['mode' => 'default', 'url' => null],
             'confirmation_whatsapp_group' => ['mode' => 'default', 'url' => null],
         ];
+    }
+
+    /** Reusable seed only: never applied to existing drafts or published snapshots. */
+    public static function webinarDefaults(): array
+    {
+        $content = self::defaults();
+        $content['presentation']['template'] = 'WEBINAR';
+        $content['presentation']['webinar'] = [
+            'title' => 'Próximo webinar en vivo', 'starts_at' => null,
+            'sections' => array_map(fn (string $id): array => ['id' => $id, 'visible' => true], self::WEBINAR_SECTIONS),
+        ];
+        $content['hero']['description'] = 'Descubre JAKAWI y cómo participar desde el comienzo en nuestro próximo webinar gratuito.';
+        $content['hero']['cta'] = $content['final']['cta'] = 'RESERVAR MI LUGAR GRATIS';
+        $content['benefits'] = ['eyebrow' => 'QUÉ DESCUBRIRÁS', 'title' => 'Conoce el comienzo de JAKAWI.', 'description' => 'Tres temas para acompañar el prelanzamiento.', 'items' => [
+            ['title' => 'Qué es JAKAWI', 'description' => 'Conoce la propuesta que estamos preparando para Cochabamba.'],
+            ['title' => 'Cómo ser parte', 'description' => 'Descubre cómo crear tu cuenta gratuita y acompañar el comienzo.'],
+            ['title' => 'Qué viene primero', 'description' => 'Conoce los próximos pasos del prelanzamiento.'],
+        ]];
+        $content['webinar'] = [
+            'opportunity' => ['title' => 'Una ciudad con mucho por descubrir.', 'description' => 'A veces vivimos la rutina sin conocer las posibilidades de nuestra propia ciudad. JAKAWI comienza con una invitación a descubrir Cochabamba juntos.'],
+            'early' => ['title' => 'Participa desde el comienzo.', 'description' => 'Conoce la propuesta y decide cómo acompañar esta etapa.', 'items' => [
+                ['title' => 'Entiende la propuesta', 'description' => 'Escucha de qué se trata JAKAWI en el webinar.'],
+                ['title' => 'Conoce los próximos pasos', 'description' => 'Descubre qué estamos preparando para el prelanzamiento.'],
+                ['title' => 'Comparte tu invitación', 'description' => 'Al activar tu cuenta tendrás un enlace personal disponible.'],
+            ]],
+            'steps' => ['title' => 'Cómo funciona', 'items' => [
+                ['title' => 'Regístrate gratis', 'description' => 'Completa tu nombre, WhatsApp y correo. Revisa tu email para activar la cuenta.'],
+                ['title' => 'Entra a la comunidad', 'description' => 'Después del registro encontrarás el acceso a WhatsApp si el grupo está habilitado.'],
+                ['title' => 'Participa en el webinar', 'description' => 'Consulta la fecha confirmada y las indicaciones del encuentro cuando estén disponibles.'],
+            ]],
+        ];
+        $content['registration'] = ['eyebrow' => 'TU PRÓXIMO PASO', 'title' => 'Reserva tu lugar gratis.', 'description' => 'Regístrate para acompañar el prelanzamiento de JAKAWI.'];
+        $content['faq']['items'] = [
+            ['question' => '¿Tiene costo?', 'answer' => 'El registro y el webinar de esta etapa son gratuitos.'],
+            ['question' => '¿Cuándo es el webinar?', 'answer' => 'La fecha y la hora se mostrarán aquí cuando estén confirmadas. Si aún no aparecen, el encuentro sigue en preparación.'],
+            ['question' => '¿Qué pasa después del registro?', 'answer' => 'Verás la página de confirmación y el grupo de WhatsApp si está habilitado. Si tu cuenta es nueva, recibirás las indicaciones de activación por correo. Tu enlace personal estará disponible después de activar la cuenta.'],
+        ];
+        return $content;
     }
 
     public static function confirmationDefaults(): array
@@ -136,9 +175,32 @@ class LandingContent
         if (! $partial) {
             $content = self::withPresentation($content);
         }
-        $rules = ['content' => ['required', 'array:seo,hero,benefits,registration,faq,final,video,confirmation_video,presentation,after_registration,next_step,whatsapp_group,confirmation_whatsapp_group']];
-        $rules['content.presentation'] = [$presence, 'array:template,show_video,show_faq,show_confirmation_video'];
+        $rules = ['content' => ['required', 'array:seo,hero,benefits,registration,faq,final,video,confirmation_video,presentation,after_registration,next_step,whatsapp_group,confirmation_whatsapp_group,webinar']];
+        $rules['content.presentation'] = [$presence, 'array:template,show_video,show_faq,show_confirmation_video,webinar'];
         $rules['content.presentation.template'] = [$presence, Rule::in(self::TEMPLATES)];
+        $rules['content.presentation.webinar'] = ['sometimes', 'required', 'array:title,starts_at,sections'];
+        $rules['content.presentation.webinar.title'] = ['required_with:content.presentation.webinar', 'string', 'max:1200', 'not_regex:/[<>]/u'];
+        $rules['content.presentation.webinar.starts_at'] = ['present_with:content.presentation.webinar', 'nullable', 'date_format:Y-m-d\\TH:i:sP', 'regex:/-04:00$/D'];
+        $rules['content.presentation.webinar.sections'] = ['required_with:content.presentation.webinar', 'array', 'list', 'size:9'];
+        $rules['content.presentation.webinar.sections.*'] = ['required', 'array:id,visible'];
+        $rules['content.presentation.webinar.sections.*.id'] = ['required', 'distinct:strict', Rule::in(self::WEBINAR_SECTIONS)];
+        $rules['content.presentation.webinar.sections.*.visible'] = ['required', 'boolean:strict'];
+        $rules['content.webinar'] = ['sometimes', 'required', 'array:opportunity,early,steps'];
+        foreach (['opportunity' => ['title', 'description'], 'early' => ['title', 'description', 'items'], 'steps' => ['title', 'items']] as $section => $keys) {
+            $rules['content.webinar.'.$section] = [$partial ? 'sometimes' : 'required_with:content.webinar', 'array:'.implode(',', $keys)];
+            foreach ($keys as $key) {
+                if ($key !== 'items') {
+                    $rules['content.webinar.'.$section.'.'.$key] = [...($partial ? ['sometimes', 'required'] : ['required_with:content.webinar']), 'string', 'max:1200', 'not_regex:/[<>]/u'];
+                }
+            }
+            if (in_array('items', $keys)) {
+                $rules['content.webinar.'.$section.'.items'] = [$partial ? 'sometimes' : 'required_with:content.webinar', 'array', 'list', 'size:3'];
+                $rules['content.webinar.'.$section.'.items.*'] = ['required', 'array:title,description'];
+                foreach (['title', 'description'] as $key) {
+                    $rules['content.webinar.'.$section.'.items.*.'.$key] = ['required', 'string', 'max:1200', 'not_regex:/[<>]/u'];
+                }
+            }
+        }
         foreach (['show_video', 'show_faq', 'show_confirmation_video'] as $key) {
             $rules['content.presentation.'.$key] = [$presence, 'boolean:strict'];
         }
@@ -187,6 +249,16 @@ class LandingContent
             }
         }
         Validator::make(['content' => $content], $rules)->after(function ($validator) use ($content): void {
+            if (isset($content['presentation']['webinar'])) {
+                if (! isset($content['webinar'])) {
+                    $validator->errors()->add('content.webinar', 'Completa el contenido de la composición WEBINAR.');
+                }
+                foreach ($content['presentation']['webinar']['sections'] ?? [] as $section) {
+                    if (is_array($section) && ($section['id'] ?? null) === 'registration' && ($section['visible'] ?? null) !== true) {
+                        $validator->errors()->add('content.presentation.webinar.sections', 'El formulario de registro debe permanecer visible.');
+                    }
+                }
+            }
             foreach (['whatsapp_group', 'confirmation_whatsapp_group'] as $section) {
                 $url = $content[$section]['url'] ?? null;
                 if ((($content[$section]['mode'] ?? '') === 'custom' || $url !== null)

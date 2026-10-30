@@ -9,8 +9,11 @@ export type Member = { name: string; email: string; phone: string | null; city: 
 export type LandingTemplate = 'LEAD_VSL' | 'WEBINAR' | 'WAITLIST';
 export type LandingVideoSettings = { youtube_url: string | null; poster: string | null; aspect_ratio: '3:4'; source_type: 'youtube'; source_aspect_ratio: '9:16' | '3:4' | '16:9'; focal_x: number; focal_y: number };
 
+export type WebinarSection = 'hero' | 'event' | 'benefits' | 'opportunity' | 'early' | 'steps' | 'registration' | 'faq' | 'final';
+type WebinarBlock = { title: string; description: string; items: { title: string; description: string }[] };
 export type LandingContent = {
-    presentation: { template: LandingTemplate; show_video: boolean; show_faq: boolean; show_confirmation_video: boolean };
+    presentation: { template: LandingTemplate; show_video: boolean; show_faq: boolean; show_confirmation_video: boolean; webinar?: { title: string; starts_at: string | null; sections: { id: WebinarSection; visible: boolean }[] } };
+    webinar?: { opportunity: { title: string; description: string }; early: WebinarBlock; steps: Omit<WebinarBlock, 'description'> };
     whatsapp_group: { mode: 'default' | 'custom' | 'none'; url: string | null };
     confirmation_whatsapp_group: { mode: 'inherit' | 'default' | 'custom' | 'none'; url: string | null };
     after_registration: { title: string; message: string; instructions: string; cta_label: string };

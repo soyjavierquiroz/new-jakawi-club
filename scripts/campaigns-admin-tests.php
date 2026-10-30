@@ -13,6 +13,7 @@ $campaignFixtures = ['landings' => [], 'confirmations' => [], 'previews' => []];
 $otherPublic = MarketingLanding::pluck('published_configuration', 'id')->all();
 foreach (['default' => $fallback, 'custom' => $own, 'none' => null] as $mode => $expected) {
     $campaignContent = LandingContent::defaults();
+    $campaignContent['confirmation_whatsapp_group'] = ['mode' => 'inherit', 'url' => null];
     $campaignContent['whatsapp_group'] = ['mode' => $mode, 'url' => $mode === 'custom' ? $own : null];
     $campaignContent['video']['youtube_url'] = 'https://www.youtube.com/watch?v=aqz-KE-bpKQ';
     $campaignContent['confirmation_video']['youtube_url'] = 'https://www.youtube.com/watch?v=M7lc1UVf-VE';
@@ -23,7 +24,7 @@ foreach (['default' => $fallback, 'custom' => $own, 'none' => null] as $mode => 
     $campaignBase = '/admin/landings/'.$campaign->id;
     check(http('POST', $campaignBase.'/publicar', ['revision' => $campaign->revision])->isRedirect(), 'grupo publicado: '.$mode);
     $publicPage = payload(http('GET', '/'.$campaign->slug, [], true));
-    check($publicPage['props']['launch']['whatsapp_url'] === $expected, 'grupo público efectivo: '.$mode);
+    check($publicPage['props']['launch']['whatsapp_url'] === null && ! isset($publicPage['props']['landing']['content']['whatsapp_group']), 'captación sin grupo público: '.$mode);
     $campaignFixtures['landings'][$mode] = $publicPage;
     foreach (['inherit' => $expected, 'custom' => $different, 'none' => null] as $confirmationMode => $confirmationExpected) {
         $campaignContent['confirmation_whatsapp_group'] = ['mode' => $confirmationMode, 'url' => $confirmationMode === 'custom' ? $different : null];
@@ -37,11 +38,11 @@ foreach (['default' => $fallback, 'custom' => $own, 'none' => null] as $mode => 
     $campaignContent['whatsapp_group'] = ['mode' => 'custom', 'url' => $different];
     http('PUT', $campaignBase, [...$campaignData, 'configuration' => $campaignContent, 'revision' => $campaign->fresh()->revision]);
     $draftPage = payload(http('GET', $campaignBase.'/preview', [], true));
-    check($draftPage['props']['launch']['whatsapp_url'] === $different
-        && payload(http('GET', '/'.$campaign->slug, [], true))['props']['launch']['whatsapp_url'] === $expected, 'preview usa grupo del borrador; público conserva snapshot '.$mode);
+    check($draftPage['props']['launch']['whatsapp_url'] === null
+        && payload(http('GET', '/'.$campaign->slug, [], true))['props']['launch']['whatsapp_url'] === null, 'preview y público reservan WhatsApp para confirmación '.$mode);
     $campaignFixtures['previews'][$mode] = $draftPage;
     check(http('POST', $campaignBase.'/publicar', ['revision' => $campaign->fresh()->revision])->isRedirect()
-        && payload(http('GET', '/'.$campaign->slug, [], true))['props']['launch']['whatsapp_url'] === $different, 'publicar aplica grupo guardado '.$mode);
+        && payload(http('GET', '/'.$campaign->slug, [], true))['props']['launch']['whatsapp_url'] === null && $campaign->fresh()->published_configuration['whatsapp_group']['url'] === $different, 'publicar aplica grupo guardado '.$mode);
     $campaignFixtures['editor'] = payload(http('GET', $campaignBase.'/editar', [], true));
     foreach (['jakawi-club-landing-v1', LandingContent::SCHEMA] as $schemaVersion) {
         $importedCampaign = LandingContent::import(json_encode(['schema' => $schemaVersion, 'content' => ['hero' => ['title' => 'Texto editorial']]]), $campaignContent);

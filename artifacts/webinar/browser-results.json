@@ -1,0 +1,19 @@
+{
+  "checks": [
+    "responsive-390-cta-sticky-no-date-no-whatsapp",
+    "shared-player-3x4-390-fixture-only",
+    "responsive-430-cta-sticky-no-date-no-whatsapp",
+    "shared-player-3x4-430-fixture-only",
+    "responsive-1440-cta-sticky-no-date-no-whatsapp",
+    "shared-player-3x4-1440-fixture-only",
+    "saved-order-visibility-bolivia-date-countdown-preview-no-analytics",
+    "elapsed-countdown-never-restarts",
+    "registration-error-preserves-data-e164-referral-single-submit",
+    "editor-390-tabs-date-layout-export-no-write",
+    "editor-1440-tabs-date-layout-export-no-write",
+    "reusable-new-webinar-seed-no-save-no-publication"
+  ],
+  "passed": 12,
+  "live_registrations": 0,
+  "provider_playback_verified": false
+}

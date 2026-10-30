@@ -1,0 +1,55 @@
+{
+  "landings": {
+    "command": "bash scripts/test-webinar.sh landings",
+    "passed": 302,
+    "exit_code": 0,
+    "live_users_created": 0
+  },
+  "postconversion": {
+    "command": "bash scripts/test-webinar.sh postconversion",
+    "passed": 134,
+    "exit_code": 0,
+    "live_users_created": 0
+  },
+  "frontend": {
+    "command": "bash scripts/build-frontend.sh",
+    "typecheck": "passed",
+    "build": "passed",
+    "output": "app/public/build-next",
+    "deployed": false,
+    "exit_code": 0
+  },
+  "browser": {
+    "command": "bash scripts/check-webinar-visual.sh",
+    "checks": [
+      "responsive-390-cta-sticky-no-date-no-whatsapp",
+      "shared-player-3x4-390-fixture-only",
+      "responsive-430-cta-sticky-no-date-no-whatsapp",
+      "shared-player-3x4-430-fixture-only",
+      "responsive-1440-cta-sticky-no-date-no-whatsapp",
+      "shared-player-3x4-1440-fixture-only",
+      "saved-order-visibility-bolivia-date-countdown-preview-no-analytics",
+      "elapsed-countdown-never-restarts",
+      "registration-error-preserves-data-e164-referral-single-submit",
+      "editor-390-tabs-date-layout-export-no-write",
+      "editor-1440-tabs-date-layout-export-no-write",
+      "reusable-new-webinar-seed-no-save-no-publication"
+    ],
+    "passed": 12,
+    "live_registrations": 0,
+    "provider_playback_verified": false,
+    "exit_code": 0
+  },
+  "local_validator": {
+    "command": "python3 scripts/validate-local.py",
+    "cwd": "/opt/sites/jakawi.club",
+    "exit_code": 1,
+    "failure": "scripts/validate-local.py:52 expects launch.registration_open === false; the running environment reports true",
+    "configuration_changed": false,
+    "scope": "running baseline; not the isolated implementation"
+  },
+  "diff_check": {
+    "command": "git diff --check",
+    "exit_code": 0
+  }
+}

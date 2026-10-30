@@ -103,6 +103,11 @@ try {
     $home->update(['configuration' => $content, 'published_configuration' => $content, 'campaign' => 'origin_2026', 'published_campaign' => 'origin_2026']);
     foreach (['webinar' => 'WEBINAR', 'fundadores' => 'WAITLIST'] as $slug => $template) {
         $other = $content; $other['presentation']['template'] = $template;
+        if ($template === 'WEBINAR') {
+            $seed = App\Support\LandingContent::webinarDefaults();
+            $other['presentation']['webinar'] = $seed['presentation']['webinar'];
+            $other['webinar'] = $seed['webinar'];
+        }
         App\Models\MarketingLanding::create(['title' => $slug, 'slug' => $slug, 'template' => $template, 'configuration' => $other, 'published_configuration' => $other, 'status' => 'published', 'published_at' => now()]);
     }
     foreach (['principal', 'webinar', 'fundadores'] as $slug) {
@@ -129,7 +134,7 @@ try {
     app('cache')->flush();
     $request = registration('conversion@example.test', ['landing_id' => $home->id, 'referral_code' => $second->referral_code]);
     $response = http('POST', '/registro', $request);
-    check($response->isRedirect('https://jakawi.club/principal/confirmado'), 'backend dirige a gracias de landing de origen');
+    check($response->isRedirect('https://jakawi.club/principal/gracias'), 'backend dirige a gracias de landing de origen');
     $user = User::where('email', 'conversion@example.test')->firstOrFail();
     check($user->privacy_accepted_at !== null && $user->privacy_version === config('jakawi.privacy_version'), 'aceptación guarda fecha y versión existentes');
     check($user->referred_by_id === $first->id && ! $user->activated_at && ! $user->hasVerifiedEmail(), 'referente original y activación pendiente');
@@ -144,7 +149,7 @@ try {
     http('GET', '/principal/confirmado', [], true); http('GET', '/principal/confirmado', [], true);
     check((int) DB::table('marketing_event_totals')->where('event', 'registration_completed')->sum('total') === $conversionCount, 'refrescar gracias no cuenta conversiones');
     check(http('GET', '/webinar/confirmado')->isRedirect('https://jakawi.club/webinar'), 'recibo no sirve para otra landing');
-    check(http('GET', '/bienvenida')->isRedirect('https://jakawi.club/principal/confirmado'), 'bienvenida existente reutiliza landing de sesión');
+    check(http('GET', '/bienvenida')->isRedirect('https://jakawi.club/principal/gracias'), 'bienvenida existente reutiliza landing de sesión');
     $newContent = $content; $newContent['after_registration']['title'] = 'Otra edición';
     $home->update(['published_configuration' => $newContent, 'published_campaign' => 'later_campaign']);
     check(payload(http('GET', '/principal/confirmado', [], true))['props']['confirmation']['content']['title'] === $content['after_registration']['title'], 'recibo conserva snapshot confirmado ante cambios editoriales');
@@ -169,7 +174,7 @@ try {
     config(['jakawi.whatsapp_group_url' => 'https://chat.whatsapp.com/ApprovedGroupFixture123']);
     $credentials = ['email' => $user->email, 'token' => $activation->token, 'password' => 'PasswordExample123', 'password_confirmation' => 'PasswordExample123'];
     check(http('POST', '/activar', $credentials)->isRedirect('https://jakawi.club/bienvenida'), 'activación existente consume el token sin reemplazo');
-    check(http('GET', '/bienvenida')->isRedirect('https://jakawi.club/principal/confirmado'), 'activación misma sesión vuelve a landing original');
+    check(http('GET', '/bienvenida')->isRedirect('https://jakawi.club/principal/gracias'), 'activación misma sesión vuelve a landing original');
     $confirmed = payload(http('GET', '/principal/confirmado', [], true));
     check($confirmed['props']['confirmation']['activation'] === 'confirmed' && $confirmed['props']['referral_url'] === $user->referralUrl(), 'solo cuenta activada y verificada muestra confirmación e invitación');
     check((int) DB::table('marketing_event_totals')->where('event', 'registration_completed')->sum('total') === $conversionCount && $user->fresh()->referred_by_id === $first->id, 'activar y refrescar no altera conversiones ni referente');
@@ -184,7 +189,7 @@ try {
     freshBrowser(); app('cache')->flush();
     $response = http('POST', '/registro', $request);
     $duplicate = payload(http('GET', '/principal/confirmado', [], true));
-    check($response->isRedirect('https://jakawi.club/principal/confirmado') && $duplicate['props']['confirmation']['activation'] === 'pending' && (int) DB::table('marketing_event_totals')->where('event', 'registration_completed')->sum('total') === $conversionCount, 'email existente recibe respuesta genérica sin otra conversión');
+    check($response->isRedirect('https://jakawi.club/principal/gracias') && $duplicate['props']['confirmation']['activation'] === 'pending' && (int) DB::table('marketing_event_totals')->where('event', 'registration_completed')->sum('total') === $conversionCount, 'email existente recibe respuesta genérica sin otra conversión');
     check($user->fresh()->referred_by_id === $first->id, 'email existente conserva referente inmutable');
     freshBrowser();
     check(http('GET', '/principal/confirmado?success=1&activation=confirmed')->isRedirect('https://jakawi.club/principal'), 'query no puede fabricar confirmación');
@@ -222,8 +227,13 @@ try {
     foreach (['webinar', 'fundadores'] as $slug) {
         freshBrowser(); app('cache')->flush();
         $origin = App\Models\MarketingLanding::where('slug', $slug)->firstOrFail();
+        http('GET', '/r/'.$first->referral_code);
+        http('GET', '/'.$slug.'?utm_source=webinar-fixture&utm_campaign=prelaunch', [], true);
         $response = http('POST', '/registro', registration($slug.'@example.test', ['landing_id' => $origin->id]));
-        check($response->isRedirect('https://jakawi.club/'.$slug.'/confirmado') && payload(http('GET', '/'.$slug.'/confirmado', [], true))['props']['confirmation']['landing_slug'] === $slug, 'registro usa gracias de origen: '.$slug);
+        $originUser = User::where('email', $slug.'@example.test')->firstOrFail();
+        check($originUser->referred_by_id === $first->id && $originUser->registration_origin['utms'] === ['utm_source' => 'webinar-fixture', 'utm_campaign' => 'prelaunch'], 'registro conserva referente y UTM: '.$slug);
+        check(Notification::sent($originUser, ActivateAccount::class)->count() === 1, 'registro reutiliza activación existente: '.$slug);
+        check($response->isRedirect('https://jakawi.club/'.$slug.'/gracias') && payload(http('GET', '/'.$slug.'/confirmado', [], true))['props']['confirmation']['landing_slug'] === $slug, 'registro usa gracias de origen: '.$slug);
     }
     $conversionCount = (int) DB::table('marketing_event_totals')->where('event', 'registration_completed')->sum('total');
     // An unrelated verified login cannot turn a pending receipt into an activation.

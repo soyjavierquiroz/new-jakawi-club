@@ -6,9 +6,15 @@ import { focusRegistration } from './registration-navigation';
 
 export const REGISTRATION_CTA = 'QUIERO SER PARTE DE JAKAWI';
 
+export function useRegistrationCTA() {
+    const content = useContext(LandingContext)?.content;
+    return content?.presentation.template === 'WEBINAR' && content.presentation.webinar ? content.hero.cta : REGISTRATION_CTA;
+}
+
 export function MarketingCTA({ location, className = '' }: { location: 'hero' | 'benefits' | 'final'; className?: string }) {
     const trackMarketing = useLandingTracking();
-    return <a href="#registro" className={`btn btn-primary ${className}`} data-marketing-cta={location} onClick={event => { if (focusRegistration('registro', event)) trackMarketing('cta_click', location); }}>{REGISTRATION_CTA}<Arrow /></a>;
+    const label = useRegistrationCTA();
+    return <a href="#registro" className={`btn btn-primary ${className}`} data-marketing-cta={location} onClick={event => { if (focusRegistration('registro', event)) trackMarketing('cta_click', location); }}>{label}<Arrow /></a>;
 }
 
 export function MarketingHero({ children, open, compact = false, encounter }: { children?: ReactNode; open: boolean; compact?: boolean; encounter?: ReactNode }) {
