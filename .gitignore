@@ -125,3 +125,6 @@ credentials.json
 /artifacts/affiliate-results/*fixtures.json
 /artifacts/affiliate-results/*fixture.html
 /artifacts/affiliate-results/**/*fixtures.json
+/artifacts/landing-json-v3/*fixtures.json
+/artifacts/landing-json-v3/*fixture.html
+/artifacts/landing-json-v3/*.png

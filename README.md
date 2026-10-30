@@ -352,6 +352,13 @@ siempre disponible. El JSON v2 admite los textos opcionales `content.webinar`, p
 fecha, orden, visibilidad y medios se gestionan desde los controles existentes.
 No se crean ejemplos en LIVE ni se publica al guardar.
 
+Contrato completo v3 preparado sin desplegar: [referencia oficial para el copywriter](docs/landings/JAKAWI-LANDING-V3-SCHEMA.md)
+y [JSON WEBINAR integral](docs/landings/JAKAWI-WEBINAR-V3-EXAMPLE.json).
+Amplía el importador existente con composición explícita, fecha, orden, visibilidad,
+ambos videos y grupos. En creación exige configuración completa para evitar herencias;
+en landings existentes conserva los parches. v1/v2 mantienen su alcance editorial.
+Importar solo modifica el formulario; guardar y publicar siguen separados.
+
 Implementación, archivos, pruebas aisladas y límites: [WEBINAR MVP](artifacts/webinar/REPORT.md).
 
 WEBINAR integrado sobre main vigente y desplegado exclusivamente en CLUB: [informe y pruebas del despliegue](artifacts/webinar-release/REPORT.md). No se creó ni publicó contenido WEBINAR automáticamente.

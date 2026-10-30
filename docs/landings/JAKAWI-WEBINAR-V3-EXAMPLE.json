@@ -1,0 +1,187 @@
+{
+  "schema": "jakawi-club-landing-v3",
+  "template": "WEBINAR",
+  "content": {
+    "seo": {
+      "title": "Webinar gratuito de JAKAWI en Cochabamba",
+      "description": "Conoce la propuesta de JAKAWI, descubre cómo participar desde el comienzo y acompaña su prelanzamiento en Cochabamba."
+    },
+    "hero": {
+      "eyebrow": "COCHABAMBA · WEBINAR DE PRELANZAMIENTO",
+      "title": "Descubre lo que",
+      "emphasis": "estamos preparando",
+      "ending": "para tu ciudad.",
+      "description": "Participa en el webinar gratuito de JAKAWI. Conoce la propuesta, entiende cómo ser parte y descubre los próximos pasos del prelanzamiento.",
+      "cta": "RESERVAR MI LUGAR GRATIS"
+    },
+    "benefits": {
+      "eyebrow": "QUÉ DESCUBRIRÁS",
+      "title": "Conoce JAKAWI desde el comienzo.",
+      "description": "Tres temas para entender la propuesta y decidir cómo acompañar esta etapa.",
+      "items": [
+        {
+          "title": "Qué es JAKAWI",
+          "description": "Conoce la propuesta que estamos preparando para descubrir y disfrutar más de Cochabamba."
+        },
+        {
+          "title": "Cómo participar",
+          "description": "Entiende cómo crear tu cuenta gratuita y qué necesitas para acceder a tu invitación personal."
+        },
+        {
+          "title": "Cuáles son los próximos pasos",
+          "description": "Descubre cómo acompañar el prelanzamiento y dónde consultar las indicaciones del encuentro."
+        }
+      ]
+    },
+    "webinar": {
+      "opportunity": {
+        "title": "Tu ciudad todavía tiene mucho por descubrir.",
+        "description": "La rutina puede hacernos pasar por alto lugares, experiencias y posibilidades cercanas. JAKAWI comienza con una invitación a mirar Cochabamba con otros ojos y descubrir juntos lo que viene."
+      },
+      "early": {
+        "title": "Sé parte de esta primera etapa.",
+        "description": "El webinar es una oportunidad para conocer la propuesta antes de decidir cómo participar.",
+        "items": [
+          {
+            "title": "Entiende la propuesta",
+            "description": "Conoce de qué se trata JAKAWI y el contexto de su prelanzamiento."
+          },
+          {
+            "title": "Conoce lo que viene",
+            "description": "Escucha los próximos pasos previstos para esta etapa."
+          },
+          {
+            "title": "Comparte la invitación",
+            "description": "Después de activar tu cuenta podrás acceder a tu enlace personal para invitar a otras personas."
+          }
+        ]
+      },
+      "steps": {
+        "title": "Cómo participar",
+        "items": [
+          {
+            "title": "Completa tu registro",
+            "description": "Ingresa tu nombre, WhatsApp y correo electrónico en el formulario."
+          },
+          {
+            "title": "Revisa las indicaciones",
+            "description": "Si tu cuenta es nueva, revisa el correo para activarla. En la confirmación encontrarás el grupo de WhatsApp si está habilitado."
+          },
+          {
+            "title": "Prepárate para el webinar",
+            "description": "Consulta la fecha, la hora y las indicaciones del encuentro cuando estén confirmadas."
+          }
+        ]
+      }
+    },
+    "registration": {
+      "eyebrow": "TU PRÓXIMO PASO",
+      "title": "Reserva tu lugar gratis.",
+      "description": "Completa tus datos para acompañar el prelanzamiento de JAKAWI y continuar con las indicaciones de participación."
+    },
+    "faq": {
+      "eyebrow": "ANTES DE REGISTRARTE",
+      "title": "Resolvamos tus dudas.",
+      "items": [
+        {
+          "question": "¿El registro y el webinar tienen costo?",
+          "answer": "El registro y el webinar de esta etapa son gratuitos."
+        },
+        {
+          "question": "¿Cuándo será el webinar?",
+          "answer": "La fecha y la hora se mostrarán en esta página cuando estén confirmadas. Si todavía no aparecen, el encuentro sigue en preparación."
+        },
+        {
+          "question": "¿Qué ocurre después del registro?",
+          "answer": "Verás una página de confirmación y el acceso al grupo de WhatsApp si está habilitado. Si tu cuenta es nueva, recibirás las indicaciones para activarla por correo. Tu invitación personal estará disponible después de la activación."
+        }
+      ]
+    },
+    "final": {
+      "eyebrow": "EL COMIENZO ES CONTIGO",
+      "title": "Conoce JAKAWI y descubre lo que viene.",
+      "description": "Da el primer paso para acompañar el prelanzamiento en Cochabamba.",
+      "cta": "RESERVAR MI LUGAR GRATIS"
+    },
+    "after_registration": {
+      "title": "¡Gracias por dar el primer paso!",
+      "message": "Recibimos tu solicitud. Si podemos completarla, recibirás un correo con las indicaciones para continuar.",
+      "instructions": "Si tu cuenta es nueva, busca el mensaje de activación y revisa también la carpeta de spam. Consulta el grupo de WhatsApp si aparece disponible en esta página.",
+      "cta_label": "Continuar"
+    },
+    "presentation": {
+      "template": "WEBINAR",
+      "show_video": false,
+      "show_faq": true,
+      "show_confirmation_video": false,
+      "webinar": {
+        "title": "Próximo webinar en vivo",
+        "starts_at": null,
+        "sections": [
+          {
+            "id": "hero",
+            "visible": true
+          },
+          {
+            "id": "event",
+            "visible": true
+          },
+          {
+            "id": "benefits",
+            "visible": true
+          },
+          {
+            "id": "opportunity",
+            "visible": true
+          },
+          {
+            "id": "early",
+            "visible": true
+          },
+          {
+            "id": "steps",
+            "visible": true
+          },
+          {
+            "id": "registration",
+            "visible": true
+          },
+          {
+            "id": "faq",
+            "visible": true
+          },
+          {
+            "id": "final",
+            "visible": true
+          }
+        ]
+      }
+    },
+    "video": {
+      "youtube_url": null,
+      "poster": null,
+      "aspect_ratio": "3:4",
+      "source_type": "youtube",
+      "source_aspect_ratio": "9:16",
+      "focal_x": 0.5,
+      "focal_y": 0.5
+    },
+    "confirmation_video": {
+      "youtube_url": null,
+      "poster": null,
+      "aspect_ratio": "3:4",
+      "source_type": "youtube",
+      "source_aspect_ratio": "9:16",
+      "focal_x": 0.5,
+      "focal_y": 0.5
+    },
+    "whatsapp_group": {
+      "mode": "none",
+      "url": null
+    },
+    "confirmation_whatsapp_group": {
+      "mode": "none",
+      "url": null
+    }
+  }
+}

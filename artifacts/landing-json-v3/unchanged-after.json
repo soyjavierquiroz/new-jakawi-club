@@ -1,0 +1,25 @@
+{
+  "head": "45b26e7a1fc93f2ed34437195971e8d4783032bc",
+  "landings": {
+    "count": 1,
+    "digest": "987238fd5ee6868206fb2dc0406dbbfb"
+  },
+  "manifest": "8177416c64d3fcfe44c5a7d416d4ad3466c74b877b09dd0d98107d1b57b32284",
+  "containers": {
+    "jakawi-club-app": {
+      "id": "0f1d77eed4464941f3b907dce395a16f27b5787e7fa0085b130cd34870ee7dc9",
+      "started": "2026-10-30T13:20:48.528311414Z",
+      "restarts": 0
+    },
+    "jakawi-club-web": {
+      "id": "dc402b6f71823f815ba765dc41f301f8edd2f8906b2f0a78e03ec17a50f891b3",
+      "started": "2026-10-28T04:46:47.260933129Z",
+      "restarts": 0
+    },
+    "jakawi-club-db": {
+      "id": "f1e18228228deedc93a2526055ab9127b4268f2c6327c4455651f486bfc54d34",
+      "started": "2026-10-28T04:21:06.144670657Z",
+      "restarts": 0
+    }
+  }
+}

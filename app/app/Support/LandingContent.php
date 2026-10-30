@@ -8,13 +8,15 @@ use Illuminate\Validation\ValidationException;
 
 class LandingContent
 {
-    public const SCHEMA = 'jakawi-club-landing-v2';
+    public const SCHEMA = 'jakawi-club-landing-v3';
+    public const V2_SCHEMA = 'jakawi-club-landing-v2';
     public const LEGACY_SCHEMA = 'jakawi-club-landing-v1';
     public const TEMPLATES = ['LEAD_VSL', 'WEBINAR', 'WAITLIST'];
     public const EDITORIAL = ['seo', 'hero', 'benefits', 'registration', 'faq', 'final', 'after_registration', 'webinar'];
+    public const EDITORIAL_V3 = [...self::EDITORIAL, 'presentation', 'video', 'confirmation_video', 'whatsapp_group', 'confirmation_whatsapp_group'];
     public const WEBINAR_SECTIONS = ['hero', 'event', 'benefits', 'opportunity', 'early', 'steps', 'registration', 'faq', 'final'];
 
-    /** The local LEAD_VSL template; editorial data never includes operational settings. */
+    /** The local LEAD_VSL defaults shared by the existing administrative and public flows. */
     public static function defaults(): array
     {
         return [
@@ -111,7 +113,7 @@ class LandingContent
     public static function envelope(array $content): array
     {
         $content = self::withPresentation($content);
-        return ['schema' => self::SCHEMA, 'template' => $content['presentation']['template'] ?? 'LEAD_VSL', 'content' => array_intersect_key($content, array_flip(self::EDITORIAL))];
+        return ['schema' => self::SCHEMA, 'template' => $content['presentation']['template'], 'content' => array_intersect_key($content, array_flip(self::EDITORIAL_V3))];
     }
 
     /** Legacy snapshots gain presentation defaults in memory, without database writes. */
@@ -137,26 +139,94 @@ class LandingContent
         return $content;
     }
 
-    public static function import(string $json, array $base): array
+    public static function import(string $json, array $base, bool $newLanding = false): array
     {
+        if (strlen($json) > 65536) {
+            throw ValidationException::withMessages(['editorial_json' => 'El documento supera 65536 bytes UTF-8 (64 KiB).']);
+        }
         try {
             $document = json_decode($json, true, 24, JSON_THROW_ON_ERROR);
         } catch (\JsonException) {
             throw ValidationException::withMessages(['editorial_json' => 'JSON inválido o demasiado profundo.']);
         }
-        Validator::make(['document' => $document], [
+        $v3 = is_array($document) && ($document['schema'] ?? null) === self::SCHEMA;
+        self::validator(['document' => $document], [
             'document' => ['required', 'array:schema,template,content'],
-            'document.schema' => ['required', Rule::in([self::SCHEMA, self::LEGACY_SCHEMA])],
+            'document.schema' => ['required', Rule::in([self::SCHEMA, self::V2_SCHEMA, self::LEGACY_SCHEMA])],
             'document.template' => ['sometimes', 'required', Rule::in(self::TEMPLATES)],
-            'document.content' => ['required', 'array:'.implode(',', self::EDITORIAL)],
+            'document.content' => ['required', 'array:'.implode(',', $v3 ? self::EDITORIAL_V3 : self::EDITORIAL)],
         ])->validate();
         // Check supplied keys/types before merging; unknown keys are never silently discarded.
-        self::validate($document['content'], true);
-        $merged = self::merge(self::withPresentation($base), $document['content']);
+        $patch = self::validate($document['content'], true);
         if (isset($document['template'])) {
-            $merged['presentation']['template'] = $document['template'];
+            if ($v3 && isset($patch['presentation']['template']) && $patch['presentation']['template'] !== $document['template']) {
+                throw ValidationException::withMessages(['content.presentation.template' => 'Debe coincidir con template en la raíz del JSON.']);
+            }
+            $patch['presentation']['template'] = $document['template'];
         }
-        return self::validate($merged);
+        if ($v3 && $newLanding) {
+            // A new v3 document is self-contained: never inherit campaign media or environment defaults.
+            $required = array_diff(self::EDITORIAL_V3, ['webinar']);
+            $rules = [];
+            foreach ($required as $key) {
+                $rules['content.'.$key] = ['required', 'array'];
+            }
+            foreach (['show_video', 'show_faq', 'show_confirmation_video', 'template'] as $key) {
+                $rules['content.presentation.'.$key] = ['required'];
+            }
+            foreach (['video', 'confirmation_video'] as $key) {
+                foreach (array_keys(self::videoDefaults()) as $field) {
+                    $rules['content.'.$key.'.'.$field] = [in_array($field, ['youtube_url', 'poster']) ? 'present' : 'required'];
+                }
+            }
+            foreach (['whatsapp_group', 'confirmation_whatsapp_group'] as $key) {
+                $rules['content.'.$key.'.mode'] = ['required'];
+                $rules['content.'.$key.'.url'] = ['present'];
+            }
+            if (($patch['presentation']['template'] ?? null) === 'WEBINAR') {
+                $rules['content.webinar'] = ['required', 'array'];
+                $rules['content.presentation.webinar'] = ['required', 'array'];
+            }
+            self::validator(['content' => $patch], $rules)->validate();
+            return self::validate([...$patch, 'next_step' => ['action' => 'recover', 'redirect_seconds' => 0]]);
+        }
+        return self::validate(self::merge(self::withPresentation($base), $patch));
+    }
+
+    /** Reuse Laravel rules and report unknown properties at their exact JSON path. */
+    private static function validator(array $data, array $rules): \Illuminate\Validation\Validator
+    {
+        return Validator::make($data, $rules, [
+            'required' => ':attribute es obligatorio y no puede estar vacío.',
+            'required_with' => ':attribute es obligatorio para completar esta sección.',
+            'present' => ':attribute debe estar presente; usa null solo si el campo lo permite.',
+            'present_with' => ':attribute debe estar presente; usa null si la fecha no está confirmada.',
+            'array' => ':attribute debe ser un objeto o una lista con las propiedades permitidas.',
+            'list' => ':attribute debe ser una lista JSON consecutiva.',
+            'string' => ':attribute debe ser texto.',
+            'max' => ['string' => ':attribute no puede superar :max caracteres.', 'array' => ':attribute no puede tener más de :max elementos.'],
+            'min' => ['array' => ':attribute debe tener al menos :min elemento.'],
+            'size' => ['array' => ':attribute debe contener exactamente :size elementos.'],
+            'in' => ':attribute contiene un valor no admitido. Valores permitidos: :values.',
+            'boolean' => ':attribute debe ser true o false, sin comillas.',
+            'numeric' => ':attribute debe ser un número JSON, sin comillas.',
+            'between' => ['numeric' => ':attribute debe estar entre :min y :max.'],
+            'distinct' => ':attribute está repetido; cada sección debe aparecer una sola vez.',
+            'date_format' => ':attribute debe ser una fecha válida con formato YYYY-MM-DDTHH:mm:ss-04:00.',
+            'regex' => ':attribute tiene un formato inválido; la fecha requiere el huso -04:00 de Bolivia.',
+            'not_regex' => ':attribute no admite < ni >.',
+            'content.after_registration.*.not_regex' => ':attribute no admite < ni > ni afirmar cuenta activada, correo verificado o correo enviado; el servidor confirma esos estados.',
+        ])->after(function (\Illuminate\Validation\Validator $validator): void {
+            foreach ($validator->failed() as $path => $failures) {
+                $allowed = $failures['Array'] ?? [];
+                $value = data_get($validator->getData(), $path);
+                if ($allowed && is_array($value)) {
+                    foreach (array_diff(array_keys($value), $allowed) as $unknown) {
+                        $validator->errors()->add($path.'.'.$unknown, 'Propiedad no admitida en este contrato JSON.');
+                    }
+                }
+            }
+        });
     }
 
     private static function merge(array $base, array $patch): array
@@ -179,9 +249,9 @@ class LandingContent
         $rules['content.presentation'] = [$presence, 'array:template,show_video,show_faq,show_confirmation_video,webinar'];
         $rules['content.presentation.template'] = [$presence, Rule::in(self::TEMPLATES)];
         $rules['content.presentation.webinar'] = ['sometimes', 'required', 'array:title,starts_at,sections'];
-        $rules['content.presentation.webinar.title'] = ['required_with:content.presentation.webinar', 'string', 'max:1200', 'not_regex:/[<>]/u'];
-        $rules['content.presentation.webinar.starts_at'] = ['present_with:content.presentation.webinar', 'nullable', 'date_format:Y-m-d\\TH:i:sP', 'regex:/-04:00$/D'];
-        $rules['content.presentation.webinar.sections'] = ['required_with:content.presentation.webinar', 'array', 'list', 'size:9'];
+        $rules['content.presentation.webinar.title'] = [...($partial ? ['sometimes', 'required'] : ['required_with:content.presentation.webinar']), 'string', 'max:1200', 'not_regex:/[<>]/u'];
+        $rules['content.presentation.webinar.starts_at'] = [$partial ? 'sometimes' : 'present_with:content.presentation.webinar', 'nullable', 'date_format:Y-m-d\\TH:i:sP', 'regex:/-04:00$/D'];
+        $rules['content.presentation.webinar.sections'] = [$partial ? 'sometimes' : 'required_with:content.presentation.webinar', 'array', 'list', 'size:9'];
         $rules['content.presentation.webinar.sections.*'] = ['required', 'array:id,visible'];
         $rules['content.presentation.webinar.sections.*.id'] = ['required', 'distinct:strict', Rule::in(self::WEBINAR_SECTIONS)];
         $rules['content.presentation.webinar.sections.*.visible'] = ['required', 'boolean:strict'];
@@ -248,20 +318,24 @@ class LandingContent
                 $rules['content.'.$section.'.'.$key] = [$presence, 'numeric:strict', 'between:0,1'];
             }
         }
-        Validator::make(['content' => $content], $rules)->after(function ($validator) use ($content): void {
+        self::validator(['content' => $content], $rules)->after(function ($validator) use ($content, $partial): void {
             if (isset($content['presentation']['webinar'])) {
-                if (! isset($content['webinar'])) {
+                if (($content['presentation']['webinar']['starts_at'] ?? null) === '') {
+                    $validator->errors()->add('content.presentation.webinar.starts_at', 'Usa null si no hay fecha confirmada, o una fecha válida con formato YYYY-MM-DDTHH:mm:ss-04:00.');
+                }
+                if (! $partial && ! isset($content['webinar'])) {
                     $validator->errors()->add('content.webinar', 'Completa el contenido de la composición WEBINAR.');
                 }
-                foreach ($content['presentation']['webinar']['sections'] ?? [] as $section) {
+                $sections = $content['presentation']['webinar']['sections'] ?? [];
+                foreach (is_array($sections) ? $sections : [] as $index => $section) {
                     if (is_array($section) && ($section['id'] ?? null) === 'registration' && ($section['visible'] ?? null) !== true) {
-                        $validator->errors()->add('content.presentation.webinar.sections', 'El formulario de registro debe permanecer visible.');
+                        $validator->errors()->add('content.presentation.webinar.sections.'.$index.'.visible', 'El formulario de registro debe permanecer visible.');
                     }
                 }
             }
             foreach (['whatsapp_group', 'confirmation_whatsapp_group'] as $section) {
                 $url = $content[$section]['url'] ?? null;
-                if ((($content[$section]['mode'] ?? '') === 'custom' || $url !== null)
+                if (((! $partial && ($content[$section]['mode'] ?? '') === 'custom') || $url !== null)
                     && RegistrationNextStep::validGroupUrl($url) === null) {
                     $validator->errors()->add('content.'.$section.'.url', 'Usa una invitación HTTPS de chat.whatsapp.com, sin parámetros ni redirecciones.');
                 }

@@ -209,13 +209,13 @@ try {
     }
     $patch = ['schema' => 'jakawi-club-landing-v1', 'content' => ['hero' => ['title' => 'Compatible']]];
     check(App\Support\LandingContent::import(json_encode($patch), $legacy)['after_registration'] === App\Support\LandingContent::confirmationDefaults(), 'JSON v1 anterior sigue importable');
-    $patch = ['schema' => App\Support\LandingContent::SCHEMA, 'content' => ['after_registration' => ['title' => 'Gracias del editor']]];
+    $patch = ['schema' => App\Support\LandingContent::V2_SCHEMA, 'content' => ['after_registration' => ['title' => 'Gracias del editor']]];
     $import = App\Support\LandingContent::import(json_encode($patch), $content);
     check($import['after_registration']['title'] === 'Gracias del editor' && $import['after_registration']['instructions'] === $content['after_registration']['instructions'] && $import['next_step'] === $content['next_step'], 'JSON v2 parcial conserva textos omitidos y operaciones');
-    check(App\Support\LandingContent::envelope($content)['schema'] === 'jakawi-club-landing-v2' && !isset(App\Support\LandingContent::envelope($content)['content']['next_step']), 'export v2 excluye destino y contador');
+    check(App\Support\LandingContent::envelope($content)['schema'] === 'jakawi-club-landing-v3' && !isset(App\Support\LandingContent::envelope($content)['content']['next_step']), 'export v3 excluye destino y contador heredados');
     foreach ([['confirmation_video' => ['youtube_url' => 'https://youtu.be/aqz-KE-bpKQ']], ['video' => ['focal_x' => 0]], ['whatsapp_group_url' => 'https://chat.whatsapp.com/Unapproved123'], ['after_registration' => ['url' => 'https://evil.example']], ['next_step' => ['action' => 'whatsapp']], ['after_registration' => ['redirect_seconds' => 1]], ['after_registration' => ['title' => 'Cuenta activada']], ['after_registration' => ['message' => '<a href="https://evil.example">grupo</a>']]] as $bad) {
         $rejected = false;
-        try { App\Support\LandingContent::import(json_encode(['schema' => App\Support\LandingContent::SCHEMA, 'content' => $bad]), $content); } catch (Illuminate\Validation\ValidationException) { $rejected = true; }
+        try { App\Support\LandingContent::import(json_encode(['schema' => App\Support\LandingContent::V2_SCHEMA, 'content' => $bad]), $content); } catch (Illuminate\Validation\ValidationException) { $rejected = true; }
         check($rejected, 'JSON rechaza operaciones, enlaces ejecutables o afirmación de activación');
     }
     foreach ([['action' => 'https://evil.example', 'redirect_seconds' => 0], ['action' => 'whatsapp', 'redirect_seconds' => 1], ['action' => 'whatsapp', 'redirect_seconds' => 10, 'url' => 'https://evil.example']] as $bad) {

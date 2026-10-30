@@ -44,15 +44,16 @@ foreach (['default' => $fallback, 'custom' => $own, 'none' => null] as $mode => 
     check(http('POST', $campaignBase.'/publicar', ['revision' => $campaign->fresh()->revision])->isRedirect()
         && payload(http('GET', '/'.$campaign->slug, [], true))['props']['launch']['whatsapp_url'] === null && $campaign->fresh()->published_configuration['whatsapp_group']['url'] === $different, 'publicar aplica grupo guardado '.$mode);
     $campaignFixtures['editor'] = payload(http('GET', $campaignBase.'/editar', [], true));
-    foreach (['jakawi-club-landing-v1', LandingContent::SCHEMA] as $schemaVersion) {
+    foreach ([LandingContent::LEGACY_SCHEMA, LandingContent::V2_SCHEMA, LandingContent::SCHEMA] as $schemaVersion) {
         $importedCampaign = LandingContent::import(json_encode(['schema' => $schemaVersion, 'content' => ['hero' => ['title' => 'Texto editorial']]]), $campaignContent);
         check($importedCampaign['whatsapp_group'] === $campaignContent['whatsapp_group'] && $importedCampaign['confirmation_whatsapp_group'] === $campaignContent['confirmation_whatsapp_group'], 'JSON conserva operación '.$schemaVersion.'/'.$mode);
         foreach (['whatsapp_group', 'confirmation_whatsapp_group'] as $section) {
-            check(http('POST', $campaignBase.'/import', ['editorial_json' => json_encode(['schema' => $schemaVersion, 'content' => [$section => ['mode' => 'custom', 'url' => $own]]])])->getStatusCode() === 422, 'JSON rechaza grupos '.$schemaVersion.'/'.$section);
+            $status = $schemaVersion === LandingContent::SCHEMA ? 200 : 422;
+            check(http('POST', $campaignBase.'/import', ['editorial_json' => json_encode(['schema' => $schemaVersion, 'content' => [$section => ['mode' => 'custom', 'url' => $own]]])])->getStatusCode() === $status, 'JSON respeta alcance de grupos '.$schemaVersion.'/'.$section);
         }
     }
     $exportedCampaign = json_encode(payload(http('GET', $campaignBase.'/export')));
-    check(! str_contains($exportedCampaign, 'chat.whatsapp.com') && ! str_contains($exportedCampaign, 'whatsapp_group'), 'export editorial excluye grupos y URL '.$mode);
+    check(str_contains($exportedCampaign, 'chat.whatsapp.com') && str_contains($exportedCampaign, 'whatsapp_group'), 'export editorial v3 conserva grupos y URL '.$mode);
 }
 foreach ($otherPublic as $id => $snapshot) {
     check(MarketingLanding::findOrFail($id)->published_configuration === $snapshot, 'campañas no alteran otros snapshots '.$id);

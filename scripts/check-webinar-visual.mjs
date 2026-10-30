@@ -77,8 +77,9 @@ try {
     }
     const fixtures = JSON.parse(await readFile('/evidence/webinar-fixtures.json', 'utf8'));
     const historical = JSON.parse(await readFile('/evidence/browser-fixtures.json', 'utf8'));
+    const v3 = JSON.parse(await readFile('/evidence/json-v3-fixtures.json', 'utf8'));
     let page, heldSubmission, navigation = 0;
-    const checks = [], metrics = [], submissions = [], writes = [];
+    const checks = [], metrics = [], submissions = [], writes = [], imports = [];
     const fulfill = (event, code, type, body = '', extra = []) => call('Fetch.fulfillRequest', { requestId: event.requestId, responseCode: code, responseHeaders: [{name:'Content-Type',value:type}, ...extra], body: Buffer.from(body).toString('base64') });
     on('Fetch.requestPaused', async event => {
         try {
@@ -96,16 +97,32 @@ try {
             }
             if (url.pathname === '/medicion') { metrics.push(JSON.parse(event.request.postData)); await fulfill(event,204,'application/json'); return; }
             if (url.pathname === '/registro') { submissions.push(JSON.parse(event.request.postData)); heldSubmission = event; return; }
+            if (event.request.method === 'POST' && /\/admin\/landings\/(?:\d+\/)?import$/.test(url.pathname)) {
+                const data = JSON.parse(event.request.postData);
+                const document = JSON.parse(data.editorial_json);
+                imports.push({path: url.pathname, document});
+                if (document.content.hero?.title === null) {
+                    await fulfill(event,422,'application/json',JSON.stringify(v3.errors['content.hero.title'])); return;
+                }
+                const result = url.pathname === '/admin/landings/import' ? v3.imported : v3.patched;
+                await fulfill(event,200,'application/json',JSON.stringify(result)); return;
+            }
             if (event.request.method !== 'GET') { writes.push(url.pathname); await fulfill(event,204,'application/json'); return; }
             if (live && ['/', '/principal', '/login'].includes(url.pathname)) {
                 await call('Fetch.continueRequest', { requestId: event.requestId }); return;
             }
             const response = structuredClone(page);
             if (url.pathname.includes('/preview')) {
-                Object.assign(response, structuredClone(fixtures.empty));
-                response.props.landing.content = structuredClone(page.props.landing.configuration);
-                response.props.landing.preview = true;
-                response.props.launch.registration_open = false;
+                if (url.pathname.endsWith('/confirmado')) {
+                    Object.assign(response, structuredClone(v3.confirmation));
+                } else {
+                    Object.assign(response, structuredClone(fixtures.empty));
+                    response.props.landing.content = structuredClone(page.props.landing.configuration);
+                    response.props.landing.preview = true;
+                    response.props.launch.video_url = response.props.landing.content.video.youtube_url;
+                    response.props.launch.video_poster = response.props.landing.content.video.poster;
+                    response.props.launch.registration_open = false;
+                }
             }
             response.url = url.pathname + url.search;
             await fulfill(event,200,'text/html; charset=utf-8',html.replace(pattern,(_,open,_body,close)=>open+JSON.stringify(response).replaceAll('<','\\u003c')+close));
@@ -197,7 +214,9 @@ try {
         await evaluate('[...document.querySelectorAll("button")].find(b=>b.getAttribute("aria-label")==="Subir CTA final")?.click()');
         await evaluate('[...document.querySelectorAll("button")].find(b=>b.textContent==="EXPORTAR JSON").click()');
         const exported=JSON.parse(await evaluate('document.querySelector("#editorial-output").value'));
-        assert(exported.content.webinar && !exported.content.presentation);
+        assert.equal(exported.schema,'jakawi-club-landing-v3');
+        assert(exported.content.webinar && exported.content.presentation.webinar);
+        assert.equal(exported.content.presentation.webinar.starts_at,'2031-05-02T20:15:00-04:00');
         await evaluate('[...document.querySelectorAll("button")].find(b=>b.textContent==="Cerrar").click()');
         await evaluate('document.querySelector("#stage-confirmation").click()');
         assert(await evaluate('!!document.querySelector("#show-confirmation-video")'));
@@ -210,6 +229,58 @@ try {
     await evaluate('[...document.querySelectorAll("button")].find(b=>b.textContent==="Usar contenido inicial WEBINAR").click()');
     assert.equal(await evaluate('document.getElementById("content.hero.description").value'),fixtures.empty.props.landing.content.hero.description);
     assert.equal(await evaluate('document.querySelector("#webinar-starts-at").value'),'');
+    // Use real PHP import responses as fixtures; no second implementation of JSON merging here.
+    await navigate(historical.create);
+    await evaluate('[...document.querySelectorAll("button")].find(b=>b.textContent==="IMPORTAR JSON").click()');
+    await fill('editorial-json',JSON.stringify(v3.document),'HTMLTextAreaElement');
+    await evaluate('document.querySelector("dialog form").requestSubmit()');
+    await until('!document.querySelector("dialog").open && document.querySelector("#landing-template").value==="WEBINAR"','v3 new import activates WEBINAR');
+    assert.equal(imports.at(-1).path,'/admin/landings/import');
+    assert.equal(await evaluate('document.querySelector("#webinar-starts-at").value'),'');
+    assert.equal(await evaluate('document.querySelector("#show-main-video").checked'),false);
+    assert.equal(await evaluate('[...document.querySelectorAll("[aria-label^=Subir]")].length'),9);
+    await evaluate('[...document.querySelectorAll("button")].find(b=>b.textContent==="EXPORTAR JSON").click()');
+    assert.deepEqual(JSON.parse(await evaluate('document.querySelector("#editorial-output").value')),v3.document);
+    await evaluate('[...document.querySelectorAll("button")].find(b=>b.textContent==="Cerrar").click()');
+    await evaluate('document.querySelector("#stage-confirmation").click()');
+    assert.equal(await evaluate('document.querySelector("#show-confirmation-video").checked'),false);
+    assert.equal(await evaluate('document.getElementById("content.confirmation_whatsapp_group.mode").value'),'none');
+    checks.push('v3-new-complete-import-activates-composition-no-seed-export-equivalent-no-save');
+    await navigate(v3.editor);
+    await fill('content.seo.title','SEO todavía sin guardar','HTMLTextAreaElement');
+    await evaluate('[...document.querySelectorAll("button")].find(b=>b.textContent==="IMPORTAR JSON").click()');
+    await fill('editorial-json',JSON.stringify(v3.patch),'HTMLTextAreaElement');
+    await evaluate('document.querySelector("dialog form").requestSubmit()');
+    await until('!document.querySelector("dialog").open && document.querySelector("#webinar-starts-at").value==="2030-11-10T19:30"','v3 existing patch applies');
+    assert.equal(imports.at(-1).path,`/admin/landings/${v3.editor.props.landing.id}/import`);
+    await evaluate('[...document.querySelectorAll("button")].find(b=>b.textContent==="EXPORTAR JSON").click()');
+    const patchedExport = JSON.parse(await evaluate('document.querySelector("#editorial-output").value'));
+    assert.equal(patchedExport.content.video.youtube_url,v3.patched.configuration.video.youtube_url);
+    assert.equal(patchedExport.content.confirmation_video.youtube_url,v3.patched.configuration.confirmation_video.youtube_url);
+    assert.equal(patchedExport.content.confirmation_whatsapp_group.mode,'custom');
+    await evaluate('[...document.querySelectorAll("button")].find(b=>b.textContent==="Cerrar").click()');
+    await evaluate('Object.defineProperty(navigator,"clipboard",{configurable:true,value:{writeText:()=>Promise.reject(new Error("Clipboard fixture"))}});[...document.querySelectorAll("button")].find(b=>b.textContent==="COPIAR BRIEF PARA IA").click()');
+    await until('document.querySelector("dialog").open && !!document.querySelector("#editorial-output")','v3 brief fallback opens');
+    const brief = await evaluate('document.querySelector("#editorial-output").value');
+    assert(brief.includes('jakawi-club-landing-v3') && brief.includes('starts_at') && brief.includes('show_confirmation_video') && brief.includes('confirmation_whatsapp_group'));
+    await evaluate('[...document.querySelectorAll("button")].find(b=>b.textContent==="Cerrar").click()');
+    await evaluate('[...document.querySelectorAll("button")].find(b=>b.textContent==="IMPORTAR JSON").click()');
+    await fill('editorial-json',JSON.stringify({schema:'jakawi-club-landing-v3',content:{hero:{title:null}}}),'HTMLTextAreaElement');
+    await evaluate('document.querySelector("dialog form").requestSubmit()');
+    await until('document.querySelector("dialog").textContent.includes("content.hero.title")','v3 validation error has JSON path');
+    assert(await evaluate('document.querySelector("dialog").textContent.includes("obligatorio")'));
+    await evaluate('[...document.querySelectorAll("button")].find(b=>b.textContent==="Cerrar").click()');
+    checks.push('v3-existing-patch-independent-videos-groups-brief-errors-no-save');
+    await navigate(v3.dated);
+    assert.equal(await evaluate('document.querySelector("[data-webinar-schedule] time").dateTime'),'2030-11-10T19:30:00-04:00');
+    assert(await evaluate('!!document.querySelector("[data-webinar-countdown]")'));
+    assert.deepEqual(await evaluate('[...document.querySelectorAll("[data-webinar-section]")].map(e=>e.dataset.webinarSection)'),['final','faq','registration','steps','early','benefits','event','hero']);
+    assert.equal(await evaluate(`document.querySelectorAll('a[href*="chat.whatsapp.com"]').length`),0);
+    await navigate(v3.dated_confirmation);
+    await until('!!document.querySelector(".vsl-frame")','v3 confirmation mounts shared player');
+    assert.equal(await evaluate('document.querySelector(".confirmation-whatsapp-cta").textContent'),'UNIRME AL GRUPO DE WHATSAPP');
+    assert.equal(await evaluate('document.querySelector(".confirmation-whatsapp-cta").tagName'),'BUTTON');
+    checks.push('v3-saved-previews-date-countdown-order-visibility-confirmation-player-whatsapp-only-after');
     if (live) {
         for (const width of [390,1440]) {
             await call('Emulation.setDeviceMetricsOverride',{width,height:900,deviceScaleFactor:1,mobile:width<768});

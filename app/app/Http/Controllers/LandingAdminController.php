@@ -76,9 +76,14 @@ class LandingAdminController extends Controller
 
     public function import(Request $request, ?MarketingLanding $landing = null): JsonResponse
     {
-        $data = $request->validate(['editorial_json' => ['required', 'string', 'max:65536'], 'configuration' => ['sometimes', 'required', 'array']]);
+        $data = $request->validate(['editorial_json' => ['required', 'string', 'max:65536'], 'configuration' => ['sometimes', 'required', 'array']], [
+            'editorial_json.required' => 'Selecciona un archivo o pega un documento JSON.',
+            'editorial_json.string' => 'editorial_json debe contener el documento como texto JSON.',
+            'editorial_json.max' => 'El documento supera 65536 bytes UTF-8 (64 KiB).',
+            'configuration.array' => 'configuration debe contener la configuración actual del formulario.',
+        ]);
         $base = LandingContent::validate($data['configuration'] ?? $landing?->configuration ?? LandingContent::defaults());
-        return response()->json(['configuration' => LandingContent::import($data['editorial_json'], $base)]);
+        return response()->json(['configuration' => LandingContent::import($data['editorial_json'], $base, $landing === null)]);
     }
 
     public function export(MarketingLanding $landing): JsonResponse

@@ -135,7 +135,7 @@ try {
     check($preview['component'] === 'Welcome' && $preview['props']['landing']['preview'] && ! $preview['props']['launch']['registration_open'], 'preview real protegido sin registro ni publicación');
     check(DB::table('marketing_landing_event_totals')->count() === 0, 'preview no genera conteos de servidor');
     $export = payload(http('GET', $base.'/export'));
-    check($export == App\Support\LandingContent::envelope($content), 'exportación editorial completa v1');
+    check($export == App\Support\LandingContent::envelope($content), 'exportación editorial completa v3');
     check(! isset($export['status'], $export['slug'], $export['campaign']), 'exportación excluye operaciones y campaña');
     $partial = ['schema' => App\Support\LandingContent::SCHEMA, 'content' => ['hero' => ['title' => 'Nuevo titular']]];
     $imported = http('POST', $base.'/import', ['editorial_json' => json_encode($partial), 'configuration' => $content]);
@@ -156,10 +156,10 @@ try {
         json_encode([...$partial, 'content' => ['hero' => ['css' => 'display:none']]]),
         json_encode([...$partial, 'content' => ['hero' => ['title' => '<script>alert(1)</script>']]]),
         json_encode([...$partial, 'content' => ['hero' => ['title' => null]]]),
-        json_encode([...$partial, 'content' => ['video' => ['youtube_url' => 'https://www.youtube.com/watch?v=M7lc1UVf-VE']]]),
+        json_encode([...$partial, 'schema' => App\Support\LandingContent::V2_SCHEMA, 'content' => ['video' => ['youtube_url' => 'https://www.youtube.com/watch?v=M7lc1UVf-VE']]]),
         json_encode([...$partial, 'campaign' => 'otra']),
         json_encode([...$partial, 'template' => 'OTRA']),
-        json_encode([...$partial, 'content' => ['presentation' => ['template' => 'WEBINAR']]]),
+        json_encode([...$partial, 'schema' => App\Support\LandingContent::V2_SCHEMA, 'content' => ['presentation' => ['template' => 'WEBINAR']]]),
         json_encode([...$partial, 'content' => ['video' => ['poster' => '/marketing/../secret.png']]]),
         json_encode([...$partial, 'content' => ['benefits' => ['items' => [['title' => 'Incompleto']]]]]),
         json_encode([...$partial, 'content' => ['faq' => ['items' => ['x' => ['question' => 'a', 'answer' => 'b']]]]]),
@@ -234,7 +234,7 @@ try {
     $confirmationPreview = payload(http('GET', $base.'/preview/confirmado', [], true));
     check($confirmationPreview['component'] === 'Registered' && $confirmationPreview['props']['confirmation']['content']['title'] === 'Gracias desde el editor' && $confirmationPreview['props']['confirmation']['preview'], 'preview de gracias usa borrador guardado y renderer real');
     $json = ['schema' => App\Support\LandingContent::SCHEMA, 'content' => ['after_registration' => ['title' => 'Gracias importadas']]];
-    $import = payload(http('POST', '/admin/landings/import', ['editorial_json' => json_encode($json), 'configuration' => $next]));
+    $import = payload(http('POST', $base.'/import', ['editorial_json' => json_encode($json), 'configuration' => $next]));
     check($import['configuration']['after_registration']['title'] === 'Gracias importadas' && $import['configuration']['next_step'] === $next['next_step'] && $landing->fresh()->configuration === $next && $landing->fresh()->published_configuration === $savedPublic, 'importación de gracias no persiste ni publica y conserva destino');
     $legacy = $home->configuration; unset($legacy['presentation']);
     check(App\Support\LandingContent::withPresentation($legacy)['presentation']['template'] === 'LEAD_VSL', 'snapshots anteriores compatibles sin migración');
@@ -258,6 +258,7 @@ try {
     $home->update(['published_configuration' => $originalHome]);
     require '/tests/webinar-tests.php';
     require '/tests/campaigns-admin-tests.php';
+    require '/tests/landing-json-v3-tests.php';
     file_put_contents('/evidence/browser-fixtures.json', json_encode([
         'invalid_import' => payload(http('POST', '/admin/landings/import', ['editorial_json' => json_encode(['schema' => App\Support\LandingContent::SCHEMA, 'content' => ['hero' => ['title' => null]]])])),
         'editor' => payload(http('GET', $base.'/editar', [], true)),

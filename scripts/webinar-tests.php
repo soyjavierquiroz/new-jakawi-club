@@ -44,7 +44,7 @@ foreach (['missing', 'duplicate', 'hidden-form', 'unknown'] as $case) {
     check(http('PUT', $webinarBase, [...$webinarData, 'configuration' => $invalid, 'revision' => $webinarLanding->fresh()->revision])->getStatusCode() === 422, 'rechazar layout WEBINAR '.$case);
 }
 $document = App\Support\LandingContent::envelope($dated);
-check(isset($document['content']['webinar']) && ! isset($document['content']['presentation']), 'exportar textos WEBINAR sin fecha ni controles operativos');
+check(isset($document['content']['webinar'], $document['content']['presentation']['webinar']) && $document['schema'] === App\Support\LandingContent::SCHEMA, 'exportar WEBINAR v3 con fecha y composición');
 check(App\Support\LandingContent::import(json_encode($document), $dated) == $dated, 'roundtrip JSON v2 WEBINAR conserva fecha, medios y layout');
 $textPatch = App\Support\LandingContent::import(json_encode(['schema' => App\Support\LandingContent::SCHEMA, 'content' => ['webinar' => ['opportunity' => ['title' => 'Oportunidad editada']]]]), $dated);
 check($textPatch['webinar']['opportunity']['title'] === 'Oportunidad editada' && $textPatch['webinar']['early'] === $dated['webinar']['early'], 'WEBINAR JSON parcial conserva campos y listas omitidos');
