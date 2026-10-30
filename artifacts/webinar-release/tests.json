@@ -159,5 +159,123 @@
     "failure": "line 52 expects registration_open=false; LIVE registration_open=true",
     "configuration_changed": false
   },
-  "protected_live_state_after_isolated_tests": "unchanged"
+  "protected_live_state_after_isolated_tests": "unchanged",
+  "webinar_browser_live": {
+    "checks": [
+      "responsive-390-cta-sticky-no-date-no-whatsapp",
+      "shared-player-3x4-390-fixture-only",
+      "responsive-430-cta-sticky-no-date-no-whatsapp",
+      "shared-player-3x4-430-fixture-only",
+      "responsive-1440-cta-sticky-no-date-no-whatsapp",
+      "shared-player-3x4-1440-fixture-only",
+      "saved-order-visibility-bolivia-date-countdown-preview-no-analytics",
+      "elapsed-countdown-never-restarts",
+      "registration-error-preserves-data-e164-referral-single-submit",
+      "editor-390-tabs-date-layout-export-no-write",
+      "editor-1440-tabs-date-layout-export-no-write",
+      "existing-home-principal-live-open-390",
+      "existing-home-principal-live-open-1440",
+      "existing-sso-login-live",
+      "reusable-new-webinar-seed-no-save-no-publication"
+    ],
+    "passed": 15,
+    "live_assets": true,
+    "live_registrations": 0,
+    "provider_playback_verified": false
+  },
+  "local_validator_after_deployment": {
+    "command": "python3 scripts/validate-local.py",
+    "exit_code": 1,
+    "failure": "same line 52 registration_open expectation as before deployment",
+    "registration_remains_open": true
+  },
+  "economic_browser_live": {
+    "live_assets": true,
+    "data": "isolated HTTP kernel fixtures",
+    "checks": [
+      {
+        "width": 390,
+        "rules_form": true,
+        "decimal_string": true,
+        "bolivia_effective_date": true,
+        "no_defaults": true,
+        "ledger": true,
+        "approval_guard": true,
+        "manual_approval": true,
+        "economic_cutoff": true,
+        "no_legacy_requirement": true,
+        "affiliate_detail": true,
+        "exact_currency_totals": true,
+        "no_overflow": true
+      },
+      {
+        "width": 1440,
+        "rules_form": true,
+        "decimal_string": true,
+        "bolivia_effective_date": true,
+        "no_defaults": true,
+        "ledger": true,
+        "approval_guard": true,
+        "manual_approval": true,
+        "economic_cutoff": true,
+        "no_legacy_requirement": true,
+        "affiliate_detail": true,
+        "exact_currency_totals": true,
+        "no_overflow": true
+      }
+    ],
+    "runtime_errors": [],
+    "failed_assets": [],
+    "intercepted_admin_submissions": 4,
+    "no_live_mutations": true,
+    "no_live_session": true
+  },
+  "short_link_browser_live": {
+    "live_assets": true,
+    "data": "isolated HTTP kernel fixtures",
+    "checks": [
+      {
+        "width": 390,
+        "paused": true,
+        "finished": true,
+        "missing": true,
+        "short_link": true,
+        "clipboard": true,
+        "whatsapp": true,
+        "history": true,
+        "conversions_preserved": true,
+        "admin_update": true,
+        "associated_links": true,
+        "no_overflow": true
+      },
+      {
+        "width": 1440,
+        "paused": true,
+        "finished": true,
+        "missing": true,
+        "short_link": true,
+        "clipboard": true,
+        "whatsapp": true,
+        "history": true,
+        "conversions_preserved": true,
+        "admin_update": true,
+        "associated_links": true,
+        "no_overflow": true
+      }
+    ],
+    "runtime_errors": [],
+    "failed_assets": [],
+    "intercepted_admin_submissions": 2,
+    "no_live_mutations": true,
+    "no_live_session": true
+  },
+  "post_deployment_source_verification": {
+    "mounted_files": 414,
+    "https_assets": 28,
+    "editorial_rows_and_snapshots_unchanged": true,
+    "registration_open": true,
+    "all_club_services_healthy": true,
+    "sso_start_pkce_and_invalid_callback_verified": true,
+    "sso_real_provider_login_tested": false
+  }
 }

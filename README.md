@@ -350,3 +350,5 @@ fecha, orden, visibilidad y medios se gestionan desde los controles existentes.
 No se crean ejemplos en LIVE ni se publica al guardar.
 
 Implementación, archivos, pruebas aisladas y límites: [WEBINAR MVP](artifacts/webinar/REPORT.md).
+
+WEBINAR integrado sobre main vigente y desplegado exclusivamente en CLUB: [informe y pruebas del despliegue](artifacts/webinar-release/REPORT.md). No se creó ni publicó contenido WEBINAR automáticamente.

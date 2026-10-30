@@ -1,0 +1,12 @@
+{
+  "source_sha": "c83f0196d59ee7a513d819e3451c945869c053dc",
+  "integrated_webinar_sha": "97d69cbe7a79ae15f68ed3a3fa13e46a045db89c",
+  "baseline_live_sha": "19cd737be5d5f4f07999de3e17862f0643318f07",
+  "maintenance_seconds": 4.72,
+  "app_only_restart": true,
+  "previous_chunks_preserved": true,
+  "manifest_published_last": true,
+  "migrations_executed": false,
+  "configuration_changed": false,
+  "cms_publication_executed": false
+}

@@ -45,15 +45,58 @@ vigente. No se cierra ni se altera el validador para hacerlo pasar.
 
 ## Operación
 
-Estado de esta sección: pendiente de completar al verificar LIVE.
+**Despliegue completado exclusivamente en JAKAWI.CLUB.** Fuente y validaciones
+promovidas a main mediante fast-forward y push normal en
+`c83f0196d59ee7a513d819e3451c945869c053dc`. El commit final de documentación y
+capturas conserva exactamente esa fuente de aplicación; su SHA efectivo se
+registra en `LIVE.json` y en `git rev-parse HEAD`, sin autorreferencia.
+
+Mantenimiento: **4,72 segundos**. Se copiaron los chunks nuevos, se conservó cada
+asset anterior y se reemplazó el manifest al final. Solo se reinició
+`jakawi-club-app`. Sin migraciones, cambios de secretos/configuración,
+instalaciones ni recreación de contenedores.
+
+Verificación posterior:
+
+- `/up` local y HTTPS: **200**. App, web y PostgreSQL CLUB: **healthy**.
+- **414 archivos montados** coinciden con Git; **28 assets** de manifest coinciden
+  byte a byte entre disco y HTTPS, incluido el editor WEBINAR nuevo.
+- El controlador de creación en el runtime LIVE ofrece WEBINAR completo con
+  nueve secciones y fecha vacía. Las rutas administrativas mantienen sus permisos.
+- Navegador con **assets LIVE**: **15 grupos WEBINAR PASS**, con previews/administrador
+  mediante fixtures y toda mutación interceptada. Incluye `/` y `/principal` reales
+  a 390/1440 px, registro abierto y acceso de login SSO disponible.
+- Paneles de comisiones/reglas/afiliados y enlaces cortos con **assets LIVE** a
+  390/1440 px: sin errores JS, assets fallidos ni desbordes. Datos de fixture;
+  formularios administrativos interceptados, sin sesiones LIVE privadas.
+- Inicio SSO real de CLUB: redirección con callback registrado, PKCE S256, state
+  y nonce. Callback inválido: rechazo hacia login. No se sigue la redirección a COM
+  ni se realiza un intercambio de tokens o login real del proveedor.
+- Los hashes de `marketing_landings` completos (borrador, textos, configuración,
+  estado y snapshot publicado), usuarios, tokens, identidad, ofertas/enlaces,
+  eventos comerciales, reglas, libro y auditoría permanecen iguales al baseline.
+- Fuentes de SSO, CRM, receptor, economía y enlaces cortos intactas; secretos intactos.
+  Web, PostgreSQL y contenedores vecinos conservan ID, inicio y contador de reinicios.
+- `validate-local.py` sigue fallando exactamente en la misma línea 52 por registro
+  abierto; se conserva ese estado operativo, sin intentar forzar la prueba.
+
+**No se creó ni publicó ninguna landing WEBINAR, ni se modificó contenido editorial
+existente, la landing principal o su snapshot publicado.** La única landing
+preexistente conserva su fila íntegra. No hubo altas de prueba LIVE, correos,
+publicación CMS, llamadas a CRM ni cambios de COM o Traefik.
+
+Evidencia: [pruebas](tests.json), [operación](deployment.json),
+[navegador WEBINAR LIVE](webinar-live/browser-results.json),
+[paneles económicos LIVE](commission-tests/browser-live.json),
+[enlaces cortos LIVE](short-links/browser-live.json).
 
 Respaldo privado preparado en `/srv/sites/jakawi.club/rollback-webinar-mvp/`:
 fuente anterior, assets anteriores, cachés y baseline de hashes. No se copian
 secretos a Git, logs, imágenes ni artefactos públicos.
 
 No se necesitan migraciones, cambios de configuración, instalaciones ni reinicios
-de web o PostgreSQL. El despliegue previsto usa fast-forward de main, conserva
-los chunks antiguos, cambia el manifest al final y reinicia exclusivamente app.
+de web o PostgreSQL. El despliegue realizado usó fast-forward de main, conservó
+los chunks antiguos, cambió el manifest al final y reinició exclusivamente app.
 
 El sello final `LIVE.json` se excluye de Git para evitar autorreferencia del SHA.
 Las pruebas de navegador posteriores usan assets HTTPS reales con fixtures de

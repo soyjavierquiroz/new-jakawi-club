@@ -56,7 +56,7 @@ assert state['oidc_enabled'] == baseline['state']['oidc_enabled']
 containers_unchanged = []
 for name, old in baseline['containers'].items():
     c = json.loads(command(['docker','inspect',name]))[0]
-    assert c['Id'] == old['id'], name
+    assert c['State']['Running'] and c['Id'] == old['id'], name
     if name != 'jakawi-club-app':
         assert c['State']['StartedAt'] == old['started_at'] and c['RestartCount'] == old['restarts'], name
         containers_unchanged.append(name)
