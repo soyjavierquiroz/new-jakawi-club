@@ -1,3 +1,4 @@
+import { ClubCardImage } from './ClubCardPresentation';
 import { Link } from '@inertiajs/react';
 import { useState } from 'react';
 import { CommunityWhatsAppIcon } from './CommunityWhatsAppIcon';
@@ -22,13 +23,13 @@ export function OfferCard({ offer }: { offer: CatalogOffer }) {
         catch { setMessage('Selecciona y copia el enlace del campo.'); }
     }
     return <article data-catalog-offer={offer.key} className="flex min-w-0 flex-col overflow-hidden rounded-card border border-border bg-surface">
-        {offer.image_url && !imageFailed ? <img src={offer.image_url} alt="" loading="lazy" referrerPolicy="no-referrer" className="aspect-[16/9] w-full object-cover" onError={() => setImageFailed(true)} /> : <div className="flex aspect-[16/9] items-center justify-center bg-surface-subtle p-6 text-lg font-bold text-text-secondary">{catalogTypes[offer.type]}</div>}
+        {offer.source === 'club' ? <ClubCardImage image={offer.image_url} title={offer.name} /> : offer.image_url && !imageFailed ? <img src={offer.image_url} alt="" loading="lazy" referrerPolicy="no-referrer" className="aspect-[16/9] w-full object-cover" onError={() => setImageFailed(true)} /> : <div className="flex aspect-[16/9] items-center justify-center bg-surface-subtle p-6 text-lg font-bold text-text-secondary">{catalogTypes[offer.type]}</div>}
         <div className="flex grow flex-col p-5">
             <div className="flex flex-wrap justify-between gap-2 text-xs font-semibold"><span>{catalogTypes[offer.type]} · {offer.source.toUpperCase()}</span><span data-availability={offer.effective_state}>{catalogStates[offer.effective_state]}</span></div>
             <p className="mt-3 text-xs font-semibold text-text-secondary">{offer.category || 'Oportunidades'}{offer.cities.length > 0 && ` · ${offer.cities.join(', ')}`}</p>
-            <h2 className="mt-2 break-words text-xl font-extrabold leading-snug">{offer.name}</h2>
+            <h2 className="mt-2 min-h-14 line-clamp-2 break-words text-xl font-extrabold leading-snug">{offer.name}</h2>
             {offer.partners.length > 0 && <p className="mt-2 break-words text-sm font-semibold">{offer.partners.map(partner => partner.name).join(' · ')}</p>}
-            {offer.short_description && <p className="mt-3 text-sm text-text-secondary">{offer.short_description}</p>}
+            {offer.short_description && <p className="mt-3 min-h-15 line-clamp-3 text-sm text-text-secondary">{offer.short_description}</p>}
             {(offer.starts_at || offer.ends_at) && <p className="mt-3 text-xs text-text-secondary">{offer.starts_at && `Desde ${date(offer.starts_at)}`}{offer.starts_at && offer.ends_at && ' · '}{offer.ends_at && `Hasta ${date(offer.ends_at)}`}</p>}
             {offer.availability_status === 'scheduled' && <p className="mt-3 text-xs text-text-secondary">Sesión programada. La disponibilidad de cupos y las reservas se consultan en COM.</p>}
             <div className="mt-auto pt-5">

@@ -14,6 +14,7 @@ $webinarPreview = payload(http('GET', $webinarBase.'/preview', [], true));
 check($webinarPreview['props']['landing']['content']['presentation']['webinar']['starts_at'] === null, 'preview WEBINAR sin fecha no hereda fecha global');
 check($webinarPreview['props']['launch']['whatsapp_url'] === null && ! isset($webinarPreview['props']['landing']['content']['whatsapp_group']), 'WEBINAR captación no expone WhatsApp');
 check(http('POST', $webinarBase.'/publicar', ['revision' => $webinarLanding->fresh()->revision])->isRedirect(), 'publicar WEBINAR promueve borrador correcto en esquema aislado');
+$webinarSnapshot = $webinarLanding->fresh()->published_configuration;
 $webinarPublic = payload(http('GET', '/webinar-aislado', [], true));
 $dated = $webinar;
 $dated['presentation']['webinar']['starts_at'] = '2030-11-10T19:30:00-04:00'; // Fixture only, never a real event.
@@ -23,7 +24,7 @@ foreach ($dated['presentation']['webinar']['sections'] as &$section) {
 }
 unset($section);
 check(http('PUT', $webinarBase, [...$webinarData, 'configuration' => $dated, 'revision' => $webinarLanding->fresh()->revision])->isRedirect(), 'guardar WEBINAR con fecha Bolivia, orden y visibilidad');
-check($webinarLanding->fresh()->published_configuration == $webinar, 'guardar fecha y orden no cambia snapshot público');
+check($webinarLanding->fresh()->published_configuration === $webinarSnapshot, 'guardar fecha y orden no cambia snapshot público');
 $datedPreview = payload(http('GET', $webinarBase.'/preview', [], true));
 check($datedPreview['props']['landing']['content']['presentation']['webinar'] == $dated['presentation']['webinar'], 'preview conserva fecha con offset y orden exactos');
 check(http('POST', $webinarBase.'/publicar', ['revision' => $webinarLanding->fresh()->revision])->isRedirect(), 'publicar snapshot WEBINAR actualizado');

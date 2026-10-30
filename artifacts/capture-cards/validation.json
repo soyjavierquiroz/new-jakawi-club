@@ -1,0 +1,20 @@
+{
+  "catalog_http_checks": 96,
+  "landing_editor_checks": 577,
+  "postgresql": "temporary isolated schemas",
+  "live_test_accounts": 0,
+  "live_test_campaigns": 0,
+  "typescript": "passed",
+  "vite_build": "passed",
+  "browser_viewports": [
+    390,
+    1440
+  ],
+  "browser_preview": "passed",
+  "short_links_and_attribution": "passed",
+  "historical_editorial_contracts": [
+    "v1",
+    "v2",
+    "v3"
+  ]
+}

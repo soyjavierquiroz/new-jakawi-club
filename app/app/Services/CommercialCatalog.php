@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\MarketingLanding;
+use App\Support\LandingCommercial;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\DB;
 
@@ -27,6 +28,11 @@ final class CommercialCatalog
 
     public function present(object $offer): array
     {
+        $commercial = [];
+        if ($offer->source === 'club' && preg_match('/^landing:([0-9]+)$/D', $offer->source_id ?? '', $match)
+            && ($landing = MarketingLanding::find((int) $match[1])) && $landing->published_configuration !== null) {
+            $commercial = LandingCommercial::forLanding($landing);
+        }
         return [
             'key' => $offer->key, 'source' => $offer->source, 'source_id' => $offer->source_id,
             'name' => $offer->name, 'type' => $offer->type, 'short_description' => $offer->short_description,
@@ -37,6 +43,7 @@ final class CommercialCatalog
             'starts_at' => $offer->starts_at, 'ends_at' => $offer->ends_at,
             'last_synced_at' => $offer->last_synced_at, 'local_paused' => $offer->local_paused,
             'destination_url' => $offer->destination_url,
+            ...$commercial,
         ];
     }
 
@@ -61,7 +68,7 @@ final class CommercialCatalog
             }
             $id = 'landing:'.$landing->id;
             $row = [
-                'name' => $landing->title, 'source' => 'club', 'source_id' => $id,
+                ...LandingCommercial::forLanding($landing), 'source' => 'club', 'source_id' => $id,
                 'type' => 'acquisition', 'category' => 'Captación',
                 'destination_url' => rtrim(config('app.url'), '/').'/',
                 'publication_status' => 'published', 'landing_status' => 'PUBLISHED',

@@ -15,6 +15,7 @@ docker run --rm --name jakawi-club-catalog-tests --network jakawi-club-private \
     --volume "$source_dir/app:/var/www/html:ro" \
     --volume /opt/sites/jakawi.club/app/vendor:/var/www/html/vendor:ro \
     --volume "$build_dir:/var/www/html/public/build:ro" \
+    --volume "$source_dir/scripts/fixtures:/var/www/html/public/marketing:ro" \
     --volume "$source_dir/scripts:/tests:ro" \
     --volume "$evidence_dir:/evidence" \
     --tmpfs /var/www/html/storage:rw,mode=1777,size=32m \

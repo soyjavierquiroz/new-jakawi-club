@@ -14,6 +14,7 @@ export type LandingVideoSettings = { youtube_url: string | null; poster: string 
 export type WebinarSection = 'hero' | 'event' | 'benefits' | 'opportunity' | 'early' | 'steps' | 'registration' | 'faq' | 'final';
 type WebinarBlock = { title: string; description: string; items: { title: string; description: string }[] };
 export type LandingContent = {
+    commercial?: { image: string | null; description: string | null; public_name?: string | null };
     presentation: { template: LandingTemplate; show_video: boolean; show_faq: boolean; show_confirmation_video: boolean; webinar?: { title: string; starts_at: string | null; sections: { id: WebinarSection; visible: boolean }[] } };
     webinar?: { opportunity: { title: string; description: string }; early: WebinarBlock; steps: Omit<WebinarBlock, 'description'> };
     whatsapp_group: { mode: 'default' | 'custom' | 'none'; url: string | null };
@@ -29,7 +30,7 @@ export type LandingContent = {
     video: LandingVideoSettings;
     confirmation_video: LandingVideoSettings;
 };
-export type Landing = { id: number; slug: string; content: LandingContent; preview: boolean; revision: number };
+export type Landing = { id: number; slug: string; content: LandingContent; preview: boolean; revision: number; social?: { name: string; short_description: string; image_url: string | null } };
 export type LandingRecord = {
     id: number; title: string; slug: string; status: 'draft' | 'published' | 'archived'; campaign: string | null;
     published_campaign: string | null; configuration: LandingContent; published_configuration: LandingContent | null;

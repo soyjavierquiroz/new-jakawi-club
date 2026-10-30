@@ -176,3 +176,8 @@ credentials.json
 /artifacts/confirmation-scroll/*.png
 /artifacts/confirmation-scroll/browser-live.json
 /artifacts/confirmation-scroll/validation.json
+
+/artifacts/capture-cards/LIVE.json
+/artifacts/capture-cards/*fixtures.json
+/artifacts/capture-cards/*.png
+/artifacts/capture-cards/*.html

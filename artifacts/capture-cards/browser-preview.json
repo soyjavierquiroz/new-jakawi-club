@@ -1,0 +1,35 @@
+{
+  "live_assets": false,
+  "checks": [
+    {
+      "width": 390,
+      "own_image": true,
+      "poster_fallback": true,
+      "brand_fallback": true,
+      "failed_image_fallback": true,
+      "consistent_heights": true,
+      "clipboard": true,
+      "whatsapp": true,
+      "draft_preview": true,
+      "confirmation_unchanged": true,
+      "no_overflow": true
+    },
+    {
+      "width": 1440,
+      "own_image": true,
+      "poster_fallback": true,
+      "brand_fallback": true,
+      "failed_image_fallback": true,
+      "consistent_heights": true,
+      "clipboard": true,
+      "whatsapp": true,
+      "draft_preview": true,
+      "confirmation_unchanged": true,
+      "no_overflow": true
+    }
+  ],
+  "runtime_errors": [],
+  "failed_assets": [],
+  "no_live_mutations": true,
+  "no_live_accounts": true
+}

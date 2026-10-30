@@ -98,12 +98,16 @@ class LandingAdminController extends Controller
         DB::transaction(function () use ($request, $landing): void {
             $locked = $this->lock($request, $landing);
             $locked->published_configuration = LandingContent::validate($locked->configuration);
+            $locked->published_configuration = [...$locked->published_configuration, 'commercial' => [...$locked->published_configuration['commercial'], 'public_name' => \App\Support\LandingCommercial::text($locked->title, 120)]];
             $locked->published_campaign = $locked->campaign;
             $locked->published_at = now();
             $locked->status = 'published';
             $locked->revision++;
             $locked->save();
         });
+        if ($landing->isHome()) {
+            app(\App\Services\CommercialCatalog::class)->syncClub();
+        }
         return back()->with('status', 'Versión guardada publicada.');
     }
 

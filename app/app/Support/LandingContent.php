@@ -23,6 +23,7 @@ class LandingContent
     {
         return [
             'presentation' => self::presentationDefaults(),
+            'commercial' => ['image' => null, 'description' => null, 'public_name' => null],
             'seo' => ['title' => 'Tu ciudad tiene mucho más para vivir', 'description' => 'Conoce el comienzo de JAKAWI en Cochabamba. Una nueva forma de descubrir tu ciudad. Vive más. Gasta menos.'],
             'hero' => ['eyebrow' => 'COCHABAMBA / PRELANZAMIENTO', 'title' => 'Tu ciudad tiene', 'emphasis' => 'mucho más', 'ending' => 'para vivir.', 'description' => 'Estamos preparando JAKAWI, una nueva forma de descubrir experiencias, lugares y oportunidades para disfrutar más de Cochabamba.', 'cta' => 'QUIERO SER PARTE'],
             'benefits' => ['eyebrow' => 'EL COMIENZO ES CONTIGO', 'title' => 'Las mejores historias empiezan siendo parte.', 'description' => 'Esto es lo que podrás hacer al sumarte, cuando abramos los registros.', 'items' => [
@@ -131,7 +132,7 @@ class LandingContent
     /** Legacy snapshots gain presentation defaults in memory, without database writes. */
     public static function withPresentation(array $content): array
     {
-        $content = ['after_registration' => self::confirmationDefaults(), 'next_step' => ['action' => 'recover', 'redirect_seconds' => 0],
+        $content = ['commercial' => ['image' => null, 'description' => null, 'public_name' => null], 'after_registration' => self::confirmationDefaults(), 'next_step' => ['action' => 'recover', 'redirect_seconds' => 0],
             'whatsapp_group' => ['mode' => 'default', 'url' => null], 'confirmation_whatsapp_group' => ['mode' => 'inherit', 'url' => null], ...$content];
         if (($content['after_registration']['title'] ?? null) === 'Gracias por dar el siguiente paso.') {
             $content['after_registration']['title'] = self::confirmationDefaults()['title'];
@@ -261,7 +262,12 @@ class LandingContent
         if (! $partial) {
             $content = self::withPresentation($content);
         }
-        $rules = ['content' => ['required', 'array:seo,hero,benefits,registration,faq,final,video,confirmation_video,presentation,after_registration,next_step,whatsapp_group,confirmation_whatsapp_group,webinar']];
+        $rules = ['content' => ['required', 'array:seo,hero,benefits,registration,faq,final,video,confirmation_video,presentation,after_registration,next_step,whatsapp_group,confirmation_whatsapp_group,webinar,commercial']];
+        $rules['content.commercial'] = ['sometimes', 'array:image,description,public_name'];
+        $rules['content.commercial.image'] = ['sometimes', 'nullable', 'string', 'max:500'];
+        $rules['content.commercial.description'] = ['sometimes', 'nullable', 'string', 'max:320', 'not_regex:/[<>]/u'];
+        // Captured at publication, never resolved from a mutable draft name.
+        $rules['content.commercial.public_name'] = ['sometimes', 'nullable', 'string', 'max:120', 'not_regex:/[<>]/u'];
         $rules['content.presentation'] = [$presence, 'array:template,show_video,show_faq,show_confirmation_video,webinar'];
         $rules['content.presentation.template'] = [$presence, Rule::in(self::TEMPLATES)];
         $rules['content.presentation.webinar'] = ['sometimes', 'required', 'array:title,starts_at,sections'];
@@ -343,6 +349,10 @@ class LandingContent
             }
         }
         self::validator(['content' => $content], $rules)->after(function ($validator) use ($content, $partial): void {
+            $image = $content['commercial']['image'] ?? null;
+            if ($image !== null && LaunchSettings::videoPoster($image) === null) {
+                $validator->errors()->add('content.commercial.image', 'Selecciona una imagen PNG, JPEG o WebP existente en /marketing/.');
+            }
             if (isset($content['presentation']['webinar'])) {
                 if (($content['presentation']['webinar']['starts_at'] ?? null) === '') {
                     $validator->errors()->add('content.presentation.webinar.starts_at', 'Usa null si no hay fecha confirmada, o una fecha válida con formato YYYY-MM-DDTHH:mm:ss-04:00.');

@@ -408,3 +408,7 @@ y el mismo comando sin opciones para verificar los assets LIVE. Requiere fixture
 frescos de `scripts/test-postconversion.sh` con `JAKAWI_EVIDENCE_DIR` apuntando a
 `artifacts/confirmation-scroll`; todas las mutaciones del navegador se interceptan.
 Evidencia y diagnóstico CRM de solo lectura: [informe](artifacts/confirmation-scroll/REPORT.md).
+
+### Presentación comercial de captación
+
+La sección **IMAGEN Y PRESENTACIÓN COMERCIAL** de la pestaña de captación reutiliza los medios locales de `/marketing/` y permite una imagen 16:9 y descripción breve opcionales. La tarjeta y sus metadatos sociales usan exclusivamente el snapshot publicado; guardar borrador conserva el catálogo. Sin medios propios, usa poster/hero publicados y finalmente marca JAKAWI, sin extracciones de YouTube. [Implementación, pruebas y operación](artifacts/capture-cards/REPORT.md).

@@ -65,11 +65,12 @@ class WelcomeController extends Controller
         if ($preview) {
             $launch['registration_open'] = false;
         }
+        $social = \App\Support\LandingCommercial::forLanding($landing, $preview);
         return Inertia::render('Welcome', [
             'launch' => $launch,
-            'landing' => ['id' => $landing->id, 'slug' => $landing->slug, 'content' => $content, 'preview' => $preview, 'revision' => $landing->revision],
+            'landing' => ['id' => $landing->id, 'slug' => $landing->slug, 'content' => $content, 'preview' => $preview, 'revision' => $landing->revision, 'social' => $social],
             'referral_code' => $preview ? null : $referrals->current($request)?->referral_code,
             'referral_preference' => $request->cookie('jakawi_referral_consent'),
-        ]);
+        ])->withViewData(['landingSocial' => $social]);
     }
 }
