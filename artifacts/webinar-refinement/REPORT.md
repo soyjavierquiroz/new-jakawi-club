@@ -30,3 +30,8 @@ baseline vigente de esta entrega. Sello final en LIVE.json ignorado.
 
 Pruebas previas: 419 landings + 134 postconversion PASS; TypeScript/build PASS;
 23 grupos de navegador PASS, sin mutaciones LIVE.
+
+Código desplegado: `5e19216fbd0676540d9a0d5b8a2114f0664ca5e0`.
+LIVE: 26 grupos PASS, incluidos 390/430/1440, home/principal y login.
+Solo app reiniciada, 20 assets nuevos y chunks anteriores conservados.
+Sin migraciones, registros/correos reales ni publicaciones de campañas.
