@@ -11,6 +11,11 @@ return Application::configure(basePath: dirname(__DIR__))
         web: __DIR__.'/../routes/web.php',
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
+        then: function (): void {
+            // Machine-only receiver: no browser session, CSRF exemption or CRM hooks.
+            \Illuminate\Support\Facades\Route::post('/internal/commercial/events', \App\Http\Controllers\CommercialEventController::class)
+                ->middleware(\App\Http\Middleware\AuthenticateCommercialEvent::class)->name('commercial.receive');
+        },
     )
     ->withMiddleware(function (Middleware $middleware): void {
         // Only the confirmed Docker network shared with Traefik is trusted.
@@ -26,6 +31,6 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(
-            fn (Request $request) => $request->is('api/*') || $request->expectsJson(),
+            fn (Request $request) => $request->is('api/*', 'internal/commercial/*') || $request->expectsJson(),
         );
     })->create();

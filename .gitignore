@@ -94,3 +94,6 @@ credentials.json
 /scripts/__pycache__/
 /artifacts/identity-phase04/browser-live.json
 /artifacts/identity-phase04/login-live-*.png
+
+/artifacts/commercial-phase05/LIVE.json
+/artifacts/commercial-phase05/*fixtures.json

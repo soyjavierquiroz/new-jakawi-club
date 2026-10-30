@@ -22,6 +22,7 @@ services:
       - /srv/sites/jakawi.club/storage:/var/www/html/storage
       - /srv/sites/jakawi.club/bootstrap-cache:/var/www/html/bootstrap/cache
       - /srv/sites/jakawi.club/secrets/crm-hmac:/run/secrets/crm_club_hmac:ro
+      - /srv/sites/jakawi.club/secrets/com-commercial-hmac:/run/secrets/com_commercial_hmac:ro
     networks:
       - private
       - egress

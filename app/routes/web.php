@@ -11,6 +11,9 @@ use App\Http\Middleware\MarketingAdmin;
 use App\Http\Controllers\LandingAdminController;
 use Illuminate\Support\Facades\Route;
 
+Route::get('/admin/conversiones-com', \App\Http\Controllers\CommercialAdminController::class)
+    ->middleware(['auth', 'verified', MarketingAdmin::class])->name('commercial.index');
+
 Route::get('/', WelcomeController::class)->name('home');
 Route::get('/l/{slug}', [WelcomeController::class, 'legacy'])->name('landing.legacy');
 Route::prefix('admin/landings')->middleware(['auth', 'verified', MarketingAdmin::class])->group(function (): void {
