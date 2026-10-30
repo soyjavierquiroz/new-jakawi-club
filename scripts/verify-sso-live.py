@@ -19,13 +19,15 @@ assert not command(['git','status','--porcelain'])
 assert head==command(['git','rev-parse','origin/main']).decode().strip()==command(['git','ls-remote','origin','refs/heads/main']).decode().split()[0]
 assert sha256(Path('/srv/sites/jakawi.club/secrets/app.env').read_bytes()).hexdigest()==base['env_sha256']
 # Everything outside the explicit SSO change set must retain the previous source bytes.
-allowed={'app/app/Http/Controllers/AuthController.php','app/app/Http/Middleware/HandleInertiaRequests.php','app/composer.json','app/composer.lock','app/resources/js/pages/Auth.tsx','app/routes/web.php','compose.yaml','README.md','.gitignore','artifacts/global-identity/REPORT.md','artifacts/identity-phase03/REPORT.md'}
+allowed={'app/app/Http/Controllers/AuthController.php','app/app/Http/Middleware/HandleInertiaRequests.php','app/composer.json','app/composer.lock','app/resources/js/pages/Auth.tsx','app/routes/web.php','compose.yaml','README.md','.gitignore','artifacts/global-identity/REPORT.md','artifacts/identity-phase03/REPORT.md','docker/nginx/nginx.conf','docker/nginx/default.conf'}
 protected=[p for p in base['files'] if p.startswith(('app/','docker/')) and p not in allowed]
 assert all(sha256((ROOT/p).read_bytes()).hexdigest()==base['files'][p] for p in protected)
 files=command(['git','ls-files','app']).decode().splitlines()
 expected={p.removeprefix('app/'):sha256((ROOT/p).read_bytes()).hexdigest() for p in files if (ROOT/p).is_file() and not p.startswith(('app/storage/','app/bootstrap/cache/'))}
 encoded=base64.b64encode(json.dumps(list(expected)).encode()).decode()
 assert php("<?php $r=[];foreach(json_decode(base64_decode('"+encoded+"'),true)as $f)$r[$f]=hash_file('sha256',$f);echo json_encode($r);")==expected
+web_files={'/etc/nginx/nginx.conf':'docker/nginx/nginx.conf','/etc/nginx/conf.d/default.conf':'docker/nginx/default.conf'}
+for mounted,local in web_files.items():assert command(['docker','exec','jakawi-club-web','cat',mounted])==(ROOT/local).read_bytes()
 encoded=base64.b64encode(json.dumps(base['tables']).encode()).decode()
 state=php(r'''<?php require 'vendor/autoload.php';$app=require 'bootstrap/app.php';$app->make(Illuminate\Contracts\Console\Kernel::class)->bootstrap();
 $before=json_decode(base64_decode('''+"'"+encoded+"'"+r'''),true);$tables=[];foreach($before as $table=>$b){$rows=Illuminate\Support\Facades\DB::table($table)->select($b['columns'])->get()->map(fn($v)=>(array)$v)->all();usort($rows,fn($a,$b)=>strcmp(json_encode($a),json_encode($b)));$tables[$table]=count($rows)===$b['count']&&hash('sha256',json_encode($rows))===$b['digest'];}
@@ -76,6 +78,7 @@ callback=response.headers['Location'];cq=parse_qs(urlparse(callback).query)
 assert cq['error']==['login_required'] and cq['state']==q['state']
 response=get(callback);assert response.code==302 and response.headers['Location']=='https://jakawi.club/login'
 assert 'no-store' in response.headers['Cache-Control'] and response.headers['Referrer-Policy']=='no-referrer'
+assert set(response.headers.get_all('Referrer-Policy'))=={'no-referrer'}
 response=get('https://jakawi.club/auth/jakawi/callback?code=invalid&state=invalid');assert response.code==302 and response.headers['Location']=='https://jakawi.club/login'
 # Verify the installed confidential credential without obtaining a token or touching a user.
 from urllib.parse import urlencode

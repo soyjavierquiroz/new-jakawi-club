@@ -22,6 +22,8 @@ TypeScript y Vite se ejecutan con los límites de los builders existentes. `bash
 
 Publicación exclusiva CLUB, sin migraciones. Credencial registrada instalada en `/srv/sites/jakawi.club/secrets/com-oidc.env`, root 0600; Compose la inyecta solo en CLUB. Se actualizan source/vendor/assets/cachés y se recrea exclusivamente `jakawi-club-app` para cargarla. Assets previos conservados. Commit/push normal a `main`; `python3 scripts/verify-sso-live.py` verifica remoto, código montado, assets HTTPS, `/up`, inicio/callback de error reales COM, credencial aplicada, cookies exclusivas y permisos/vínculo del piloto. SHA LIVE en `LIVE.json`, excluido de Git para evitar autorreferencia.
 
+Nginx CLUB conserva la política de referrer anterior en las demás rutas y aplica `no-referrer` en inicio/callback SSO. Esto evita que su cabecera adicional sobreescriba la protección emitida por Laravel. Se valida `nginx -t` y se recarga únicamente Nginx CLUB, sin recrear/reiniciar su contenedor. Se verifican todas las cabeceras Referrer-Policy recibidas en HTTPS.
+
 Se conservan por hash landings, registro, confirmaciones, WhatsApp, correo/SES, FluentCRM, referidos y atribución. Se comparan las cuentas originales y sus credenciales/roles, y los contenedores COM/CRM conservan ID/imagen/inicio/reinicios. No se despliega ni modifica COM.
 
 ## Piloto y límites de verificación
