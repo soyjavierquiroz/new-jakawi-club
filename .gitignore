@@ -128,3 +128,9 @@ credentials.json
 /artifacts/landing-json-v3/*fixtures.json
 /artifacts/landing-json-v3/*fixture.html
 /artifacts/landing-json-v3/*.png
+
+/artifacts/landing-json-v3-release/LIVE.json
+/artifacts/landing-json-v3-release/**/*fixtures.json
+/artifacts/landing-json-v3-release/*fixtures.json
+/artifacts/landing-json-v3-release/**/*.png
+/artifacts/landing-json-v3-release/**/*.html

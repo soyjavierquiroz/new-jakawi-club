@@ -1,0 +1,11 @@
+{
+    "passed": 82,
+    "postgresql": "isolated schema",
+    "live_events_created": 0,
+    "live_users_created": 0,
+    "active_live_rules_created": 0,
+    "automatic_approvals": 0,
+    "payments": 0,
+    "economic_cutoff": "2026-10-30T07:45:11.067511-04:00",
+    "com_retirement_sha": "68f63c8f080b52f4eddaf14d25deea5dd257ab4d"
+}

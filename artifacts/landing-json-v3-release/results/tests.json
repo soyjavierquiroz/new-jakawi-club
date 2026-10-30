@@ -1,0 +1,11 @@
+{
+    "passed": 64,
+    "postgresql": "schema verified before fixture writes",
+    "concurrent_gets": 24,
+    "atomic_counts": true,
+    "personal_data_columns": 0,
+    "live_fixtures": 0,
+    "affiliate_privacy": true,
+    "conversions_deduplicated": true,
+    "admin_unattributed_preserved": true
+}

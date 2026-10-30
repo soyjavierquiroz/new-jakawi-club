@@ -1,0 +1,86 @@
+{
+  "original_commit": "b36e8dcbaaf05c55d41bc59a22367cd8633e7755",
+  "cherry_pick": "ad8905f40b43669899f5250d9f0a8bd7c829af3a",
+  "integrated_commit": "fca4a3b86821edf66c532b250847ad2f4dfc2f84",
+  "base_main": "e1368f662cc0f12db63d6f57ebadc5825ced5b49",
+  "php": {
+    "landings": {
+      "passed": 379,
+      "database": "isolated PostgreSQL schema",
+      "live_test_users": 0
+    },
+    "postconversion": {
+      "passed": 134,
+      "database": "isolated PostgreSQL schema",
+      "notifications": "fake",
+      "live_test_users": 0
+    },
+    "catalog": {
+      "passed": 75,
+      "postgresql": "schema isolation verified before writes",
+      "live_fixtures": 0,
+      "multipage": true,
+      "atomic_failure": true,
+      "permanent_dossis_link": true,
+      "on_demand": true,
+      "affiliate_privacy": true,
+      "club_referral_verified": true
+    },
+    "results": {
+      "passed": 64,
+      "postgresql": "schema verified before fixture writes",
+      "concurrent_gets": 24,
+      "atomic_counts": true,
+      "personal_data_columns": 0,
+      "live_fixtures": 0,
+      "affiliate_privacy": true,
+      "conversions_deduplicated": true,
+      "admin_unattributed_preserved": true
+    },
+    "commissions": {
+      "passed": 82,
+      "postgresql": "isolated schema",
+      "live_events_created": 0,
+      "live_users_created": 0,
+      "active_live_rules_created": 0,
+      "automatic_approvals": 0,
+      "payments": 0,
+      "economic_cutoff": "2026-10-30T07:45:11.067511-04:00",
+      "com_retirement_sha": "68f63c8f080b52f4eddaf14d25deea5dd257ab4d"
+    },
+    "commercial": {
+      "passed": 62,
+      "postgresql": "isolated schema",
+      "live_events_created": 0,
+      "live_users_created": 0,
+      "outbound_http": 0,
+      "notifications": 0
+    }
+  },
+  "php_total": 796,
+  "typecheck": true,
+  "vite_build": true,
+  "browser_preview": {
+    "checks": [
+      "responsive-390-cta-sticky-no-date-no-whatsapp",
+      "shared-player-3x4-390-fixture-only",
+      "responsive-430-cta-sticky-no-date-no-whatsapp",
+      "shared-player-3x4-430-fixture-only",
+      "responsive-1440-cta-sticky-no-date-no-whatsapp",
+      "shared-player-3x4-1440-fixture-only",
+      "saved-order-visibility-bolivia-date-countdown-preview-no-analytics",
+      "elapsed-countdown-never-restarts",
+      "registration-error-preserves-data-e164-referral-single-submit",
+      "editor-390-tabs-date-layout-export-no-write",
+      "editor-1440-tabs-date-layout-export-no-write",
+      "v3-new-complete-import-activates-composition-no-seed-export-equivalent-no-save",
+      "v3-existing-patch-independent-videos-groups-brief-errors-no-save",
+      "v3-saved-previews-date-countdown-order-visibility-confirmation-player-whatsapp-only-after",
+      "reusable-new-webinar-seed-no-save-no-publication"
+    ],
+    "passed": 15,
+    "live_assets": false,
+    "live_registrations": 0,
+    "provider_playback_verified": false
+  }
+}
