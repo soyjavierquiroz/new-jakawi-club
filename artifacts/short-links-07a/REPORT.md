@@ -28,7 +28,19 @@ Validación:
 - Estado final LIVE sin cuentas de prueba, ventas, eventos ni reglas nuevas. Sin APIs COM nuevas,
   importación de catálogo, cambios en COM, CRM, SSO, captación, receptor o pagos.
 
-Publicación y verificación final: se registran al completar el despliegue.
+Publicado exclusivamente CLUB mediante fast-forward y push normal de `main`.
+Migración aditiva aplicada, dos enlaces de cuentas reales preparados sin ventas
+ni eventos. Primer enlace operativo: `https://jakawi.club/r/Ms8xvfMr`; HTTPS 302
+al destino Dossis 43 con el código CLUB verificado, `no-store` y sin cookies.
+`/up` local y HTTPS devuelven 200. Assets anteriores conservados y manifest nuevo
+publicado al final. Solo PHP se reinició; Nginx CLUB recibió una recarga sin
+reinicio para omitir los accesos comerciales. PostgreSQL y web no se recrearon.
+Operación de despliegue: 10,79 segundos, incluido push. Navegador con assets LIVE
+satisfactorio en 390/1440, con formularios interceptados. Tablas protegidas de
+usuarios, eventos, reglas, libro, auditoría y trabajos coinciden con el baseline.
+Commit de implementación: `67fb6969abe8b3f90a1938cca375f77b5402bcae`.
+SHA efectivo final y comprobación remota: sello local `LIVE.json` generado
+mediante `python3 scripts/verify-short-links-live.py` después del último push.
 Respaldo privado: `/srv/sites/jakawi.club/rollback-short-links-07a/`.
 El sello `LIVE.json` local ignorado contiene el SHA efectivo posterior al push,
 la URL corta verificada, `/up`, hashes de fuente montada, assets HTTPS y datos
