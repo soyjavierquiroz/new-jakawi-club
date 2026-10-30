@@ -1,0 +1,6 @@
+{
+  "exit_code": 1,
+  "stdout": "",
+  "stderr": "Traceback (most recent call last):\n  File \"/opt/sites/jakawi.club/scripts/validate-local.py\", line 52, in <module>\n    assert page['props']['launch']['registration_open'] is False\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n",
+  "when": "before 06E deployment"
+}

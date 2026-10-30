@@ -8,9 +8,10 @@ Recepción comercial COM → CLUB: [Fase 05](artifacts/commercial-phase05/REPORT
 Receptor HMAC exclusivo `POST /internal/commercial/events`, idempotente y sin altas
 de usuarios ni efectos CRM. Panel privado **CONVERSIONES COM** en
 `/admin/conversiones-com`. [Contrato exacto para Codex COM](docs/integrations/com-commercial-events-v1.md).
-Motor económico Fase 06C: [reglas, libro y conciliación](docs/economics/commissions-06c.md).
+Motor económico Fase 06E: [corte, reglas y aprobación manual](docs/economics/commissions-06e.md).
 Reglas en `/admin/reglas-comisiones`, libro en `/admin/comisiones`; aprobación manual
-con exclusividad acreditada. Sin reglas activas predeterminadas, pagos ni saldos retirables.
+sin conciliación histórica COM. Corte: `2026-10-30T07:45:11.067511-04:00`,
+según la fecha original firmada de COM. Sin reglas activas predeterminadas, pagos ni saldos retirables.
 
 Acceso SSO COM → CLUB: [Fase 04](artifacts/identity-phase04/REPORT.md). Login principal **INGRESAR CON JAKAWI** en `https://jakawi.club/login`; acceso local conservado.
 

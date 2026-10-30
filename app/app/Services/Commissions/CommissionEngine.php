@@ -30,9 +30,25 @@ final class CommissionEngine
         ]);
     }
 
+    // The signed payload preserves all six fractional digits. The receiver's timestamp
+    // binding may truncate them, so economic decisions use the authenticated original.
+    public const EVENT_TIME_SQL = "((commercial_events.raw_body::jsonb)->>'occurred_at')::timestamptz";
+
+    public function occurredAt(object $event): Carbon
+    {
+        return Carbon::parse(json_decode($event->raw_body, true, 32, JSON_THROW_ON_ERROR)['occurred_at']);
+    }
+
+    public function firstConfirmation(object $event): ?object
+    {
+        return $this->operation($event)->where('conversion_status', 'confirmed')
+            ->orderByRaw(self::EVENT_TIME_SQL.' ASC')->orderBy('id')->first();
+    }
+
     private function eligible(object $event): bool
     {
         return $event->source === 'jakawi.com' && $event->conversion_status === 'confirmed'
+            && $this->occurredAt($event)->gt(Carbon::parse(config('commissions.economic_cutoff')))
             && $event->referrer_club_uuid !== null && $event->club_referral_code !== null
             && User::where('uuid', $event->referrer_club_uuid)->where('referral_code', $event->club_referral_code)->exists();
     }
@@ -42,7 +58,7 @@ final class CommissionEngine
     {
         return DB::transaction(function () use ($event, $actor): object {
             $this->lock($event);
-            $latest = $this->operation($event)->orderByDesc('occurred_at')->orderByDesc('received_at')->orderByDesc('id')->firstOrFail();
+            $latest = $this->operation($event)->orderByRaw(self::EVENT_TIME_SQL.' DESC')->orderByDesc('id')->firstOrFail();
             $entry = DB::table('commission_ledger')->where('source', $event->source)
                 ->where('com_reference_type', $event->com_reference_type)->where('com_reference_id', $event->com_reference_id)->lockForUpdate()->first();
             if (! $entry) {
@@ -54,7 +70,12 @@ final class CommissionEngine
                 $this->audit(null, $entry, 'registered', $actor, 'Operación COM registrada; sin obligación económica.');
             }
             $changes = ['latest_event_id' => $latest->id];
-            $valid = $this->eligible($latest);
+            $confirmation = $this->firstConfirmation($event);
+            // A later state update cannot turn an operation confirmed before the cut
+            // into a new economic fact. Late delivery uses exactly the same boundary.
+            $valid = $confirmation !== null
+                && $this->occurredAt($confirmation)->gt(Carbon::parse(config('commissions.economic_cutoff')))
+                && $this->eligible($latest);
             if ($entry->affiliate_uuid === null && $valid && $entry->status !== 'discarded') {
                 $changes += ['affiliate_uuid' => $latest->referrer_club_uuid, 'affiliate_code' => $latest->club_referral_code, 'status' => 'candidate'];
             }
@@ -72,20 +93,21 @@ final class CommissionEngine
                 // Earliest eligible remunerable event; rule version is frozen once applied.
                 $valuation = $this->operation($event)->where('conversion_status', 'confirmed')->where('partner_id', $latest->partner_id)
                     ->where('referrer_club_uuid', $owner)->where('club_referral_code', $code)
+                    ->whereRaw(self::EVENT_TIME_SQL.' > ?::timestamptz', [config('commissions.economic_cutoff')])
                     ->whereExists(function (Builder $q): void {
                         $q->selectRaw('1')->from('commission_rules as r')->where('r.status', 'active')
                             ->whereColumn('r.partner_id', 'commercial_events.partner_id')->whereColumn('r.event_type', 'commercial_events.event_type')
-                            ->whereColumn('r.effective_at', '<=', 'commercial_events.occurred_at');
-                    })->orderBy('occurred_at')->orderBy('received_at')->orderBy('id')->first();
+                            ->whereRaw('r.effective_at <= '.self::EVENT_TIME_SQL);
+                    })->orderByRaw(self::EVENT_TIME_SQL.' ASC')->orderBy('id')->first();
                 if ($valuation) {
                     $rule = DB::table('commission_rules')->where('status', 'active')->where('partner_id', $valuation->partner_id)
-                        ->where('event_type', $valuation->event_type)->where('effective_at', '<=', $valuation->occurred_at)
+                        ->where('event_type', $valuation->event_type)->where('effective_at', '<=', $this->occurredAt($valuation)->utc()->format('Y-m-d H:i:s.uP'))
                         ->orderByDesc('effective_at')->orderByDesc('id')->sharedLock()->first();
                     if ($rule) $changes += ['rule_id' => $rule->id, 'commission_event_id' => $valuation->id,
                         'amount' => $rule->fixed_amount, 'currency' => $rule->currency, 'rule_snapshot' => json_encode($rule, JSON_THROW_ON_ERROR)];
                 }
             }
-            return $this->save($entry, $changes, 'evaluated', $actor, 'Evaluación de elegibilidad y regla; aprobación y conciliación pendientes.');
+            return $this->save($entry, $changes, 'evaluated', $actor, 'Evaluación por fecha económica COM y corte autorizado; aprobación administrativa manual.');
         }, 3);
     }
 
@@ -117,16 +139,11 @@ final class CommissionEngine
             $changes = [];
             if ($action === 'evaluate') {
                 if ($entry->eligible) $changes['review_required'] = false;
-            } elseif ($action === 'reconcile') {
-                if ($entry->status === 'approved') throw ValidationException::withMessages(['review' => 'Descarta primero una aprobación si la conciliación cambió.']);
-                $changes = ['reconciliation' => $data['reconciliation'], 'external_reference' => $data['external_reference'],
-                    'reconciliation_note' => $data['reason'], 'reconciled_by' => $actor->uuid, 'reconciled_at' => now()];
-                if ($data['reconciliation'] === 'remunerated_by_com') $changes['status'] = 'discarded';
             } elseif ($action === 'approve') {
                 $rule = $entry->rule_id ? DB::table('commission_rules')->where('id', $entry->rule_id)->sharedLock()->first() : null;
                 if ($entry->status !== 'candidate' || ! $entry->eligible || $entry->review_required || ! $rule || $rule->status !== 'active' || Carbon::parse($rule->effective_at)->isFuture()
-                    || $entry->reconciliation !== 'club_exclusive' || ! $entry->external_reference) {
-                    throw ValidationException::withMessages(['review' => 'Exige candidatura vigente, regla activa y exclusividad CLUB acreditada; revisa las discrepancias.']);
+                    || $entry->amount === null || $entry->currency === null || $entry->commission_event_id === null) {
+                    throw ValidationException::withMessages(['review' => 'Exige operación posterior al corte, referente verificado, regla activa e importe exacto; revisa las discrepancias.']);
                 }
                 $changes = ['status' => 'approved', 'approved_by' => $actor->uuid, 'approved_at' => now()];
             } elseif ($action === 'discard') {
@@ -139,11 +156,11 @@ final class CommissionEngine
     public function summary(User $user): array
     {
         $q = DB::table('commission_ledger')->where('affiliate_uuid', $user->uuid)->where('affiliate_code', $user->referral_code);
-        return ['pending' => (clone $q)->where('status', 'candidate')->count(),
-            'approved' => (clone $q)->where('status', 'approved')->count(),
+        return ['pending' => (clone $q)->where('status', 'candidate')->where('eligible', true)->where('review_required', false)->count(),
+            'approved' => (clone $q)->where('status', 'approved')->where('review_required', false)->count(),
             'review' => (clone $q)->where('review_required', true)->where('status', '<>', 'discarded')->count(),
             'currencies' => (clone $q)->whereNotNull('currency')->groupBy('currency')->orderBy('currency')
-                ->selectRaw("currency, coalesce(sum(amount) filter (where status = 'candidate'),0)::text as pending, coalesce(sum(amount) filter (where status = 'approved' and not review_required),0)::text as approved, coalesce(sum(amount) filter (where status = 'approved' and review_required),0)::text as review")
+                ->selectRaw("currency, coalesce(sum(amount) filter (where status = 'candidate' and eligible and not review_required),0)::text as pending, coalesce(sum(amount) filter (where status = 'approved' and not review_required),0)::text as approved, coalesce(sum(amount) filter (where status in ('candidate','approved') and review_required),0)::text as review")
                 ->get()->all()];
     }
 }

@@ -33,7 +33,8 @@ class AffiliateController extends Controller
             'conversions' => $operations,
             'commission_entries' => \Illuminate\Support\Facades\DB::table('commission_ledger')
                 ->where('affiliate_uuid', $user->uuid)->where('affiliate_code', $user->referral_code)
-                ->orderByDesc('id')->paginate(25, ['id','com_reference_type','com_reference_id','status','amount','currency','review_required','reconciliation','created_at','approved_at'], 'commission_page'),
+                ->orderByDesc('id')->paginate(25, ['id','com_reference_type','com_reference_id','status','amount','currency','review_required','eligible','rule_id','created_at','approved_at'], 'commission_page'),
+            'economic_cutoff' => config('commissions.economic_cutoff'),
             'economics' => app(\App\Services\Commissions\CommissionEngine::class)->summary($user),
         ]);
     }

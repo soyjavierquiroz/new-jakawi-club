@@ -1,6 +1,6 @@
 import { Head, Link } from '@inertiajs/react';
 import { useRef, useState } from 'react';
-import { commissionStatus, EconomicPages, economicDate, type Pagination } from '../components/CommissionUI';
+import { commissionStatus, EconomicCutoff, EconomicPages, economicDate, type Pagination } from '../components/CommissionUI';
 import { Arrow, PageFrame } from '../components/UI';
 import { CommunityWhatsAppIcon } from '../components/CommunityWhatsAppIcon';
 
@@ -14,14 +14,15 @@ type Conversion = {
     com_reference_id: string;
 };
 type Props = {
-    commission_entries?: Pagination<{ id: number; com_reference_type: string; com_reference_id: string; status: string; amount: string | null; currency: string | null; review_required: boolean; reconciliation: string; created_at: string }>;
+    economic_cutoff?: string;
+    commission_entries?: Pagination<{ id: number; com_reference_type: string; com_reference_id: string; status: string; amount: string | null; currency: string | null; review_required: boolean; eligible: boolean; rule_id: number | null; created_at: string }>;
     economics?: { pending: number; approved: number; review: number; currencies: { currency: string; pending: string; approved: string; review: string }[] };
     campaign: { name: string; personal_url: string };
     conversions: { data: Conversion[]; total: number; current_page: number; last_page: number; prev_page_url: string | null; next_page_url: string | null };
 };
 const dates = new Intl.DateTimeFormat('es-BO', { dateStyle: 'medium', timeStyle: 'short', timeZone: 'America/La_Paz' });
 
-export default function Affiliates({ campaign, conversions, economics, commission_entries }: Props) {
+export default function Affiliates({ campaign, conversions, economics, commission_entries, economic_cutoff }: Props) {
     const input = useRef<HTMLTextAreaElement>(null);
     const [message, setMessage] = useState('');
     async function copy() {
@@ -57,15 +58,15 @@ export default function Affiliates({ campaign, conversions, economics, commissio
                 <p className="text-xs font-semibold tracking-widest text-text-secondary">CONVERSIONES CONFIRMADAS</p>
                 <p data-conversion-count className="my-4 text-6xl font-extrabold">{conversions.total}</p>
                 <p className="text-sm text-text-secondary">Total de tus operaciones COM confirmadas. Cada referencia comercial se cuenta una sola vez.</p>
-                <p className="mt-5 border-t border-border pt-4 text-sm text-text-secondary">Las comisiones requieren una regla activa, evaluación y conciliación con COM. No hay pagos automáticos.</p>
+                <p className="mt-5 border-t border-border pt-4 text-sm text-text-secondary">Las comisiones requieren una operación posterior al corte, referente verificado, regla activa y aprobación manual. No hay pagos automáticos.</p>
             </aside>
         </div>
         {economics && <section id="mis-comisiones" className="my-10">
-            <h2 className="text-2xl font-extrabold tracking-tight">MIS COMISIONES</h2>
+            <h2 className="text-2xl font-extrabold tracking-tight">MIS COMISIONES</h2>{economic_cutoff && <EconomicCutoff value={economic_cutoff} />}
             <div className="my-5 grid gap-4 sm:grid-cols-3"><article className="feature-card"><p className="text-sm text-text-secondary">Pendientes de evaluación</p><p data-pending-commissions className="mt-3 text-3xl font-bold">{economics.pending}</p></article><article className="feature-card"><p className="text-sm text-text-secondary">Comisiones aprobadas</p><p data-approved-commissions className="mt-3 text-3xl font-bold">{economics.approved}</p></article><article className="feature-card"><p className="text-sm text-text-secondary">Requieren revisión</p><p className="mt-3 text-3xl font-bold">{economics.review}</p></article></div>
             <p className="text-sm text-text-secondary">Los candidatos sin regla se conservan sin importe. Las valoraciones pendientes son estimaciones sujetas a revisión; estos totales no son saldos disponibles para retirar.</p>
-            {economics.currencies.length ? <div className="mt-5 grid gap-4 sm:grid-cols-2">{economics.currencies.map(total => <article key={total.currency} className="feature-card" data-commission-currency={total.currency}><h3 className="font-bold">{total.currency}</h3><dl className="mt-3 space-y-2 text-sm"><div><dt className="text-text-secondary">Valoración pendiente</dt><dd className="break-all font-semibold">{total.pending} {total.currency}</dd></div><div><dt className="text-text-secondary">Aprobado tras conciliación</dt><dd className="break-all font-semibold">{total.approved} {total.currency}</dd></div><div><dt className="text-text-secondary">Aprobaciones en revisión</dt><dd className="break-all font-semibold">{total.review} {total.currency}</dd></div></dl></article>)}</div> : <p className="mt-4 text-sm">Todavía no hay importes asignados.</p>}
-            {commission_entries && commission_entries.data.length > 0 && <><h3 className="mb-4 mt-8 text-lg font-bold">Detalle de comisiones</h3><div className="space-y-3">{commission_entries.data.map(entry => <article key={entry.id} className="feature-card flex flex-wrap justify-between gap-4 text-sm" data-affiliate-commission={entry.id}><div><p className="break-all font-semibold">{entry.com_reference_type}: {entry.com_reference_id}</p><p className="mt-2 text-text-secondary">{economicDate(entry.created_at)} · {commissionStatus[entry.status]}</p>{entry.review_required && <p className="mt-2">Requiere revisión</p>}{entry.reconciliation === 'pending' && entry.status === 'candidate' && <p className="mt-2 text-text-secondary">Pendiente de conciliación con COM</p>}</div><p className="break-all font-semibold">{entry.amount === null ? 'Sin importe asignado' : `${entry.amount} ${entry.currency}${entry.status === 'candidate' ? ' · Valoración pendiente' : ''}`}</p></article>)}</div><EconomicPages page={commission_entries} /></>}
+            {economics.currencies.length ? <div className="mt-5 grid gap-4 sm:grid-cols-2">{economics.currencies.map(total => <article key={total.currency} className="feature-card" data-commission-currency={total.currency}><h3 className="font-bold">{total.currency}</h3><dl className="mt-3 space-y-2 text-sm"><div><dt className="text-text-secondary">Valoración pendiente</dt><dd className="break-all font-semibold">{total.pending} {total.currency}</dd></div><div><dt className="text-text-secondary">Aprobado manualmente</dt><dd className="break-all font-semibold">{total.approved} {total.currency}</dd></div><div><dt className="text-text-secondary">Importes en revisión</dt><dd className="break-all font-semibold">{total.review} {total.currency}</dd></div></dl></article>)}</div> : <p className="mt-4 text-sm">Todavía no hay importes asignados.</p>}
+            {commission_entries && commission_entries.data.length > 0 && <><h3 className="mb-4 mt-8 text-lg font-bold">Detalle de comisiones</h3><div className="space-y-3">{commission_entries.data.map(entry => <article key={entry.id} className="feature-card flex flex-wrap justify-between gap-4 text-sm" data-affiliate-commission={entry.id}><div><p className="break-all font-semibold">{entry.com_reference_type}: {entry.com_reference_id}</p><p className="mt-2 text-text-secondary">{economicDate(entry.created_at)} · {commissionStatus[entry.status]}</p>{entry.review_required && <p className="mt-2">Requiere revisión</p>}{entry.status === 'candidate' && !entry.review_required && <p className="mt-2 text-text-secondary">{entry.rule_id === null ? 'Sin regla activa aplicable · Sin obligación económica' : 'Pendiente de aprobación manual'}</p>}</div><p className="break-all font-semibold">{entry.amount === null ? 'Sin importe asignado' : `${entry.amount} ${entry.currency}${entry.status === 'candidate' ? ' · Valoración pendiente' : ''}`}</p></article>)}</div><EconomicPages page={commission_entries} /></>}
         </section>}
         <section id="mis-conversiones" className="mt-12 scroll-mt-8">
             <h2 className="text-2xl font-extrabold tracking-tight">MIS CONVERSIONES</h2>

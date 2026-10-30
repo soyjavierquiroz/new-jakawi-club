@@ -23,7 +23,7 @@ class CommissionAdminController extends Controller
             $rule->history = $audit->get($rule->id, collect())->all();
             return $rule;
         });
-        return Inertia::render('admin/CommissionRules', ['rules' => $rules]);
+        return Inertia::render('admin/CommissionRules', ['rules' => $rules, 'economic_cutoff' => config('commissions.economic_cutoff')]);
     }
 
     public function storeRule(Request $request, CommissionEngine $engine): RedirectResponse
@@ -39,7 +39,7 @@ class CommissionAdminController extends Controller
             $parts = explode('.', $data['fixed_amount']);
             $id = DB::table('commission_rules')->insertGetId([
                 ...$data, 'fixed_amount' => $parts[0].'.'.str_pad($parts[1] ?? '', 4, '0'),
-                'effective_at' => Carbon::parse($data['effective_at'])->utc(),
+                'effective_at' => Carbon::parse($data['effective_at'])->utc()->format('Y-m-d H:i:s.uP'),
                 'status' => 'draft', 'created_by' => $request->user()->uuid, 'created_at' => now(), 'updated_at' => now(),
             ]);
             $engine->audit(null, DB::table('commission_rules')->find($id), 'rule_created', $request->user(), 'Nueva versión en borrador; sin activación automática.', true);
@@ -65,32 +65,32 @@ class CommissionAdminController extends Controller
         return back()->with('status', 'Estado de la regla actualizado. Las valoraciones anteriores se conservan.');
     }
 
-    public function ledger(Request $request): Response
+    public function ledger(Request $request, CommissionEngine $engine): Response
     {
-        $filters = $request->validate(['status' => ['nullable', Rule::in(['registered','candidate','approved','discarded'])],
-            'reconciliation' => ['nullable', Rule::in(['pending','club_exclusive','remunerated_by_com'])]]);
+        $filters = $request->validate(['status' => ['nullable', Rule::in(['registered','candidate','approved','discarded'])]]);
         $entries = DB::table('commission_ledger as l')->join('commercial_events as e', 'e.id', '=', 'l.original_event_id')
             ->when($filters['status'] ?? null, fn ($q, $v) => $q->where('l.status', $v))
-            ->when($filters['reconciliation'] ?? null, fn ($q, $v) => $q->where('l.reconciliation', $v))
             ->orderByDesc('l.id')->paginate(25, ['l.*','e.event_id','e.partner_id','e.partner_name','e.event_type'])->withQueryString();
         $ids = $entries->getCollection()->pluck('id');
         $audit = DB::table('commission_audit')->whereIn('ledger_id', $ids)->orderBy('id')
             ->get(['ledger_id','action','actor_uuid','reason','created_at','before','after'])->groupBy('ledger_id');
-        $entries->through(function (object $entry) use ($audit): object {
+        $entries->through(function (object $entry) use ($audit, $engine): object {
+            $confirmation = $engine->firstConfirmation($entry);
+            $entry->economic_occurred_at = $confirmation ? $engine->occurredAt($confirmation)->format('Y-m-d\TH:i:s.uP') : null;
+            $entry->after_cutoff = $confirmation !== null && $engine->occurredAt($confirmation)->gt(Carbon::parse(config('commissions.economic_cutoff')));
+            $entry->rule_active = $entry->rule_id !== null && DB::table('commission_rules')->where('id', $entry->rule_id)->where('status', 'active')->exists();
             $entry->history = $audit->get($entry->id, collect())->all();
             return $entry;
         });
-        return Inertia::render('admin/CommissionLedger', ['entries' => $entries, 'filters' => $filters]);
+        return Inertia::render('admin/CommissionLedger', ['entries' => $entries, 'filters' => $filters, 'economic_cutoff' => config('commissions.economic_cutoff')]);
     }
 
     public function review(Request $request, int $entry, CommissionEngine $engine): RedirectResponse
     {
         $data = $request->validate([
             'version' => ['required','integer','min:1'],
-            'action' => ['required', Rule::in(['evaluate','reconcile','approve','discard'])],
+            'action' => ['required', Rule::in(['evaluate','approve','discard'])],
             'reason' => ['required','string','min:5','max:2000'],
-            'reconciliation' => ['required_if:action,reconcile', Rule::in(['club_exclusive','remunerated_by_com'])],
-            'external_reference' => ['required_if:action,reconcile','nullable','string','max:190','regex:/^\S(?:[^\x00-\x1F\x7F]*\S)?$/uD'],
         ]);
         $engine->review($entry, $data, $request->user());
         return back()->with('status', 'Decisión registrada en el historial económico. No se ha realizado ningún pago.');

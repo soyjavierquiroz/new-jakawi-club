@@ -133,15 +133,15 @@ try {
     check(web('GET','/admin/reglas-comisiones')->isRedirect('https://jakawi.club/login') && web('GET','/admin/comisiones')->isRedirect(),'guest economic administration denied');
     $a=login(false);$aCookies=$cookies;
     check(web('GET','/admin/reglas-comisiones')->getStatusCode()===403 && postAdmin('/admin/reglas-comisiones',[])->getStatusCode()===403,'ordinary affiliate cannot configure rules');
-    $base=['schema_version'=>1,'event_id'=>'economic:a','event_type'=>'order.confirmed','occurred_at'=>'2026-10-29T12:00:00Z',
+    $base=['schema_version'=>1,'event_id'=>'economic:a','event_type'=>'order.confirmed','occurred_at'=>'2026-10-30T11:46:00Z',
         'com_reference'=>['type'=>'order','id'=>'economic-order-a'],'conversion_status'=>'confirmed','partner'=>['id'=>'fixture-partner','name'=>'Partner aislado'],
         'referral'=>['club_referral_code'=>$a->referral_code]];
     check(send($base)->getStatusCode()===201,'verified COM conversion accepted through original HMAC receiver');
     $entry=ledger('economic-order-a');
     check($entry->status==='candidate' && $entry->affiliate_uuid===$a->uuid && $entry->affiliate_code===$a->referral_code,'candidate linked to verified affiliate and original operation');
-    check($entry->amount===null && $entry->currency===null && $entry->rule_id===null && $entry->reconciliation==='pending','without a rule candidates have no amount or obligation');
+    check($entry->amount===null && $entry->currency===null && $entry->rule_id===null,'without a rule candidates have no amount or obligation');
     check(send($base)->getStatusCode()===200 && DB::table('commission_ledger')->count()===1,'receipt retries never duplicate ledger');
-    check(send([...$base,'event_id'=>'economic:a:state','occurred_at'=>'2026-10-29T13:00:00Z','event_type'=>'order.updated'])->getStatusCode()===201 && DB::table('commission_ledger')->count()===1,'multiple state events share a unique economic operation');
+    check(send([...$base,'event_id'=>'economic:a:state','occurred_at'=>'2026-10-30T11:47:00Z','event_type'=>'order.updated'])->getStatusCode()===201 && DB::table('commission_ledger')->count()===1,'multiple state events share a unique economic operation');
     check(send([...$base,'event_id'=>'economic:no-ref','com_reference'=>['type'=>'order','id'=>'economic-no-ref'],'referral'=>null,'global_subject_id'=>$a->uuid])->getStatusCode()===201,'code-less event accepted without identity-based attribution');
     check(ledger('economic-no-ref')->status==='registered' && ledger('economic-no-ref')->affiliate_uuid===null,'conversion without referred affiliate stays registered and unvalued');
     $b=login(false);$bCookies=$cookies;
@@ -151,7 +151,7 @@ try {
     $admin=login(true);$adminCookies=$cookies;
     check(web('GET','/admin/reglas-comisiones')->getStatusCode()===200 && web('GET','/admin/comisiones')->getStatusCode()===200,'activated verified admin can view rules and ledger');
     $emptyRules=payload(web('GET','/admin/reglas-comisiones'));
-    check(reviewEntry($entry,'approve')->isRedirect() && ledger('economic-order-a')->status==='candidate','approval without rule and reconciliation blocked');
+    check(reviewEntry($entry,'approve')->isRedirect() && ledger('economic-order-a')->status==='candidate','approval without applicable active rule blocked');
     check(DB::table('commission_audit')->where('action','approve')->count()===0,'rejected approval produces no financial approval');
     foreach (['0','0.0000','-1','1.00001','1e2',0.1,'1000000000000.00'] as $amount) {
         postAdmin('/admin/reglas-comisiones',['partner_id'=>'fixture-partner','event_type'=>'order.confirmed','fixed_amount'=>$amount,'currency'=>'BOB','effective_at'=>'2026-10-01T00:00:00Z']);
@@ -165,15 +165,11 @@ try {
     reviewEntry(ledger('economic-order-a'),'evaluate');$entry=ledger('economic-order-a');
     check($entry->amount==='0.1001' && $entry->currency==='BOB' && $entry->rule_id===$rule->id,'explicit evaluation applies active fixed rule without float');
     check($entry->commission_event_id===$entry->original_event_id && $entry->latest_event_id!==$entry->original_event_id,'remunerable original event retained despite later non-remunerable state event');
-    check($entry->status==='candidate' && $entry->reconciliation==='pending' && $entry->approved_at===null,'active rule never auto-approves an unreconciled commission');
-    $beforeAudit=DB::table('commission_audit')->count();
-    reviewEntry($entry,'approve');
-    check(ledger('economic-order-a')->status==='candidate' && DB::table('commission_audit')->count()===$beforeAudit,'valued commission without exclusive evidence cannot be approved');
+    check($entry->status==='candidate' && $entry->approved_at===null,'active rule never auto-approves a commission');
     $rule2=createRule(['fixed_amount'=>'0.2002','effective_at'=>'2026-10-20T00:00:00Z']);activateRule($rule2);
     reviewEntry(ledger('economic-order-a'),'evaluate');
     check(ledger('economic-order-a')->amount==='0.1001' && ledger('economic-order-a')->rule_id===$rule->id,'new economic versions never rewrite existing valuation snapshots');
     activateRule($rule,'inactive');
-    reviewEntry(ledger('economic-order-a'),'reconcile',['reconciliation'=>'club_exclusive','external_reference'=>'fixture-COM-exclusive-a']);
     reviewEntry(ledger('economic-order-a'),'approve');
     check(ledger('economic-order-a')->status==='candidate','inactive snapshotted rule blocks approval without repricing');
     activateRule($rule);
@@ -181,20 +177,20 @@ try {
     $race=concurrent([['approve',(string)$entry->id,(string)$entry->version,(string)$admin->id],['approve',(string)$entry->id,(string)$entry->version,(string)$admin->id]]);
     check($race===['approved','blocked'],'concurrent manual approvals produce exactly one financial decision');
     $entry=ledger('economic-order-a');
-    check($entry->status==='approved' && $entry->approved_by===$admin->uuid && $entry->external_reference==='fixture-COM-exclusive-a','approved commission records actor exclusive evidence and reference');
+    check($entry->status==='approved' && $entry->approved_by===$admin->uuid && $entry->approved_at!==null,'manual approval needs no historical COM evidence and records actor and date');
     check(DB::table('commission_audit')->where('ledger_id',$entry->id)->where('action','approve')->count()===1,'single approval is durably audited');
     reviewEntry(ledger('economic-order-b'),'evaluate');$be=ledger('economic-order-b');
     check($be->amount==='0.2002' && $be->rule_id===$rule2->id,'new unvalued candidate uses latest effective active rule');
-    reviewEntry($be,'reconcile',['reconciliation'=>'remunerated_by_com','external_reference'=>'fixture-COM-legacy-commission']);
+    reviewEntry($be,'discard');
     $be=ledger('economic-order-b');
-    check($be->status==='discarded' && $be->reconciliation==='remunerated_by_com','historical COM remuneration permanently blocks CLUB obligation');
+    check($be->status==='discarded','manual discard permanently closes a commission');
     reviewEntry($be,'approve');
-    check(ledger('economic-order-b')->status==='discarded','COM-paid commission cannot be reopened or approved');
+    check(ledger('economic-order-b')->status==='discarded','discarded commission cannot be reopened or approved');
     $concurrentEvent=[...$base,'com_reference'=>['type'=>'order','id'=>'economic-concurrent']];$encoded=base64_encode(json_encode($concurrentEvent));
     check(concurrent([['send',$encoded,'economic:race:1'],['send',$encoded,'economic:race:2']])===['201','201'],'concurrent distinct event IDs for one operation are accepted');
     check(DB::table('commission_ledger')->where('com_reference_id','economic-concurrent')->count()===1,'database uniqueness and operation lock prevent duplicate commissions under concurrency');
     $ce=ledger('economic-concurrent');
-    check($ce->amount==='0.2002' && $ce->status==='candidate' && $ce->reconciliation==='pending','concurrent candidate still requires manual evaluation and reconciliation');
+    check($ce->amount==='0.2002' && $ce->status==='candidate','concurrent candidate still requires manual administrative approval');
     // Currency totals are PostgreSQL numeric strings, never JS/PHP floating point.
     $usdRule=createRule(['event_type'=>'redemption.confirmed','fixed_amount'=>'123456789012.3456','currency'=>'USD']);activateRule($usdRule);
     check(send([...$base,'event_id'=>'economic:usd','event_type'=>'redemption.confirmed','com_reference'=>['type'=>'redemption','id'=>'economic-usd']])->getStatusCode()===201,'second currency with a large exact amount accepted');
@@ -209,24 +205,74 @@ try {
     check($economics['pending']===4 && $economics['approved']===1,'affiliate sees own pending and approved counts only');
     $byCurrency=collect($economics['currencies'])->keyBy('currency');
     check($byCurrency['BOB']['approved']==='0.1001' && $byCurrency['BOB']['pending']==='0.4004' && $byCurrency['USD']['pending']==='123456789012.3456','totals are exact and separated by currency');
-    check(!str_contains(json_encode($affiliate),'fixture-COM-legacy-commission') && !str_contains(json_encode($affiliate),$b->referral_code),'affiliate response exposes no other affiliate or reconciliation evidence');
+    check(!str_contains(json_encode($affiliate),'reconciliation') && !str_contains(json_encode($affiliate),$b->referral_code),'affiliate response exposes no other affiliate or historical COM requirements');
     check(count($affiliate['props']['commission_entries']['data'])===5 && !str_contains(json_encode($affiliate['props']['commission_entries']),'economic-order-b'),'affiliate commission detail contains only own operation references');
     $cookies=$bCookies;
     check(payload(web('GET','/afiliados'))['props']['economics']['approved']===0 && payload(web('GET','/afiliados'))['props']['economics']['pending']===0,'discarded other-affiliate operation contributes no pending or approved amount');
     $cookies=$adminCookies;
     $stale=ledger('economic-concurrent');
-    reviewEntry($stale,'reconcile',['reconciliation'=>'club_exclusive','external_reference'=>'fixture-exclusive-race']);
+    reviewEntry($stale,'evaluate');
     reviewEntry($stale,'discard');
-    check(ledger('economic-concurrent')->status==='candidate','stale admin review cannot overwrite a newer reconciliation');
+    check(ledger('economic-concurrent')->status==='candidate','stale admin review cannot overwrite a newer evaluation');
+    // Boundary fixtures use the original signed time and real receiver unchanged.
+    check(config('commissions.economic_cutoff')==='2026-10-30T07:45:11.067511-04:00','authorized cutoff is explicit and stable');
+    check(!Illuminate\Support\Facades\Schema::hasColumn('commission_ledger','reconciliation'),'obsolete schema approval dependency removed');
+    foreach (['before'=>'2026-10-30T07:45:11.067510-04:00','at'=>'2026-10-30T07:45:11.067511-04:00','utc-at'=>'2026-10-30T11:45:11.067511Z'] as $label=>$date) {
+        check(send([...$base,'event_id'=>'cut:'.$label,'occurred_at'=>$date,'com_reference'=>['type'=>'order','id'=>'cut-'.$label]])->getStatusCode()===201,'pre-cut or exact-cut receipt accepted: '.$label);
+        $cut=ledger('cut-'.$label);
+        reviewEntry($cut,'evaluate');reviewEntry(ledger('cut-'.$label),'approve');
+        $cut=ledger('cut-'.$label);
+        check(!$cut->eligible && $cut->status==='registered' && $cut->amount===null && $cut->rule_id===null,'pre-cut or exact-cut fact excluded despite active rule and later HTTP receipt: '.$label);
+    }
+    foreach (['after'=>'2026-10-30T07:45:11.067512-04:00','utc-after'=>'2026-10-30T11:45:11.067512Z'] as $label=>$date) {
+        send([...$base,'event_id'=>'cut:'.$label,'occurred_at'=>$date,'com_reference'=>['type'=>'order','id'=>'cut-'.$label]]);
+        $cut=ledger('cut-'.$label);
+        check($cut->eligible && $cut->amount==='0.2002' && $cut->approved_at===null,'one microsecond after cutoff valued exactly and awaits manual approval: '.$label);
+    }
+    // Original column bindings truncate microseconds; the engine must not depend on it.
+    $rawAfter=DB::table('commercial_events')->where('event_id','cut:after')->firstOrFail();
+    check(app(App\Services\Commissions\CommissionEngine::class)->occurredAt($rawAfter)->format('u')==='067512','economic date retains microseconds from signed original payload');
+    send([...$base,'event_id'=>'cut:before:update','occurred_at'=>'2026-10-30T11:48:00Z','event_type'=>'order.updated','com_reference'=>['type'=>'order','id'=>'cut-before']]);
+    check(!ledger('cut-before')->eligible && ledger('cut-before')->amount===null,'later update never renews a pre-cut confirmed operation');
+    send([...$base,'event_id'=>'cut:pending','occurred_at'=>'2026-10-30T11:44:00Z','conversion_status'=>'pending','com_reference'=>['type'=>'order','id'=>'cut-pending']]);
+    check(ledger('cut-pending')->amount===null,'pre-cut pending operation creates no obligation');
+    send([...$base,'event_id'=>'cut:confirmed','occurred_at'=>'2026-10-30T11:48:00Z','com_reference'=>['type'=>'order','id'=>'cut-pending']]);
+    check(ledger('cut-pending')->eligible && ledger('cut-pending')->amount==='0.2002','first real confirmation after cutoff qualifies even if pending before');
+    send([...$base,'event_id'=>'cut:late:after','com_reference'=>['type'=>'order','id'=>'cut-late']]);
+    check(ledger('cut-late')->amount==='0.2002','post-cut confirmation initially valued');
+    send([...$base,'event_id'=>'cut:late:before','occurred_at'=>'2026-10-30T11:44:00Z','com_reference'=>['type'=>'order','id'=>'cut-late']]);
+    reviewEntry(ledger('cut-late'),'approve');
+    $late=ledger('cut-late');
+    check(!$late->eligible && $late->review_required && $late->status==='candidate','late arriving earlier confirmation blocks approval and flags preserved snapshot');
+    $aSummary=app(App\Services\Commissions\CommissionEngine::class)->summary($a);
+    $aTotals=collect($aSummary['currencies'])->keyBy('currency');
+    check($aSummary['review']===1 && $aTotals['BOB']->review==='0.2002','ineligible valued candidate is separated from pending totals for review');
+    // Same-second ordering also comes from the exact COM date, never HTTP arrival.
+    send([...$base,'event_id'=>'cut:precision:cancel','occurred_at'=>'2026-10-30T11:45:11.067514Z','conversion_status'=>'cancelled','com_reference'=>['type'=>'order','id'=>'cut-precision']]);
+    send([...$base,'event_id'=>'cut:precision:confirm','occurred_at'=>'2026-10-30T11:45:11.067513Z','com_reference'=>['type'=>'order','id'=>'cut-precision']]);
+    check(!ledger('cut-precision')->eligible && ledger('cut-precision')->amount===null,'later HTTP delivery cannot override a later COM cancellation within same second');
+    $microRule=createRule(['event_type'=>'micro.confirmed','effective_at'=>'2026-10-30T11:45:11.067513Z']);activateRule($microRule);
+    send([...$base,'event_id'=>'cut:rule:before','event_type'=>'micro.confirmed','occurred_at'=>'2026-10-30T11:45:11.067512Z','com_reference'=>['type'=>'order','id'=>'cut-rule-before']]);
+    send([...$base,'event_id'=>'cut:rule:at','event_type'=>'micro.confirmed','occurred_at'=>'2026-10-30T11:45:11.067513Z','com_reference'=>['type'=>'order','id'=>'cut-rule-at']]);
+    check(ledger('cut-rule-before')->amount===null && ledger('cut-rule-at')->amount==='0.1001','rule applicability respects microsecond business dates');
+    $noRef=ledger('economic-no-ref');reviewEntry($noRef,'approve');
+    check(ledger('economic-no-ref')->amount===null && ledger('economic-no-ref')->status==='registered','active rule without verified referral cannot create or approve an amount');
+    $count=DB::table('commission_ledger')->count();
+    check(send([...$base,'event_id'=>'economic:forged'],[],key:'invalid-signature')->getStatusCode()===401 && DB::table('commission_ledger')->count()===$count,'unauthenticated operation never reaches economic ledger');
+    check(send([...$base,'event_id'=>'economic:unknown-ref','referral'=>['club_referral_code'=>'ZZZZZZZZZZZZ']])->getStatusCode()===422 && DB::table('commission_ledger')->count()===$count,'unverified CLUB referral cannot create an economic entry');
+    $beforeObsolete=DB::table('commission_audit')->count();
+    reviewEntry(ledger('economic-concurrent'),'reconcile',['reconciliation'=>'club_exclusive','external_reference'=>'obsolete']);
+    check(DB::table('commission_audit')->count()===$beforeObsolete,'obsolete reconciliation action is rejected');
     $rulesFixture=payload(web('GET','/admin/reglas-comisiones'));
     $ledgerFixture=payload(web('GET','/admin/comisiones'));
     check(count($ledgerFixture['props']['entries']['data'][0]['history'])>=2,'administration exposes immutable history and original evidence references');
-    check(web('GET','/admin/comisiones?reconciliation=pending')->getStatusCode()===200,'administrative pending COM reconciliation filter works');
-    check(send([...$base,'event_id'=>'economic:a:cancel','occurred_at'=>'2026-10-29T15:00:00Z','conversion_status'=>'cancelled'])->getStatusCode()===201,'subsequent COM cancellation recorded');
+    check(web('GET','/admin/comisiones?status=candidate')->getStatusCode()===200,'administrative candidate status filter works');
+    check(!str_contains(json_encode($ledgerFixture),'reconciliation') && !str_contains(json_encode($ledgerFixture),'external_reference'),'ledger and audit no longer require historical COM reconciliation');
+    check(send([...$base,'event_id'=>'economic:a:cancel','occurred_at'=>'2026-10-30T11:49:00Z','conversion_status'=>'cancelled'])->getStatusCode()===201,'subsequent COM cancellation recorded');
     $entry=ledger('economic-order-a');
     check($entry->status==='approved' && $entry->review_required && !$entry->eligible && $entry->amount==='0.1001','cancellation flags approved commission for review without rewriting history');
     $cookies=$aCookies;$summary=payload(web('GET','/afiliados'))['props']['economics'];$currencies=collect($summary['currencies'])->keyBy('currency');
-    check($currencies['BOB']['approved']==='0' && $currencies['BOB']['review']==='0.1001','questioned approvals excluded from reconciled approved totals');
+    check($currencies['BOB']['approved']==='0' && $currencies['BOB']['review']==='0.3003','questioned approvals excluded from approved totals');
     $cookies=$adminCookies;
     $auditBefore=DB::table('commission_audit')->count();
     Artisan::call('commissions:sync');Artisan::call('commissions:sync');
@@ -246,7 +292,7 @@ try {
     check(web('GET','/admin/reglas-comisiones')->isRedirect(),'unverified administrator economic access denied');
     check(DB::table('jobs')->count()===0 && Http::recorded()->count()===0 && Notification::sentNotifications()===[],'engine sends no CRM jobs notifications HTTP requests or payments');
     file_put_contents('/evidence/commission-browser-fixtures.json',json_encode(['rules'=>$rulesFixture,'empty_rules'=>$emptyRules,'ledger'=>$ledgerFixture,'affiliate'=>$affiliate],JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE));
-    $result=['passed'=>count($passed),'postgresql'=>'isolated schema','live_events_created'=>0,'live_users_created'=>0,'active_live_rules_created'=>0,'automatic_approvals'=>0,'payments'=>0];
+    $result=['passed'=>count($passed),'postgresql'=>'isolated schema','live_events_created'=>0,'live_users_created'=>0,'active_live_rules_created'=>0,'automatic_approvals'=>0,'payments'=>0,'economic_cutoff'=>config('commissions.economic_cutoff'),'com_retirement_sha'=>config('commissions.com_retirement_sha')];
     file_put_contents('/evidence/tests.json',json_encode($result,JSON_PRETTY_PRINT).PHP_EOL);echo json_encode($result).PHP_EOL;
 } catch(Throwable $e) {
     fwrite(STDERR,get_class($e).' '.$e->getMessage().' at '.$e->getFile().':'.$e->getLine().PHP_EOL);$failed=true;

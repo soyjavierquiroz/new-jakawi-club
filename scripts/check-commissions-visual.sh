@@ -2,7 +2,7 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 source_dir="$(pwd)"
-evidence_dir="${JAKAWI_EVIDENCE_DIR:-${source_dir}/artifacts/commissions-06c}"
+evidence_dir="${JAKAWI_EVIDENCE_DIR:-${source_dir}/artifacts/commissions-06e}"
 # Reuse installed Chromium in a bounded container. Browser fixtures never create LIVE accounts.
 docker run --rm --name jakawi-club-commission-browser --network jakawi-club-egress \
     --memory 512m --memory-swap 640m --cpus 0.75 --pids-limit 128 \

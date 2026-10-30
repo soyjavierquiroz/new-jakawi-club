@@ -1,7 +1,7 @@
 import { Head, useForm } from '@inertiajs/react';
 import type { FormEvent } from 'react';
 import { ErrorText, PageFrame } from '../../components/UI';
-import { commissionStatus, EconomicHistory, EconomicNav, EconomicPages, economicDate, type Audit, type Pagination } from '../../components/CommissionUI';
+import { commissionStatus, EconomicCutoff, EconomicHistory, EconomicNav, EconomicPages, economicDate, type Audit, type Pagination } from '../../components/CommissionUI';
 
 type Rule = { id: number; partner_id: string; event_type: string; fixed_amount: string; currency: string; effective_at: string; status: string; history: Audit[] };
 function RuleCard({ rule }: { rule: Rule }) {
@@ -14,7 +14,7 @@ function RuleCard({ rule }: { rule: Rule }) {
         <EconomicHistory history={rule.history} />
     </article>;
 }
-export default function CommissionRules({ rules }: { rules: Pagination<Rule> }) {
+export default function CommissionRules({ rules, economic_cutoff }: { rules: Pagination<Rule>; economic_cutoff: string }) {
     const form = useForm({ partner_id: '', event_type: '', fixed_amount: '', currency: '', effective_at: '' });
     function submit(event: FormEvent) {
         event.preventDefault();
@@ -22,7 +22,7 @@ export default function CommissionRules({ rules }: { rules: Pagination<Rule> }) 
         form.post('/admin/reglas-comisiones', { onSuccess: () => form.reset(), preserveScroll: true });
     }
     return <><Head title="Reglas de comisiones" /><PageFrame>
-        <p className="eyebrow">ADMINISTRACIÓN CLUB</p><h1 className="section-title mt-4">REGLAS DE COMISIONES</h1><EconomicNav />
+        <p className="eyebrow">ADMINISTRACIÓN CLUB</p><h1 className="section-title mt-4">REGLAS DE COMISIONES</h1><EconomicNav /><EconomicCutoff value={economic_cutoff} />
         <p className="max-w-3xl text-text-secondary">Solo montos fijos. Cada cambio económico requiere una nueva versión; las valoraciones existentes se conservan. Activar una regla permite evaluar candidatos, sin aprobar comisiones automáticamente.</p>
         <form onSubmit={submit} className="feature-card my-8 grid gap-5 md:grid-cols-2" id="commission-rule-form">
             <div className="md:col-span-2"><h2 className="text-xl font-bold">Nueva regla en borrador</h2><p className="mt-2 text-sm text-text-secondary">Introduce el ID original del partner y el tipo real de evento COM. Moneda: código de 3 letras. Importe exacto con punto y hasta 4 decimales.</p></div>

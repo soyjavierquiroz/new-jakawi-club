@@ -1,0 +1,6 @@
+{
+  "typescript": "passed",
+  "vite": "passed",
+  "dependencies_changed": false,
+  "build": "isolated worktree public/build-next"
+}

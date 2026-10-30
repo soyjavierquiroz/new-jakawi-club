@@ -1,0 +1,8 @@
+{
+    "passed": 62,
+    "postgresql": "isolated schema",
+    "live_events_created": 0,
+    "live_users_created": 0,
+    "outbound_http": 0,
+    "notifications": 0
+}

@@ -1,5 +1,8 @@
 # Fase 06C — motor económico CLUB
 
+Documento histórico sustituido por [Fase 06E](commissions-06e.md). Las exigencias
+de conciliación descritas aquí ya no forman parte del motor vigente.
+
 Reglas: `https://jakawi.club/admin/reglas-comisiones`.
 Libro: `https://jakawi.club/admin/comisiones`.
 Afiliado: `https://jakawi.club/afiliados`.
