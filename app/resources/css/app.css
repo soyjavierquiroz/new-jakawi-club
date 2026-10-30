@@ -224,3 +224,69 @@
     86% { transform: translateY(-3px); }
     90% { transform: translateY(-1px); }
 }
+
+/* WEBINAR editorial defaults; other templates and confirmation keep their theme. */
+.webinar-event-bar { background: var(--success); color: var(--ink); }
+.webinar-event-bar > .shell { display: flex; align-items: center; justify-content: space-between; gap: .75rem; min-height: 38px; padding-block: .375rem; }
+.webinar-event-bar p, .webinar-event-bar a { display: flex; align-items: center; gap: .5rem; font-size: .8125rem; font-weight: 700; }
+.webinar-event-bar svg { flex-shrink: 0; width: 18px; height: 18px; }
+.webinar-event-bar a { min-height: 28px; text-decoration: underline; text-underline-offset: 3px; white-space: nowrap; }
+main[data-landing-template=WEBINAR] { --text-secondary: var(--palette-light-text-secondary); }
+main[data-landing-template=WEBINAR] .section-space { padding-block: 2.5rem; }
+main[data-landing-template=WEBINAR] .section-title { font-size: clamp(2rem, 3.5vw, 3rem); line-height: 1.12; }
+main[data-landing-template=WEBINAR] .feature-card { padding: 1.5rem; }
+main[data-landing-template=WEBINAR] .feature-card p { font-size: 1rem; line-height: 1.65; }
+.webinar-benefit-icon { display: inline-grid; width: 44px; height: 44px; place-items: center; border-radius: 50%; background: var(--brand-subtle); color: var(--ink); }
+main[data-landing-template=WEBINAR] #como-funciona .feature-card:nth-child(even) .webinar-benefit-icon { background: var(--cream); outline: 1px solid var(--border); }
+.webinar-event-card { background: var(--surface-raised); border-top: 4px solid var(--success); }
+.webinar-event-details { display: flex; flex-wrap: wrap; gap: .875rem 1.5rem; margin-top: 1.5rem; }
+.webinar-event-details p, .webinar-date-pending > p:first-child { display: flex; align-items: center; gap: .625rem; font-weight: 600; }
+.webinar-event-details p:first-child { width: 100%; }
+.webinar-event-details svg, .webinar-date-pending svg { flex-shrink: 0; }
+.webinar-date-pending { margin-top: 1.25rem; }
+.webinar-date-pending > p + p { margin-top: .5rem; color: var(--text-secondary); }
+.webinar-countdown { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .75rem; max-width: 34rem; margin-top: 1.5rem; }
+.webinar-countdown > div { padding: .875rem .5rem; border: 1px solid var(--border); border-radius: var(--radius-control); background: var(--cream); text-align: center; }
+.webinar-countdown > div > span:first-child { font-size: clamp(1.75rem, 4vw, 3rem); line-height: 1.1; }
+.webinar-countdown > div > span:last-child { display: block; margin-top: .375rem; font-size: .8125rem; color: var(--text-secondary); }
+[data-webinar-section=opportunity] { margin-block: 1.5rem; background: var(--ink); color: var(--surface-raised); }
+[data-webinar-section=opportunity] section::before { content: ''; display: block; width: 3rem; height: 5px; margin-bottom: 1.25rem; background: var(--brand); }
+[data-webinar-section=opportunity] .section-title { max-width: 48rem; font-size: clamp(2.25rem, 4.5vw, 3.75rem); }
+[data-webinar-section=opportunity] p { color: var(--cream); font-size: 1.125rem; line-height: 1.75; }
+.webinar-steps { display: grid; position: relative; gap: 1.5rem; margin-top: 2rem; }
+main[data-landing-template=WEBINAR] .webinar-steps > li { position: relative; display: grid; grid-template-columns: 44px minmax(0, 1fr); column-gap: 1rem; padding: 0; border: 0; background: transparent; box-shadow: none; }
+.webinar-steps > li::before { content: ''; position: absolute; top: 44px; bottom: -1.5rem; left: 21px; border-left: 2px solid var(--border-strong); }
+.webinar-steps > li:last-child::before { display: none; }
+.webinar-steps .benefit-number { grid-column: 1; grid-row: 1 / span 2; position: relative; z-index: 1; width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--brand); background: var(--cream); }
+.webinar-steps > li > svg { position: absolute; top: 12px; right: 0; width: 18px; color: var(--text-muted); }
+.webinar-steps h3, .webinar-steps p { grid-column: 2; }
+.webinar-steps h3 { margin-top: .5rem; padding-right: 1.5rem; }
+main[data-landing-template=WEBINAR] .registration-section { background: var(--cream); }
+main[data-landing-template=WEBINAR] #registro { padding: clamp(1.5rem, 4vw, 2.25rem); background: var(--surface-raised); border-color: var(--border-strong); }
+main[data-landing-template=WEBINAR] #registration-form-title { font-size: 1.5rem; line-height: 1.2; }
+main[data-landing-template=WEBINAR] #registro .input { min-height: 52px; background: var(--surface-raised); font-size: 1rem; }
+main[data-landing-template=WEBINAR] #registro button[type=submit] { min-height: 56px; font-size: 1rem; background: var(--brand); }
+main[data-landing-template=WEBINAR] #registro .text-xs { font-size: .8125rem; }
+main[data-landing-template=WEBINAR] .faq-item p { font-size: 1rem; line-height: 1.75; }
+@media (min-width: 768px) {
+    .webinar-steps { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2rem; }
+    main[data-landing-template=WEBINAR] .webinar-steps > li { display: block; }
+    .webinar-steps > li::before { top: 21px; bottom: auto; left: 44px; width: calc(100% + 2rem - 44px); border-left: 0; border-top: 2px solid var(--border-strong); }
+    .webinar-steps > li > svg { right: 0; background: var(--cream); }
+    .webinar-steps h3 { margin-top: 1rem; }
+    main[data-landing-template=WEBINAR] .section-space { padding-block: 3.5rem; }
+}
+@media (max-width: 767px) {
+    .webinar-event-bar > .shell { min-height: 36px; gap: .5rem; padding-block: .25rem; }
+    .webinar-event-bar p, .webinar-event-bar a { font-size: .75rem; gap: .375rem; line-height: 1.3; }
+    .webinar-event-bar a { min-height: 32px; }
+    .webinar-event-bar a svg { display: none; }
+    .webinar-event-bar p > svg { width: 16px; height: 16px; }
+    .webinar-countdown { gap: .375rem; }
+    .webinar-countdown > div { padding: .75rem .25rem; }
+    .webinar-countdown > div > span:last-child { font-size: .75rem; }
+    main[data-landing-template=WEBINAR] .webinar-event-card { padding: 1.25rem; }
+}
+/* Days may have four or five digits for scheduled campaigns far in the future. */
+.webinar-countdown > div:first-child > span:first-child { font-size: clamp(1.25rem, 3vw, 2rem); letter-spacing: -.04em; }
+main[data-landing-template=WEBINAR] .webinar-event-card .eyebrow { font-size: .75rem; }

@@ -1,5 +1,6 @@
 // Selective local adaptation of official marketing/primitives.tsx and offer/blocks.tsx.
 import { useContext, type ReactNode } from 'react';
+import { Play, RotateCcw } from '../media/jakawi-vsl-player/player-icons';
 import { Arrow } from '../UI';
 import { LandingContext, useLandingTracking } from './LandingContext';
 import { focusRegistration } from './registration-navigation';
@@ -38,10 +39,12 @@ export function MarketingHero({ children, open, compact = false, encounter }: { 
 }
 
 export function MarketingBenefits({ compact = false }: { compact?: boolean }) {
-    const content = useContext(LandingContext)!.content.benefits;
+    const landing = useContext(LandingContext)!.content;
+    const content = landing.benefits;
+    const webinar = landing.presentation.template === 'WEBINAR';
     return <section id="como-funciona" className="shell section-space" aria-labelledby="benefits-title">
         <div className="max-w-2xl"><p className="eyebrow">{content.eyebrow}</p><h2 id="benefits-title" className="section-title mt-4">{content.title}</h2><p className="mt-5 leading-7 text-text-secondary">{content.description}</p></div>
-        <div className={`mt-9 grid gap-4 sm:grid-cols-2 ${compact ? 'lg:grid-cols-3' : 'lg:grid-cols-4'}`}>{(compact ? content.items.slice(0, 3) : content.items).map(({title, description}, index) => <article key={title} className="feature-card"><span className="benefit-number" aria-hidden="true">0{index + 1}</span><h3 className="mb-3 mt-5 text-lg font-extrabold tracking-tight">{title}</h3><p className="text-sm leading-7 text-text-secondary">{description}</p></article>)}</div>
+        <div className={`mt-9 grid gap-4 sm:grid-cols-2 ${compact ? 'lg:grid-cols-3' : 'lg:grid-cols-4'}`}>{(compact ? content.items.slice(0, 3) : content.items).map(({title, description}, index) => <article key={title} className="feature-card"><span className={webinar ? 'webinar-benefit-icon' : 'benefit-number'} aria-hidden="true">{webinar ? (index % 3 === 0 ? <Play /> : index % 3 === 1 ? <Arrow /> : <RotateCcw />) : <>0{index + 1}</>}</span><h3 className="mb-3 mt-5 text-lg font-extrabold tracking-tight">{title}</h3><p className="text-sm leading-7 text-text-secondary">{description}</p></article>)}</div>
     </section>;
 }
 
