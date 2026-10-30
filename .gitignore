@@ -137,3 +137,9 @@ credentials.json
 
 /artifacts/landing-ai-kit/*fixtures.json
 /artifacts/landing-ai-kit/*.png
+
+/artifacts/landing-ai-kit-release/LIVE.json
+/artifacts/landing-ai-kit-release/**/*fixtures.json
+/artifacts/landing-ai-kit-release/*fixtures.json
+/artifacts/landing-ai-kit-release/**/*.png
+/artifacts/landing-ai-kit-release/*.png
