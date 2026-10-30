@@ -1,0 +1,11 @@
+{
+  "deployed_at": "2026-10-30T12:18:57.990523-04:00",
+  "from_sha": "9663f542ff6a5115c931520ab7d51786a350188b",
+  "deployed_sha": "23105aab03a0560b1ea28e57c20b4a88e0f8e290",
+  "maintenance_seconds": 6.39,
+  "new_assets": 19,
+  "only_app_recreated": true,
+  "migrations": 0,
+  "editorial_mutations": 0,
+  "readonly_documents_mount": true
+}

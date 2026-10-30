@@ -136,12 +136,18 @@ echo json_encode($r);
         if f.is_file() and f.name != 'manifest.json':
             assert f.read_bytes() == (ROOT/'app/public/build'/f.relative_to(PRIVATE/'build')).read_bytes()
     assert http('https://jakawi.club/up').code == http('http://127.0.0.1:18082/up').code == 200
+    browser = json.loads((OUT/'browser-live.json').read_text())
+    commercial = json.loads((OUT/'commercial/browser-live.json').read_text())
+    assert browser['live_assets'] and browser['passed'] == 21 and browser['live_registrations'] == 0
+    assert commercial['live_assets'] and commercial['no_live_mutations'] and commercial['no_live_test_clicks']
+    assert not commercial['runtime_errors'] and not commercial['failed_assets']
     result = {'verified_at': datetime.now(ZoneInfo('America/La_Paz')).isoformat(), 'live_sha': head,
               'git_clean_and_synced': True, 'documents_exact_utf8_source': True, 'zip_valid': True,
               'protected_admin_downloads': True, 'import_v3': True, 'readonly_mount': True,
               'editorial_users_and_protected_tables_unchanged': True, 'secrets_unchanged': True,
               'unrelated_source_unchanged': True, 'services': cs, 'only_app_recreated': True,
               'registration_open': True, 'https_assets_verified': len(assets), 'previous_chunks_preserved': True,
+              'browser_live_groups': browser['passed'], 'commercial_widths': [c['width'] for c in commercial['checks']],
               'mounted_files_verified': len(mounted), 'live_registrations': 0, 'real_emails': 0}
     (OUT/'LIVE.json').write_text(json.dumps(result,indent=2)+'\n')
     print(json.dumps(result))

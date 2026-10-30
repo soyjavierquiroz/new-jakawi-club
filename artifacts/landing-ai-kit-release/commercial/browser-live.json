@@ -1,0 +1,38 @@
+{
+  "live_assets": true,
+  "data": "isolated real-kernel fixtures",
+  "checks": [
+    {
+      "width": 390,
+      "legacy_anchor": true,
+      "no_explore_flash": true,
+      "anchor_visible": true,
+      "canonical_results": true,
+      "back_forward": true,
+      "native_hash": true,
+      "dashboard_link": true,
+      "search_restored": true,
+      "opportunity_clicks": true,
+      "approved_currencies": true,
+      "no_overflow": true
+    },
+    {
+      "width": 1440,
+      "legacy_anchor": true,
+      "no_explore_flash": true,
+      "anchor_visible": true,
+      "canonical_results": true,
+      "back_forward": true,
+      "native_hash": true,
+      "dashboard_link": true,
+      "search_restored": true,
+      "opportunity_clicks": true,
+      "approved_currencies": true,
+      "no_overflow": true
+    }
+  ],
+  "runtime_errors": [],
+  "failed_assets": [],
+  "no_live_mutations": true,
+  "no_live_test_clicks": true
+}
