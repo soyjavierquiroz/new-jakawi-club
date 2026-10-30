@@ -37,6 +37,8 @@ Route::get('/bienvenida', [RegistrationController::class, 'welcome'])->name('wel
 Route::middleware('guest')->group(function (): void {
     Route::post('/registro', [RegistrationController::class, 'store'])->middleware([RegistrationOpen::class, 'throttle:registration'])->name('register');
     Route::get('/login', [AuthController::class, 'login'])->name('login');
+    Route::get('/auth/jakawi', [\App\Http\Controllers\JakawiLoginController::class, 'start'])->middleware('throttle:12,1')->block(20, 10)->name('jakawi.login');
+    Route::get('/auth/jakawi/callback', [\App\Http\Controllers\JakawiLoginController::class, 'callback'])->middleware('throttle:20,1')->block(20, 10)->name('jakawi.callback');
     Route::post('/login', [AuthController::class, 'authenticate'])->middleware('throttle:login');
     Route::get('/recuperar-password', [AuthController::class, 'forgot'])->name('password.request');
     Route::post('/recuperar-password', [AuthController::class, 'email'])->middleware('throttle:account-mail')->name('password.email');

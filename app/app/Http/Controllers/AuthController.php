@@ -21,9 +21,12 @@ use Inertia\Response;
 
 class AuthController extends Controller
 {
-    public function login(): Response
+    public function login(Request $request): Response
     {
-        return Inertia::render('Auth', ['mode' => 'login']);
+        return Inertia::render('Auth', [
+            'mode' => 'login', 'jakawiSso' => (bool) config('oidc.enabled'),
+            'linkRequired' => (bool) $request->session()->get('jakawi_link_required', false),
+        ]);
     }
 
     public function authenticate(Request $request): RedirectResponse

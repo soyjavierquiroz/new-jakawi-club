@@ -1,0 +1,1 @@
+{"live_assets":false,"checks":[{"width":390,"primary_sso":true,"local_login_retained":true,"full_browser_navigation":true,"no_overflow":true},{"width":1440,"primary_sso":true,"local_login_retained":true,"full_browser_navigation":true,"no_overflow":true}],"runtime_errors":[],"failed_assets":[],"no_mutations":true,"no_pilot_session":true}

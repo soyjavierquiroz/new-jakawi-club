@@ -1,6 +1,6 @@
 # Identidad global CLUB — preparativos locales
 
-**Informe histórico.** Continuación de estos preparativos y estado operativo actual: [Fase 03](../identity-phase03/REPORT.md).
+**Informe histórico.** Continuación: [Fase 03](../identity-phase03/REPORT.md) y [Fase 04 — cliente SSO CLUB](../identity-phase04/REPORT.md).
 
 ## Implementado
 

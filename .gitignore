@@ -88,3 +88,9 @@ credentials.json
 /artifacts/identity-phase03/crm-payloads.json
 /artifacts/identity-phase03/browser.json
 /artifacts/identity-phase03/private-*.png
+
+/artifacts/identity-phase04/LIVE.json
+/artifacts/identity-phase04/identity-browser-fixtures.json
+/scripts/__pycache__/
+/artifacts/identity-phase04/browser-live.json
+/artifacts/identity-phase04/login-live-*.png

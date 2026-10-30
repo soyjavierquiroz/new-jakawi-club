@@ -15,7 +15,7 @@ class HandleInertiaRequests extends Middleware
     {
         $response = parent::handle($request, $next);
         $response->headers->set('Cache-Control', 'no-store, private');
-        if ($request->is('activar/*', 'restablecer-password/*', 'cuenta/jakawi/confirmar-email/*')) {
+        if ($request->is('activar/*', 'restablecer-password/*', 'cuenta/jakawi/confirmar-email/*', 'auth/jakawi', 'auth/jakawi/*')) {
             $response->headers->set('Referrer-Policy', 'no-referrer');
         }
 

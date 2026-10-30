@@ -1,5 +1,7 @@
 # JAKAWI Launch Engine — jakawi.club
 
+Acceso SSO COM → CLUB: [Fase 04](artifacts/identity-phase04/REPORT.md). Login principal **INGRESAR CON JAKAWI** en `https://jakawi.club/login`; acceso local conservado.
+
 Identidad global COM: [Fase 03, operación y pruebas](artifacts/identity-phase03/REPORT.md). La acción **ACTIVAR MI ACCESO A JAKAWI.COM** pertenece exclusivamente al dashboard privado. Usa el contrato técnico real de COM y conserva cuentas, permisos, sesiones y atribución locales. El registro de leads no provisiona ni vincula cuentas COM.
 
 Aplicación Laravel independiente publicada en **https://jakawi.club** mediante Traefik compartido y Let's Encrypt. `https://www.jakawi.club` redirige permanentemente al dominio principal.

@@ -1,5 +1,7 @@
 # Fase 03 — integración de identidad CLUB → COM
 
+Continuación: [Fase 04 — cliente SSO CLUB](../identity-phase04/REPORT.md).
+
 ## Contrato y alcance
 
 Se consume el contrato técnico `/root/jakawi-identity-v1/repository/docs/integrations/CLUB_COM_IDENTITY_API_V1.md` de COM, SHA `11e04f3c91fd4096257a01f01c48eba3396f59e2`. Único origen API: `https://jakawi.com/internal/identity`. Rutas utilizadas: POST `/handoffs`, GET `/handoffs/{handoff_id}`, GET `/links/{club_user_id}`. No hay callback ni intercambio de sesiones.

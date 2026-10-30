@@ -1,0 +1,106 @@
+PASS alta CLUB aislada conserva formulario nativo
+PASS activación CLUB consume token real simulado por notificación
+PASS cliente CLUB provisiona contra autoridad COM aislada real
+PASS UUID generado realmente por COM persiste en CLUB
+PASS repetir bytes contra COM real mantiene resultado idempotente
+PASS segunda acción CLUB no genera otro handoff
+PASS COM real rechaza autenticación de integración inválida
+PASS alta CLUB aislada conserva formulario nativo
+PASS activación CLUB consume token real simulado por notificación
+PASS cuenta COM existente exige autorización real sin vincular por email
+PASS consentimiento COM exige login nativo
+PASS login COM aislado valida CSRF real
+PASS otra cuenta accede con contraseña nativa en COM aislado
+PASS COM real rechaza autorización del titular equivocado
+PASS titular fixture realiza login completo real en COM aislado
+PASS GET de consentimiento muestra acción sin autorizar
+PASS CLUB sigue pendiente antes del consentimiento explícito
+PASS COM real no vincula sin consentimiento enviado
+PASS titular fixture autoriza mediante POST COM con CSRF nativo
+PASS CLUB recupera y persiste vínculo realmente autorizado por COM
+PASS identidad compartida conserva contraseña referente y rol CLUB
+PASS CLUB redirects to the deployed COM authorize endpoint
+PASS exact registered callback and PKCE S256 match the private verifier
+PASS state and nonce have 256 bits; browser receives neither verifier nor secret
+PASS existing real COM session issues a code without another password
+PASS real COM code and ID token authenticate CLUB through its HTTP callback
+PASS successful SSO destroys the previous CLUB session id
+PASS SSO administrator reaches dashboard and administrative panel
+PASS real SSO preserves all account columns, credentials, role and attribution
+PASS callback consumes transaction and never stores provider tokens
+PASS callback is non-cacheable and does not leak referrer
+PASS real token exchange uses confidential Basic and no browser cookies
+PASS CLUB logout closes only the local session
+PASS consumed callback cannot exchange again or reopen CLUB
+PASS CLUB redirects to the deployed COM authorize endpoint
+PASS COM session survives CLUB logout and independently authorizes a new flow
+PASS without COM session the same flow requires native COM login
+PASS native CLUB logout rotates only its existing remember token
+PASS local CLUB password remains a working alternative
+PASS CLUB redirects to the deployed COM authorize endpoint
+PASS reject wrong issuer without a CLUB session
+PASS CLUB redirects to the deployed COM authorize endpoint
+PASS reject wrong audience without a CLUB session
+PASS CLUB redirects to the deployed COM authorize endpoint
+PASS reject expired token without a CLUB session
+PASS CLUB redirects to the deployed COM authorize endpoint
+PASS reject future issuance without a CLUB session
+PASS CLUB redirects to the deployed COM authorize endpoint
+PASS reject missing expiry without a CLUB session
+PASS CLUB redirects to the deployed COM authorize endpoint
+PASS reject missing issuance without a CLUB session
+PASS CLUB redirects to the deployed COM authorize endpoint
+PASS reject missing nonce without a CLUB session
+PASS CLUB redirects to the deployed COM authorize endpoint
+PASS reject wrong nonce without a CLUB session
+PASS CLUB redirects to the deployed COM authorize endpoint
+PASS reject missing subject without a CLUB session
+PASS CLUB redirects to the deployed COM authorize endpoint
+PASS reject non UUID subject without a CLUB session
+PASS CLUB redirects to the deployed COM authorize endpoint
+PASS reject future not before without a CLUB session
+PASS CLUB redirects to the deployed COM authorize endpoint
+PASS reject unauthorized party without a CLUB session
+PASS CLUB redirects to the deployed COM authorize endpoint
+PASS reject multiple audiences without authorized party without a CLUB session
+PASS CLUB redirects to the deployed COM authorize endpoint
+PASS reject unexpected algorithm none
+PASS CLUB redirects to the deployed COM authorize endpoint
+PASS reject unexpected algorithm HS256
+PASS CLUB redirects to the deployed COM authorize endpoint
+PASS reject unexpected algorithm RS512
+PASS CLUB redirects to the deployed COM authorize endpoint
+PASS reject untrusted JWT header kid
+PASS CLUB redirects to the deployed COM authorize endpoint
+PASS reject untrusted JWT header jwk
+PASS CLUB redirects to the deployed COM authorize endpoint
+PASS reject untrusted JWT header jku
+PASS CLUB redirects to the deployed COM authorize endpoint
+PASS reject untrusted JWT header crit
+PASS CLUB redirects to the deployed COM authorize endpoint
+PASS reject modified signature
+PASS CLUB redirects to the deployed COM authorize endpoint
+PASS invalid state/error/code stops before any token request
+PASS CLUB redirects to the deployed COM authorize endpoint
+PASS invalid state/error/code stops before any token request
+PASS CLUB redirects to the deployed COM authorize endpoint
+PASS invalid state/error/code stops before any token request
+PASS CLUB redirects to the deployed COM authorize endpoint
+PASS invalid state/error/code stops before any token request
+PASS CLUB redirects to the deployed COM authorize endpoint
+PASS invalid state/error/code stops before any token request
+PASS CLUB redirects to the deployed COM authorize endpoint
+PASS expired transaction stops before token exchange
+PASS CLUB redirects to the deployed COM authorize endpoint
+PASS unknown subject with matching email enters explicit Phase 03 linking and remains unauthenticated
+PASS unknown subject creates no account or handoff and cannot grant roles
+PASS CLUB redirects to the deployed COM authorize endpoint
+PASS revoked Phase 03 link cannot authenticate even with a valid signed ID token
+PASS CLUB redirects to the deployed COM authorize endpoint
+PASS provider outage returns safely to local login
+PASS all adverse SSO attempts preserve administrator credentials and permissions
+PASS CLUB redirects to the deployed COM authorize endpoint
+PASS signed profile/admin claims cannot grant administrative access to an existing member
+PASS SSO resolves by subject even when email differs and does not overwrite local profile
+{"passed":104,"com_implementation":"deployed immutable COM image in disposable containers","com_sha":"61af05e4a0b153cfa9970db435bb467bc6971d4c","com_database":"dedicated disposable PostgreSQL","club_database":"isolated schema","live_users_created":0,"pilot_authorization_simulated":false}
+{"original_com_users_unchanged": true, "exactly_one_provisioned_user": true, "new_user_not_admin": true, "new_user_verified": true, "new_links": true, "no_memberships": true, "no_partner_roles": true, "no_crm_deliveries": true}

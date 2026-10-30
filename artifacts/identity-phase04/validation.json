@@ -1,0 +1,17 @@
+{
+  "verified_at": "2026-10-29T22:46:12.257084-04:00",
+  "sso_and_phase03_checks": 104,
+  "mvp_checks": 73,
+  "php_syntax": "PASS",
+  "typescript": "PASS",
+  "vite_build": "PASS",
+  "browser_viewports": [
+    390,
+    1440
+  ],
+  "browser_errors": [],
+  "live_test_users": 0,
+  "pilot_impersonated": false,
+  "schema_changes": false,
+  "existing_dependency_versions_changed": false
+}

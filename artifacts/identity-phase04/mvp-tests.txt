@@ -1,0 +1,79 @@
+PASS aislamiento de PostgreSQL
+PASS migración compatible con usuarios existentes
+PASS landing sin contenido de video inventado
+PASS analítica local acepta visita
+PASS visitas deduplicadas por sesión y día
+PASS CTA deduplicado por ubicación
+PASS cliente no puede confirmar registro
+PASS analítica rechaza combinación inválida
+PASS sin video aprobado no hay evento de inicio
+PASS configuración YouTube permitida y normalizada
+PASS configuración YouTube permitida y normalizada
+PASS configuración YouTube permitida y normalizada
+PASS configuración rechaza fuente no aprobada
+PASS configuración rechaza fuente no aprobada
+PASS configuración rechaza fuente no aprobada
+PASS configuración rechaza fuente no aprobada
+PASS configuración rechaza fuente no aprobada
+PASS configuración rechaza fuente no aprobada
+PASS poster debe ser archivo local existente
+PASS inicio de video deduplicado frente a reanudaciones
+PASS analítica almacena solo agregados sin datos personales
+PASS registro público cerrado
+PASS registro cerrado no produce conversión
+PASS correo log impide apertura incluso con banderas activas
+PASS correo log no escribe enlaces ni tokens
+PASS apertura exige SMTP y habilitación explícita
+PASS consentimiento obligatorio
+PASS validación de teléfono internacional
+PASS backend conserva validación E.164 estricta
+PASS backend conserva validación E.164 estricta
+PASS backend conserva validación E.164 estricta
+PASS backend conserva validación E.164 estricta
+PASS sin consentimiento no hay cookie de atribución de 30 días
+PASS primer referente válido persistente
+PASS cookie opt-in cifrada Secure HttpOnly de 30 días
+PASS cookie restaura el primer referente en una sesión nueva
+PASS registro normalizado sin contraseña con UUID y consentimiento
+PASS atribución transaccional conserva el original frente al campo oculto
+PASS registro confirmado en backend cuenta una conversión
+PASS bienvenida temporal no revela datos antes de verificar correo
+PASS activación simulada con token almacenado como hash
+PASS email duplicado: respuesta indistinguible, sin cuenta ni atribución nuevas
+PASS registro repetido conserva referente original
+PASS email repetido no duplica conversión
+PASS autorreferido bloqueado al registrar el mismo email
+PASS retirar consentimiento elimina cookie y referente pendiente
+PASS códigos públicos y UUID únicos
+PASS modelo impide cambiar identidad permanente
+PASS base de datos impide reemplazar atribuciones
+PASS base de datos bloquea autorreferido
+PASS índice único normalizado protege registros concurrentes
+PASS área privada rechaza visitantes
+PASS cuenta sin activar no inicia sesión
+PASS activación verifica email y establece contraseña segura
+PASS bienvenida verificada muestra enlace personal
+PASS dashboard accesible tras activar
+PASS usuario autenticado no puede autoatribuirse otro referente
+PASS perfil básico no modifica identidad ni referente
+PASS logout revoca sesión
+PASS token de activación no se reutiliza
+PASS login normaliza email y permite acceso privado
+PASS recuperación no revela si existe una cuenta
+PASS recuperación envía notificación simulada nativa
+PASS recuperación establece contraseña y consume token
+PASS recuperación revoca sesiones anteriores en PostgreSQL
+PASS token de recuperación no se reutiliza
+PASS enlace vencido no activa cuenta
+PASS bienvenida vence a los 15 minutos
+PASS limitación de intentos de login
+PASS configuración vacía no inventa eventos ni enlaces
+PASS configuración HTTPS y enlace Zoom limitado al área privada
+PASS CSRF protege formularios fuera de modo testing
+PASS CSRF protege analítica local
+{
+    "passed": 73,
+    "database": "isolated PostgreSQL schema",
+    "notifications": "fake",
+    "live_test_users": 0
+}
