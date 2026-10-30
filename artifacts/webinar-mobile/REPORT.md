@@ -27,3 +27,10 @@ la comprobación de esta entrega usa el baseline vigente capturado antes de edit
 
 Pruebas previas: 419 landings + 134 postconversion PASS; TypeScript/build PASS;
 23 grupos de navegador PASS con assets nuevos, sin mutaciones LIVE.
+
+Código desplegado: `ceafb8162988090e151582b8e6fc8094b9415079`.
+LIVE: 26 grupos de navegador PASS, incluido home/principal y login.
+Solo app reiniciada, 20 assets nuevos y chunks anteriores conservados.
+Contenido, snapshots, usuarios, tablas comerciales y secretos intactos.
+Cero registros reales, correos o publicaciones de campañas.
+El sello final, Git sincronizado y hashes HTTPS quedan en LIVE.json ignorado.
