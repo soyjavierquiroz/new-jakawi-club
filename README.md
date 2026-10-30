@@ -2,13 +2,15 @@
 
 Afiliados: **MIS ENLACES** y **MIS CONVERSIONES** en el dashboard privado,
 panel `/afiliados`. Enlace Dossis 43 con código CLUB real y operaciones COM
-confirmadas únicas por referencia, sin comisiones. [Contrato y operación del MVP](docs/integrations/club-affiliates-mvp.md).
+confirmadas únicas por referencia. [Contrato y operación del MVP](docs/integrations/club-affiliates-mvp.md).
 
 Recepción comercial COM → CLUB: [Fase 05](artifacts/commercial-phase05/REPORT.md).
 Receptor HMAC exclusivo `POST /internal/commercial/events`, idempotente y sin altas
 de usuarios ni efectos CRM. Panel privado **CONVERSIONES COM** en
 `/admin/conversiones-com`. [Contrato exacto para Codex COM](docs/integrations/com-commercial-events-v1.md).
-No incluye comisiones, pagos ni saldos.
+Motor económico Fase 06C: [reglas, libro y conciliación](docs/economics/commissions-06c.md).
+Reglas en `/admin/reglas-comisiones`, libro en `/admin/comisiones`; aprobación manual
+con exclusividad acreditada. Sin reglas activas predeterminadas, pagos ni saldos retirables.
 
 Acceso SSO COM → CLUB: [Fase 04](artifacts/identity-phase04/REPORT.md). Login principal **INGRESAR CON JAKAWI** en `https://jakawi.club/login`; acceso local conservado.
 

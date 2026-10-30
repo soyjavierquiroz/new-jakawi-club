@@ -11,6 +11,14 @@ use App\Http\Middleware\MarketingAdmin;
 use App\Http\Controllers\LandingAdminController;
 use Illuminate\Support\Facades\Route;
 
+Route::prefix('admin')->middleware(['auth', 'verified', MarketingAdmin::class])->group(function (): void {
+    Route::get('/reglas-comisiones', [\App\Http\Controllers\CommissionAdminController::class, 'rules'])->name('commissions.rules');
+    Route::post('/reglas-comisiones', [\App\Http\Controllers\CommissionAdminController::class, 'storeRule'])->middleware('throttle:30,1');
+    Route::post('/reglas-comisiones/{rule}/estado', [\App\Http\Controllers\CommissionAdminController::class, 'ruleStatus'])->whereNumber('rule')->middleware('throttle:30,1');
+    Route::get('/comisiones', [\App\Http\Controllers\CommissionAdminController::class, 'ledger'])->name('commissions.ledger');
+    Route::post('/comisiones/{entry}/revision', [\App\Http\Controllers\CommissionAdminController::class, 'review'])->whereNumber('entry')->middleware('throttle:30,1');
+});
+
 Route::get('/admin/conversiones-com', \App\Http\Controllers\CommercialAdminController::class)
     ->middleware(['auth', 'verified', MarketingAdmin::class])->name('commercial.index');
 

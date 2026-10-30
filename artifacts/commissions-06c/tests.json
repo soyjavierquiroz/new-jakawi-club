@@ -1,0 +1,9 @@
+{
+    "passed": 59,
+    "postgresql": "isolated schema",
+    "live_events_created": 0,
+    "live_users_created": 0,
+    "active_live_rules_created": 0,
+    "automatic_approvals": 0,
+    "payments": 0
+}

@@ -31,6 +31,10 @@ class AffiliateController extends Controller
                 'personal_url' => 'https://jakawi.com/l/dossis-43-cafe-y-antojo?'.http_build_query(['club_ref' => $user->referral_code]),
             ],
             'conversions' => $operations,
+            'commission_entries' => \Illuminate\Support\Facades\DB::table('commission_ledger')
+                ->where('affiliate_uuid', $user->uuid)->where('affiliate_code', $user->referral_code)
+                ->orderByDesc('id')->paginate(25, ['id','com_reference_type','com_reference_id','status','amount','currency','review_required','reconciliation','created_at','approved_at'], 'commission_page'),
+            'economics' => app(\App\Services\Commissions\CommissionEngine::class)->summary($user),
         ]);
     }
 }

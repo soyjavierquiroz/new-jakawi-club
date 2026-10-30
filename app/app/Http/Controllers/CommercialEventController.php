@@ -95,6 +95,7 @@ class CommercialEventController extends Controller
                 'conversion_status' => $data['conversion_status'],
             ]);
             $event = DB::table('commercial_events')->where('source', 'jakawi.com')->where('event_id', $data['event_id'])->first();
+            if ($inserted) app(\App\Services\Commissions\CommissionEngine::class)->record($event);
             return $this->receipt($event, $digest, $provenance, (bool) $inserted);
         });
     }

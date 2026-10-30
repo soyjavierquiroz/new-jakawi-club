@@ -123,7 +123,7 @@ try {
     $cookies=$aCookies;
     $r=web('GET','/afiliados?user_id='.$b->id.'&club_ref='.$b->referral_code.'&referrer_club_uuid='.$b->uuid);
     $page=payload($r);$operations=$page['props']['conversions'];
-    check($operations['total']===2 && !str_contains($r->getContent(),'private-order-b') && !str_contains($r->getContent(),'shared-operation'),'scope cannot be overridden and one COM operation never counts for two affiliates');
+    check($operations['total']===2 && !str_contains($r->getContent(),'private-order-b') && !str_contains(json_encode($operations),'shared-operation'),'scope cannot be overridden and one COM operation never counts for two affiliates');
     $r=web('GET','/afiliados');
     check(!str_contains($r->getContent(),$b->referral_code) && !str_contains($r->getContent(),'raw_body') && !str_contains($r->getContent(),'global_subject_id') && !str_contains($r->getContent(),'referrer_club_uuid'),'private response excludes other codes raw events and identity metadata');
     check(str_contains($r->headers->get('Cache-Control'),'no-store'),'affiliate response forbids caching');

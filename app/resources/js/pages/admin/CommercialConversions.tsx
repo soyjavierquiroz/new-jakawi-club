@@ -1,5 +1,6 @@
 import { Head, Link, router } from '@inertiajs/react';
 import { useState, type FormEvent } from 'react';
+import { EconomicNav } from '../../components/CommissionUI';
 import { PageFrame } from '../../components/UI';
 
 type CommercialEvent = {
@@ -24,6 +25,7 @@ export default function CommercialConversions({ events, filters, partners, campa
     }
     return <><Head title="CONVERSIONES COM" /><PageFrame>
         <div className="mb-8 flex flex-wrap items-end justify-between gap-5"><div><p className="eyebrow">ADMINISTRACIÓN CLUB</p><h1 className="section-title mt-4">CONVERSIONES COM</h1><p className="mt-4 text-text-secondary">Eventos comerciales recibidos de JAKAWI.COM. Fechas en hora de Bolivia.</p></div><Link className="btn btn-secondary" href="/admin/landings">Administración</Link></div>
+        <EconomicNav />
         <form onSubmit={filter} className="mb-8 flex flex-wrap items-end gap-4">
             <div><label className="label" htmlFor="commercial-partner">Partner</label><select className="input" id="commercial-partner" value={partner} onChange={e => setPartner(e.target.value)}><option value="">Todos</option>{partners.map(id => <option key={id} value={id}>{id}</option>)}</select></div>
             <div><label className="label" htmlFor="commercial-campaign">Campaña</label><select className="input" id="commercial-campaign" value={campaign} onChange={e => setCampaign(e.target.value)}><option value="">Todas</option>{campaigns.map(id => <option key={id} value={id}>{id}</option>)}</select></div>
