@@ -34,9 +34,11 @@ Se conserva su resultado previo y no se cambia el registro ni ese validador.
 La comprobación focalizada de esta fase verifica `/up`, código montado, assets,
 corte, esquema, rutas privadas, middleware, SHA remoto y contenedores CLUB.
 
-Despliegue exclusivamente CLUB mediante fast-forward y push normal de main;
+Desplegado exclusivamente CLUB mediante fast-forward y push normal de main;
 chunks anteriores conservados y manifest publicado al final. Solo se reinicia
-`app`. No se cambian COM, FluentCRM, identidad/SSO, landings, registro, receptor
+`app`; mantenimiento de 6,79 segundos. `/up` local y HTTPS devuelven 200.
+El navegador con assets LIVE confirma ambos tamaños sin errores ni mutaciones.
+No se cambian COM, FluentCRM, identidad/SSO, landings, registro, receptor
 comercial ni enlaces personales. La base LIVE comprobada antes del despliegue
 contenía cero reglas y cero entradas económicas.
 

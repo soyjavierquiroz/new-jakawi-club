@@ -1,0 +1,8 @@
+{
+  "source_sha": "5926081a8174b422cca4af06921e112d31ff394f",
+  "migration": "2026_10_30_000003_simplify_commission_approval",
+  "maintenance_seconds": 6.79,
+  "app_only_restart": true,
+  "previous_chunks_preserved": true,
+  "manifest_published_last": true
+}
