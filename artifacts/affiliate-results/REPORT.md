@@ -43,3 +43,7 @@ La verificación final `LIVE.json` (no versionada para evitar autorreferencia)
 compara Git remoto/local, código montado, assets HTTPS, `/up` público/local,
 enlaces, tablas protegidas y entorno contra el baseline privado de esta entrega.
 Las verificaciones de enlace LIVE usan exclusivamente HEAD/prefetch; no fabrican clics.
+
+Entrega desplegada: migración aplicada, cachés/manifest publicados y app saludable.
+Validación local aprobada y revisión 390/1440 repetida con assets LIVE, sin errores.
+La sonda de salud contempla el breve arranque de PHP-FPM tras reiniciar app.
