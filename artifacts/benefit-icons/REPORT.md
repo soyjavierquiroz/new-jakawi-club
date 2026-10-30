@@ -45,3 +45,8 @@ El verificador `scripts/verify-benefit-icons-live.py` contrasta Git/origin/main,
 archivos montados, tablas protegidas y snapshots, secretos, contenedores, importación
 y validación real de PHP, kit/ZIP, assets HTTPS y resultados de Chromium LIVE.
 El sello final `LIVE.json` está excluido de Git para evitar autorreferencia.
+
+Despliegue completado: 21 assets nuevos y manifest publicado al final. 30 grupos
+Chromium con assets HTTPS LIVE PASS, incluidas home/principal/login y los cuatro
+grupos específicos de iconos. Validación local PASS con el baseline de la entrega.
+Ninguna cuenta, registro, correo ni campaña de prueba en LIVE.

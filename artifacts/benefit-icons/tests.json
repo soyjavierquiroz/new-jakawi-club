@@ -6,5 +6,9 @@
   "vite": "PASS",
   "new_dependencies": 0,
   "browser_preview_groups": 27,
-  "live_mutations": 0
+  "live_mutations": 0,
+  "browser_live_groups": 30,
+  "local_validation": "PASS",
+  "protected_tables_unchanged": true,
+  "published_snapshots_unchanged": true
 }

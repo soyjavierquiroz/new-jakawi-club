@@ -1,0 +1,9 @@
+{
+  "source_sha": "792d398fca3391304fcdb90ef828c7cb90b26e08",
+  "baseline_sha": "36e58e31940de2b4537c727882781e1a0013e4aa",
+  "new_asset_files": 21,
+  "manifest_published_last": true,
+  "previous_assets_preserved": true,
+  "only_app_restart": true,
+  "migrations": false
+}
