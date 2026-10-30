@@ -43,12 +43,16 @@ documentación/evidencia de despliegue, sin cambiar los archivos de aplicación.
 
 ## Operación
 
-Preparación completada; despliegue pendiente en este punto del historial.
+Despliegue completado en `e8d8184f8034a185406ef94d2a4ba6bec3da50d4`.
+Mantenimiento: **7,80 segundos**. Se añadieron **19 archivos de assets**, conservando
+los chunks anteriores y sustituyendo el manifest al final. Se regeneraron cachés
+y se reinició exclusivamente `jakawi-club-app`; los tres servicios CLUB están
+saludables. Sin migraciones. La verificación posterior se registra en `LIVE.json`.
 Rollback exclusivo CLUB preparado en `/srv/sites/jakawi.club/rollback-landing-json-v3/`:
 archivo de fuente previo, assets, cachés y baseline de hashes. Sin copias de secretos
 al repositorio ni contenido de usuarios en la evidencia.
 
-Procedimiento previsto: avance de main mediante fast-forward, copia de chunks
+Procedimiento ejecutado: avance de main mediante fast-forward, copia de chunks
 nuevos conservando todos los anteriores, cambio atómico de manifest, regeneración
 de cachés y reinicio exclusivamente de `app`. Sin migraciones, sincronización
 comercial, cambios de secretos ni modificaciones de infraestructura.

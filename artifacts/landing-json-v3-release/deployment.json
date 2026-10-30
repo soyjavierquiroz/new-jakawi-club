@@ -1,0 +1,13 @@
+{
+  "deployed_at": "2026-10-30T10:44:24.147378-04:00",
+  "from_sha": "e1368f662cc0f12db63d6f57ebadc5825ced5b49",
+  "deployed_sha": "e8d8184f8034a185406ef94d2a4ba6bec3da50d4",
+  "maintenance_seconds": 7.8,
+  "new_asset_files": 19,
+  "manifest_sha256": "1fbacbeb9f20b8bf3e5fce1bb77dc2e57073d6e0ed47a9a104d3765d9718d692",
+  "migrations": 0,
+  "only_app_restarted": true,
+  "old_chunks_preserved": true,
+  "method": "git merge --ff-only + assets + caches + app restart",
+  "content_mutations": 0
+}
