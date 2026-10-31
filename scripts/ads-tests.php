@@ -92,5 +92,6 @@ config(['ads.meta.token'=>null]);check(!app(Advertising::class)->ready('meta'),'
 
 $additionalVisit=AdVisit::create(['id'=>(string)Illuminate\Support\Str::uuid(),'provider'=>'meta','context'=>['url'=>'https://jakawi.club/ads/meta/membresia'],
     'consent_scope'=>$ttVisit->consent_scope,'consented_at'=>now(),'expires_at'=>now()->addDay()]);
+app('session')->forget('ad_consent_scope');
 web('POST','/preferencias',['allow_ads'=>false]);
-check((bool)$additionalVisit->fresh()->revoked_at && (bool)$ttVisit->fresh()->revoked_at,'one privacy withdrawal revokes all visits across providers in the same consent scope');
+check((bool)$additionalVisit->fresh()->revoked_at && (bool)$ttVisit->fresh()->revoked_at,'privacy withdrawal revokes all provider visits even after session scope is cleared');

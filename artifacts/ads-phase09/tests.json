@@ -81,7 +81,7 @@
         "privacy readiness pending prevents real API requests",
         "expired attribution cannot deliver",
         "missing credentials disables platform",
-        "one privacy withdrawal revokes all visits across providers in the same consent scope"
+        "privacy withdrawal revokes all provider visits even after session scope is cleared"
     ],
     "live_fixtures": 0,
     "real_bank_payments": 0,
