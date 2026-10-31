@@ -53,8 +53,11 @@ class AffiliateController extends Controller
                 return (array) $operation;
             });
 
+        $panels = PartnerAffiliateController::panels($user);
         return Inertia::render('Affiliates', [
-            'partner_panels' => PartnerAffiliateController::panels($user),
+            'partner_panels' => Inertia::always($panels),
+            'partner_access_unavailable' => Inertia::always((bool) $request->attributes->get('partner_access_unavailable', false)),
+            'partner_sso_required' => $request->session()->get('jakawi_sso_subject') !== $user->global_subject_id || !$user->global_subject_id,
             'results' => app(\App\Services\AffiliateResults::class)->summary($user),
             'tab' => $tab, 'filters' => $filters, 'offers' => $offerPage,
             'cities' => DB::table('commercial_offers')->where('catalog_present', true)

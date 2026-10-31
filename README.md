@@ -142,6 +142,8 @@ Informes: [MVP](artifacts/mvp/REPORT.md), [operación y apertura](artifacts/mvp/
 
 Referencias de integración: [Laravel 13](https://laravel.com/docs/13.x/releases), [Inertia 3](https://inertiajs.com/docs/v3/installation/server-side-setup), [Vite](https://vite.dev/guide/).
 
+Acceso Partner automático mediante SSO y permisos vigentes COM: [Fase 10D](docs/integrations/club-partner-sso-10d.md).
+
 ## Identidad visual JAKAWI
 
 Los tokens locales están en `app/resources/css/jakawi-theme.css`, importados desde `app.css` y expuestos a Tailwind 4 mediante `@theme inline`. La referencia oficial, consultada **solo en lectura**, es `/root/jakawi-build-v1/repository/app/resources/css/theme.css` (SHA `0bcda5842a0d1b9df93437784d7b3ad0fbb53fde`), junto con su `app.css` y `resources/js/layouts/marketing-layout.tsx`. Se aplica `data-marketing-theme="light-conversion"` a todas las páginas del micrositio. Los radios, espacios, superficies y sombras conservan los valores oficiales.

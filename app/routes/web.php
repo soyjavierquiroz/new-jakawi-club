@@ -27,8 +27,10 @@ Route::prefix('admin')->middleware(['auth', 'verified', MarketingAdmin::class])-
 Route::get('/admin/conversiones-com', \App\Http\Controllers\CommercialAdminController::class)
     ->middleware(['auth', 'verified', MarketingAdmin::class])->name('commercial.index');
 
+Route::get('/afiliados/sso', [\App\Http\Controllers\JakawiLoginController::class, 'partner'])->middleware('throttle:12,1')->block(20,10);
+
 Route::get('/afiliados', \App\Http\Controllers\AffiliateController::class)
-    ->middleware(['auth', 'verified', \App\Http\Middleware\ActiveAffiliate::class])->name('affiliates.index');
+    ->middleware([\App\Http\Middleware\PartnerSsoEntry::class, 'verified', \App\Http\Middleware\ActiveAffiliate::class])->name('affiliates.index');
 
 Route::post('/afiliados/enlaces/{offer}', [\App\Http\Controllers\AffiliateController::class, 'generate'])
     ->middleware(['auth', 'verified', \App\Http\Middleware\ActiveAffiliate::class, 'throttle:30,1'])->name('affiliates.generate');

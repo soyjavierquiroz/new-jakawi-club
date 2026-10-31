@@ -44,6 +44,7 @@ class AuthController extends Controller
         ])) {
             throw ValidationException::withMessages(['email' => 'No pudimos iniciar sesión. Revisa tus datos o solicita un enlace de acceso.']);
         }
+        $request->session()->forget('jakawi_sso_subject');
         $request->session()->regenerate();
 
         return MembershipJourney::pending($request) ? redirect()->route('membership.activate') : redirect()->intended(route('dashboard'));

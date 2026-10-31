@@ -5,9 +5,16 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 final class ClubPurchaseClient {
     public function request(string $method, string $suffix = '', ?array $data = null, int $timeout = 15, int $attempts = 2): Response {
+        return $this->signedRequest($method, '/internal/club/purchases'.$suffix, $data, $timeout, $attempts);
+    }
+
+    public function partnerAccess(string $subject): Response {
+        return $this->signedRequest('POST', '/internal/club/partners/access', ['global_subject_id' => $subject], 8, 1);
+    }
+
+    private function signedRequest(string $method, string $path, ?array $data, int $timeout, int $attempts): Response {
         $secret = config('purchases.secret');
         if (!is_string($secret) || strlen($secret) < 32) throw new \RuntimeException('Purchase service unavailable');
-        $path = '/internal/club/purchases'.$suffix;
         $raw = $data === null ? '' : json_encode($data, JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR);
         for ($attempt = 0; $attempt < $attempts; $attempt++) {
             $time = (string) time(); $nonce = (string) Str::uuid();

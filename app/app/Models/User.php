@@ -75,6 +75,7 @@ class User extends Authenticatable implements MustVerifyEmail
             'password' => 'hashed',
             'privacy_accepted_at' => 'datetime',
             'activated_at' => 'datetime',
+            'sso_provisioned_at' => 'datetime',
             'is_marketing_admin' => 'boolean',
             'registration_origin' => 'array',
         ];

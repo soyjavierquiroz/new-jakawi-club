@@ -15,19 +15,24 @@ use Symfony\Component\HttpFoundation\Response;
 
 final class JakawiLoginController extends Controller
 {
-    public function start(Request $request, ?array $checkout = null): Response
+    public function start(Request $request, ?array $checkout = null, bool $partner = false): Response
     {
         try {
             $client = new JakawiOidc;
             $url = $client->begin();
             $request->session()->regenerate(true);
             $request->session()->put('jakawi_oidc', Crypt::encryptString(json_encode([
-                'expires_at' => time() + 600, 'values' => $client->transaction, 'checkout' => $checkout,
+                'expires_at' => time() + 600, 'values' => $client->transaction, 'checkout' => $checkout, 'partner' => $partner,
             ], JSON_THROW_ON_ERROR)));
             return $request->header('X-Inertia') ? Inertia::location($url) : redirect()->away($url);
         } catch (\Throwable) {
             return $this->failure();
         }
+    }
+
+    public function partner(Request $request): Response
+    {
+        return $this->start($request, null, true);
     }
 
     public function callback(Request $request, IdentityLink $identity): RedirectResponse
@@ -46,8 +51,10 @@ final class JakawiLoginController extends Controller
             if ($request->query('error') !== null) return $this->failure();
             $code = $request->query('code');
             if (! is_string($code) || $code === '' || strlen($code) > 8192) return $this->failure();
-            if (! isset($pending['checkout']) && $request->user()) return redirect()->route('dashboard');
-            $subject = (new JakawiOidc)->complete($values, $code, $state);
+            if (! isset($pending['checkout']) && empty($pending['partner']) && $request->user()) return redirect()->route('dashboard');
+            $client = new JakawiOidc;
+            $subject = $client->complete($values, $code, $state);
+            if (!empty($pending['partner']) && $request->user() && $request->user()->global_subject_id !== $subject) return $this->failure();
             if (isset($pending['checkout'])) {
                 $local = $request->user();
                 if (! $local || $local->uuid !== $pending['checkout']['club_user_id']
@@ -62,19 +69,23 @@ final class JakawiLoginController extends Controller
             }
             // Identity is resolved solely by the signed subject, never by email/profile claims.
             $user = User::where('global_subject_id', $subject)->first();
-            if (! $user) {
-                return redirect()->route('login')->with('jakawi_link_required', true)->with('status',
-                    'Tu cuenta JAKAWI aún no está conectada a CLUB. Ingresa con tu acceso CLUB y usa «ACTIVAR MI ACCESO A JAKAWI.COM» en el dashboard. Después podrás ingresar con JAKAWI.');
-            }
+            if (! $user) $user = app(\App\Services\Identity\SsoAccount::class)->resolve($subject, (array) $client->getVerifiedClaims());
             if (! $user->activated_at || ! $user->hasVerifiedEmail()) return $this->failure();
-            // Reuse the authenticated Phase 03 lookup, including revocation and correlation checks.
-            if (! $identity->refresh($user)['connected'] || $user->fresh()->global_subject_id !== $subject) return $this->failure();
+            // Preserve historical CLUB link checks for ordinary login. Partner entry is
+            // authorized independently by signed OIDC subject + the fresh COM permission lookup.
+            if (empty($pending['partner']) && !$user->sso_provisioned_at
+                && (! $identity->refresh($user)['connected'] || $user->fresh()->global_subject_id !== $subject)) return $this->failure();
             $user->refresh();
             if (! $user->activated_at || ! $user->hasVerifiedEmail()) return $this->failure();
             Auth::login($user);
             $request->session()->forget('jakawi_link_required');
+            $request->session()->put('jakawi_sso_subject', $subject);
             $request->session()->regenerate(true);
             if (MembershipJourney::pending($request)) return redirect()->route('membership.activate');
+            if (!empty($pending['partner'])) {
+                $request->session()->forget('url.intended');
+                return redirect('/afiliados');
+            }
             // A fixed local destination also strips the authorization code from subsequent URLs.
             return redirect()->route('dashboard');
         } catch (\Throwable) {

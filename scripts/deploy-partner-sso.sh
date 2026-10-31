@@ -1,0 +1,61 @@
+#!/usr/bin/env bash
+set -euo pipefail
+source_dir="$(cd "$(dirname "$0")/.." && pwd)"
+live_dir=/opt/sites/jakawi.club
+rollback_dir=/srv/sites/jakawi.club/rollback-partner-sso-10d
+python3 - "$source_dir" "$live_dir" "$rollback_dir" <<'PY'
+import sys,subprocess,json,os,shutil,hashlib
+from pathlib import Path
+source,live,backup=map(Path,sys.argv[1:]);os.umask(0o077)
+assert not subprocess.check_output(['git','status','--porcelain'],cwd=source)
+assert subprocess.check_output(['git','rev-parse','HEAD'],cwd=source)==subprocess.check_output(['git','rev-parse','origin/main'],cwd=source)
+assert not subprocess.check_output(['git','status','--porcelain'],cwd=live)
+assert len(json.loads((source/'artifacts/partner-sso-10d/tests.json').read_text())['passed'])>=140
+assert len(json.loads((source/'artifacts/partner-sso-10d/regression-partners/tests.json').read_text())['passed'])>=35
+assert json.loads((source/'artifacts/partner-sso-10d/browser-preview.json').read_text())['no_live_mutations']
+assert all(json.loads((source/'artifacts/partner-sso-10d/backend-contract.json').read_text()).values())
+backup.mkdir(exist_ok=True)
+if not (backup/'baseline.json').exists():
+ sha=subprocess.check_output(['git','rev-parse','HEAD'],cwd=live,text=True).strip()
+ baseline={'sha':sha,'env':{p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in Path('/srv/sites/jakawi.club/secrets').glob('*.env')},'other_containers':{name:json.loads(subprocess.check_output(['docker','inspect',name]))[0]['State']['StartedAt'] for name in ['jakawi-app-1','jakawi-worker-1','jakawi-scheduler-1','crm-jakawi-private-app-1']}}
+ (backup/'source.tar').write_bytes(subprocess.check_output(['git','archive',sha],cwd=live))
+ shutil.copy2(live/'app/public/build/manifest.json',backup/'manifest.json')
+ (backup/'baseline.json').write_text(json.dumps(baseline,indent=2))
+items=json.loads(subprocess.check_output(['docker','inspect','jakawi-club-app','jakawi-club-web','jakawi-club-db']))
+(backup/'validation-baseline.json').write_text(json.dumps({'containers':{i['Name'].lstrip('/'):{'id':i['Id'],'started_at':i['State']['StartedAt'],'restarts':i['RestartCount']} for i in items}},indent=2))
+print('Rollback privado y evidencia de pruebas verificados.')
+PY
+# Apply only the additive identity-projection migration from the tested source.
+docker run --rm --name jakawi-club-partner-sso-migrate --network jakawi-club-private \
+ --memory 256m --memory-swap 320m --cpus 0.65 --pids-limit 96 \
+ --env-file /srv/sites/jakawi.club/secrets/app.env --env APP_CONFIG_CACHE=/tmp/partner-config.php --env APP_ROUTES_CACHE=/tmp/partner-routes.php --env LOG_CHANNEL=null \
+ --volume "$source_dir/app:/var/www/html:ro" --volume /opt/sites/jakawi.club/app/vendor:/var/www/html/vendor:ro \
+ --tmpfs /var/www/html/storage:rw,mode=1777,size=32m --tmpfs /var/www/html/bootstrap/cache:rw,mode=1777,size=8m \
+ jakawi-club-php:8.4-base-v1 php artisan migrate --force --path=database/migrations/2026_11_01_100000_sso_representative_projection.php
+cd "$live_dir"
+git merge --ff-only origin/main
+python3 - "$source_dir" <<'PY'
+import sys,shutil,os
+from pathlib import Path
+source=Path(sys.argv[1])/'app/public/build-next';target=Path('app/public/build')
+for file in source.rglob('*'):
+ if not file.is_file() or file.name=='manifest.json':continue
+ dest=target/file.relative_to(source);dest.parent.mkdir(exist_ok=True,parents=True)
+ if dest.exists():assert dest.read_bytes()==file.read_bytes()
+ else:shutil.copy2(file,dest)
+shutil.copy2(source/'manifest.json',target/'manifest.partner-sso.json');os.replace(target/'manifest.partner-sso.json',target/'manifest.json')
+PY
+for cache in config:cache route:cache view:cache; do
+ docker compose exec -T --user www-data app php -d memory_limit=128M artisan "$cache"
+done
+docker compose restart app
+curl --fail --silent --show-error --retry 5 --retry-delay 2 --retry-all-errors --max-time 20 https://jakawi.club/up -o /dev/null
+JAKAWI_BASELINE_PATH="$rollback_dir/validation-baseline.json" JAKAWI_EVIDENCE_DIR="$source_dir/artifacts/partner-sso-10d" python3 scripts/validate-local.py
+python3 - "$rollback_dir" <<'PY'
+import json,sys,hashlib,subprocess
+from pathlib import Path
+before=json.loads((Path(sys.argv[1])/'baseline.json').read_text())
+assert before['env']=={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in Path('/srv/sites/jakawi.club/secrets').glob('*.env')}
+for name,started in before['other_containers'].items():assert json.loads(subprocess.check_output(['docker','inspect',name]))[0]['State']['StartedAt']==started
+print('Secretos intactos; COM y CRM sin reinicios ni despliegues.')
+PY

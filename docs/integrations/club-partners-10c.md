@@ -3,6 +3,10 @@
 CLUB consume el contrato COM Fase 10B (`artifacts/partners-phase10b/CONTRACT.md`
 en COM, contrastado con su código desplegado), sin modificar COM ni CRM.
 
+Las asignaciones manuales de representantes descritas abajo son históricas y
+quedan sin efecto de autorización desde [Fase 10D](club-partner-sso-10d.md).
+COM decide los permisos económicos vigentes mediante SSO.
+
 ## Identidad, atribución y hechos
 
 `affiliate_partners` es una referencia comercial mínima por `jakawi.com` + ID

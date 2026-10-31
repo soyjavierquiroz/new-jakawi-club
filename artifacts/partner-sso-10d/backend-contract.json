@@ -1,0 +1,6 @@
+{
+  "real_backend_hmac_accepted": true,
+  "existing_dossis_owner_authorized": true,
+  "wrong_hmac_denied": true,
+  "no_live_fixtures": true
+}

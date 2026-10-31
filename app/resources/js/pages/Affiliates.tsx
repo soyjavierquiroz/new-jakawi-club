@@ -1,5 +1,5 @@
 import { Head, Link, router, usePage } from '@inertiajs/react';
-import { useEffect, type FormEvent } from 'react';
+import { useEffect, useState, type FormEvent } from 'react';
 import { commissionStatus, EconomicCutoff, EconomicPages, economicDate, type Pagination } from '../components/CommissionUI';
 import { AffiliateResultsSummary, type AffiliateResults } from '../components/AffiliateResultsSummary';
 import { PageFrame } from '../components/UI';
@@ -17,6 +17,8 @@ type Conversion = {
 type PartnerPanel = { partner_id: string; name: string; status: string; leads: number; activated: number; rate: number; links: Record<string,string>; commissions: {currency:string;status:string;review_required:boolean;entries:number;amount:string}[] };
 type Props = {
     partner_panels?: PartnerPanel[];
+    partner_access_unavailable?: boolean;
+    partner_sso_required?: boolean;
     economic_cutoff?: string;
     commission_entries?: Pagination<{ id: number; com_reference_type: string; com_reference_id: string; status: string; amount: string | null; currency: string | null; review_required: boolean; eligible: boolean; rule_id: number | null; created_at: string }>;
     economics?: { pending: number; approved: number; review: number; currencies: { currency: string; pending: string; approved: string; review: string }[] };
@@ -30,8 +32,10 @@ type Props = {
 };
 const dates = new Intl.DateTimeFormat('es-BO', { dateStyle: 'medium', timeStyle: 'short', timeZone: 'America/La_Paz' });
 
-export default function Affiliates({ partner_panels = [], tab, filters, offers, cities, quick_links, conversions, economics, commission_entries, economic_cutoff, results }: Props) {
+export default function Affiliates({ partner_panels = [], partner_access_unavailable = false, partner_sso_required = false, tab, filters, offers, cities, quick_links, conversions, economics, commission_entries, economic_cutoff, results }: Props) {
     const { url } = usePage();
+    const [selectedPartner, setSelectedPartner] = useState('');
+    const activePartner = partner_panels.find(p => p.partner_id === selectedPartner) ?? partner_panels[0];
     useEffect(() => {
         const syncAnchor = () => {
             const hash = window.location.hash;
@@ -61,7 +65,10 @@ export default function Affiliates({ partner_panels = [], tab, filters, offers, 
     return <><Head title="Catálogo de oportunidades" /><PageFrame>
         <Link href="/dashboard" className="text-sm font-semibold underline underline-offset-4">Volver a mi cuenta</Link>
         <div className="mb-8 mt-8"><p className="eyebrow">MI ESPACIO DE AFILIADO</p><h1 className="mt-3 text-3xl font-extrabold tracking-tight sm:text-5xl">OPORTUNIDADES</h1><p className="mt-4 max-w-2xl text-text-secondary">Descubre oportunidades, comparte tus enlaces y sigue tus resultados.</p></div>
-        {partner_panels.length > 0 && <section aria-label="Resultados empresariales" className="mb-8 space-y-5"><h2 className="text-2xl font-bold">MIS NEGOCIOS · PARTNERS</h2>{partner_panels.map(p=><article className="feature-card min-w-0" key={p.partner_id} data-partner-panel={p.partner_id}><h3 className="text-xl font-bold">{p.name}</h3><p className="mt-2 text-sm">Beneficiario PARTNER · {p.status === 'enabled' ? 'Habilitado' : 'Deshabilitado'}</p><dl className="my-5 grid gap-4 sm:grid-cols-3">{[[p.leads,'Leads captados'],[p.activated,'Membresías activadas'],[`${p.rate}%`,'Tasa de activación']].map(([v,l])=><div key={l}><dt className="text-sm text-text-secondary">{l}</dt><dd className="mt-2 text-2xl font-bold">{v}</dd></div>)}</dl>{p.status === 'enabled' && <div className="space-y-3">{Object.entries(p.links).map(([target,link])=><div key={target}><p className="text-sm font-bold">{target === 'carta' ? 'Carta CLUB' : target === 'checkout' ? 'Checkout CLUB' : 'Página COM'}</p><a className="break-all text-sm underline" href={link}>{link}</a></div>)}</div>}<h4 className="mt-5 font-bold">Comisiones del negocio</h4>{p.commissions.length ? p.commissions.map((c,i)=><p className="mt-2 break-words text-sm" key={i}>{c.amount} {c.currency} · {commissionStatus[c.status]}{c.review_required ? ' · Requiere revisión' : ''}</p>) : <p className="mt-2 text-sm">Sin comisiones valoradas.</p>}<p className="mt-4 text-sm text-text-secondary">Consulta autorizada del negocio. Aprobación manual; sin pagos automáticos.</p></article>)}<h2 className="pt-3 text-2xl font-bold">MI ACTIVIDAD INDIVIDUAL</h2></section>}
+        {partner_sso_required && <p className="feature-card mb-6 text-sm">Para consultar los resultados de tu establecimiento, <a className="font-semibold underline" href="/afiliados/sso">ingresa con JAKAWI</a>.</p>}
+        {partner_access_unavailable && <p role="status" className="feature-card mb-6 text-sm">No pudimos validar el acceso a tu establecimiento. Vuelve a intentarlo. Tu área personal sigue disponible.</p>}
+        {partner_panels.length > 0 && <section aria-label="Resultados empresariales" className="mb-8 space-y-5"><h2 className="text-2xl font-bold">RESULTADOS DE MI ESTABLECIMIENTO</h2>{partner_panels.length > 1 && <div><label className="label" htmlFor="authorized-partner">Establecimiento</label><select id="authorized-partner" className="input w-full min-w-0" value={activePartner?.partner_id} onChange={e=>setSelectedPartner(e.target.value)}>{partner_panels.map(p=><option key={p.partner_id} value={p.partner_id}>{p.name}</option>)}</select></div>}{(activePartner ? [activePartner] : []).map(p=><article className="feature-card min-w-0" key={p.partner_id} data-partner-panel={p.partner_id}><h3 className="text-xl font-bold">{p.name}</h3><p className="mt-2 text-sm">Beneficiario PARTNER · {p.status === 'enabled' ? 'Habilitado' : 'Deshabilitado'}</p><dl className="my-5 grid gap-4 sm:grid-cols-3">{[[p.leads,'Leads captados'],[p.activated,'Membresías activadas'],[`${p.rate}%`,'Tasa de activación']].map(([v,l])=><div key={l}><dt className="text-sm text-text-secondary">{l}</dt><dd className="mt-2 text-2xl font-bold">{v}</dd></div>)}</dl>{p.status === 'enabled' && <div className="space-y-3">{Object.entries(p.links).map(([target,link])=><div key={target}><p className="text-sm font-bold">{target === 'carta' ? 'Carta CLUB' : target === 'checkout' ? 'Checkout CLUB' : 'Página COM'}</p><a className="break-all text-sm underline" href={link}>{link}</a></div>)}</div>}<h4 className="mt-5 font-bold">Comisiones del negocio</h4>{p.commissions.length ? p.commissions.map((c,i)=><p className="mt-2 break-words text-sm" key={i}>{c.amount} {c.currency} · {commissionStatus[c.status]}{c.review_required ? ' · Requiere revisión' : ''}</p>) : <p className="mt-2 text-sm">Sin comisiones valoradas.</p>}<p className="mt-4 text-sm text-text-secondary">Consulta autorizada del negocio. Aprobación manual; sin pagos automáticos.</p></article>)}</section>}
+        <h2 className="mb-5 text-2xl font-bold">MIS RESULTADOS PERSONALES</h2>
         <nav data-catalog-tab={tab} aria-label="Catálogo de afiliados" className="mb-7 grid grid-cols-2 gap-2 sm:grid-cols-4 border-b border-border pb-4 text-center text-sm font-bold">
             {([['explore', 'EXPLORAR'], ['links', 'MIS ENLACES'], ['history', 'HISTORIAL'], ['results', 'MIS RESULTADOS']] as const).map(([value, label]) => <Link key={value} href={`/afiliados?tab=${value}`} aria-current={tab === value ? 'page' : undefined} className={`rounded-control px-2 py-3 ${tab === value ? 'bg-ink text-surface' : 'bg-surface-subtle text-text-secondary'}`}>{label}</Link>)}
         </nav>

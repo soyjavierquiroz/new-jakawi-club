@@ -72,6 +72,18 @@ function login(bool $admin, bool $verified = true, bool $activated = true): User
     return $user->fresh();
 }
 
+// Direct service checks simulate a verified SSO request; authorization comes only from COM.
+function businessPanels(User $user): array {
+ $user=clone $user;$old=app('request');$r=Request::create('https://jakawi.club/afiliados');
+ if (!$user->global_subject_id) {$user->global_subject_id=(string)Illuminate\Support\Str::uuid();}
+ $r->setLaravelSession(app('session')->driver());$r->session()->put('jakawi_sso_subject',$user->global_subject_id);$r->setUserResolver(fn()=>$user);
+ app()->instance('request',$r);$r->setUserResolver(fn()=>$user);
+ Http::swap(new Illuminate\Http\Client\Factory);
+ Http::fake(['https://jakawi.com/internal/club/partners/access'=>Http::response(['global_subject_id'=>$user->global_subject_id,'partners'=>[['id'=>43,'name'=>'Dossis 43','status'=>'published','role'=>'owner','economic_access'=>DB::table('affiliate_partner_access')->where('user_id',$user->id)->exists()]]])]);
+ config(['purchases.secret'=>str_repeat('h',64)]);
+ try {return App\Http\Controllers\PartnerAffiliateController::panels($user);}finally{app()->instance('request',$old);}
+}
+
 function openLink(string $code, string $method = 'GET', array $headers = []): Symfony\Component\HttpFoundation\Response {
     Auth::forgetGuards();
     return kernelRequest(Request::create('https://jakawi.club/r/'.$code.'?club_ref=ATTACKER&email=visitor@example.test', $method, [], [], [], array_merge([
@@ -108,7 +120,7 @@ try {
  $n=User::count();check(send($lead)->getStatusCode()===201,'organic Dossis COM registration accepted');check(User::count()===$n,'external registration creates no CLUB account');
  check(send($lead)->getStatusCode()===200,'duplicate event id deduplicated');
  $changed=$lead;$changed['acquisition']['partner_id']=44;check(send($changed)->getStatusCode()===409,'changed event id rejected');
- $panel=App\Http\Controllers\PartnerAffiliateController::panels($owner);check($panel[0]['leads']===1,'authorized owner sees business lead');check(App\Http\Controllers\PartnerAffiliateController::panels($staff)===[],'staff without explicit economic authorization denied');
+ $panel=businessPanels($owner);check($panel[0]['leads']===1,'authorized owner sees business lead');check(businessPanels($staff)===[],'staff without explicit economic authorization denied');
  $subject2=(string)Illuminate\Support\Str::uuid();$direct=$lead;$direct['event_id']='com:member:'.$subject2.':registered';$direct['global_subject_id']=$subject2;$direct['com_reference']['id']='explicit';$direct['acquisition']=['source'=>'jakawi.com','kind'=>'club_referral','club_referral_code'=>$individual->referral_code,'fallback_partner_id'=>43];check(send($direct)->getStatusCode()===201,'explicit referral to Dossis accepted');
  $person=DB::table('acquisition_aliases')->where('kind','subject')->where('reference',$subject2)->first();check(DB::table('acquisition_people')->find($person->person_id)->beneficiary_id===$individual->uuid,'explicit individual beats default Partner');
  $prior=new User(['name'=>'Prior','email'=>'prior@example.test']);$prior->referred_by_id=$individual->id;$prior->save();
@@ -116,7 +128,7 @@ try {
  $activation=['schema_version'=>1,'event_id'=>'com:membership:test-activation','event_type'=>'membership.activated','occurred_at'=>now()->toIso8601String(),'com_reference'=>['type'=>'membership','id'=>'MEM-43'],'global_subject_id'=>$subject,'membership_reference'=>'MEM-43','payment_reference'=>(string)Illuminate\Support\Str::uuid()];
  check(send($activation)->getStatusCode()===201,'COM membership activation attributed to retained lead');
  check(DB::table('commission_ledger')->count()===0,'no rule means no membership ledger entry');
- $panel=App\Http\Controllers\PartnerAffiliateController::panels($owner);check($panel[0]['activated']===1 && (float)$panel[0]['rate']===100.0,'business activation and rate');
+ $panel=businessPanels($owner);check($panel[0]['activated']===1 && (float)$panel[0]['rate']===100.0,'business activation and rate');
  $rule=function(string $type,string $amount) use($owner):int {return DB::table('commission_rules')->insertGetId(['partner_id'=>'*','beneficiary_type'=>$type,'event_type'=>'membership.activated','fixed_amount'=>$amount,'currency'=>'BOB','effective_at'=>now()->subDay(),'status'=>'active','created_by'=>$owner->uuid,'created_at'=>now(),'updated_at'=>now()]);};
  $oldActivation=$activation;$oldActivation['event_id']='com:membership:old-consumer';$oldActivation['global_subject_id']=(string)Illuminate\Support\Str::uuid();$oldActivation['payment_reference']=(string)Illuminate\Support\Str::uuid();$oldActivation['membership_reference']='MEM-OLD';$oldActivation['com_reference']['id']='MEM-OLD';
  $oldId=DB::table('commercial_events')->insertGetId(['source'=>'jakawi.com','event_id'=>$oldActivation['event_id'],'schema_version'=>1,'event_type'=>'membership.activated','occurred_at'=>now(),'received_at'=>now(),'com_reference_type'=>'membership','com_reference_id'=>'MEM-OLD','global_subject_id'=>$oldActivation['global_subject_id'],'conversion_status'=>'activated','raw_body'=>json_encode($oldActivation),'raw_body_sha256'=>hash('sha256',json_encode($oldActivation)),'payload_sha256'=>str_repeat('0',64),'key_id'=>'fixture-previous-consumer','signed_at'=>time()]);
@@ -142,7 +154,7 @@ try {
  $late['event_type']='membership.attribution_identity_linked';$late['event_id']='com:membership:'.$latePay.':attribution-identity-linked';$late['club_user_uuid']=$prior->uuid;$late['global_subject_id']=$priorSubject;$late['purchase_acquisition']=$origin;
  check(send($late)->getStatusCode()===201,'late guest link to previously referred CLUB user');
  $priorAlias=DB::table('acquisition_aliases')->where('kind','user')->where('reference',$prior->uuid)->first();check(DB::table('acquisition_people')->find($priorAlias->person_id)->beneficiary_id===$individual->uuid,'guest identity link preserves original personal referrer');
- $newUser=User::create(['name'=>'Linked','email'=>'linked@example.test']);DB::table('users')->where('id',$newUser->id)->update(['global_subject_id'=>$subject]);DB::transaction(fn()=>$service->person(['user'=>$newUser->uuid,'subject'=>$subject]));$panel=App\Http\Controllers\PartnerAffiliateController::panels($owner);check($panel[0]['leads']===3,'external lead not duplicated after CLUB identity link');
+ $newUser=User::create(['name'=>'Linked','email'=>'linked@example.test']);DB::table('users')->where('id',$newUser->id)->update(['global_subject_id'=>$subject]);DB::transaction(fn()=>$service->person(['user'=>$newUser->uuid,'subject'=>$subject]));$panel=businessPanels($owner);check($panel[0]['leads']===3,'external lead not duplicated after CLUB identity link');
  $body=['contract'=>'jakawi-com-origin-v1','source'=>'jakawi.com','audience'=>'jakawi.club','issued_at'=>time(),'expires_at'=>time()+3600,'acquisition'=>$origin];$enc=rtrim(strtr(base64_encode(json_encode($body)),'+/','-_'),'=');$token=$enc.'.'.hash_hmac('sha256',"jakawi-com-origin-v1\n".$enc,$secret);
  check($service->token($token)===$origin && $service->token($token.'x')===null,'exact COM signed proof verified and tampering rejected');
  $request=Request::create('/membresia?com_origin='.urlencode($token));$request->setLaravelSession(app('session')->driver());$service->capture($request);$club=User::create(['name'=>'Club lead','email'=>'club@example.test']);DB::transaction(fn()=>$service->register($club,$request));check(DB::table('acquisition_aliases')->where('kind','user')->where('reference',$club->uuid)->exists(),'CLUB free registration retains signed Partner');

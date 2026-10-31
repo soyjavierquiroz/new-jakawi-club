@@ -238,3 +238,13 @@ credentials.json
 /artifacts/partners-10c/**/*fixtures.json
 
 /artifacts/partners-10c/validation.json
+
+/artifacts/partner-sso-10d/*fixture*.json
+/artifacts/partner-sso-10d/*.png
+/artifacts/partner-sso-10d/LIVE.json
+/artifacts/partner-sso-10d/browser-live.json
+/artifacts/partner-sso-10d/validation.json
+
+/artifacts/partner-sso-10d/**/*.png
+/artifacts/partner-sso-10d/**/*fixture*.json
+/artifacts/partner-sso-10d/tests.log

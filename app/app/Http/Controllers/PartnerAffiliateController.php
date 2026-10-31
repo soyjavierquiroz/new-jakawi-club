@@ -24,13 +24,7 @@ final class PartnerAffiliateController extends Controller {
   return back()->with('status','Partner actualizado. Sin reglas económicas nuevas.');
  }
  public function access(Request $r,int $partner): \Illuminate\Http\RedirectResponse {
-  $d=$r->validate(['user_uuid'=>'required|uuid','authorized'=>'required|boolean']);
-  abort_unless(DB::table('affiliate_partners')->where('id',$partner)->exists(),404);
-  $user=User::where('uuid',$d['user_uuid'])->firstOrFail();
-  $q=DB::table('affiliate_partner_access')->where('partner',$partner)->where('user_id',$user->id);
-  if ($d['authorized']) DB::table('affiliate_partner_access')->insertOrIgnore(['partner'=>$partner,'user_id'=>$user->id,'authorized_by'=>$r->user()->uuid,'authorized_at'=>now()]);
-  else $q->delete();
-  return back()->with('status','Autorización empresarial actualizada.');
+  abort(410, 'Los permisos de representantes se administran exclusivamente en JAKAWI.COM.');
  }
  public function link(string $code,string $target): \Illuminate\Http\RedirectResponse {
   $p=DB::table('affiliate_partners')->where('code',$code)->where('status','enabled')->first(); abort_unless($p,404);
@@ -39,7 +33,9 @@ final class PartnerAffiliateController extends Controller {
   return redirect()->away($url)->header('Cache-Control','private, no-store')->header('Referrer-Policy','no-referrer');
  }
  public static function panels(User $user): array {
-  return DB::table('affiliate_partner_access as access')->join('affiliate_partners as p','p.id','=','access.partner')->where('access.user_id',$user->id)->get(['p.*'])->map(function($p): array {
+  $authorized=app(\App\Services\PartnerEconomicAccess::class)->partners(request(),$user);
+  if (!$authorized) return [];
+  return DB::table('affiliate_partners as p')->where('p.source','jakawi.com')->where('p.status','enabled')->whereIn('p.partner_id',$authorized)->get(['p.*'])->map(function($p): array {
    $people=DB::table('acquisition_people as people')->where('beneficiary_type','PARTNER')->where('beneficiary_id',$p->partner_id)
     ->whereExists(fn($q)=>$q->selectRaw('1')->from('acquisition_aliases as a')->whereColumn('a.person_id','people.id'));
    $leads=(clone $people)->count();

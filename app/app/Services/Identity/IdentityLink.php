@@ -25,6 +25,13 @@ final class IdentityLink
     public function state(User $user): array
     {
         if (! config('identity.enabled')) return ['status' => 'DISABLED', 'connected' => false];
+        if ($user->sso_provisioned_at && $user->global_subject_id) {
+            // This account originated in COM; it does not need the CLUB-origin handoff.
+            // Identity state grants no business permissions: those always come from COM live.
+            return ['status' => 'LINKED', 'connected' => true, 'needs_email_confirmation' => false,
+                'authorization_url' => null, 'retry_at' => null, 'can_activate' => false,
+                'message' => 'Cuenta JAKAWI conectada mediante SSO'];
+        }
         $link = DB::table('club_identity_links')->where('user_id', $user->id)->first();
         $handoff = $this->latest($user);
         $status = $link?->status === 'LINKED' ? 'LINKED' : ($link?->status ?? $handoff?->status ?? 'READY');
