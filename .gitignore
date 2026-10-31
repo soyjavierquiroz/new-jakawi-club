@@ -253,3 +253,8 @@ credentials.json
 /artifacts/acquisition-10e/LIVE.json
 /artifacts/acquisition-10e/validation.json
 /artifacts/acquisition-10e/**/*fixture*.json
+
+/artifacts/acquisition-10g/LIVE.json
+/artifacts/acquisition-10g/validation.json
+/artifacts/acquisition-10g/*fixture*.json
+/artifacts/acquisition-10g/com-live.json

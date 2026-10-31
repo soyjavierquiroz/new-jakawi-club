@@ -140,7 +140,7 @@ final class CommissionEngine
         if ($person->beneficiary_type === 'PARTNER' && !DB::table('affiliate_partners')->where('source','jakawi.com')->where('partner_id',$person->beneficiary_id)->where('status','enabled')->exists()) return null;
         $at = $this->occurredAt($event);
         $acquisitionRule = DB::table('commission_rules')->where('nature','ONE_TIME_ACQUISITION')
-            ->where('event_type','membership.activated')->where('effective_at','<=',$at->utc()->format('Y-m-d H:i:s.uP'))->exists();
+            ->where('event_type','membership.activated')->exists();
         $evidence = null;
         if ($acquisitionRule) {
             // Never value a renewal or an unverified first purchase. A signed activation
@@ -157,13 +157,15 @@ final class CommissionEngine
             }
             $evidence = app(MembershipAcquisitionEvidence::class)->resolve($person,$event,$at);
             if (!$evidence || $evidence['first_acquisition'] !== true || empty($evidence['reference'])) return null;
+            $at = Carbon::parse($evidence['acquisition_at'] ?? $at);
+            if (!$at->gt(Carbon::parse(config('commissions.economic_cutoff')))) return null;
             if ($person->beneficiary_type === 'INDIVIDUAL' && !in_array($evidence['membership_status'],['FREE','PAID'],true)) return null;
         }
         $rule = DB::table('commission_rules')->where('status','active')->where('event_type','membership.activated')
             ->where('nature',$acquisitionRule ? 'ONE_TIME_ACQUISITION' : 'LEGACY')
             ->when($acquisitionRule, fn (Builder $q) => $q->where('membership_status',$person->beneficiary_type === 'PARTNER' ? 'ANY' : $evidence['membership_status']))
             ->where('beneficiary_type',$person->beneficiary_type)->whereIn('partner_id',[$person->beneficiary_id,'*'])
-            ->where('effective_at','<=',$this->occurredAt($event)->utc()->format('Y-m-d H:i:s.uP'))
+            ->where('effective_at','<=',$at->utc()->format('Y-m-d H:i:s.uP'))
             ->orderByRaw("CASE WHEN partner_id = '*' THEN 1 ELSE 0 END")->orderByDesc('effective_at')->orderByDesc('id')->sharedLock()->first();
         if (!$rule) return null;
         $id = DB::table('commission_ledger')->insertGetId([

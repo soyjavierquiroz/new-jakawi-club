@@ -1,5 +1,7 @@
 # Fase 10E — tarifas de adquisición de membresías
 
+Estado histórico de 10E. El adaptador fue conectado en [Fase 10G](commissions-10g.md); el bloqueo descrito abajo corresponde a la entrega original de 10E.
+
 Configuración oficial `PRELAUNCH-10E-v1` en el motor, reglas y ledger existentes:
 
 | Beneficiario | Membresía al adquirir | Tarifa fija |

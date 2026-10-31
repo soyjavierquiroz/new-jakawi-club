@@ -484,3 +484,5 @@ PARTNER Bs30, `membership.activated` / `ONE_TIME_ACQUISITION`.
 histórica y membresía vigente del afiliado a la fecha de activación.** La
 integración actual solo acredita activaciones pasadas. No inferir FREE/PAID.
 [Implementación, contrato mínimo faltante y pruebas](docs/economics/commissions-10e.md).
+
+Comisiones de adquisición: [Fase 10G, evidencia COM real y operación](docs/economics/commissions-10g.md). Reutiliza PRELAUNCH-10E-v1, aprobación manual y ledger; UNKNOWN pendiente, sin retroactividad.

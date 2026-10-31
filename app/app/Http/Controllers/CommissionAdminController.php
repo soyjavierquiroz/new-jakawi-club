@@ -23,7 +23,7 @@ class CommissionAdminController extends Controller
             $rule->history = $audit->get($rule->id, collect())->all();
             return $rule;
         });
-        return Inertia::render('admin/CommissionRules', ['rules' => $rules, 'economic_cutoff' => config('commissions.economic_cutoff'), 'acquisition_contract_ready' => false]);
+        return Inertia::render('admin/CommissionRules', ['rules' => $rules, 'economic_cutoff' => config('commissions.economic_cutoff'), 'acquisition_contract_ready' => true]);
     }
 
     public function storeRule(Request $request, CommissionEngine $engine): RedirectResponse
@@ -52,7 +52,7 @@ class CommissionAdminController extends Controller
         DB::transaction(function () use ($request, $engine, $data): void {
             $parts = explode('.', $data['fixed_amount']);
             $id = DB::table('commission_rules')->insertGetId([
-                ...$data, 'fixed_amount' => $parts[0].'.'.str_pad($parts[1] ?? '', 4, '0'),
+                ...$data, 'rule_version' => $data['nature'] === 'ONE_TIME_ACQUISITION' ? 'ACQ-'.(string)\Illuminate\Support\Str::uuid() : null, 'fixed_amount' => $parts[0].'.'.str_pad($parts[1] ?? '', 4, '0'),
                 'effective_at' => Carbon::parse($data['effective_at'])->utc()->format('Y-m-d H:i:s.uP'),
                 'status' => 'draft', 'created_by' => $request->user()->uuid, 'created_at' => now(), 'updated_at' => now(),
             ]);
@@ -99,7 +99,24 @@ class CommissionAdminController extends Controller
             $entry->history = $audit->get($entry->id, collect())->all();
             return $entry;
         });
-        return Inertia::render('admin/CommissionLedger', ['entries' => $entries, 'filters' => $filters, 'economic_cutoff' => config('commissions.economic_cutoff')]);
+        $evidence = DB::table('acquisition_evidence as a')->whereIn('a.id', DB::table('acquisition_evidence')->selectRaw('max(id)')->groupBy('event_id'))
+            ->orderByDesc('a.id')->limit(50)->get(['a.id','a.event_id','a.purchase_reference','a.status','a.reason','a.created_at'])->map(function (object $item): object {
+                if ($item->status === 'verified' && !DB::table('commission_ledger')->where('original_event_id', $item->event_id)->exists()) {
+                    $item->reason = 'Evidencia COM válida; sin tarifa aplicable por fecha original o elegibilidad CLUB. No se emitió comisión.';
+                }
+                return $item;
+            });
+        return Inertia::render('admin/CommissionLedger', ['evidence' => $evidence, 'entries' => $entries, 'filters' => $filters, 'economic_cutoff' => config('commissions.economic_cutoff')]);
+    }
+
+    public function retryEvidence(int $evidence, CommissionEngine $engine): RedirectResponse
+    {
+        $item = DB::table('acquisition_evidence')->find($evidence);
+        abort_unless($item, 404);
+        $activation = DB::table('acquisition_activations')->where('event_id', $item->event_id)->firstOrFail();
+        $person = DB::table('acquisition_people')->find($activation->person_id);
+        $engine->recordMembership($person, $activation);
+        return back()->with('status', 'Evaluación solicitada; las consultas repetidas se limitan a una cada cinco minutos por identidad. Sin pagos automáticos.');
     }
 
     public function review(Request $request, int $entry, CommissionEngine $engine): RedirectResponse

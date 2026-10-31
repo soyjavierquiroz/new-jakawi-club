@@ -12,6 +12,12 @@ final class ClubPurchaseClient {
         return $this->signedRequest('POST', '/internal/club/partners/access', ['global_subject_id' => $subject], 8, 1);
     }
 
+    public function acquisitionEvidence(string $payment, ?string $affiliate): Response {
+        return $this->signedRequest('POST', '/internal/club/acquisitions/evidence', [
+            'purchase_reference' => $payment, 'affiliate_global_subject_id' => $affiliate,
+        ], 8, 2);
+    }
+
     private function signedRequest(string $method, string $path, ?array $data, int $timeout, int $attempts): Response {
         $secret = config('purchases.secret');
         if (!is_string($secret) || strlen($secret) < 32) throw new \RuntimeException('Purchase service unavailable');

@@ -177,9 +177,10 @@ try {
  check(web('GET','/admin/partners-afiliados')->getStatusCode()===403,'staff cannot administratively grant economic access');
 
 
- if (($argv[1] ?? '') === '--acquisition-rates') require '/tests/acquisition-rate-tests.php';
+ if (in_array($argv[1] ?? '', ['--acquisition-rates','--acquisition-evidence'], true)) require '/tests/acquisition-rate-tests.php';
 
  // Export actual protected props under owner session for intercepted browser verification.
+ if (($argv[1] ?? '') === '--acquisition-evidence') require '/tests/acquisition-evidence-tests.php';
  $cookies=[]; Auth::forgetGuards(); app('session')->flush(); app('session')->regenerate(); web('POST','/login',['email'=>$owner->email,'password'=>'FixturePassword123'],false);$res=web('GET','/afiliados?tab=results'); if($res->getStatusCode()!==200) throw new RuntimeException('Panel HTTP '.$res->getStatusCode().' '.$res->headers->get('Location')); $page=payload($res);check(($page['component']??'')==='Affiliates','real owner panel HTTP rendered');file_put_contents('/evidence/partner-browser-fixture.json',json_encode($page,JSON_THROW_ON_ERROR));
  file_put_contents('/evidence/tests.json',json_encode(['passed'=>$passed,'live_fixtures'=>0],JSON_PRETTY_PRINT|JSON_THROW_ON_ERROR));
 } finally {DB::statement('SET search_path TO public');DB::statement('DROP SCHEMA IF EXISTS '.$schema.' CASCADE');}

@@ -20,6 +20,7 @@ Route::prefix('admin')->middleware(['auth', 'verified', MarketingAdmin::class])-
     Route::get('/reglas-comisiones', [\App\Http\Controllers\CommissionAdminController::class, 'rules'])->name('commissions.rules');
     Route::post('/reglas-comisiones', [\App\Http\Controllers\CommissionAdminController::class, 'storeRule'])->middleware('throttle:30,1');
     Route::post('/reglas-comisiones/{rule}/estado', [\App\Http\Controllers\CommissionAdminController::class, 'ruleStatus'])->whereNumber('rule')->middleware('throttle:30,1');
+    Route::post('/comisiones/evidencia/{evidence}/reintentar', [\App\Http\Controllers\CommissionAdminController::class, 'retryEvidence'])->whereNumber('evidence')->middleware('throttle:10,1');
     Route::get('/comisiones', [\App\Http\Controllers\CommissionAdminController::class, 'ledger'])->name('commissions.ledger');
     Route::post('/comisiones/{entry}/revision', [\App\Http\Controllers\CommissionAdminController::class, 'review'])->whereNumber('entry')->middleware('throttle:30,1');
 });

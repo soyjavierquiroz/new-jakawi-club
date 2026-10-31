@@ -32,7 +32,7 @@ $individualOrigin = ['source'=>'jakawi.com','kind'=>'club_referral','club_referr
 $unknown = $make10e($individualOrigin);
 $n = DB::table('commission_ledger')->count();
 check(send($unknown)->getStatusCode() === 201 && DB::table('commission_ledger')->count() === $n, '10E real resolver withholds commission without COM evidence');
-check(app(MembershipAcquisitionEvidence::class)->resolve((object)[],(object)[],now()) === null,'10E verified email and activation history cannot infer FREE or PAID');
+
 app()->instance(MembershipAcquisitionEvidence::class,$fixtureEvidence);
 $free = $make10e($individualOrigin);
 check(send($free)->getStatusCode() === 201,'10E free affiliate activation accepted');
@@ -92,11 +92,13 @@ $guestIdentity['global_subject_id']=(string)Illuminate\Support\Str::uuid(); $gue
 check(send($guestIdentity)->getStatusCode() === 201 && DB::table('commission_ledger')->count() === $guestCount,'10E later identity_linked creates zero additional commission');
 check(DB::table('commission_ledger')->where('com_reference_id',$paid['membership_reference'])->value('beneficiary_id') === $individual->uuid,'10E original individual beats competing Partner fallback');
 app()->forgetInstance(MembershipAcquisitionEvidence::class);
+\Illuminate\Support\Facades\Http::swap(new \Illuminate\Http\Client\Factory);
+\Illuminate\Support\Facades\Http::fake(['*'=>\Illuminate\Support\Facades\Http::response([],503)]);
 $blockedPartner = $make10e($origin); $n=DB::table('commission_ledger')->count();
 check(send($blockedPartner)->getStatusCode() === 201 && DB::table('commission_ledger')->count() === $n,'10E Partner also requires first-ever purchase evidence');
 $rulesAdmin=login(true);
 $rulesResponse=payload(web('GET','/admin/reglas-comisiones'));
-check(($rulesResponse['props']['acquisition_contract_ready'] ?? null) === false,'10E admin explicitly reports missing COM contract');
+check(($rulesResponse['props']['acquisition_contract_ready'] ?? null) === true,'10G admin reports connected COM contract');
 $draft=['beneficiary_type'=>'INDIVIDUAL','membership_status'=>'FREE','nature'=>'ONE_TIME_ACQUISITION',
     'partner_id'=>'*','event_type'=>'membership.activated','fixed_amount'=>'15','currency'=>'BOB',
     'effective_at'=>now()->addMinute()->toIso8601String()];
