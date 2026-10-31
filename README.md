@@ -454,3 +454,8 @@ comprobante privado y estados confirmados por su nuevo contrato de compras.
 Esta entrega sustituye la entrada comercial que antes exigía SSO; conserva el
 acceso SSO posterior, la activación de correo y los checkouts propios COM.
 [Implementación, pruebas, operación y rollback](artifacts/public-checkout/REPORT.md).
+
+El acceso autenticado a `/activar` prepara o recupera la intención y muestra el QR
+directamente, sin pantalla «Tus datos». «Cambiar de cuenta» usa POST/CSRF, invalida
+la sesión y vuelve al checkout visitante sin reutilizar la compra anterior.
+[Pruebas y despliegue del checkout directo](artifacts/direct-checkout/REPORT.md).

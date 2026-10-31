@@ -9,6 +9,8 @@ use App\Support\Normalize;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 final class PublicMembershipController extends Controller {
     public function show(Request $request, PublicMembershipCheckout $checkout, ReferralAttribution $referrals): \Symfony\Component\HttpFoundation\Response {
@@ -17,6 +19,16 @@ final class PublicMembershipController extends Controller {
         if (is_string($code)) $referrals->capture($request, $code);
         $purchase = $checkout->current($request);
         $unavailable = false;
+        $profileIncomplete = false;
+        $active = $request->user() && app(MemberActivation::class)->confirmed($request->user());
+        if ($request->user() && !$purchase && !$active && !$request->isMethod('HEAD')) {
+            try {
+                // Reuse the authenticated profile and the existing serialized creation path.
+                $purchase = $checkout->create($request, $this->buyerData($request));
+            } catch (ValidationException) {
+                $profileIncomplete = true;
+            }
+        }
         if ($purchase && !$request->isMethod('HEAD')) {
             try {
                 $purchase = $checkout->sync($purchase);
@@ -39,23 +51,34 @@ final class PublicMembershipController extends Controller {
             'active' => ($request->user() && app(MemberActivation::class)->confirmed($request->user())) || (bool) $purchase?->activated_at,
             'purchase' => $purchase ? ['status' => $purchase->status, 'qr_ready' => $purchase->qr_ready,
                 'receipt_received' => (bool) $purchase->receipt_sha256] : null,
-            'recipient' => config('purchases.recipient'), 'unavailable' => $unavailable,
+            'recipient' => config('purchases.recipient'), 'unavailable' => $unavailable, 'profile_incomplete' => $profileIncomplete,
         ])->toResponse($request)->withHeaders(['Cache-Control' => 'private, no-store']);
     }
     public function store(Request $request, PublicMembershipCheckout $checkout): RedirectResponse {
         if ($request->user() && app(MemberActivation::class)->confirmed($request->user())) return redirect('/activar');
         if (!$checkout->current($request)) {
-            $source = $request->user() ? $request->user()->only(['name', 'email', 'phone']) : $request->only(['name', 'email', 'phone']);
-            $data = validator([
-                'name' => Normalize::name($source['name'] ?? ''), 'email' => Normalize::email($source['email'] ?? ''), 'phone' => Normalize::phone($source['phone'] ?? ''),
-            ], ['name' => 'required|string|max:120', 'email' => 'required|email:rfc|max:254', 'phone' => ['required', 'regex:/^\+[1-9][0-9]{7,14}$/D']], [
-                'name.required' => 'Escribe tu nombre completo.', 'email.*' => 'Escribe un correo válido.', 'phone.*' => 'Incluye el prefijo de tu país, por ejemplo +59170000000.',
-            ])->validate();
-            $purchase = $checkout->create($request, $data);
+            $purchase = $checkout->create($request, $this->buyerData($request));
         } else $purchase = $checkout->current($request);
         try { $checkout->sync($purchase); }
         catch (\RuntimeException) { return redirect('/activar')->with('status', 'No pudimos conectar con el servicio de pagos. Tu compra se conserva. Vuelve a intentarlo.'); }
         return redirect('/activar');
+    }
+    private function buyerData(Request $request): array {
+        $source = $request->user() ? $request->user()->only(['name', 'email', 'phone']) : $request->only(['name', 'email', 'phone']);
+        return validator([
+            'name' => Normalize::name($source['name'] ?? ''), 'email' => Normalize::email($source['email'] ?? ''), 'phone' => Normalize::phone($source['phone'] ?? ''),
+        ], ['name' => 'required|string|max:120', 'email' => 'required|email:rfc|max:254', 'phone' => ['required', 'regex:/^\+[1-9][0-9]{7,14}$/D']], [
+            'name.required' => 'Escribe tu nombre completo.', 'email.*' => 'Escribe un correo válido.', 'phone.*' => 'Incluye el prefijo de tu país, por ejemplo +59170000000.',
+        ])->validate();
+    }
+    public function switchAccount(Request $request): RedirectResponse {
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+        // Only a fixed local destination survives; purchase capabilities and buyer data do not.
+        $request->session()->put('url.intended', '/activar');
+        Inertia::clearHistory();
+        return redirect()->route('membership.activate');
     }
     public function receipt(Request $request, PublicMembershipCheckout $checkout): RedirectResponse {
         $purchase = $checkout->current($request); abort_unless($purchase, 404);

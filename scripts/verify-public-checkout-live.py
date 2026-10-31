@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Read-only proof of the deployed CLUB checkout, without LIVE purchase fixtures."""
-import hashlib, json, re, subprocess, urllib.request
+import hashlib, json, os, re, subprocess, urllib.request
 from pathlib import Path
-root=Path('/opt/sites/jakawi.club');evidence=root/'artifacts/public-checkout'
+root=Path('/opt/sites/jakawi.club');evidence=Path(os.environ.get('JAKAWI_EVIDENCE_DIR', str(root/'artifacts/public-checkout')))
 baseline=json.loads(Path('/srv/sites/jakawi.club/rollback-public-checkout/baseline.json').read_text())
 def run(args,**kwargs):return subprocess.check_output(args,cwd=root,**kwargs)
 assert not run(['git','status','--porcelain']).strip(), 'Working tree differs from release'

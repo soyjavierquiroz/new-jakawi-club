@@ -216,3 +216,9 @@ credentials.json
 /artifacts/public-checkout/browser-live.json
 /artifacts/public-checkout/regression-landings/
 /artifacts/public-checkout/regression-results/
+
+/artifacts/direct-checkout/*fixtures.json
+/artifacts/direct-checkout/*.png
+/artifacts/direct-checkout/LIVE.json
+/artifacts/direct-checkout/browser-live.json
+/artifacts/direct-checkout/validation.json

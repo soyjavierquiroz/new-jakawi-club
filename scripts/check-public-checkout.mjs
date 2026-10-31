@@ -81,7 +81,7 @@ try {
 
 
     const fixtures=JSON.parse(await readFile('/evidence/checkout-browser-fixtures.json','utf8'));
-    const checks=[], unexpectedWrites=[];
+    const checks=[], unexpectedWrites=[], switchRequests=[];
     const fulfill=(event,code,type,body='',headers=[])=>call('Fetch.fulfillRequest',{requestId:event.requestId,responseCode:code,responseHeaders:[{name:'Content-Type',value:type},...headers],body:Buffer.from(body).toString('base64')});
     on('Fetch.requestPaused',async event=>{
         try {
@@ -90,6 +90,10 @@ try {
                 try { const file=await readFile('/workspace/public/build-next/assets/'+url.pathname.split('/').at(-1));
                     return await fulfill(event,200,url.pathname.endsWith('.js')?'text/javascript':url.pathname.endsWith('.css')?'text/css':url.pathname.endsWith('.woff2')?'font/woff2':'application/octet-stream',file);
                 } catch {}
+            }
+            if(url.pathname==='/activar/cambiar-cuenta' && event.request.method==='POST') {
+                switchRequests.push('POST /activar/cambiar-cuenta');
+                return await fulfill(event,303,'text/plain','',[{name:'Location',value:'/activar?fixture=switched'}]);
             }
             if(event.request.method!=='GET') {unexpectedWrites.push(url.pathname);return await fulfill(event,204,'text/plain');}
             if(url.pathname==='/activar/qr')return await fulfill(event,200,'image/svg+xml','<svg xmlns="http://www.w3.org/2000/svg" width="288" height="288"><rect width="288" height="288" fill="white"/><text x="30" y="145" fill="black">QR · fixture visual</text></svg>');
@@ -108,7 +112,7 @@ try {
     const until=async(expression,label)=>{for(let i=0;i<100;i++){if(await evaluate(`!!(${expression})`))return;await pause(100);}console.error(JSON.stringify({runtimeErrors,failedAssets,dom:await evaluate('document.body.innerHTML.slice(0,1500)')}));throw new Error(label);};
     for(const width of [390,1440]) {
         await call('Emulation.setDeviceMetricsOverride',{width,height:960,deviceScaleFactor:1,mobile:width===390});
-        for(const key of ['sales','empty','signed','qr','review','active','existing','signed_review','signed_active']) {
+        for(const key of ['sales','empty','signed','qr','review','active','existing','signed_review','signed_active','signed_rejected','switched','second']) {
             const path=key==='sales'?'/membresia':'/activar';
             const query=live&&['sales','empty'].includes(key)?'':'?fixture='+key;
             await call('Page.navigate',{url:'about:blank'}); await pause(100);
@@ -121,7 +125,15 @@ try {
             assert(!/SSO|OIDC|HMAC|global_subject_id|\bCOM\b/.test(content),'buyer sees no internal terms');
             if(key==='sales')assert(await evaluate('[...document.querySelectorAll("main a")].filter(a=>a.textContent.includes("Activar mi membresía")&&a.getAttribute("href").startsWith("/activar")).length>=3'),'repeated direct purchase CTAs');
             if(key==='empty')assert(await evaluate('!!document.querySelector("#buyer-name") && !!document.querySelector("#buyer-email") && !document.querySelector("input[type=password]")'),'only purchase details without password');
-            if(['signed','signed_review','signed_active'].includes(key))assert(await evaluate('!document.querySelector("#buyer-name") && !document.querySelector("#buyer-email")'),'no repeated authenticated identity fields');
+            if(['signed','signed_review','signed_active','signed_rejected','second'].includes(key))assert(await evaluate('!document.querySelector("#buyer-name") && !document.querySelector("#buyer-email")'),'no repeated authenticated identity fields');
+            if(['signed','signed_review','signed_active','signed_rejected','second'].includes(key)) {
+                assert(!content.includes('Continuar al pago') && !content.includes('TUS DATOS'),'authenticated checkout skips data step');
+                const first=fixtures[key].props.buyer.name.trim().split(/\s+/u)[0];
+                assert(content.includes('Hola, '+first) && content.includes('¿No eres tú, '+first+'?') && content.includes('Cambiar de cuenta'),'real first-name greeting and switch control');
+            }
+            if(['signed','second'].includes(key))assert(await evaluate('document.querySelector("main img")?.getAttribute("src") === "/activar/qr"'),'authenticated QR immediately visible');
+            if(key==='signed_rejected')assert(content.includes('No pudimos validar el comprobante anterior.') && content.includes('Ya pagué'),'rejected correction remains available');
+            if(key==='switched')assert(await evaluate('!!document.querySelector("#buyer-name") && !document.querySelector("[data-checkout-identity]") && [...document.querySelectorAll("a")].some(a=>a.getAttribute("href")==="/login")'),'switch leads to clean guest form and login option');
             if(key==='review'||key==='signed_review')assert(content.includes('¡Recibimos tu comprobante!')&&content.includes('Estamos verificando tu pago.'),'exact review message');
             if(key==='active'||key==='signed_active')assert(content.includes('Tu membresía está activada')&&!content.includes('Ya pagué'),'active state blocks second charge');
             if(key==='qr') {
@@ -131,10 +143,19 @@ try {
             }
             const screenshot=await call('Page.captureScreenshot',{format:'png',captureBeyondViewport:true});
             await writeFile(`${output}/${key}-${width}-${live?'live':'preview'}.png`,Buffer.from(screenshot.data,'base64'));
+            if(key==='signed') {
+                await evaluate('[...document.querySelectorAll("button")].find(b=>b.textContent.includes("Ya pagué")).click()');
+                await until('document.querySelector("#receipt")','receipt before switch');
+                await evaluate('[...document.querySelectorAll("button")].find(b=>b.textContent.includes("Cambiar de cuenta")).click()');
+                await until('document.querySelector("#buyer-name") && !document.querySelector("[data-checkout-identity]")','clean guest checkout after switch');
+                assert(await evaluate('document.querySelector("#buyer-name").value === "" && document.querySelector("#buyer-email").value === "" && !document.querySelector("#receipt")'),'switch clears local form and receipt state');
+                checks.push(`switch via POST ${width}`);
+            }
             checks.push(`${key} ${width}`);
         }
     }
     assert.deepEqual(runtimeErrors,[],'no browser runtime errors');assert.deepEqual(failedAssets,[],'all assets load');assert.deepEqual(unexpectedWrites,[],'no live purchase/receipt writes');
-    await writeFile(`${output}/browser-${live?'live':'preview'}.json`,JSON.stringify({checks,no_live_mutations:true,runtimeErrors,failedAssets},null,2));
+    assert.equal(switchRequests.length,2,'switch actions intercepted without LIVE writes');
+    await writeFile(`${output}/browser-${live?'live':'preview'}.json`,JSON.stringify({checks,no_live_mutations:true,simulated_switch_posts:switchRequests.length,runtimeErrors,failedAssets},null,2));
     console.log(JSON.stringify({checks:checks.length,no_live_mutations:true}));
 } finally { if(socket)socket.close();chrome.kill('SIGTERM'); }
