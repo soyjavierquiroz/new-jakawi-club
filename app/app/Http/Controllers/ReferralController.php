@@ -23,7 +23,9 @@ class ReferralController extends Controller
         if (array_key_exists('allow_ads', $data)) {
             if (!$data['allow_ads']) {
                 app(\App\Services\Advertising::class)->safely(fn () => \App\Models\AdVisit::whereKey($request->session()->get('ad_visit_id'))->update(['revoked_at' => now()]));
-                $request->session()->forget('ad_visit_id');
+                $scope = $request->session()->get('ad_consent_scope');
+                if (is_string($scope)) app(\App\Services\Advertising::class)->safely(fn () => \App\Models\AdVisit::where('consent_scope', $scope)->update(['revoked_at' => now()]));
+                $request->session()->forget(['ad_visit_id', 'ad_consent_scope']);
                 foreach (['_fbp','_fbc','_ttp'] as $name) Cookie::queue(Cookie::forget($name));
             }
             Cookie::queue(cookie('jakawi_ads_consent', $data['allow_ads'] ? 'yes' : 'no', 60 * 24 * config('ads.retention_days'), '/', null, true, true, false, 'lax'));

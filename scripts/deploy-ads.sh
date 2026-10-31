@@ -12,7 +12,7 @@ assert Path('/srv/sites/jakawi.club/rollback-ads-phase09/baseline.json').is_file
 PY
 docker compose config --quiet
 # Only the additive advertising migration; keep existing business data.
-docker compose exec -T --user www-data app php -d memory_limit=128M artisan migrate --force --path=database/migrations/2026_10_31_230000_create_advertising_tables.php
+docker compose exec -T --user www-data app php -d memory_limit=128M artisan migrate --force --path=database/migrations/2026_10_31_230000_create_advertising_tables.php --path=database/migrations/2026_10_31_230100_add_ad_consent_scope.php
 python3 - <<'PY'
 from pathlib import Path
 import os,shutil

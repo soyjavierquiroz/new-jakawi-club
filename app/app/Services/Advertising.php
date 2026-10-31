@@ -32,7 +32,9 @@ final class Advertising {
         }
         if ($provider === 'meta' && isset($context['fbclid']) && !isset($context['fbc'])) $context['fbc'] = 'fb.1.'.now()->getTimestampMs().'.'.$context['fbclid'];
         if ($existing) { $visit->update(['context' => $context]); return; }
-        $visit = AdVisit::create(['id' => (string) Str::uuid(), 'provider' => $provider, 'context' => $context,
+        $scope = $request->session()->get('ad_consent_scope');
+        if (!is_string($scope)) { $scope = (string) Str::uuid(); $request->session()->put('ad_consent_scope', $scope); }
+        $visit = AdVisit::create(['consent_scope' => $scope, 'id' => (string) Str::uuid(), 'provider' => $provider, 'context' => $context,
             'consented_at' => now(), 'expires_at' => now()->addDays(config('ads.retention_days'))]);
         $request->session()->put('ad_visit_id', $visit->id);
     }

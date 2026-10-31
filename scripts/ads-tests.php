@@ -89,3 +89,8 @@ check(count($adsCalls)===$count,'privacy readiness pending prevents real API req
 config($configured);$ttVisit=AdVisit::find($guestAd->ad_visit_id);$ttVisit->update(['expires_at'=>now()->subSecond()]);
 (new DeliverAdEvent($ttCheckout->id))->handle();check($ttCheckout->fresh()->status==='rejected','expired attribution cannot deliver');
 config(['ads.meta.token'=>null]);check(!app(Advertising::class)->ready('meta'),'missing credentials disables platform');
+
+$additionalVisit=AdVisit::create(['id'=>(string)Illuminate\Support\Str::uuid(),'provider'=>'meta','context'=>['url'=>'https://jakawi.club/ads/meta/membresia'],
+    'consent_scope'=>$ttVisit->consent_scope,'consented_at'=>now(),'expires_at'=>now()->addDay()]);
+web('POST','/preferencias',['allow_ads'=>false]);
+check((bool)$additionalVisit->fresh()->revoked_at && (bool)$ttVisit->fresh()->revoked_at,'one privacy withdrawal revokes all visits across providers in the same consent scope');

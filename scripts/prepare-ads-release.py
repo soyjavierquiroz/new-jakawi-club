@@ -9,7 +9,7 @@ if not (private/'baseline.json').exists():
     baseline={'sha':sha,'env_sha256':hashlib.sha256(Path('/srv/sites/jakawi.club/secrets/app.env').read_bytes()).hexdigest(),'containers':{}}
     for name in ['jakawi-club-app','jakawi-club-web','jakawi-club-db']:
         item=json.loads(subprocess.check_output(['docker','inspect',name]))[0]
-        baseline['containers'][name]={'id':item['Id'],'image':item['Image'],'started_at':item['State']['StartedAt']}
+        baseline['containers'][name]={'id':item['Id'],'image':item['Image'],'started_at':item['State']['StartedAt'],'restarts':item['RestartCount']}
     (private/'source.tar').write_bytes(subprocess.check_output(['git','archive',sha],cwd=root))
     shutil.copy2(root/'app/public/build/manifest.json',private/'manifest.json')
     (private/'baseline.json').write_text(json.dumps(baseline,indent=2))

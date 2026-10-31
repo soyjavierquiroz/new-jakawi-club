@@ -1,5 +1,5 @@
 {
-    "passed": 80,
+    "passed": 81,
     "checks": [
         "isolated schema before writes",
         "editable public sales and original referral",
@@ -80,7 +80,8 @@
         "privacy readiness pending disables browser",
         "privacy readiness pending prevents real API requests",
         "expired attribution cannot deliver",
-        "missing credentials disables platform"
+        "missing credentials disables platform",
+        "one privacy withdrawal revokes all visits across providers in the same consent scope"
     ],
     "live_fixtures": 0,
     "real_bank_payments": 0,
