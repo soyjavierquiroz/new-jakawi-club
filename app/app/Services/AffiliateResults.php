@@ -19,6 +19,10 @@ final class AffiliateResults
                     ->where('event.source', 'jakawi.com')->where('event.event_type', 'membership.activated')
                     ->where('event.conversion_status', 'activated')->where('event.com_reference_type', 'membership')
                     ->whereColumn('event.global_subject_id', 'lead.global_subject_id');
+            })->orWhere(function (Builder $query) use ($user): void {
+                $query->where('lead.referred_by_id', $user->id)->whereExists(function (Builder $purchase): void {
+                    $purchase->selectRaw('1')->from('membership_purchases as purchase')->whereColumn('purchase.user_id', 'lead.id')->whereNotNull('purchase.activated_at');
+                });
             })->count();
         return [
             'leads_captured' => $leads,

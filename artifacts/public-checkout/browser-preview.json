@@ -1,0 +1,25 @@
+{
+  "checks": [
+    "sales 390",
+    "empty 390",
+    "signed 390",
+    "qr 390",
+    "review 390",
+    "active 390",
+    "existing 390",
+    "signed_review 390",
+    "signed_active 390",
+    "sales 1440",
+    "empty 1440",
+    "signed 1440",
+    "qr 1440",
+    "review 1440",
+    "active 1440",
+    "existing 1440",
+    "signed_review 1440",
+    "signed_active 1440"
+  ],
+  "no_live_mutations": true,
+  "runtimeErrors": [],
+  "failedAssets": []
+}

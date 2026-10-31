@@ -209,3 +209,10 @@ credentials.json
 /artifacts/activation-url/browser-live.json
 /artifacts/activation-url/validation.json
 /artifacts/activation-url/state-after.json
+
+/artifacts/public-checkout/*fixtures.json
+/artifacts/public-checkout/*.png
+/artifacts/public-checkout/LIVE.json
+/artifacts/public-checkout/browser-live.json
+/artifacts/public-checkout/regression-landings/
+/artifacts/public-checkout/regression-results/

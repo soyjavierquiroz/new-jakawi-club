@@ -32,6 +32,8 @@ class AppServiceProvider extends ServiceProvider
                 app(\App\Services\Identity\ActivationEvidence::class)->record($event->user);
             }
         });
+        RateLimiter::for('membership-checkout', fn (Request $request) => Limit::perMinute($request->isMethod('GET') || $request->isMethod('HEAD') ? 30 : 6)
+            ->by($request->method().'|'.$request->path().'|'.($request->user()?->uuid ?? $request->ip())));
         RateLimiter::for('registration', fn (Request $request) => Limit::perMinute(5)->by($request->ip()));
         RateLimiter::for('account-mail', fn (Request $request) => [
             Limit::perMinute(5)->by('ip:'.$request->ip()),

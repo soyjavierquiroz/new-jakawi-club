@@ -34,6 +34,10 @@ class CommercialEventController extends Controller
         };
         $digest = hash('sha256', json_encode($canonicalize($object), JSON_THROW_ON_ERROR | JSON_PRESERVE_ZERO_FRACTION));
         $data = json_decode($raw, true, 32, JSON_THROW_ON_ERROR);
+        if ((($data['event_type'] ?? null) === 'membership.activated' && ($data['origin'] ?? null) === 'CLUB')
+            || ($data['event_type'] ?? null) === 'membership.identity_linked') {
+            return app(\App\Services\ClubPurchaseEvents::class)->receive($request, $data, $digest);
+        }
         $membership = ($data['event_type'] ?? null) === 'membership.activated';
         $allowed = ['schema_version', 'event_id', 'event_type', 'occurred_at', 'com_reference', 'partner', 'origin', 'referral', 'global_subject_id', 'conversion_status'];
         if ($membership) $allowed = ['schema_version', 'event_id', 'event_type', 'occurred_at', 'com_reference', 'global_subject_id', 'membership_reference', 'payment_reference'];

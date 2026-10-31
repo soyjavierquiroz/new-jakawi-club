@@ -1,5 +1,9 @@
 # URL comercial de activación
 
+> Referencia histórica del flujo SSO. La entrada comercial vigente es el
+> [checkout público nativo CLUB](../../artifacts/public-checkout/REPORT.md).
+
+
 `GET https://jakawi.club/activar` inicia el recorrido de membresía de Bs 100.
 Conserva `POST /activar` y `GET /activar/{token}` para activar la cuenta por correo.
 No se modifican landing pública, formulario de captación ni confirmación WhatsApp.

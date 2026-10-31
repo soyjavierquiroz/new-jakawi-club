@@ -7,7 +7,7 @@ import type { Landing } from './types';
 
 function MetadataLayout({ children }: { children: ReactNode }) {
     const page = usePage();
-    const landing = page.component === 'Welcome' ? page.props.landing as Landing | undefined : undefined;
+    const landing = ['Welcome', 'MembershipSales'].includes(page.component) ? page.props.landing as Landing | undefined : undefined;
     return <><Head><meta head-key="robots" name="robots" content={landing?.social?.robots || 'noindex, nofollow'} /></Head>{children}</>;
 }
 

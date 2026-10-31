@@ -12,7 +12,7 @@ class LandingContent
     public const V2_SCHEMA = 'jakawi-club-landing-v2';
     public const LEGACY_SCHEMA = 'jakawi-club-landing-v1';
     public const TEMPLATES = ['LEAD_VSL', 'WEBINAR', 'WAITLIST'];
-    public const EDITORIAL = ['seo', 'hero', 'benefits', 'registration', 'faq', 'final', 'after_registration', 'webinar'];
+    public const EDITORIAL = ['seo', 'hero', 'benefits', 'registration', 'faq', 'final', 'after_registration', 'webinar', 'testimonials'];
     public const EDITORIAL_V3 = [...self::EDITORIAL, 'presentation', 'video', 'confirmation_video', 'whatsapp_group', 'confirmation_whatsapp_group'];
     public const BENEFIT_ICONS = ['play', 'users', 'gift', 'compass', 'calendar', 'star', 'heart', 'arrow-right', 'lightbulb', 'megaphone'];
 
@@ -182,7 +182,7 @@ class LandingContent
         }
         if ($v3 && $newLanding) {
             // A new v3 document is self-contained: never inherit campaign media or environment defaults.
-            $required = array_diff(self::EDITORIAL_V3, ['webinar']);
+            $required = array_diff(self::EDITORIAL_V3, ['webinar', 'testimonials']);
             $rules = [];
             foreach ($required as $key) {
                 $rules['content.'.$key] = ['required', 'array'];
@@ -262,7 +262,12 @@ class LandingContent
         if (! $partial) {
             $content = self::withPresentation($content);
         }
-        $rules = ['content' => ['required', 'array:seo,hero,benefits,registration,faq,final,video,confirmation_video,presentation,after_registration,next_step,whatsapp_group,confirmation_whatsapp_group,webinar,commercial']];
+        $rules = ['content' => ['required', 'array:seo,hero,benefits,registration,faq,final,video,confirmation_video,presentation,after_registration,next_step,whatsapp_group,confirmation_whatsapp_group,webinar,commercial,testimonials']];
+        $rules['content.testimonials'] = ['sometimes', 'array', 'list', 'max:8'];
+        $rules['content.testimonials.*'] = ['required', 'array:name,quote,authorized'];
+        $rules['content.testimonials.*.name'] = ['required', 'string', 'max:120', 'not_regex:/[<>]/u'];
+        $rules['content.testimonials.*.quote'] = ['required', 'string', 'max:1200', 'not_regex:/[<>]/u'];
+        $rules['content.testimonials.*.authorized'] = ['required', 'boolean:strict'];
         $rules['content.commercial'] = ['sometimes', 'array:image,description,public_name'];
         $rules['content.commercial.image'] = ['sometimes', 'nullable', 'string', 'max:500'];
         $rules['content.commercial.description'] = ['sometimes', 'nullable', 'string', 'max:320', 'not_regex:/[<>]/u'];

@@ -56,7 +56,11 @@ Route::get('/r/{code}', [ReferralController::class, 'show'])->where('code', '[A-
 Route::post('/preferencias', [ReferralController::class, 'preferences'])->middleware('throttle:30,1')->name('preferences');
 Route::get('/bienvenida', [RegistrationController::class, 'welcome'])->name('welcome');
 
-Route::get('/activar', [\App\Http\Controllers\MembershipCheckoutController::class, 'entry'])->middleware('throttle:30,1')->block(20, 10)->name('membership.activate');
+Route::get('/activar', [\App\Http\Controllers\PublicMembershipController::class, 'show'])->middleware('throttle:membership-checkout')->block(20, 10)->name('membership.activate');
+
+Route::post('/activar/compra', [\App\Http\Controllers\PublicMembershipController::class, 'store'])->middleware('throttle:membership-checkout')->block(20, 10);
+Route::post('/activar/comprobante', [\App\Http\Controllers\PublicMembershipController::class, 'receipt'])->middleware('throttle:membership-checkout')->block(20, 10);
+Route::get('/activar/qr', [\App\Http\Controllers\PublicMembershipController::class, 'qr'])->middleware('throttle:membership-checkout');
 
 Route::get('/auth/jakawi/callback', [\App\Http\Controllers\JakawiLoginController::class, 'callback'])->middleware('throttle:20,1')->block(20, 10)->name('jakawi.callback');
 
@@ -80,8 +84,8 @@ Route::middleware('auth')->group(function (): void {
     Route::patch('/perfil', [DashboardController::class, 'update'])->middleware('verified')->name('profile.update');
 });
 
-Route::post('/cuenta/membresia', \App\Http\Controllers\MembershipCheckoutController::class)
-    ->middleware(['auth', 'verified', \App\Http\Middleware\ActiveAffiliate::class, 'throttle:6,1'])->block(20, 10);
+Route::post('/cuenta/membresia', [\App\Http\Controllers\PublicMembershipController::class, 'store'])
+    ->middleware(['auth', 'throttle:membership-checkout'])->block(20, 10);
 
 Route::prefix('cuenta/jakawi')->middleware(['auth', 'verified'])->group(function (): void {
     Route::post('/activar', [\App\Http\Controllers\IdentityController::class, 'activate'])->middleware('throttle:6,1')->name('identity.activate');

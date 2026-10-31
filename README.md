@@ -443,3 +443,14 @@ HMAC existente conserva activaciones pendientes de vínculo sin generar comision
 [Contrato, pruebas y despliegue](docs/integrations/club-membership-funnel-08.md).
 
 URL corta de activación: [recorrido y despliegue](docs/integrations/club-activation-url.md).
+
+### Carta de membresía y checkout público sin registro previo
+
+`/membresia` es una landing comercial independiente editable desde el CMS.
+`/activar` permite pagar Bs 100 íntegramente en CLUB con nombre, correo y teléfono,
+sin login, verificación, contraseña ni sesión COM. Cuenta pendiente/lead para
+emails nuevos; compra invitada segura para emails existentes. QR original COM,
+comprobante privado y estados confirmados por su nuevo contrato de compras.
+Esta entrega sustituye la entrada comercial que antes exigía SSO; conserva el
+acceso SSO posterior, la activación de correo y los checkouts propios COM.
+[Implementación, pruebas, operación y rollback](artifacts/public-checkout/REPORT.md).

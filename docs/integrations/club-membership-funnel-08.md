@@ -1,5 +1,9 @@
 # Fase 08 — membresías y afiliados
 
+> Referencia histórica del flujo SSO. La entrada comercial vigente es el
+> [checkout público nativo CLUB](../../artifacts/public-checkout/REPORT.md).
+
+
 La entrada privada **Activar mi membresía — Bs 100** está en `/dashboard`.
 `POST /cuenta/membresia` requiere cuenta CLUB activada/verificada, CSRF y límite de
 intentos. No hay cambios en captación pública ni en la confirmación con WhatsApp.

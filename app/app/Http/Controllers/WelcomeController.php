@@ -55,6 +55,10 @@ class WelcomeController extends Controller
             }
             if ($utms) $request->session()->put('registration_utms.'.$landing->id, $utms);
         }
+        if (!$preview) {
+            $code = $request->query('ref', $request->query('club_ref'));
+            if (is_string($code)) $referrals->capture($request, $code);
+        }
         $content = LandingContent::withPresentation($preview ? $landing->configuration : $landing->published_configuration);
         $launch = LaunchSettings::publicData();
         $launch['video_url'] = $content['video']['youtube_url'];
@@ -66,10 +70,11 @@ class WelcomeController extends Controller
             $launch['registration_open'] = false;
         }
         $social = \App\Support\LandingSeo::forLanding($landing, $preview);
-        return Inertia::render('Welcome', [
+        return Inertia::render($landing->slug === 'membresia' ? 'MembershipSales' : 'Welcome', [
             'launch' => $launch,
             'landing' => ['id' => $landing->id, 'slug' => $landing->slug, 'content' => $content, 'preview' => $preview, 'revision' => $landing->revision, 'social' => $social],
             'referral_code' => $preview ? null : $referrals->current($request)?->referral_code,
+            'commercial_image_url' => $landing->slug === 'membresia' ? app(\App\Services\MediaUrl::class)->url($content['commercial']['image'] ?? null, 'card') : null,
             'referral_preference' => $request->cookie('jakawi_referral_consent'),
         ])->withViewData(['landingSocial' => $social]);
     }

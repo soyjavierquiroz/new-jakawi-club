@@ -14,6 +14,7 @@ export type LandingVideoSettings = { youtube_url: string | null; poster: string 
 export type WebinarSection = 'hero' | 'event' | 'benefits' | 'opportunity' | 'early' | 'steps' | 'registration' | 'faq' | 'final';
 type WebinarBlock = { title: string; description: string; items: { title: string; description: string }[] };
 export type LandingContent = {
+    testimonials?: { name: string; quote: string; authorized: boolean }[];
     commercial?: { image: string | null; description: string | null; public_name?: string | null };
     presentation: { template: LandingTemplate; show_video: boolean; show_faq: boolean; show_confirmation_video: boolean; webinar?: { title: string; starts_at: string | null; sections: { id: WebinarSection; visible: boolean }[] } };
     webinar?: { opportunity: { title: string; description: string }; early: WebinarBlock; steps: Omit<WebinarBlock, 'description'> };

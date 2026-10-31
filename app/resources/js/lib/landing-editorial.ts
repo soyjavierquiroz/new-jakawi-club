@@ -11,8 +11,8 @@ export function sameConfiguration(left: unknown, right: unknown): boolean {
 }
 export function editorialDocument(content: LandingContent) {
     // Keep the v3 allowlist aligned with LandingContent::EDITORIAL_V3. Legacy next_step stays out.
-    const { seo, hero, benefits, registration, faq, final, after_registration, webinar, presentation, video, confirmation_video, whatsapp_group, confirmation_whatsapp_group } = content;
-    return { schema: editorialSchema, template: presentation.template, content: { seo, hero, benefits, registration, faq, final, after_registration, ...(webinar ? { webinar } : {}), presentation, video, confirmation_video, whatsapp_group, confirmation_whatsapp_group } };
+    const { seo, hero, benefits, registration, faq, final, after_registration, webinar, testimonials, presentation, video, confirmation_video, whatsapp_group, confirmation_whatsapp_group } = content;
+    return { schema: editorialSchema, template: presentation.template, content: { seo, hero, benefits, registration, faq, final, after_registration, ...(webinar ? { webinar } : {}), ...(testimonials ? { testimonials } : {}), presentation, video, confirmation_video, whatsapp_group, confirmation_whatsapp_group } };
 }
 
 export function editorialJSON(content: LandingContent) {
