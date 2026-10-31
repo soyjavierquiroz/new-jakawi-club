@@ -117,6 +117,14 @@ final class CommissionEngine
 
     public function recordMembership(object $person, object $activation): ?object
     {
+        return DB::transaction(function () use ($person, $activation): ?object {
+            DB::select("select pg_advisory_xact_lock(hashtextextended('club_acquisition', 0))");
+            return $this->evaluateMembership($person, $activation);
+        }, 3);
+    }
+
+    private function evaluateMembership(object $person, object $activation): ?object
+    {
         if (!$person->beneficiary_id) return null;
         $event = DB::table('commercial_events')->find($activation->event_id);
         if (!$this->occurredAt($event)->gt(Carbon::parse(config('commissions.economic_cutoff')))) return null;
@@ -130,7 +138,30 @@ final class CommissionEngine
             return $entry;
         }
         if ($person->beneficiary_type === 'PARTNER' && !DB::table('affiliate_partners')->where('source','jakawi.com')->where('partner_id',$person->beneficiary_id)->where('status','enabled')->exists()) return null;
+        $at = $this->occurredAt($event);
+        $acquisitionRule = DB::table('commission_rules')->where('nature','ONE_TIME_ACQUISITION')
+            ->where('event_type','membership.activated')->where('effective_at','<=',$at->utc()->format('Y-m-d H:i:s.uP'))->exists();
+        $evidence = null;
+        if ($acquisitionRule) {
+            // Never value a renewal or an unverified first purchase. A signed activation
+            // proves approval, but does not prove that this is the buyer's first ever.
+            if ($event->source !== 'jakawi.com' || $event->event_type !== 'membership.activated' || $event->conversion_status !== 'activated') return null;
+            $first = DB::table('acquisition_activations')->where('person_id',$person->id)->orderBy('activated_at')->orderBy('id')->first();
+            if (!$first || $first->id !== $activation->id) return null;
+            if ($person->beneficiary_type === 'INDIVIDUAL') {
+                $beneficiary = User::where('uuid',$person->beneficiary_id)->first();
+                if (!$beneficiary || DB::table('acquisition_aliases')->where('person_id',$person->id)->where(function (Builder $q) use ($beneficiary): void {
+                    $q->where(fn (Builder $u) => $u->where('kind','user')->where('reference',$beneficiary->uuid));
+                    if ($beneficiary->global_subject_id) $q->orWhere(fn (Builder $u) => $u->where('kind','subject')->where('reference',$beneficiary->global_subject_id));
+                })->exists()) return null;
+            }
+            $evidence = app(MembershipAcquisitionEvidence::class)->resolve($person,$event,$at);
+            if (!$evidence || $evidence['first_acquisition'] !== true || empty($evidence['reference'])) return null;
+            if ($person->beneficiary_type === 'INDIVIDUAL' && !in_array($evidence['membership_status'],['FREE','PAID'],true)) return null;
+        }
         $rule = DB::table('commission_rules')->where('status','active')->where('event_type','membership.activated')
+            ->where('nature',$acquisitionRule ? 'ONE_TIME_ACQUISITION' : 'LEGACY')
+            ->when($acquisitionRule, fn (Builder $q) => $q->where('membership_status',$person->beneficiary_type === 'PARTNER' ? 'ANY' : $evidence['membership_status']))
             ->where('beneficiary_type',$person->beneficiary_type)->whereIn('partner_id',[$person->beneficiary_id,'*'])
             ->where('effective_at','<=',$this->occurredAt($event)->utc()->format('Y-m-d H:i:s.uP'))
             ->orderByRaw("CASE WHEN partner_id = '*' THEN 1 ELSE 0 END")->orderByDesc('effective_at')->orderByDesc('id')->sharedLock()->first();
@@ -140,7 +171,11 @@ final class CommissionEngine
             'original_event_id'=>$event->id,'latest_event_id'=>$event->id,'commission_event_id'=>$event->id,
             'beneficiary_type'=>$person->beneficiary_type,'beneficiary_id'=>$person->beneficiary_id,'acquisition_person_id'=>$person->id,
             'affiliate_uuid'=>$person->beneficiary_type === 'INDIVIDUAL' ? $person->beneficiary_id : null,
-            'affiliate_code'=>$person->referral_code,'rule_id'=>$rule->id,'rule_snapshot'=>json_encode($rule,JSON_THROW_ON_ERROR),
+            'affiliate_code'=>$person->referral_code,'rule_id'=>$rule->id,'rule_snapshot'=>json_encode($evidence ? [...(array)$rule,
+                'acquisition_at'=>$at->format('Y-m-d\TH:i:s.uP'),
+                'payment_reference'=>json_decode($event->raw_body,true,32,JSON_THROW_ON_ERROR)['payment_reference'],
+                'beneficiary_type'=>$person->beneficiary_type,'beneficiary_id'=>$person->beneficiary_id,
+                'membership_evidence'=>$evidence] : $rule,JSON_THROW_ON_ERROR),
             'amount'=>$rule->fixed_amount,'currency'=>$rule->currency,'status'=>'candidate','eligible'=>true,'created_at'=>now(),'updated_at'=>now(),
         ]);
         $entry=DB::table('commission_ledger')->find($id);

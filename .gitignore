@@ -248,3 +248,8 @@ credentials.json
 /artifacts/partner-sso-10d/**/*.png
 /artifacts/partner-sso-10d/**/*fixture*.json
 /artifacts/partner-sso-10d/tests.log
+
+/artifacts/acquisition-10e/*fixture*.json
+/artifacts/acquisition-10e/LIVE.json
+/artifacts/acquisition-10e/validation.json
+/artifacts/acquisition-10e/**/*fixture*.json

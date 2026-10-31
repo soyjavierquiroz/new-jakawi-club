@@ -475,3 +475,12 @@ Origen COM firmado, registros externos verificados, atribución durable por IDs,
 compras invitadas y panel empresarial autorizado en `/afiliados`. Administración
 por `/admin/partners-afiliados`; escalas por INDIVIDUAL/PARTNER en reglas existentes.
 Sin reglas nuevas LIVE ni pagos automáticos. [Contrato, pruebas y operación](docs/integrations/club-partners-10c.md).
+
+### Comisiones de adquisición — Fase 10E
+
+Tarifas fijas BOB en el motor existente: INDIVIDUAL FREE Bs15, PAID Bs25,
+PARTNER Bs30, `membership.activated` / `ONE_TIME_ACQUISITION`.
+**Emisión bloqueada hasta disponer de evidencia COM de primera adquisición
+histórica y membresía vigente del afiliado a la fecha de activación.** La
+integración actual solo acredita activaciones pasadas. No inferir FREE/PAID.
+[Implementación, contrato mínimo faltante y pruebas](docs/economics/commissions-10e.md).

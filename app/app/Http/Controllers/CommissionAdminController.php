@@ -23,13 +23,15 @@ class CommissionAdminController extends Controller
             $rule->history = $audit->get($rule->id, collect())->all();
             return $rule;
         });
-        return Inertia::render('admin/CommissionRules', ['rules' => $rules, 'economic_cutoff' => config('commissions.economic_cutoff')]);
+        return Inertia::render('admin/CommissionRules', ['rules' => $rules, 'economic_cutoff' => config('commissions.economic_cutoff'), 'acquisition_contract_ready' => false]);
     }
 
     public function storeRule(Request $request, CommissionEngine $engine): RedirectResponse
     {
         $data = $request->validate([
             'beneficiary_type' => ['sometimes', Rule::in(['INDIVIDUAL','PARTNER'])],
+            'membership_status' => ['sometimes', Rule::in(['ANY','FREE','PAID'])],
+            'nature' => ['sometimes', Rule::in(['LEGACY','ONE_TIME_ACQUISITION'])],
             'partner_id' => ['required', 'string', 'max:190', 'regex:/^\S(?:[^\x00-\x1F\x7F]*\S)?$/uD'],
             'event_type' => ['required', 'string', 'max:100', 'regex:/^[a-z][a-z0-9._-]*$/D'],
             'fixed_amount' => ['required', 'string', 'regex:/^(?:0|[1-9][0-9]{0,11})(?:\.[0-9]{1,4})?$/D', 'not_regex:/^0(?:\.0+)?$/D'],
@@ -37,6 +39,16 @@ class CommissionAdminController extends Controller
             'effective_at' => ['required', 'string', 'date', 'regex:/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,6})?(?:Z|[+-]\d{2}:\d{2})$/D'],
         ]);
         $data['beneficiary_type'] ??= 'INDIVIDUAL';
+        $data['membership_status'] ??= 'ANY';
+        $data['nature'] ??= 'LEGACY';
+        if ($data['nature'] === 'ONE_TIME_ACQUISITION' && $data['event_type'] !== 'membership.activated') {
+            throw ValidationException::withMessages(['event_type' => 'Adquisición única exige membership.activated.']);
+        }
+        if ($data['event_type'] === 'membership.activated' && ($data['nature'] !== 'ONE_TIME_ACQUISITION'
+            || $data['currency'] !== 'BOB' || ($data['beneficiary_type'] === 'INDIVIDUAL' ? !in_array($data['membership_status'], ['FREE','PAID'], true) : $data['membership_status'] !== 'ANY')
+            || Carbon::parse($data['effective_at'])->isPast())) {
+            throw ValidationException::withMessages(['event_type' => 'Membresía exige adquisición única, BOB, categoría FREE/PAID individual (ANY Partner) y vigencia futura.']);
+        }
         DB::transaction(function () use ($request, $engine, $data): void {
             $parts = explode('.', $data['fixed_amount']);
             $id = DB::table('commission_rules')->insertGetId([
@@ -57,8 +69,11 @@ class CommissionAdminController extends Controller
             $before = DB::table('commission_rules')->where('id', $rule)->lockForUpdate()->first();
             abort_unless($before, 404);
             if ($before->status === $data['status']) return;
+            if ($data['status'] === 'active' && $before->nature === 'ONE_TIME_ACQUISITION' && Carbon::parse($before->effective_at)->isPast()) {
+                throw ValidationException::withMessages(['rule' => 'La adquisición exige una nueva versión con vigencia futura; no se permite activación retroactiva.']);
+            }
             if ($data['status'] === 'active' && DB::table('commission_rules')->where('id', '<>', $rule)->where('status', 'active')
-                ->where('beneficiary_type',$before->beneficiary_type)->where('partner_id', $before->partner_id)->where('event_type', $before->event_type)->where('effective_at', $before->effective_at)->exists()) {
+                ->where('membership_status',$before->membership_status)->where('nature',$before->nature)->where('beneficiary_type',$before->beneficiary_type)->where('partner_id', $before->partner_id)->where('event_type', $before->event_type)->where('effective_at', $before->effective_at)->exists()) {
                 throw ValidationException::withMessages(['rule' => 'Ya existe una versión activa para este partner, evento y fecha.']);
             }
             DB::table('commission_rules')->where('id', $rule)->update(['status' => $data['status'], 'updated_at' => now()]);
