@@ -55,8 +55,13 @@ Sello Git/origin/assets/HTTPS y QR real mediante GET HMAC:
 
 ```bash
 JAKAWI_EVIDENCE_DIR=/opt/sites/jakawi.club/artifacts/direct-checkout \
+JAKAWI_ROLLBACK_DIR=/srv/sites/jakawi.club/rollback-direct-checkout \
 python3 scripts/verify-public-checkout-live.py
 ```
+
+El verificador usa el baseline de esta entrega: permite el reinicio previsto de
+app y exige conservar los IDs CLUB, sin reiniciar web ni PostgreSQL. No compara
+workers COM contra referencias históricas.
 
 El sello `LIVE.json` es local y no se versiona. Rollback: restaurar la fuente del
 SHA previo y su manifest, regenerar rutas/vistas y reiniciar exclusivamente app.

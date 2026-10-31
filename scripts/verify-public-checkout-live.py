@@ -3,14 +3,18 @@
 import hashlib, json, os, re, subprocess, urllib.request
 from pathlib import Path
 root=Path('/opt/sites/jakawi.club');evidence=Path(os.environ.get('JAKAWI_EVIDENCE_DIR', str(root/'artifacts/public-checkout')))
-baseline=json.loads(Path('/srv/sites/jakawi.club/rollback-public-checkout/baseline.json').read_text())
+baseline=json.loads((Path(os.environ.get('JAKAWI_ROLLBACK_DIR','/srv/sites/jakawi.club/rollback-public-checkout'))/'baseline.json').read_text())
 def run(args,**kwargs):return subprocess.check_output(args,cwd=root,**kwargs)
 assert not run(['git','status','--porcelain']).strip(), 'Working tree differs from release'
 sha=run(['git','rev-parse','HEAD'],text=True).strip()
 assert run(['git','rev-parse','origin/main'],text=True).strip()==sha
 for name,before in baseline['containers'].items():
     item=json.loads(run(['docker','inspect',name]))[0]
-    assert {'id':item['Id'],'image':item['Image'],'started_at':item['State']['StartedAt']}==before, name+' changed'
+    assert item['Id']==before['id'], name+' changed'
+    if 'image' in before: assert item['Image']==before['image'], name+' image changed'
+    if name!='jakawi-club-app':
+        assert item['State']['StartedAt']==before['started_at'], name+' restarted'
+        if 'restarts' in before: assert item['RestartCount']==before['restarts'], name+' restarted'
 for path,component in [('/membresia','MembershipSales'),('/activar','MembershipCheckout')]:
     response=urllib.request.urlopen('https://jakawi.club'+path,timeout=20)
     assert response.status==200 and response.url.endswith(path)
@@ -39,9 +43,11 @@ echo json_encode(['debug'=>config('app.debug'),'purchase_secret_ready'=>strlen((
 state=json.loads(run(['docker','compose','exec','-T','--user','www-data','app','php'],input=php.encode()))
 assert state['debug'] is False and state['purchase_secret_ready'] and state['recipient_ready']
 assert state['qr_mime'] in ['image/png','image/jpeg']
-assert state['home_snapshot_sha256']==baseline['home_snapshot_sha256']
+if 'home_snapshot_sha256' in baseline: assert state['home_snapshot_sha256']==baseline['home_snapshot_sha256']
 assert urllib.request.urlopen('https://jakawi.club/up',timeout=20).status==200
 checks={'sha':sha,'manifest_sha256':hashlib.sha256(manifest.read_bytes()).hexdigest(),'public_routes':True,'real_com_qr_hmac_read_only':True,
-'home_snapshot_unchanged':True,'com_and_other_containers_unchanged':True,'live_purchase_fixtures':0,'real_bank_payments':0,'backend':state}
+'protected_container_ids_unchanged':sorted(baseline['containers']),
+'protected_services_not_restarted':sorted(name for name in baseline['containers'] if name!='jakawi-club-app'),'live_purchase_fixtures':0,'real_bank_payments':0,'backend':state}
+if 'home_snapshot_sha256' in baseline: checks['home_snapshot_unchanged']=True
 (evidence/'LIVE.json').write_text(json.dumps(checks,indent=2)+'\n')
 print(json.dumps({k:v for k,v in checks.items() if k!='backend'},indent=2))
