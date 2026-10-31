@@ -466,3 +466,10 @@ Rutas Ads diferenciadas con CMS/checkout compartido, permiso publicitario propio
 Meta Pixel/CAPI y TikTok Pixel/Events API directas desde CLUB. Deshabilitados por
 defecto hasta credenciales CLUB y readiness de privacidad. Colas y scheduler
 existentes, sin servicios nuevos. [Implementación, configuración, pruebas y despliegue](artifacts/ads-phase09/REPORT.md).
+
+### Beneficiarios individuales y Partners — Fase 10C
+
+Origen COM firmado, registros externos verificados, atribución durable por IDs,
+compras invitadas y panel empresarial autorizado en `/afiliados`. Administración
+por `/admin/partners-afiliados`; escalas por INDIVIDUAL/PARTNER en reglas existentes.
+Sin reglas nuevas LIVE ni pagos automáticos. [Contrato, pruebas y operación](docs/integrations/club-partners-10c.md).

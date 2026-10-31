@@ -29,12 +29,14 @@ class CommissionAdminController extends Controller
     public function storeRule(Request $request, CommissionEngine $engine): RedirectResponse
     {
         $data = $request->validate([
+            'beneficiary_type' => ['sometimes', Rule::in(['INDIVIDUAL','PARTNER'])],
             'partner_id' => ['required', 'string', 'max:190', 'regex:/^\S(?:[^\x00-\x1F\x7F]*\S)?$/uD'],
             'event_type' => ['required', 'string', 'max:100', 'regex:/^[a-z][a-z0-9._-]*$/D'],
             'fixed_amount' => ['required', 'string', 'regex:/^(?:0|[1-9][0-9]{0,11})(?:\.[0-9]{1,4})?$/D', 'not_regex:/^0(?:\.0+)?$/D'],
             'currency' => ['required', 'string', 'regex:/^[A-Z]{3}$/D'],
             'effective_at' => ['required', 'string', 'date', 'regex:/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,6})?(?:Z|[+-]\d{2}:\d{2})$/D'],
         ]);
+        $data['beneficiary_type'] ??= 'INDIVIDUAL';
         DB::transaction(function () use ($request, $engine, $data): void {
             $parts = explode('.', $data['fixed_amount']);
             $id = DB::table('commission_rules')->insertGetId([
@@ -56,7 +58,7 @@ class CommissionAdminController extends Controller
             abort_unless($before, 404);
             if ($before->status === $data['status']) return;
             if ($data['status'] === 'active' && DB::table('commission_rules')->where('id', '<>', $rule)->where('status', 'active')
-                ->where('partner_id', $before->partner_id)->where('event_type', $before->event_type)->where('effective_at', $before->effective_at)->exists()) {
+                ->where('beneficiary_type',$before->beneficiary_type)->where('partner_id', $before->partner_id)->where('event_type', $before->event_type)->where('effective_at', $before->effective_at)->exists()) {
                 throw ValidationException::withMessages(['rule' => 'Ya existe una versión activa para este partner, evento y fecha.']);
             }
             DB::table('commission_rules')->where('id', $rule)->update(['status' => $data['status'], 'updated_at' => now()]);

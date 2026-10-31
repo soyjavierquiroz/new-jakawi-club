@@ -1,0 +1,20 @@
+{
+  "live_assets": false,
+  "checks": [
+    {
+      "width": 390,
+      "partner_panel": true,
+      "separate_personal_results": true,
+      "no_overflow": true
+    },
+    {
+      "width": 1440,
+      "partner_panel": true,
+      "separate_personal_results": true,
+      "no_overflow": true
+    }
+  ],
+  "runtime_errors": [],
+  "failed_assets": [],
+  "no_live_mutations": true
+}

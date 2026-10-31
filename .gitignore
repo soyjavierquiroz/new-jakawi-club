@@ -229,3 +229,10 @@ credentials.json
 /artifacts/ads-phase09/browser-live.json
 
 /artifacts/ads-phase09/validation.json
+
+/artifacts/partners-10c/*fixture*.json
+/artifacts/partners-10c/*.png
+/artifacts/partners-10c/LIVE.json
+/artifacts/partners-10c/browser-live.json
+
+/artifacts/partners-10c/**/*fixtures.json

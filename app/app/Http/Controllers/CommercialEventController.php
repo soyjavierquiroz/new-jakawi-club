@@ -34,6 +34,9 @@ class CommercialEventController extends Controller
         };
         $digest = hash('sha256', json_encode($canonicalize($object), JSON_THROW_ON_ERROR | JSON_PRESERVE_ZERO_FRACTION));
         $data = json_decode($raw, true, 32, JSON_THROW_ON_ERROR);
+        if (in_array($data['event_type'] ?? '', ['member.registered','membership.attribution_fixed','membership.attribution_identity_linked'], true)) {
+            return app(\App\Services\AcquisitionEvents::class)->receive($request, $data, $digest);
+        }
         if ((($data['event_type'] ?? null) === 'membership.activated' && ($data['origin'] ?? null) === 'CLUB')
             || ($data['event_type'] ?? null) === 'membership.identity_linked') {
             return app(\App\Services\ClubPurchaseEvents::class)->receive($request, $data, $digest);
@@ -86,6 +89,7 @@ class CommercialEventController extends Controller
         return DB::transaction(function () use ($data, $digest, $provenance): JsonResponse {
             $existing = DB::table('commercial_events')->where('source', 'jakawi.com')->where('event_id', $data['event_id'])->first();
             if ($existing) {
+                if ($data['event_type'] === 'membership.activated' && hash_equals($existing->payload_sha256,$digest)) app(\App\Services\PartnerAcquisition::class)->event($existing,$data);
                 return $this->receipt($existing, $digest, $provenance, false);
             }
             $code = $data['referral']['club_referral_code'] ?? null;
@@ -104,6 +108,7 @@ class CommercialEventController extends Controller
                 'conversion_status' => $data['conversion_status'],
             ]);
             $event = DB::table('commercial_events')->where('source', 'jakawi.com')->where('event_id', $data['event_id'])->first();
+            if ($event->event_type === 'membership.activated') app(\App\Services\PartnerAcquisition::class)->event($event, $data);
             if ($inserted && $event->event_type !== 'membership.activated') app(\App\Services\Commissions\CommissionEngine::class)->record($event);
             return $this->receipt($event, $digest, $provenance, (bool) $inserted);
         });

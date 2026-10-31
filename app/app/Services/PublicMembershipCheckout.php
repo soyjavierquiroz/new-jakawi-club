@@ -11,15 +11,12 @@ final class PublicMembershipCheckout {
         $purchase = is_string($reference) ? MembershipPurchase::find($reference) : null;
         // Session possession grants access only to this purchase, never account access.
         if ($purchase && (!$request->user() || $purchase->user_id === $request->user()->id
-            || (!$purchase->user_id && hash_equals($purchase->intent['email'], $request->user()->email)))) return $purchase;
+            || (!$purchase->user_id && $purchase->identity_status === 'linked' && $purchase->global_subject_id && $purchase->global_subject_id === $request->user()->global_subject_id))) return $purchase;
         if (!$request->user()) return null;
         $order = static fn ($query) => $query->whereIn('status', ['approved', 'under_review', 'awaiting_payment', 'rejected'])
             ->orderByRaw("CASE status WHEN 'approved' THEN 0 WHEN 'under_review' THEN 1 ELSE 2 END")->orderByDesc('created_at');
         $owned = $order(MembershipPurchase::where('user_id', $request->user()->id))->first();
-        if ($owned || !$request->user()->hasVerifiedEmail()) return $owned;
-        // Recover across devices only after account authentication AND verified email.
-        return $order(MembershipPurchase::whereNull('user_id')->where('buyer_email_digest',
-            hash_hmac('sha256', $request->user()->email, config('app.key'))))->first();
+        return $owned;
     }
     public function create(Request $request, array $data): MembershipPurchase {
         $purchase = $this->current($request);
@@ -36,16 +33,20 @@ final class PublicMembershipCheckout {
                 $user->registration_origin = ['landing_id' => $landing?->id, 'landing_slug' => 'membresia',
                     'campaign' => $landing?->published_campaign, 'utms' => $request->session()->get('registration_utms.'.$landing?->id, [])];
                 $user->save();
+                app(PartnerAcquisition::class)->register($user, $request);
                 app(\App\Services\Crm\ClubContact::class)->enqueue($user);
                 app(MarketingAnalytics::class)->record('registration_completed', 'form', $landing);
             }
             $id = (string) Str::uuid();
             $purchase = MembershipPurchase::create(['ad_visit_id' => app(Advertising::class)->safely(fn () => app(Advertising::class)->visit($request)?->id), 'id' => $id, 'user_id' => $user?->id, 'buyer_email_digest' => hash_hmac('sha256', $data['email'], config('app.key')), 'intent' => [
+                'com_origin' => $request->session()->get('com_origin'),
+                'original_club_referral_code' => $user?->referred_by_id ? User::find($user->referred_by_id)?->referral_code : app(ReferralAttribution::class)->current($request)?->referral_code,
                 'club_reference' => $id, 'club_user_uuid' => $user?->uuid,
                 'guest_purchase_id' => $user ? null : (string) Str::uuid(),
                 'name' => $data['name'], 'email' => $data['email'], 'phone' => $data['phone'],
                 'amount' => '100.00', 'currency' => 'BOB', 'origin' => 'CLUB', 'claim_secret' => bin2hex(random_bytes(32)),
             ]]);
+            app(PartnerAcquisition::class)->purchase($purchase, $request);
             app(Advertising::class)->safely(function () use ($purchase): void {
                 app(Advertising::class)->record($purchase, 'Lead');
                 app(Advertising::class)->record($purchase, 'InitiateCheckout');

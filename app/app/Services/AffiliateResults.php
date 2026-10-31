@@ -24,6 +24,16 @@ final class AffiliateResults
                     $purchase->selectRaw('1')->from('membership_purchases as purchase')->whereColumn('purchase.user_id', 'lead.id')->whereNotNull('purchase.activated_at');
                 });
             })->count();
+        $people = DB::table('acquisition_people as p')->where('beneficiary_type','INDIVIDUAL')->where('beneficiary_id',$user->uuid)
+            ->whereExists(fn($q)=>$q->selectRaw('1')->from('acquisition_aliases as a')->whereColumn('a.person_id','p.id'));
+        // Count verified external identities and guest purchases absent from local referrals.
+        $external = (clone $people)->whereNotExists(function($q) use($user): void {
+            $q->selectRaw('1')->from('acquisition_aliases as a')->join('users as u',function($j): void {
+                $j->whereRaw('a.reference = u.uuid::text')->where('a.kind','user');
+            })->whereColumn('a.person_id','p.id')->where('u.referred_by_id',$user->id);
+        });
+        $leads += (clone $external)->count();
+        $activated += (clone $external)->whereExists(fn($q)=>$q->selectRaw('1')->from('acquisition_activations as act')->whereColumn('act.person_id','p.id'))->count();
         return [
             'leads_captured' => $leads,
             'memberships_activated' => $activated,
@@ -32,7 +42,7 @@ final class AffiliateResults
             'clicks' => app(AffiliateLinkClicks::class)->summary($user),
             // Existing permanent, individual FK written by CLUB registration.
             // No email matching or inferred COM registrations.
-            'club_registrations' => $leads,
+            'club_registrations' => DB::table('users')->where('referred_by_id',$user->id)->count(),
             // Other COM operations remain visible in the conversions list.
             'confirmed_redemptions' => app(AffiliateConversions::class)->confirmed($user)->where('com_reference_type', 'redemption')->count(),
             // Same scope and approved/review policy as the existing ledger summary.

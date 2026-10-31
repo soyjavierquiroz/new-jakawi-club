@@ -54,6 +54,7 @@ class AffiliateController extends Controller
             });
 
         return Inertia::render('Affiliates', [
+            'partner_panels' => PartnerAffiliateController::panels($user),
             'results' => app(\App\Services\AffiliateResults::class)->summary($user),
             'tab' => $tab, 'filters' => $filters, 'offers' => $offerPage,
             'cities' => DB::table('commercial_offers')->where('catalog_present', true)

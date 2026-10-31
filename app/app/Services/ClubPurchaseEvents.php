@@ -57,7 +57,7 @@ final class ClubPurchaseEvents {
                 app(PublicMembershipCheckout::class)->apply($purchase, $state);
                 if ($activation) app(Advertising::class)->safely(fn () => app(Advertising::class)->record($purchase, 'Purchase', $data['occurred_at']));
             }
-            // Membership facts never enter the commission engine.
+            app(PartnerAcquisition::class)->event($event, $data);
             return response()->json(['event_id' => $data['event_id'], 'status' => $inserted ? 'accepted' : 'duplicate'], $inserted ? 201 : 200);
         });
     }

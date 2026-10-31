@@ -33,10 +33,9 @@ final class PublicMembershipController extends Controller {
             try {
                 $purchase = $checkout->sync($purchase);
                 $user = $request->user();
-                // A verified authenticated account may claim its own declared email.
-                // Matching a guest-supplied email alone never establishes ownership.
-                if ($user && $user->hasVerifiedEmail() && $purchase->intent['email'] === $user->email
-                    && (!$purchase->user_id || $purchase->user_id === $user->id) && $purchase->identity_status !== 'linked') {
+                // Only the original authenticated CLUB identity can request this link.
+                if ($user && $user->hasVerifiedEmail() && $purchase->user_id === $user->id && $purchase->intent['club_user_uuid'] === $user->uuid
+                    && $purchase->identity_status !== 'linked') {
                     $response = app(ClubPurchaseClient::class)->request('POST', '/'.$purchase->id.'/identity', [
                         'club_user_uuid' => $user->uuid, 'claim_secret' => $purchase->intent['claim_secret'],
                     ]);

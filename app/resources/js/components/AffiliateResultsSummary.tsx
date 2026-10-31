@@ -13,7 +13,7 @@ export function AffiliateResultsSummary({ results, conversions }: { results: Aff
         <h2 id="results-title" className="text-2xl font-extrabold">MIS RESULTADOS</h2>
         <p className="mb-5 mt-3 text-sm text-text-secondary">Personas registradas con tu invitación original y membresías activadas confirmadas por JAKAWI.COM.</p>
         <div className="grid gap-4 sm:grid-cols-2">
-            <article className="feature-card"><h3 className="text-sm font-semibold">LEADS CAPTADOS</h3><p data-attributed-registrations className="my-3 text-4xl font-extrabold">{results.leads_captured}</p><p className="text-xs text-text-secondary">Una persona registrada en CLUB con tu invitación original cuenta una vez.</p></article>
+            <article className="feature-card"><h3 className="text-sm font-semibold">LEADS CAPTADOS</h3><p data-attributed-registrations className="my-3 text-4xl font-extrabold">{results.leads_captured}</p><p className="text-xs text-text-secondary">Personas captadas en CLUB o verificadas por COM con tu invitación original. Cada persona cuenta una vez.</p></article>
             <article className="feature-card"><h3 className="text-sm font-semibold">MEMBRESÍAS ACTIVADAS</h3><p data-memberships-activated className="my-3 text-4xl font-extrabold">{results.memberships_activated}</p><p className="text-xs text-text-secondary">Una persona captada con activación COM confirmada. Sin duplicados ni renovaciones como nuevas altas.</p></article>
         </div>
         <p className="my-5 text-sm text-text-secondary">Tasa de activación: <strong>{results.activation_rate}%</strong></p>

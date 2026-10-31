@@ -206,6 +206,10 @@ final class IdentityLink
                     throw new IdentityFailure('SUBJECT_CONFLICT', false);
                 }
                 DB::table('users')->where('id', $locked->id)->update(['global_subject_id' => $subject]);
+                $acquisition = app(\App\Services\PartnerAcquisition::class);
+                $person = $acquisition->person(['user'=>$locked->uuid,'subject'=>$subject]);
+                $activation = DB::table('acquisition_activations')->where('person_id',$person->id)->orderBy('activated_at')->orderBy('id')->first();
+                if ($activation) app(\App\Services\Commissions\CommissionEngine::class)->recordMembership($person,$activation);
                 DB::table('club_identity_links')->updateOrInsert(['user_id' => $locked->id], [
                     'global_subject_id' => $subject, 'status' => $status, 'method' => $link['method'],
                     'authorized_at' => $authorized, 'revoked_at' => $revoked, 'checked_at' => now(),

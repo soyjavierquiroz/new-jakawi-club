@@ -41,7 +41,7 @@ final class CommissionEngine
 
     public function firstConfirmation(object $event): ?object
     {
-        return $this->operation($event)->where('conversion_status', 'confirmed')
+        return $this->operation($event)->whereIn('conversion_status', ['confirmed','activated'])
             ->orderByRaw(self::EVENT_TIME_SQL.' ASC')->orderBy('id')->first();
     }
 
@@ -56,6 +56,10 @@ final class CommissionEngine
     // Called inside the receiver transaction, so receipt and economic record commit together.
     public function record(object $event, ?User $actor = null): object
     {
+        if ($event->event_type === 'membership.activated') {
+            $activation = DB::table('acquisition_activations')->where('event_id',$event->id)->firstOrFail();
+            return $this->recordMembership(DB::table('acquisition_people')->find($activation->person_id),$activation) ?? throw ValidationException::withMessages(['review'=>'Sin regla aplicable.']);
+        }
         return DB::transaction(function () use ($event, $actor): object {
             $this->lock($event);
             $latest = $this->operation($event)->orderByRaw(self::EVENT_TIME_SQL.' DESC')->orderByDesc('id')->firstOrFail();
@@ -95,12 +99,12 @@ final class CommissionEngine
                     ->where('referrer_club_uuid', $owner)->where('club_referral_code', $code)
                     ->whereRaw(self::EVENT_TIME_SQL.' > ?::timestamptz', [config('commissions.economic_cutoff')])
                     ->whereExists(function (Builder $q): void {
-                        $q->selectRaw('1')->from('commission_rules as r')->where('r.status', 'active')
+                        $q->selectRaw('1')->from('commission_rules as r')->where('r.status', 'active')->where('r.beneficiary_type','INDIVIDUAL')
                             ->whereColumn('r.partner_id', 'commercial_events.partner_id')->whereColumn('r.event_type', 'commercial_events.event_type')
                             ->whereRaw('r.effective_at <= '.self::EVENT_TIME_SQL);
                     })->orderByRaw(self::EVENT_TIME_SQL.' ASC')->orderBy('id')->first();
                 if ($valuation) {
-                    $rule = DB::table('commission_rules')->where('status', 'active')->where('partner_id', $valuation->partner_id)
+                    $rule = DB::table('commission_rules')->where('status', 'active')->where('beneficiary_type','INDIVIDUAL')->where('partner_id', $valuation->partner_id)
                         ->where('event_type', $valuation->event_type)->where('effective_at', '<=', $this->occurredAt($valuation)->utc()->format('Y-m-d H:i:s.uP'))
                         ->orderByDesc('effective_at')->orderByDesc('id')->sharedLock()->first();
                     if ($rule) $changes += ['rule_id' => $rule->id, 'commission_event_id' => $valuation->id,
@@ -109,6 +113,39 @@ final class CommissionEngine
             }
             return $this->save($entry, $changes, 'evaluated', $actor, 'Evaluación por fecha económica COM y corte autorizado; aprobación administrativa manual.');
         }, 3);
+    }
+
+    public function recordMembership(object $person, object $activation): ?object
+    {
+        if (!$person->beneficiary_id) return null;
+        $event = DB::table('commercial_events')->find($activation->event_id);
+        if (!$this->occurredAt($event)->gt(Carbon::parse(config('commissions.economic_cutoff')))) return null;
+        $existing = DB::table('commission_ledger')->where('acquisition_person_id',$person->id)->first();
+        // An identity merge may reveal a previously valued guest acquisition.
+        $other = DB::table('commission_ledger')->where('com_reference_type','membership')->whereIn('com_reference_id', DB::table('acquisition_activations')->where('person_id',$person->id)->select('membership_reference'))->first();
+        if ($existing || $other) {
+            $entry = $existing ?? $other;
+            $enabled = $person->beneficiary_type !== 'PARTNER' || DB::table('affiliate_partners')->where('source','jakawi.com')->where('partner_id',$person->beneficiary_id)->where('status','enabled')->exists();
+            if (!$enabled || $entry->beneficiary_type !== $person->beneficiary_type || $entry->beneficiary_id !== $person->beneficiary_id) return $this->save($entry,['eligible'=>false,'review_required'=>true],'identity_review',null,'Revisar beneficiario original o estado Partner antes de aprobar.');
+            return $entry;
+        }
+        if ($person->beneficiary_type === 'PARTNER' && !DB::table('affiliate_partners')->where('source','jakawi.com')->where('partner_id',$person->beneficiary_id)->where('status','enabled')->exists()) return null;
+        $rule = DB::table('commission_rules')->where('status','active')->where('event_type','membership.activated')
+            ->where('beneficiary_type',$person->beneficiary_type)->whereIn('partner_id',[$person->beneficiary_id,'*'])
+            ->where('effective_at','<=',$this->occurredAt($event)->utc()->format('Y-m-d H:i:s.uP'))
+            ->orderByRaw("CASE WHEN partner_id = '*' THEN 1 ELSE 0 END")->orderByDesc('effective_at')->orderByDesc('id')->sharedLock()->first();
+        if (!$rule) return null;
+        $id = DB::table('commission_ledger')->insertGetId([
+            'source'=>'jakawi.com','com_reference_type'=>'membership','com_reference_id'=>$activation->membership_reference,
+            'original_event_id'=>$event->id,'latest_event_id'=>$event->id,'commission_event_id'=>$event->id,
+            'beneficiary_type'=>$person->beneficiary_type,'beneficiary_id'=>$person->beneficiary_id,'acquisition_person_id'=>$person->id,
+            'affiliate_uuid'=>$person->beneficiary_type === 'INDIVIDUAL' ? $person->beneficiary_id : null,
+            'affiliate_code'=>$person->referral_code,'rule_id'=>$rule->id,'rule_snapshot'=>json_encode($rule,JSON_THROW_ON_ERROR),
+            'amount'=>$rule->fixed_amount,'currency'=>$rule->currency,'status'=>'candidate','eligible'=>true,'created_at'=>now(),'updated_at'=>now(),
+        ]);
+        $entry=DB::table('commission_ledger')->find($id);
+        $this->audit(null,$entry,'registered',null,'Membresía activada; beneficiario original y regla diferenciada. Requiere aprobación manual.');
+        return $entry;
     }
 
     private function save(object $entry, array $changes, string $action, ?User $actor, string $reason, bool $forceAudit = false): object

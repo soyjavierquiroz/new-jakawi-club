@@ -210,7 +210,7 @@ try {
     $unverifiedRequest->setLaravelSession($cleanSession);$unverifiedRequest->setUserResolver(fn()=>$claimant);
     check(app(App\Services\PublicMembershipCheckout::class)->current($unverifiedRequest)===null,'unverified account cannot recover guest purchase by email');
     $claimant->email_verified_at=now();$claimant->save();
-    check(app(App\Services\PublicMembershipCheckout::class)->current($unverifiedRequest)?->id===$claimPurchase->id,'verified authenticated buyer can recover pending guest purchase across devices');
+    check(app(App\Services\PublicMembershipCheckout::class)->current($unverifiedRequest)===null,'verified email alone never recovers or attributes a guest purchase');
     $unverifiedRequest->setLaravelSession($isolatedSession);$unverifiedRequest->setUserResolver(fn()=>$user);
     check(app(App\Services\PublicMembershipCheckout::class)->current($unverifiedRequest)?->id===$own->id,'different logged-in account never adopts a guest session purchase');
     $testimonials=App\Support\LandingContent::defaults();$testimonials['testimonials']=[['name'=>'Fixture','quote'=>'Authorized only','authorized'=>false]];

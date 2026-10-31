@@ -14,6 +14,9 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('admin')->middleware(['auth', 'verified', MarketingAdmin::class])->group(function (): void {
     Route::get('/ofertas-comerciales', [\App\Http\Controllers\CommercialOfferAdminController::class, 'index'])->name('commercial-offers.index');
     Route::put('/ofertas-comerciales/{offer}', [\App\Http\Controllers\CommercialOfferAdminController::class, 'update'])->middleware('throttle:30,1');
+    Route::get('/partners-afiliados', [\App\Http\Controllers\PartnerAffiliateController::class,'index']);
+    Route::post('/partners-afiliados', [\App\Http\Controllers\PartnerAffiliateController::class,'store']);
+    Route::post('/partners-afiliados/{partner}/acceso', [\App\Http\Controllers\PartnerAffiliateController::class,'access'])->whereNumber('partner');
     Route::get('/reglas-comisiones', [\App\Http\Controllers\CommissionAdminController::class, 'rules'])->name('commissions.rules');
     Route::post('/reglas-comisiones', [\App\Http\Controllers\CommissionAdminController::class, 'storeRule'])->middleware('throttle:30,1');
     Route::post('/reglas-comisiones/{rule}/estado', [\App\Http\Controllers\CommissionAdminController::class, 'ruleStatus'])->whereNumber('rule')->middleware('throttle:30,1');
@@ -108,3 +111,5 @@ Route::get('/{slug}/confirmado', [RegistrationController::class, 'confirmed'])
 // Last, single-segment GET only. Reserved POST-only paths retain their 405 response.
 Route::get('/{slug}', [WelcomeController::class, 'show'])
     ->where('slug', \App\Support\LandingSlug::pattern())->name('landing.show');
+
+Route::get('/a/{code}/{target}', [\App\Http\Controllers\PartnerAffiliateController::class,'link'])->where('code','[A-Za-z0-9]{24}')->where('target','carta|checkout|com');

@@ -30,7 +30,7 @@ return Application::configure(basePath: dirname(__DIR__))
         );
 
         $middleware->encryptCookies(except: ['_fbp', '_fbc', '_ttp']);
-        $middleware->web(append: [HandleInertiaRequests::class]);
+        $middleware->web(append: [\App\Http\Middleware\CaptureComOrigin::class, HandleInertiaRequests::class]);
         $middleware->redirectUsersTo('/dashboard');
     })
     ->withExceptions(function (Exceptions $exceptions): void {

@@ -53,6 +53,7 @@ class RegistrationController extends Controller
                     'campaign'=>$landing?->published_campaign,
                     'utms'=>$landing ? $request->session()->get('registration_utms.'.$landing->id, []) : []];
                 $user->save();
+                app(\App\Services\PartnerAcquisition::class)->register($user, $request);
                 app(\App\Services\Crm\ClubContact::class)->enqueue($user);
                 // Confirmed server-side, in the same transaction as the new account.
                 $analytics->record('registration_completed', 'form', $landing?->isPublic() ? $landing : null);
