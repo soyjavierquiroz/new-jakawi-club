@@ -1,13 +1,21 @@
-import { createInertiaApp } from '@inertiajs/react';
-import type { ComponentType } from 'react';
+import { Head, createInertiaApp, usePage } from '@inertiajs/react';
+import type { ComponentType, ReactNode } from 'react';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import '../css/app.css';
+import type { Landing } from './types';
+
+function MetadataLayout({ children }: { children: ReactNode }) {
+    const page = usePage();
+    const landing = page.component === 'Welcome' ? page.props.landing as Landing | undefined : undefined;
+    return <><Head><meta head-key="robots" name="robots" content={landing?.social?.robots || 'noindex, nofollow'} /></Head>{children}</>;
+}
 
 const pages = import.meta.glob<{ default: ComponentType }>('./pages/**/*.tsx');
 
 void createInertiaApp({
-    title: (title) => title ? `${title} | JAKAWI Launch Engine` : 'JAKAWI Launch Engine',
+    title: (title) => title ? title : 'JAKAWI CLUB',
+    layout: () => MetadataLayout,
     resolve: async (name) => {
         const page = pages[`./pages/${name}.tsx`];
         if (!page) {

@@ -190,3 +190,8 @@ credentials.json
 /artifacts/minio-media/LIVE.json
 /artifacts/minio-media/browser-live.json
 /artifacts/minio-media/storage-live.json
+
+/artifacts/seo-social/LIVE.json
+/artifacts/seo-social/*fixtures.json
+/artifacts/seo-social/*fixture.html
+/artifacts/seo-social/*.png

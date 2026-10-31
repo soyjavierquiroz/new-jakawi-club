@@ -416,3 +416,19 @@ La sección **IMAGEN Y PRESENTACIÓN COMERCIAL** de la pestaña de captación re
 ### Upload de imágenes MinIO de CLUB
 
 Implementación en `artifacts/minio-media/REPORT.md`: componente de subida en captación, objetos privados bajo `club/*`, URLs firmadas imgproxy y GC con referencias históricas. El propietario autorizó temporalmente reutilizar las credenciales MinIO de COM sin modificar sus políticas; [configuración privada autorizada](artifacts/minio-media/PROVISIONING.md). Pruebas aisladas: `scripts/test-media.sh`, `scripts/test-media.sh landings`, `scripts/build-frontend.sh` y `scripts/check-media-visual.sh`. El smoke `scripts/check-media-storage.sh` usa exactamente un objeto temporal LIVE y lo elimina; no ejecutar despliegue hasta que pase.
+
+### SEO y enlaces compartidos
+
+El grupo **SEO Y REDES SOCIALES** reutiliza los campos SEO existentes: vacíos usan
+el título y la descripción comercial publicados. La imagen social procede de la
+imagen promocional y es independiente del VSL/poster. Laravel emite los metadatos
+en el HTML inicial; `/` y el slug principal comparten canonical `/`. Previews,
+confirmaciones y páginas privadas mantienen noindex. Los enlaces cortos activos
+conservan sus 302 hacia el OG publicado de CLUB/COM; estados no disponibles llevan
+OG de estado y noindex. [Pruebas y operación](artifacts/seo-social/REPORT.md).
+Para medios locales heredados, `php artisan media:prepare-social` reutiliza MinIO;
+no modifica snapshots. Desplegar con `scripts/deploy-seo-social.sh` después de
+TypeScript/build y `JAKAWI_SEO_TESTS=1 scripts/test-catalog.sh`, con
+`JAKAWI_EVIDENCE_DIR` apuntando a `artifacts/seo-social`. Verificar navegador con
+`scripts/check-seo-social.sh`, `/up` y el SHA LIVE. La tarjeta visual real en
+WhatsApp/Meta requiere una comprobación adicional en esas plataformas.

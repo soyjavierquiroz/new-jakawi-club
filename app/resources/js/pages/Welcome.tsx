@@ -25,17 +25,19 @@ export default function Welcome({ landing, launch, referral_code, referral_prefe
     const completeWebinar = webinar && !!content.presentation.webinar && !!content.webinar;
     const registration = <section className="registration-section" aria-labelledby="registration-title"><div className="shell grid items-start gap-9 py-14 lg:grid-cols-2 lg:gap-20 lg:py-20"><div><p className="eyebrow">{content.registration.eyebrow}</p><h2 id="registration-title" className="section-title mt-5">{content.registration.title}</h2><p className="mt-6 text-lg leading-relaxed text-text-secondary">{content.registration.description}</p><p className="mt-6 text-sm text-text-secondary">Registro gratuito. Activa tu cuenta por correo para acceder a tu invitación personal.</p></div><RegistrationForm open={launch.registration_open} referralCode={referral_code} landingId={landing.id} /></div></section>;
     useEffect(() => { if (!landing.preview) trackMarketing('landing_visit', 'landing', landing.id); }, [landing.id, landing.preview]);
-    return <LandingContext.Provider value={landing}><Head title={content.seo.title}><meta name="description" content={content.seo.description} />{landing.social && [
-        <meta key="og:type" head-key="og:type" property="og:type" content="website" />,
-        <meta key="og:site_name" head-key="og:site_name" property="og:site_name" content="JAKAWI CLUB" />,
-        <meta key="og:title" head-key="og:title" property="og:title" content={landing.social.name} />,
-        <meta key="og:description" head-key="og:description" property="og:description" content={landing.social.short_description} />,
-        <meta key="og:image" head-key="og:image" property="og:image" content={new URL(landing.social.image_url || '/marketing/club-card.png', window.location.origin).href} />,
-        <meta key="twitter:card" head-key="twitter:card" name="twitter:card" content="summary_large_image" />,
-        <meta key="twitter:title" head-key="twitter:title" name="twitter:title" content={landing.social.name} />,
-        <meta key="twitter:description" head-key="twitter:description" name="twitter:description" content={landing.social.short_description} />,
-        <meta key="twitter:image" head-key="twitter:image" name="twitter:image" content={new URL(landing.social.image_url || '/marketing/club-card.png', window.location.origin).href} />,
-    ]}{landing.preview && <meta name="robots" content="noindex, nofollow" />}</Head>{landing.preview && <div className="message text-center" role="status">Vista previa del borrador · revisión {landing.revision} · registro deshabilitado</div>}<Header capture compact={webinar} /><main data-landing-template={template}>
+    return <LandingContext.Provider value={landing}><Head title={landing.social?.name || content.seo.title}>
+        <meta head-key="description" name="description" content={landing.social?.short_description || content.seo.description} />
+        {landing.social && <link head-key="canonical" rel="canonical" href={landing.social.canonical} />}
+        {landing.social && Object.entries({
+            'og:type': 'website', 'og:site_name': landing.social.site_name, 'og:title': landing.social.name,
+            'og:description': landing.social.short_description, 'og:url': landing.social.canonical,
+            ...(landing.social.image_url ? { 'og:image': landing.social.image_url, 'og:image:secure_url': landing.social.image_url,
+                'og:image:type': 'image/jpeg', 'og:image:width': '1200', 'og:image:height': '630', 'og:image:alt': landing.social.name } : {}),
+        }).map(([key, value]) => <meta key={key} head-key={key} property={key} content={value} />)}
+        {landing.social && Object.entries({ 'twitter:card': 'summary_large_image', 'twitter:title': landing.social.name,
+            'twitter:description': landing.social.short_description, ...(landing.social.image_url ? { 'twitter:image': landing.social.image_url } : {}),
+        }).map(([key, value]) => <meta key={key} head-key={key} name={key} content={value} />)}
+    </Head>{landing.preview && <div className="message text-center" role="status">Vista previa del borrador · revisión {landing.revision} · registro deshabilitado</div>}<Header capture compact={webinar} /><main data-landing-template={template}>
         {completeWebinar ? <WebinarComposition open={launch.registration_open} video={video} registration={registration} /> : <>
         <MarketingHero open={launch.registration_open} compact={waitlist || webinar} startsAt={webinar ? launch.event?.starts_at : null}>{video}</MarketingHero>
         {!waitlist && <MarketingBenefits />}

@@ -3,8 +3,12 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="robots" content="noindex, nofollow">
-    <title>Oferta {{ $state === 'finished' ? 'finalizada' : 'no disponible' }} | JAKAWI</title>
+    @isset($landingSocial)
+        @include('social-meta')
+    @else
+        <meta name="robots" content="noindex, nofollow">
+    @endisset
+    <title>{{ $landingSocial['name'] ?? 'Oferta no disponible | JAKAWI' }}</title>
     <link rel="icon" href="/jakawi-mark.svg" type="image/svg+xml">
     @vite('resources/css/app.css')
 </head>

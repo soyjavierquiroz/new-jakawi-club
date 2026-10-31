@@ -30,7 +30,7 @@ export type LandingContent = {
     video: LandingVideoSettings;
     confirmation_video: LandingVideoSettings;
 };
-export type Landing = { id: number; slug: string; content: LandingContent; preview: boolean; revision: number; social?: { name: string; short_description: string; image_url: string | null } };
+export type Landing = { id: number; slug: string; content: LandingContent; preview: boolean; revision: number; social?: { name: string; short_description: string; image_url: string | null; canonical: string; robots: string; site_name: string } };
 export type LandingRecord = {
     id: number; title: string; slug: string; status: 'draft' | 'published' | 'archived'; campaign: string | null;
     published_campaign: string | null; configuration: LandingContent; published_configuration: LandingContent | null;

@@ -36,6 +36,7 @@ final class ShortLinkController extends Controller
         return response()->view('short-link-unavailable', [
             'state' => $state, 'name' => $offer->name, 'description' => $offer->short_description,
             'availability' => $offer->availability_status,
+            'landingSocial' => \App\Support\LandingSeo::unavailable((object) [...(array) $offer, 'effective_state' => $state]),
         ], 200, $headers);
     }
 }

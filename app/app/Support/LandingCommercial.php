@@ -24,8 +24,8 @@ final class LandingCommercial
 
     public static function socialImage(array $content): ?string
     {
-        return app(\App\Services\MediaUrl::class)->url($content['commercial']['image'] ?? null, 'social')
-            ?? LaunchSettings::videoPoster($content['video']['poster'] ?? null);
+        return app(\App\Services\MediaUrl::class)->social($content['commercial']['image'] ?? null)
+            ?? app(\App\Services\MediaUrl::class)->social('/marketing/club-card.png');
     }
 
     public static function resolve(array $content, string $publicName): array

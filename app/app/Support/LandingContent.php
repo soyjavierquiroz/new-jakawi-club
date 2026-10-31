@@ -24,7 +24,7 @@ class LandingContent
         return [
             'presentation' => self::presentationDefaults(),
             'commercial' => ['image' => null, 'description' => null, 'public_name' => null],
-            'seo' => ['title' => 'Tu ciudad tiene mucho más para vivir', 'description' => 'Conoce el comienzo de JAKAWI en Cochabamba. Una nueva forma de descubrir tu ciudad. Vive más. Gasta menos.'],
+            'seo' => ['title' => '', 'description' => ''],
             'hero' => ['eyebrow' => 'COCHABAMBA / PRELANZAMIENTO', 'title' => 'Tu ciudad tiene', 'emphasis' => 'mucho más', 'ending' => 'para vivir.', 'description' => 'Estamos preparando JAKAWI, una nueva forma de descubrir experiencias, lugares y oportunidades para disfrutar más de Cochabamba.', 'cta' => 'QUIERO SER PARTE'],
             'benefits' => ['eyebrow' => 'EL COMIENZO ES CONTIGO', 'title' => 'Las mejores historias empiezan siendo parte.', 'description' => 'Esto es lo que podrás hacer al sumarte, cuando abramos los registros.', 'items' => [
                 ['title' => 'Estar desde el comienzo', 'description' => 'Conoce JAKAWI desde sus primeras etapas y descubre lo que estamos preparando para tu ciudad.'],
@@ -315,6 +315,9 @@ class LandingContent
                 }
             }
         }
+        foreach (['title' => 160, 'description' => 320] as $key => $limit) {
+            $rules['content.seo.'.$key] = [$partial ? 'sometimes' : 'present', 'nullable', 'string', 'max:'.$limit, 'not_regex:/[<>]/u'];
+        }
         foreach (array_keys(self::registrationDefaults()) as $key) {
             $rules['content.registration.'.$key] = ['sometimes',
                 ...(in_array($key, ['submit_label', 'form_subtitle', 'submit_microcopy']) ? ['nullable'] : ['required']),
@@ -394,6 +397,11 @@ class LandingContent
         foreach (['form_subtitle', 'submit_microcopy'] as $key) {
             if (array_key_exists($key, $content['registration'] ?? []) && $content['registration'][$key] === null) {
                 $content['registration'][$key] = '';
+            }
+        }
+        if (isset($content['seo'])) {
+            foreach (['title', 'description'] as $key) {
+                if (array_key_exists($key, $content['seo']) && $content['seo'][$key] === null) $content['seo'][$key] = '';
             }
         }
         return $content;

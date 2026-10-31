@@ -9,6 +9,7 @@ if [ -f "$source_dir/app/public/build-next/manifest.json" ]; then build_dir="$so
 docker run --rm --name jakawi-club-catalog-tests --network jakawi-club-private \
     --memory 256m --memory-swap 320m --cpus 0.65 --pids-limit 96 \
     --env-file /srv/sites/jakawi.club/secrets/app.env \
+    --env JAKAWI_SEO_TESTS="${JAKAWI_SEO_TESTS:-0}" \
     --env APP_ENV=testing --env APP_DEBUG=false --env LOG_CHANNEL=null \
     --env APP_CONFIG_CACHE=/tmp/commercial-config.php --env APP_ROUTES_CACHE=/tmp/commercial-routes.php \
     --env SESSION_DRIVER=database --env CACHE_STORE=array --env MAIL_MAILER=array --env BCRYPT_ROUNDS=4 \

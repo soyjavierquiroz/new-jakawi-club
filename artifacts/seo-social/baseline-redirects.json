@@ -1,0 +1,64 @@
+[
+  {
+    "code": "NGDoyetE",
+    "ua": "WhatsApp/2.24",
+    "status": 200,
+    "final_path": "/",
+    "og": [
+      "<meta property=\"og:type\" data-inertia=\"og:type\" content=\"website\">",
+      "<meta property=\"og:site_name\" data-inertia=\"og:site_name\" content=\"JAKAWI CLUB\">",
+      "<meta property=\"og:title\" data-inertia=\"og:title\" content=\"JAKAWI Cochabamba | Reserva gratis tu lugar en el webinar\">",
+      "<meta property=\"og:description\" data-inertia=\"og:description\" content=\"Estamos creando JAKAWI, una nueva forma de descubrir experiencias, lugares y oportunidades en tu ciudad.\">",
+      "<meta property=\"og:image\" data-inertia=\"og:image\" content=\"https://img.jakawi.com/OBomhynTpeAcqPj3Sm76NGWNKq325RdRiExsL1gQOrk/rs:fill:1200:630/q:85/bg:fffdf9/f:jpg/plain/s3://jakawi-media/club/landings/1/cover/c60f97c0-084f-4c6d-a743-82ce323224f9.webp\">"
+    ]
+  },
+  {
+    "code": "NGDoyetE",
+    "ua": "facebookexternalhit/1.1",
+    "status": 200,
+    "final_path": "/",
+    "og": [
+      "<meta property=\"og:type\" data-inertia=\"og:type\" content=\"website\">",
+      "<meta property=\"og:site_name\" data-inertia=\"og:site_name\" content=\"JAKAWI CLUB\">",
+      "<meta property=\"og:title\" data-inertia=\"og:title\" content=\"JAKAWI Cochabamba | Reserva gratis tu lugar en el webinar\">",
+      "<meta property=\"og:description\" data-inertia=\"og:description\" content=\"Estamos creando JAKAWI, una nueva forma de descubrir experiencias, lugares y oportunidades en tu ciudad.\">",
+      "<meta property=\"og:image\" data-inertia=\"og:image\" content=\"https://img.jakawi.com/OBomhynTpeAcqPj3Sm76NGWNKq325RdRiExsL1gQOrk/rs:fill:1200:630/q:85/bg:fffdf9/f:jpg/plain/s3://jakawi-media/club/landings/1/cover/c60f97c0-084f-4c6d-a743-82ce323224f9.webp\">"
+    ]
+  },
+  {
+    "code": "Ms8xvfMr",
+    "ua": "WhatsApp/2.24",
+    "status": 200,
+    "final_path": "/l/dossis-43-cafe-y-antojo",
+    "og": [
+      "<meta data-inertia=\"og:type\" property=\"og:type\" content=\"website\">",
+      "<meta data-inertia=\"og:title\" property=\"og:title\" content=\"TU CAF\u00c9 PIDE ALGO PARA ACOMPA\u00d1AR | JAKAWI\">",
+      "<meta data-inertia=\"og:description\" property=\"og:description\" content=\"\u00bfSe te antoja algo dulce o salado? Haz una parada en Cochabamba y acompa\u00f1a tu bebida con un bocado del d\u00eda.\">",
+      "<meta data-inertia=\"og:image\" property=\"og:image\" content=\"https://img.jakawi.com/cha8jObwozRiNxg9hrER0XTt0EGBH7-KFDu1f-g6DNM/rs:fill:1200:630:1/q:85/f:jpg/plain/s3://jakawi-media/landings/2/cover/5590c3a9-5064-429d-afec-86f356662b91.webp\">",
+      "<meta data-inertia=\"og:image:width\" property=\"og:image:width\" content=\"1200\">",
+      "<meta data-inertia=\"og:image:height\" property=\"og:image:height\" content=\"630\">",
+      "<meta data-inertia=\"og:image:type\" property=\"og:image:type\" content=\"image/jpeg\">",
+      "<meta data-inertia=\"og:image:alt\" property=\"og:image:alt\" content=\"Tu pr\u00f3xima parada tiene sabor a caf\u00e9. \u00b7 JAKAWI\">",
+      "<meta data-inertia=\"og:url\" property=\"og:url\" content=\"https://jakawi.com/l/dossis-43-cafe-y-antojo\">",
+      "<meta data-inertia=\"og:site_name\" property=\"og:site_name\" content=\"JAKAWI\">"
+    ]
+  },
+  {
+    "code": "Ms8xvfMr",
+    "ua": "facebookexternalhit/1.1",
+    "status": 200,
+    "final_path": "/l/dossis-43-cafe-y-antojo",
+    "og": [
+      "<meta data-inertia=\"og:type\" property=\"og:type\" content=\"website\">",
+      "<meta data-inertia=\"og:title\" property=\"og:title\" content=\"TU CAF\u00c9 PIDE ALGO PARA ACOMPA\u00d1AR | JAKAWI\">",
+      "<meta data-inertia=\"og:description\" property=\"og:description\" content=\"\u00bfSe te antoja algo dulce o salado? Haz una parada en Cochabamba y acompa\u00f1a tu bebida con un bocado del d\u00eda.\">",
+      "<meta data-inertia=\"og:image\" property=\"og:image\" content=\"https://img.jakawi.com/cha8jObwozRiNxg9hrER0XTt0EGBH7-KFDu1f-g6DNM/rs:fill:1200:630:1/q:85/f:jpg/plain/s3://jakawi-media/landings/2/cover/5590c3a9-5064-429d-afec-86f356662b91.webp\">",
+      "<meta data-inertia=\"og:image:width\" property=\"og:image:width\" content=\"1200\">",
+      "<meta data-inertia=\"og:image:height\" property=\"og:image:height\" content=\"630\">",
+      "<meta data-inertia=\"og:image:type\" property=\"og:image:type\" content=\"image/jpeg\">",
+      "<meta data-inertia=\"og:image:alt\" property=\"og:image:alt\" content=\"Tu pr\u00f3xima parada tiene sabor a caf\u00e9. \u00b7 JAKAWI\">",
+      "<meta data-inertia=\"og:url\" property=\"og:url\" content=\"https://jakawi.com/l/dossis-43-cafe-y-antojo\">",
+      "<meta data-inertia=\"og:site_name\" property=\"og:site_name\" content=\"JAKAWI\">"
+    ]
+  }
+]

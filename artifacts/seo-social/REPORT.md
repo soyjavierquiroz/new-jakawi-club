@@ -1,0 +1,17 @@
+# SEO y enlaces compartidos CLUB
+
+SEO inicial Laravel: title, description, canonical, robots, Open Graph completo y Twitter. Home y su slug comparten canonical `/`; otras landings tienen canonical propio sin parámetros. Edición SEO opcional reutiliza el snapshot comercial; las personalizaciones existentes se conservan. Guardar y publicar siguen separados. Administración, confirmaciones y previews mantienen noindex.
+
+Imagen social independiente de VSL/poster: imagen promocional, o marca si falta. JPEG 1200×630 con upscale firmado permanente en imgproxy. Se reutiliza el bucket MinIO existente. `media:prepare-social` copia los medios locales existentes bajo `club/social/{hash}` sin modificar los originales ni los snapshots. Ese prefijo estable queda fuera de la recolección de uploads temporales y portadas huérfanas. No hay almacenamiento ni dependencias nuevas. Las URLs imgproxy sincronizadas de COM conservan su objeto original al generar la variante social de los estados no disponibles.
+
+Antes de cambiar los redirects se siguieron las cadenas reales con WhatsApp/2.24 y facebookexternalhit/1.1 (ver baseline-redirects.json). CLUB llega a su landing pública y COM llega a su OG comercial JPEG 1200×630. Se conserva el 302 para todos los clientes activos, incluidos crawlers: no se añade respuesta diferenciada ni pantalla intermedia. CLUB mantiene su ruta histórica de referido; COM mantiene `club_ref`. Los estados pausado/finalizado/retirado entregan HTML con OG de no disponibilidad, sin redirección ni clic, noindex y canonical de su landing. No se modificaron COM, CRM, SSO ni comisiones.
+
+Validación: TypeScript y Vite secuenciales; 154 comprobaciones de catálogo/SEO y 578 del editor/landings en esquemas PostgreSQL efímeros, sin cuentas LIVE ni correos. Se comprueban HTML sin JS, otra landing publicada, home/slug, borradores/snapshots, previews privadas, estados, ambos tipos de enlace, crawlers y navegador, atribución, cero clics de crawler y un clic por GET humano, códigos históricos y conversiones intactos. Se corrigieron los montajes de documentación del runner de landings. Los verificadores base ahora aceptan el título comercial en lugar de exigir el título genérico del motor.
+
+Imágenes reales de marca, CLUB y COM: HTTPS público, HTTP 200, image/jpeg, 1200×630, sin cookies, sin tokens temporales. Solo existe una landing publicada en LIVE; la segunda y los estados no disponibles se prueban de manera aislada, sin publicar fixtures.
+
+Límite de evidencia: seguir el 302 y leer etiquetas con un User-Agent social no acredita una tarjeta visual real. El acceso al Sharing Debugger de Meta devolvió HTTP 429; no hay sesión de WhatsApp conectada. La verificación visual real en esas plataformas queda pendiente.
+
+Despliegue exclusivo de CLUB: assets conservando chunks anteriores, manifest al final, caché de vistas y reinicio de app para OPcache. Sin migraciones ni cambios de entorno, red o Traefik. `scripts/check-seo-social.sh` comprueba metadatos tras React y navegación Inertia, y el editor con fixture de navegador; `scripts/seo-live-state.php` compara únicamente hashes de landings, snapshots, enlaces, contadores y eventos, sin extraer datos personales. El sello final `LIVE.json` se excluye de Git para evitar autorreferencia.
+
+Rollback: restaurar el código del commit anterior y su manifest de assets, regenerar vistas y reiniciar únicamente app. Los objetos de marca copiados son inmutables y pueden permanecer sin afectar la aplicación anterior.

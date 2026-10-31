@@ -22,7 +22,7 @@ def get(url, binary=False, **headers):
         return response.status, body if binary else body.decode()
 
 status, html = get('http://127.0.0.1:18082/')
-assert status == 200 and 'JAKAWI Launch Engine' in html
+assert status == 200 and '<title>' in html and 'property="og:title"' in html and 'rel="canonical"' in html
 assert 'id="app"' in html and '/build/assets/' in html
 
 class PageParser(HTMLParser):

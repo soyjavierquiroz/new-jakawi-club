@@ -66,7 +66,7 @@ for hostname in ['jakawi.club', 'www.jakawi.club']:
             }
 
 status, headers, html = get('https://jakawi.club/')
-assert status == 200 and 'JAKAWI Launch Engine' in html
+assert status == 200 and '<title>' in html and 'property="og:title"' in html and 'rel="canonical"' in html
 urls = re.findall(r'(?:href|src)="([^"]+/build/assets/[^"]+)"', html)
 assert urls and all(url.startswith('https://jakawi.club/') for url in urls), urls
 assert headers.get('Set-Cookie') and 'secure' in headers['Set-Cookie'].lower()

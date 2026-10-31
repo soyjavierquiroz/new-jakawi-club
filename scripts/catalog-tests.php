@@ -110,7 +110,7 @@ function catalogSnapshot(): string { return DB::table('commercial_offers')->orde
 function sync(): array { return app(App\Services\ComCatalogSync::class)->run(); }
 try {
     DB::statement('CREATE SCHEMA '.$schema);
-    config(['database.connections.pgsql.search_path'=>$schema,'commercial.secret_file'=>'/tmp/commercial-test-secret','identity.enabled'=>false]);
+    config(['database.connections.pgsql.search_path'=>$schema,'commercial.secret_file'=>'/tmp/commercial-test-secret','identity.enabled'=>false,'media.imgproxy_key'=>str_repeat('ab',32),'media.imgproxy_salt'=>str_repeat('cd',32)]);
     DB::purge('pgsql');
     check(DB::selectOne('select current_schema() as name')->name===$schema
         && User::resolveConnection()->selectOne('select current_schema() as name')->name===$schema,
@@ -251,14 +251,14 @@ try {
     $savedCard=$offers->present($offers->query()->where('key',$club->key)->first());
     check($savedCard===$oldCard || ($savedCard['name']===$oldCard['name'] && $savedCard['short_description']===$oldCard['short_description'] && $savedCard['image_url']===$oldCard['image_url']),'saving and scheduled sync do not leak commercial draft');
     $preview=payload(web('GET',$base.'/preview'));
-    check($preview['props']['landing']['social']['name']===$draft['seo']['title'] && $preview['props']['landing']['social']['image_url']===$draft['commercial']['image'],'protected preview resolves draft commercial fields');
+    check($preview['props']['landing']['social']['name']===$draft['seo']['title'] && $preview['props']['landing']['social']['image_url']===App\Support\LandingCommercial::socialImage($draft),'protected preview resolves draft commercial fields');
     check(!str_contains(web('GET','/',[],false)->getContent(),$draft['seo']['title']),'public HTML social metadata exclude draft');
     check(web('POST',$base.'/publicar',['revision'=>$landing->revision])->isRedirect(),'publish commercial snapshot through existing operation');
     $landing->refresh();
     $card=$offers->present($offers->query()->where('key',$club->key)->first());
     check($card['name']===$draft['seo']['title'] && $card['short_description']===$draft['commercial']['description'] && $card['image_url']===$draft['commercial']['image'],'publishing immediately updates catalog title description image');
     $html=web('GET','/',[],false)->getContent();
-    check(str_contains($html,'property="og:title" data-inertia="og:title" content="'.$card['name'].'"') && str_contains($html,'property="og:image" data-inertia="og:image" content="https://jakawi.club/marketing/poster-fixture.png"') && str_contains($html,'name="twitter:description" data-inertia="twitter:description" content="'.$card['short_description'].'"'),'server HTML prepares social metadata without JavaScript');
+    check(str_contains($html,'property="og:title" data-inertia="og:title" content="'.$card['name'].'"') && str_contains($html,'property="og:image" data-inertia="og:image" content="'.App\Support\LandingCommercial::socialImage($draft).'"') && str_contains($html,'name="twitter:description" data-inertia="twitter:description" content="'.App\Support\LandingSeo::forLanding($landing)['short_description'].'"'),'server HTML prepares social metadata without JavaScript');
     $editPath=route('landings.edit',$landing,false);
     $editor=payload(web('GET',$editPath));
     $ownCard=$card;
@@ -281,7 +281,7 @@ try {
     check(App\Support\LandingCommercial::forLanding($landing)['name']==='Nombre público publicado','public name fallback is frozen in snapshot and never uses draft title');
     check(App\Support\LandingCommercial::text('<b>Hola</b> &amp; ciudad\n segura',200)==='Hola & ciudad\n segura','legacy text is stripped and entities decoded');
     $legacyHtml=web('GET','/',[],false)->getContent();
-    check(str_contains($legacyHtml,'https://jakawi.club/marketing/club-card.png'),'historical social image has local brand fallback');
+    check(str_contains($legacyHtml,App\Support\LandingCommercial::socialImage([])),'historical social image has local brand fallback');
     foreach (['javascript:alert(1)','/marketing/missing.png','/marketing/../private.png'] as $invalidImage) {
         $invalid=$draft;$invalid['commercial']['image']=$invalidImage;
         $beforeInvalid=$landing->fresh()->configuration;
@@ -299,6 +299,7 @@ try {
     $captureCards=['own'=>$ownCard,'poster'=>$posterCard,'legacy'=>$legacyCard,'editor'=>$editor,'preview'=>$preview];
     file_put_contents('/evidence/capture-cards-fixtures.json',json_encode($captureCards,JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE));
     if (getenv('JAKAWI_MEDIA_TESTS') === '1') require '/tests/media-tests.php';
+    if (getenv('JAKAWI_SEO_TESTS') === '1') require '/tests/seo-social-tests.php';
     // Enough isolated opportunities to exercise actual server pagination.
     $many=$items;for($id=10;$id<=24;$id++)$many[]=item($id);
     feed($many,5);sync();

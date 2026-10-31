@@ -12,6 +12,8 @@ docker run --rm --name jakawi-club-landing-tests --network jakawi-club-private \
     --env BCRYPT_ROUNDS=4 \
     --volume /opt/sites/jakawi.club/app:/var/www/html:ro \
     --volume /opt/sites/jakawi.club/scripts:/tests:ro \
+    --volume /opt/sites/jakawi.club/docs/landings:/var/www/docs/landings:ro \
+    --volume /opt/sites/jakawi.club/docs:/reference:ro \
     --volume /opt/sites/jakawi.club/scripts/fixtures:/var/www/html/public/marketing:ro \
     --volume "$evidence_dir:/evidence" \
     --tmpfs /var/www/html/storage:rw,mode=1777,size=32m \
