@@ -14,6 +14,10 @@ GC solo enumera `club/tmp` y `club/landings`, y sus marcadores privados viven en
 
 Se añade el adaptador S3 de Flysystem, GD/EXIF al runtime PHP y límites HTTP de 12 MiB para admitir multipart con archivos de 10 MiB. La imagen PHP nueva se construye y prueba con otro tag antes de reemplazar el tag de runtime usado por los comandos existentes de CLUB; no se cambia el código de CRM ni sus colas.
 
-La activación real exige las credenciales exclusivas indicadas en PROVISIONING.md y el smoke de un único objeto. Hasta completar esa comprobación no se declara upload LIVE ni URL imgproxy verificada.
+El propietario autorizó temporalmente las credenciales existentes de COM; se aplican únicamente en la configuración privada de CLUB y no se crean usuarios, políticas ni buckets. El smoke de un único objeto privado pasó: escritura club/tmp, rechazo anónimo, thumbnail/card WebP y social JPEG 1200×630 por imgproxy HTTP 200; limpieza controlada confirmada.
 
-Validación final aislada: 147 comprobaciones de medios/catálogo, 578 del editor y contratos históricos, TypeScript, Vite y Chromium a 390/1440, todas satisfactorias. Las pruebas de navegador interceptan todos los uploads y guardados; las URLs imgproxy de esos fixtures no acreditan acceso real. No se ha creado el objeto de smoke LIVE porque falta la credencial exclusiva.
+Validación final aislada: 147 comprobaciones de medios/catálogo, 578 del editor y contratos históricos, TypeScript, Vite y Chromium a 390/1440, todas satisfactorias. Las pruebas de navegador interceptan todos los uploads y guardados; las URLs imgproxy de esos fixtures no acreditan acceso real. La prueba real autorizada ya confirmó MinIO e imgproxy y retiró su único objeto temporal.
+
+Se añadió una comprobación focalizada de JPEG real de 24 MP con orientación EXIF, en un proceso PHP fresco y límite de producción de 192 MiB. La normalización reduce el lienzo antes de girarlo para no duplicar la imagen completa. El test usa exclusivamente tmpfs y ninguna conexión de base de datos.
+
+Despliegue: `scripts/verify-media-live.py baseline` conserva el baseline propio; `scripts/deploy-media.sh` publica solo CLUB tras el smoke. `scripts/check-media-visual.sh --live` usa fixtures interceptados sobre los assets LIVE. `scripts/verify-media-live.py verify` comprueba SHA remoto, código montado, assets HTTPS, runtime GD/S3, eliminación del objeto de smoke, snapshots/enlaces/ofertas COM intactos y base de datos sin reinicio. La evidencia LIVE queda ignorada para evitar autorreferencia.

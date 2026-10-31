@@ -18,7 +18,9 @@ assert json.loads((out/'browser-preview.json').read_text())['no_live_mutations']
 assert json.loads((out/'tests.json').read_text())['live_fixtures']==0
 assert Path('/srv/sites/jakawi.club/secrets/media.env').is_file()
 PY
-mkdir -m 0700 "$private_dir"
+test -f "$private_dir/baseline.json"
+test ! -e "$private_dir/vendor"
+test ! -e "$private_dir/build"
 # Preserve only CLUB's runtime, vendor, assets and container state; no shared services.
 docker image inspect jakawi-club-php:8.4-base-v1 --format '{{.Id}}' > "$private_dir/php-image-id"
 python3 - <<'BASELINE'

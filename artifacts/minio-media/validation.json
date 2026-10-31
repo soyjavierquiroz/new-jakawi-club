@@ -10,6 +10,8 @@
   "browser_preview": "passed",
   "live_test_accounts": 0,
   "live_test_landings": 0,
-  "live_storage_test": "pending exclusive CLUB credentials",
-  "deployment": "not activated"
+  "live_storage_test": "passed: one private object under club/tmp, all imgproxy presets HTTP 200, controlled cleanup",
+  "deployment": "ready for CLUB-only release",
+  "credential_mode": "owner_authorized_temporary_shared",
+  "jpeg_24mp_exif_memory": "passed with 192M PHP memory limit in a fresh stateless test process"
 }

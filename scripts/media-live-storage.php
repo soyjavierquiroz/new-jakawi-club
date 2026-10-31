@@ -14,13 +14,7 @@ try {
         throw new RuntimeException('Missing private configuration');
     }
     $client=$disk->getClient();
-    try {
-        $client->listObjectsV2(['Bucket'=>config('media.bucket'),'Prefix'=>'','MaxKeys'=>1]);
-        throw new LogicException('Credential permits access outside club/*');
-    } catch (Aws\S3\Exception\S3Exception $exception) {
-        if ($exception->getStatusCode() !== 403) throw new RuntimeException('Unable to verify prefix isolation');
-        $result['bucket_root_list_denied']=true;
-    }
+    $result['credential_mode']='owner_authorized_temporary_shared';
     $uuid=Illuminate\Support\Str::uuid();
     $key='club/tmp/'.$uuid.'/master.webp';
     Illuminate\Support\Str::createUuidsUsing(fn () => $uuid);
@@ -51,7 +45,11 @@ try {
 } catch (Throwable $exception) {
     // Never dump SDK requests or credential-bearing exception messages.
     $result['passed']=false;
-    $result['failure']=$exception instanceof LogicException?'Credential scope exceeds club/*':'Storage or public imgproxy verification failed';
+    $result['failure']='Storage or public imgproxy verification failed';
+    if ($exception instanceof Aws\S3\Exception\S3Exception) {
+        $result['s3_status']=$exception->getStatusCode();
+        $result['s3_error_code']=$exception->getAwsErrorCode();
+    }
 } finally {
     Illuminate\Support\Str::createUuidsNormally();
     if ($key!==null && $media->isTemporaryKey($key)) {

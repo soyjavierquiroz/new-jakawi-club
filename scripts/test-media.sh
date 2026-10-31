@@ -27,4 +27,4 @@ docker run --rm --name jakawi-club-media-tests --network jakawi-club-private \
     --volume "$evidence_dir:/evidence" \
     --tmpfs /var/www/html/storage:rw,mode=1777,size=32m \
     --tmpfs /var/www/html/bootstrap/cache:rw,mode=1777,size=8m \
-    jakawi-club-php:8.4-media-v1 php "/tests/$runner"
+    jakawi-club-php:8.4-media-v1 sh -c 'php /tests/media-normalization-tests.php && php "$1"' media-tests "/tests/$runner"

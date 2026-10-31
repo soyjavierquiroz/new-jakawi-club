@@ -69,25 +69,28 @@ final class MediaUploadService
     {
         $this->validate($file);
         $image = imagecreatefromstring(file_get_contents($file->getRealPath()));
-        if ($file->getMimeType() === 'image/jpeg') {
-            $orientation = (int) (@exif_read_data($file->getRealPath())['Orientation'] ?? 1);
-            if (in_array($orientation, [2, 4, 5, 7], true)) {
-                imageflip($image, IMG_FLIP_HORIZONTAL);
-            }
-            $angle = match ($orientation) {
-                3, 4 => 180, 5, 6 => -90, 7, 8 => 90, default => 0
-            };
-            if ($angle) {
-                $rotated = imagerotate($image, $angle, 0);
-                imagedestroy($image);
-                $image = $rotated;
-            }
-        }
         $ratio = min(1, 1600 / max(imagesx($image), imagesy($image)));
         $output = imagecreatetruecolor(max(1, (int) round(imagesx($image) * $ratio)), max(1, (int) round(imagesy($image) * $ratio)));
         imagealphablending($output, false);
         imagesavealpha($output, true);
         imagecopyresampled($output, $image, 0, 0, 0, 0, imagesx($output), imagesy($output), imagesx($image), imagesy($image));
+        // Resize before EXIF rotation: never allocate two full 24 MP canvases.
+        imagedestroy($image);
+        unset($image);
+        if ($file->getMimeType() === 'image/jpeg') {
+            $orientation = (int) (@exif_read_data($file->getRealPath())['Orientation'] ?? 1);
+            if (in_array($orientation, [2, 4, 5, 7], true)) {
+                imageflip($output, IMG_FLIP_HORIZONTAL);
+            }
+            $angle = match ($orientation) {
+                3, 4 => 180, 5, 6 => -90, 7, 8 => 90, default => 0
+            };
+            if ($angle) {
+                $rotated = imagerotate($output, $angle, 0);
+                imagedestroy($output);
+                $output = $rotated;
+            }
+        }
         ob_start();
         try {
             if (! imagewebp($output, null, 82)) {
@@ -97,7 +100,6 @@ final class MediaUploadService
             return ob_get_contents();
         } finally {
             ob_end_clean();
-            imagedestroy($image);
             imagedestroy($output);
         }
     }

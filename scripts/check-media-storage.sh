@@ -5,13 +5,13 @@ python3 - <<'PY'
 from pathlib import Path
 import json
 p=Path('/srv/sites/jakawi.club/secrets/media.env')
-if not p.is_file(): raise SystemExit('Missing exclusive CLUB MinIO credentials in private media.env.')
+if not p.is_file(): raise SystemExit('Missing authorized MinIO credentials in private media.env.')
 if p.stat().st_mode & 0o077 or p.stat().st_uid != 0: raise SystemExit('Private media.env must be owned by root with mode 0600.')
 values={line.split('=',1)[0]:line.split('=',1)[1].strip().strip('"').strip("'") for line in p.read_text().splitlines() if '=' in line and not line.startswith('#')}
 com=json.loads(Path('/opt/sites/jakawi.com/compose.yaml').read_text())['services']['app']['environment']
 for key in ['MEDIA_AWS_ACCESS_KEY_ID','MEDIA_AWS_SECRET_ACCESS_KEY']:
-    if not values.get(key) or values[key]==com.get(key): raise SystemExit('CLUB must use nonempty exclusive MinIO credentials.')
-print('Exclusive CLUB credentials configured; no values emitted.')
+    if not values.get(key) or values[key]!=com.get(key): raise SystemExit('Credentials must match the owner-authorized temporary COM configuration.')
+print('Owner-authorized shared credentials configured privately; CLUB object prefixes remain isolated.')
 PY
 docker run --rm --name jakawi-club-media-storage-check --network jakawi-club-egress \
   --memory 256m --memory-swap 320m --cpus 0.65 --pids-limit 96 \

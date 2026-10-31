@@ -1,15 +1,11 @@
-# Credencial privada exclusiva de CLUB
+# Configuración privada de imágenes CLUB
 
-Bloqueo de activación: falta `MEDIA_AWS_ACCESS_KEY_ID` / `MEDIA_AWS_SECRET_ACCESS_KEY` exclusivos de CLUB. No existe un cliente administrativo MinIO configurado en este host. No reutilizar las claves S3 de COM.
+El propietario autorizó TEMPORALMENTE reutilizar las credenciales MinIO existentes de COM, el mismo bucket y la firma real de imgproxy. No se crean usuarios, políticas ni buckets. No se modifican COM, imgproxy ni Traefik.
 
-El operador MinIO debe crear una credencial asociada exclusivamente a la política `club-minio-policy.json` de este directorio, limitada a `jakawi-media/club/*`, y entregarla por el canal privado en:
+Las credenciales se transfieren directamente en el servidor, sin mostrarlas, a `/srv/sites/jakawi.club/secrets/media.env`, dueño root, modo 0600. Incluye MEDIA_AWS_ACCESS_KEY_ID y MEDIA_AWS_SECRET_ACCESS_KEY, el endpoint existente, región us-east-1, bucket jakawi-media y path-style. La firma real reside en `/srv/sites/jakawi.club/secrets/imgproxy.env`, modo 0600. Ambos archivos están fuera de Git.
 
-`/srv/sites/jakawi.club/secrets/media.env`, dueño root, modo 0600.
+El aislamiento operativo se aplica a los objetos `club/tmp/*`, `club/landings/*` y marcadores `club/gc/*`; no se afirma aislamiento IAM con esta credencial compartida. Cada aplicación conserva su propio GC.
 
-Ese archivo admite las dos variables secretas anteriores. La configuración no secreta ya está definida en `config/media.php` y `config/filesystems.php`; no hace falta incluir URLs manualmente en el editor.
+`scripts/check-media-storage.sh` valida la configuración autorizada, almacena un único objeto conocido en `club/tmp/`, verifica que sigue privado y comprueba las tres imágenes públicas por imgproxy, incluida social JPEG 1200×630. El objeto se elimina en finally. No crea cuentas ni landings LIVE. No ejecutar esta prueba repetidamente durante el mismo despliegue; conservar su evidencia.
 
-La firma real de imgproxy se ha transferido directamente desde la configuración privada existente a `/srv/sites/jakawi.club/secrets/imgproxy.env`, modo 0600, sin copiar claves S3 de COM. No inventar una pareja de firma nueva.
-
-Antes de activar, `scripts/check-media-storage.sh` exige claves exclusivas, comprueba que la credencial no puede listar la raíz del bucket, almacena exactamente un objeto aleatorio conocido en `club/tmp/`, verifica las tres imágenes públicas por imgproxy (OG JPEG 1200×630) y elimina ese mismo objeto en finally. No crea usuarios, landings ni objetos permanentes LIVE. No ejecutar el GC destructivo como prueba LIVE.
-
-Si imgproxy no puede leer `club/*`, el operador del almacenamiento debe otorgar lectura de ese prefijo a la identidad existente de imgproxy. CLUB no cambia el servicio imgproxy ni COM.
+Si aparece AccessDenied al escribir bajo club/* o al servir mediante imgproxy, se informa ese bloqueo sin modificar políticas globales.

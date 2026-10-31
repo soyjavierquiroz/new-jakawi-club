@@ -1,0 +1,10 @@
+{
+    "passed": true,
+    "pixels": 24000000,
+    "orientation": 6,
+    "width": 1067,
+    "height": 1600,
+    "memory_limit": "192M",
+    "storage": "container tmpfs only",
+    "database_writes": 0
+}
