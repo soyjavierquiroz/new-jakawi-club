@@ -14,14 +14,14 @@ use Symfony\Component\HttpFoundation\Response;
 
 final class JakawiLoginController extends Controller
 {
-    public function start(Request $request): Response
+    public function start(Request $request, ?array $checkout = null): Response
     {
         try {
             $client = new JakawiOidc;
             $url = $client->begin();
             $request->session()->regenerate(true);
             $request->session()->put('jakawi_oidc', Crypt::encryptString(json_encode([
-                'expires_at' => time() + 600, 'values' => $client->transaction,
+                'expires_at' => time() + 600, 'values' => $client->transaction, 'checkout' => $checkout,
             ], JSON_THROW_ON_ERROR)));
             return $request->header('X-Inertia') ? Inertia::location($url) : redirect()->away($url);
         } catch (\Throwable) {
@@ -45,7 +45,18 @@ final class JakawiLoginController extends Controller
             if ($request->query('error') !== null) return $this->failure();
             $code = $request->query('code');
             if (! is_string($code) || $code === '' || strlen($code) > 8192) return $this->failure();
+            if (! isset($pending['checkout']) && $request->user()) return redirect()->route('dashboard');
             $subject = (new JakawiOidc)->complete($values, $code, $state);
+            if (isset($pending['checkout'])) {
+                $local = $request->user();
+                if (! $local || $local->uuid !== $pending['checkout']['club_user_id']
+                    || $subject !== $pending['checkout']['subject'] || $local->global_subject_id !== $subject
+                    || ! $local->activated_at || ! $local->hasVerifiedEmail()
+                    || ! $identity->refresh($local)['connected']) {
+                    return redirect()->route('dashboard')->with('status', 'La sesión JAKAWI.COM no corresponde a tu cuenta vinculada. Cierra esa sesión en COM e inténtalo de nuevo.');
+                }
+                return redirect()->away('https://jakawi.com/membresia/checkout');
+            }
             // Identity is resolved solely by the signed subject, never by email/profile claims.
             $user = User::where('global_subject_id', $subject)->first();
             if (! $user) {

@@ -34,7 +34,9 @@ class CommercialEventController extends Controller
         };
         $digest = hash('sha256', json_encode($canonicalize($object), JSON_THROW_ON_ERROR | JSON_PRESERVE_ZERO_FRACTION));
         $data = json_decode($raw, true, 32, JSON_THROW_ON_ERROR);
+        $membership = ($data['event_type'] ?? null) === 'membership.activated';
         $allowed = ['schema_version', 'event_id', 'event_type', 'occurred_at', 'com_reference', 'partner', 'origin', 'referral', 'global_subject_id', 'conversion_status'];
+        if ($membership) $allowed = ['schema_version', 'event_id', 'event_type', 'occurred_at', 'com_reference', 'global_subject_id', 'membership_reference', 'payment_reference'];
         if (array_diff(array_keys($data), $allowed)) {
             throw ValidationException::withMessages(['payload' => 'Unknown fields are not accepted in v1.']);
         }
@@ -56,7 +58,7 @@ class CommercialEventController extends Controller
             'event_type' => ['required', 'string', 'max:100', 'regex:/^[a-z][a-z0-9._-]*$/D'],
             'occurred_at' => ['required', 'string', 'regex:/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,6})?(?:Z|[+-]\d{2}:\d{2})$/D', 'date', 'before_or_equal:'.now()->addMinutes(5)->toIso8601String()],
             'com_reference' => ['required', 'array:type,id'],
-            'com_reference.type' => ['required', 'string', 'max:64', 'regex:/^[a-z][a-z0-9._-]*$/D'],
+            'com_reference.type' => ['required', ...($membership ? ['in:membership'] : []), 'string', 'max:64', 'regex:/^[a-z][a-z0-9._-]*$/D'],
             'com_reference.id' => ['required', ...$identifier],
             'partner' => ['sometimes', 'nullable', 'array:id,name'],
             'partner.id' => ['required_with:partner', ...$identifier],
@@ -67,9 +69,12 @@ class CommercialEventController extends Controller
             'referral' => ['sometimes', 'nullable', 'array:com_referral_id,club_referral_code'],
             'referral.com_referral_id' => ['sometimes', 'nullable', ...$identifier],
             'referral.club_referral_code' => ['sometimes', 'nullable', 'string', 'regex:/^[A-Z0-9]{12}$/D'],
-            'global_subject_id' => ['sometimes', 'nullable', 'uuid'],
-            'conversion_status' => ['required', 'string', 'max:64', 'regex:/^[a-z][a-z0-9._-]*$/D'],
+            'global_subject_id' => [$membership ? 'required' : 'sometimes', ...($membership ? [] : ['nullable']), 'uuid'],
+            'membership_reference' => $membership ? ['required', ...$identifier, 'same:com_reference.id'] : ['prohibited'],
+            'payment_reference' => $membership ? ['required', ...$identifier] : ['prohibited'],
+            'conversion_status' => [$membership ? 'prohibited' : 'required', 'string', 'max:64', 'regex:/^[a-z][a-z0-9._-]*$/D'],
         ])->validate();
+        if ($membership) $data['conversion_status'] = 'activated';
         $provenance = [
             'raw_body' => $raw, 'raw_body_sha256' => hash('sha256', $raw), 'payload_sha256' => $digest,
             'key_id' => $request->header('X-Jakawi-Com-Key-Id'), 'signed_at' => (int) $request->header('X-Jakawi-Com-Timestamp'),
@@ -95,7 +100,7 @@ class CommercialEventController extends Controller
                 'conversion_status' => $data['conversion_status'],
             ]);
             $event = DB::table('commercial_events')->where('source', 'jakawi.com')->where('event_id', $data['event_id'])->first();
-            if ($inserted) app(\App\Services\Commissions\CommissionEngine::class)->record($event);
+            if ($inserted && $event->event_type !== 'membership.activated') app(\App\Services\Commissions\CommissionEngine::class)->record($event);
             return $this->receipt($event, $digest, $provenance, (bool) $inserted);
         });
     }

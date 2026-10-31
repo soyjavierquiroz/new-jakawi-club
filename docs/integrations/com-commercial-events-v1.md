@@ -1,5 +1,10 @@
 # COM → CLUB: eventos comerciales v1
 
+Extensión Fase 08: `membership.activated` tiene el formato específico sin
+`conversion_status` y resolución por identidad descrito en
+[el contrato de membresías](club-membership-funnel-08.md). Las reglas históricas
+de atribución de operaciones de beneficios siguen vigentes.
+
 Receptor production: **`POST https://jakawi.club/internal/commercial/events`**.
 Sin barra final, query, cookies ni Bearer. HTTPS obligatorio. No usa CRM, identidad ni OIDC.
 Máximo 65 536 bytes UTF-8. `Content-Type: application/json`; `Accept: application/json`.

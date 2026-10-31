@@ -56,11 +56,12 @@ Route::get('/r/{code}', [ReferralController::class, 'show'])->where('code', '[A-
 Route::post('/preferencias', [ReferralController::class, 'preferences'])->middleware('throttle:30,1')->name('preferences');
 Route::get('/bienvenida', [RegistrationController::class, 'welcome'])->name('welcome');
 
+Route::get('/auth/jakawi/callback', [\App\Http\Controllers\JakawiLoginController::class, 'callback'])->middleware('throttle:20,1')->block(20, 10)->name('jakawi.callback');
+
 Route::middleware('guest')->group(function (): void {
     Route::post('/registro', [RegistrationController::class, 'store'])->middleware([RegistrationOpen::class, 'throttle:registration'])->name('register');
     Route::get('/login', [AuthController::class, 'login'])->name('login');
     Route::get('/auth/jakawi', [\App\Http\Controllers\JakawiLoginController::class, 'start'])->middleware('throttle:12,1')->block(20, 10)->name('jakawi.login');
-    Route::get('/auth/jakawi/callback', [\App\Http\Controllers\JakawiLoginController::class, 'callback'])->middleware('throttle:20,1')->block(20, 10)->name('jakawi.callback');
     Route::post('/login', [AuthController::class, 'authenticate'])->middleware('throttle:login');
     Route::get('/recuperar-password', [AuthController::class, 'forgot'])->name('password.request');
     Route::post('/recuperar-password', [AuthController::class, 'email'])->middleware('throttle:account-mail')->name('password.email');
@@ -76,6 +77,9 @@ Route::middleware('auth')->group(function (): void {
     Route::get('/dashboard', [DashboardController::class, 'show'])->middleware('verified')->name('dashboard');
     Route::patch('/perfil', [DashboardController::class, 'update'])->middleware('verified')->name('profile.update');
 });
+
+Route::post('/cuenta/membresia', \App\Http\Controllers\MembershipCheckoutController::class)
+    ->middleware(['auth', 'verified', \App\Http\Middleware\ActiveAffiliate::class, 'throttle:6,1'])->block(20, 10);
 
 Route::prefix('cuenta/jakawi')->middleware(['auth', 'verified'])->group(function (): void {
     Route::post('/activar', [\App\Http\Controllers\IdentityController::class, 'activate'])->middleware('throttle:6,1')->name('identity.activate');

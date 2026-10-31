@@ -432,3 +432,11 @@ TypeScript/build y `JAKAWI_SEO_TESTS=1 scripts/test-catalog.sh`, con
 `JAKAWI_EVIDENCE_DIR` apuntando a `artifacts/seo-social`. Verificar navegador con
 `scripts/check-seo-social.sh`, `/up` y el SHA LIVE. La tarjeta visual real en
 WhatsApp/Meta requiere una comprobación adicional en esas plataformas.
+
+### Membresías y resultados — Fase 08
+
+Entrada privada de Bs 100 en el dashboard, verificación SSO del sujeto y checkout
+único COM. QR todavía pendiente: no se promete cobro disponible. Mis resultados
+destaca leads captados y personas con membresía activada; el receptor comercial
+HMAC existente conserva activaciones pendientes de vínculo sin generar comisiones.
+[Contrato, pruebas y despliegue](docs/integrations/club-membership-funnel-08.md).

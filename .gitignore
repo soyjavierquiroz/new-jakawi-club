@@ -195,3 +195,10 @@ credentials.json
 /artifacts/seo-social/*fixtures.json
 /artifacts/seo-social/*fixture.html
 /artifacts/seo-social/*.png
+
+/artifacts/membership-funnel/LIVE.json
+/artifacts/membership-funnel/*fixtures.json
+/artifacts/membership-funnel/*.png
+/artifacts/membership-funnel/browser-live.json
+/artifacts/membership-funnel/validation.json
+/artifacts/membership-funnel/state-after.json

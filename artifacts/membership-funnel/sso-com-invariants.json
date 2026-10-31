@@ -1,0 +1,12 @@
+{
+  "original_com_users_unchanged": true,
+  "exactly_one_provisioned_user": true,
+  "new_user_not_admin": true,
+  "new_user_verified": true,
+  "new_links": true,
+  "one_checkout_intent": true,
+  "one_initiate_checkout": true,
+  "no_memberships": true,
+  "no_partner_roles": true,
+  "no_crm_deliveries": true
+}

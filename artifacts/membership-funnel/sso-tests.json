@@ -1,0 +1,9 @@
+{
+    "passed": 113,
+    "com_implementation": "deployed immutable COM image in disposable containers",
+    "com_sha": "98de3ee70b2e49d8e515e47f0f3afaecc1426d45",
+    "com_database": "dedicated disposable PostgreSQL",
+    "club_database": "isolated schema",
+    "live_users_created": 0,
+    "pilot_authorization_simulated": false
+}
