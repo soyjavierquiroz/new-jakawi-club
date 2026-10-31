@@ -1,10 +1,12 @@
+import { usePage } from '@inertiajs/react';
 import { Head, Link } from '@inertiajs/react';
 import { Footer, Header, Arrow } from '../components/UI';
 import { LandingVideo } from '../components/media/jakawi-vsl-player';
 import type { Landing, Launch } from '../types';
 export default function MembershipSales({ landing, launch, referral_code, commercial_image_url }: { landing: Landing; launch: Launch; referral_code: string | null; commercial_image_url: string | null }) {
     const c = landing.content;
-    const href = '/activar' + (referral_code ? '?ref=' + encodeURIComponent(referral_code) : '');
+    const ads = usePage().props.ads as { provider?: string } | undefined;
+    const href = (ads?.provider ? `/ads/${ads.provider}/activar` : '/activar') + (referral_code ? '?ref=' + encodeURIComponent(referral_code) : '');
     const cta = <Link href={href} className="btn btn-primary w-full sm:w-auto" aria-disabled={landing.preview} onClick={event => { if (landing.preview) event.preventDefault(); }}>Activar mi membresía <Arrow /></Link>;
     return <><Head title={landing.social?.name || c.seo.title}>
         <meta head-key="description" name="description" content={landing.social?.short_description || c.seo.description} />

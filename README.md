@@ -459,3 +459,10 @@ El acceso autenticado a `/activar` prepara o recupera la intención y muestra el
 directamente, sin pantalla «Tus datos». «Cambiar de cuenta» usa POST/CSRF, invalida
 la sesión y vuelve al checkout visitante sin reutilizar la compra anterior.
 [Pruebas y despliegue del checkout directo](artifacts/direct-checkout/REPORT.md).
+
+### Meta y TikTok Ads — Fase 09
+
+Rutas Ads diferenciadas con CMS/checkout compartido, permiso publicitario propio,
+Meta Pixel/CAPI y TikTok Pixel/Events API directas desde CLUB. Deshabilitados por
+defecto hasta credenciales CLUB y readiness de privacidad. Colas y scheduler
+existentes, sin servicios nuevos. [Implementación, configuración, pruebas y despliegue](artifacts/ads-phase09/REPORT.md).

@@ -222,3 +222,10 @@ credentials.json
 /artifacts/direct-checkout/LIVE.json
 /artifacts/direct-checkout/browser-live.json
 /artifacts/direct-checkout/validation.json
+
+/artifacts/ads-phase09/*fixtures.json
+/artifacts/ads-phase09/*.png
+/artifacts/ads-phase09/LIVE.json
+/artifacts/ads-phase09/browser-live.json
+
+/artifacts/ads-phase09/validation.json

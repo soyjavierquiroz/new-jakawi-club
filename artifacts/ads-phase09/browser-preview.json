@@ -1,0 +1,16 @@
+{
+  "checks": [
+    "sales 390",
+    "ads_rejected 390",
+    "ads_meta 390",
+    "ads_tiktok 390",
+    "sales 1440",
+    "ads_rejected 1440",
+    "ads_meta 1440",
+    "ads_tiktok 1440"
+  ],
+  "no_live_mutations": true,
+  "provider_requests_stubbed": true,
+  "runtimeErrors": [],
+  "failedAssets": []
+}

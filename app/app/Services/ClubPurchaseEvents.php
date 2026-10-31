@@ -55,6 +55,7 @@ final class ClubPurchaseEvents {
                     'membership_reference' => $data['membership_reference'], 'activated_at' => $activation ? $data['occurred_at'] : $purchase->activated_at,
                     'identity_status' => $activation ? $data['identity_status'] : 'linked', 'global_subject_id' => $data['global_subject_id']];
                 app(PublicMembershipCheckout::class)->apply($purchase, $state);
+                if ($activation) app(Advertising::class)->safely(fn () => app(Advertising::class)->record($purchase, 'Purchase', $data['occurred_at']));
             }
             // Membership facts never enter the commission engine.
             return response()->json(['event_id' => $data['event_id'], 'status' => $inserted ? 'accepted' : 'duplicate'], $inserted ? 201 : 200);

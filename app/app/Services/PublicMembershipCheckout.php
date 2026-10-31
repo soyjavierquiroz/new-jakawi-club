@@ -40,12 +40,17 @@ final class PublicMembershipCheckout {
                 app(MarketingAnalytics::class)->record('registration_completed', 'form', $landing);
             }
             $id = (string) Str::uuid();
-            return MembershipPurchase::create(['id' => $id, 'user_id' => $user?->id, 'buyer_email_digest' => hash_hmac('sha256', $data['email'], config('app.key')), 'intent' => [
+            $purchase = MembershipPurchase::create(['ad_visit_id' => app(Advertising::class)->safely(fn () => app(Advertising::class)->visit($request)?->id), 'id' => $id, 'user_id' => $user?->id, 'buyer_email_digest' => hash_hmac('sha256', $data['email'], config('app.key')), 'intent' => [
                 'club_reference' => $id, 'club_user_uuid' => $user?->uuid,
                 'guest_purchase_id' => $user ? null : (string) Str::uuid(),
                 'name' => $data['name'], 'email' => $data['email'], 'phone' => $data['phone'],
                 'amount' => '100.00', 'currency' => 'BOB', 'origin' => 'CLUB', 'claim_secret' => bin2hex(random_bytes(32)),
             ]]);
+            app(Advertising::class)->safely(function () use ($purchase): void {
+                app(Advertising::class)->record($purchase, 'Lead');
+                app(Advertising::class)->record($purchase, 'InitiateCheckout');
+            });
+            return $purchase;
         }, 3);
         $request->session()->put('membership_purchase', $purchase->id);
         return $purchase;

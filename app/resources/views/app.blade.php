@@ -8,6 +8,9 @@
         @else
             <meta name="robots" data-inertia="robots" content="noindex, nofollow">
         @endisset
+        @if(request()->is('ads/*/activar'))
+            <link rel="canonical" data-inertia="canonical" href="{{ rtrim(config('app.url'), '/') }}/activar">
+        @endif
         <link rel="icon" href="/jakawi-mark.svg" type="image/svg+xml">
         @viteReactRefresh
         @vite('resources/js/app.tsx')

@@ -56,6 +56,8 @@ Route::get('/r/{code}', [ReferralController::class, 'show'])->where('code', '[A-
 Route::post('/preferencias', [ReferralController::class, 'preferences'])->middleware('throttle:30,1')->name('preferences');
 Route::get('/bienvenida', [RegistrationController::class, 'welcome'])->name('welcome');
 
+Route::get('/ads/{provider}/{page}', [\App\Http\Controllers\AdsController::class, 'show'])->where('provider', 'meta|tiktok')->where('page', 'membresia|activar')->middleware('throttle:membership-checkout')->block(20, 10);
+
 Route::get('/activar', [\App\Http\Controllers\PublicMembershipController::class, 'show'])->middleware('throttle:membership-checkout')->block(20, 10)->name('membership.activate');
 
 Route::post('/activar/cambiar-cuenta', [\App\Http\Controllers\PublicMembershipController::class, 'switchAccount'])->middleware('throttle:membership-checkout')->block(20, 10);

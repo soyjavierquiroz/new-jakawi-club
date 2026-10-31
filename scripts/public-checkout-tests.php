@@ -252,6 +252,7 @@ try {
     $countBeforeRetry=App\Models\MembershipPurchase::where('user_id',$second->id)->count();
     web('GET','/activar');web('GET','/activar');
     check(App\Models\MembershipPurchase::where('user_id',$second->id)->count()===$countBeforeRetry,'retry of automatic creation preserves frozen payload and reference');
+    if (getenv('JAKAWI_ADS_TESTS') === '1') require '/tests/ads-tests.php';
     file_put_contents('/evidence/checkout-browser-fixtures.json',json_encode($fixtures,JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE));
     file_put_contents('/evidence/tests.json',json_encode(['passed'=>count($passed),'checks'=>$passed,'live_fixtures'=>0,'real_bank_payments'=>0,'outbound_hmac_verified'=>true],JSON_PRETTY_PRINT));
 } catch(Throwable $e) { fwrite(STDERR,get_class($e).' '.$e->getMessage().' at '.$e->getFile().':'.$e->getLine().PHP_EOL);$failed=true;

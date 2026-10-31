@@ -55,13 +55,17 @@ final class PublicMembershipController extends Controller {
         ])->toResponse($request)->withHeaders(['Cache-Control' => 'private, no-store']);
     }
     public function store(Request $request, PublicMembershipCheckout $checkout): RedirectResponse {
-        if ($request->user() && app(MemberActivation::class)->confirmed($request->user())) return redirect('/activar');
+        if ($request->user() && app(MemberActivation::class)->confirmed($request->user())) return redirect($this->destination($request));
         if (!$checkout->current($request)) {
             $purchase = $checkout->create($request, $this->buyerData($request));
         } else $purchase = $checkout->current($request);
         try { $checkout->sync($purchase); }
-        catch (\RuntimeException) { return redirect('/activar')->with('status', 'No pudimos conectar con el servicio de pagos. Tu compra se conserva. Vuelve a intentarlo.'); }
-        return redirect('/activar');
+        catch (\RuntimeException) { return redirect($this->destination($request))->with('status', 'No pudimos conectar con el servicio de pagos. Tu compra se conserva. Vuelve a intentarlo.'); }
+        return redirect($this->destination($request));
+    }
+    private function destination(Request $request): string {
+        $provider = $request->session()->get('ads_provider');
+        return in_array($provider, ['meta', 'tiktok'], true) ? '/ads/'.$provider.'/activar' : '/activar';
     }
     private function buyerData(Request $request): array {
         $source = $request->user() ? $request->user()->only(['name', 'email', 'phone']) : $request->only(['name', 'email', 'phone']);
@@ -83,12 +87,12 @@ final class PublicMembershipController extends Controller {
     public function receipt(Request $request, PublicMembershipCheckout $checkout): RedirectResponse {
         $purchase = $checkout->current($request); abort_unless($purchase, 404);
         $request->validate(['receipt' => ['required', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:10240']]);
-        if ($purchase->activated_at || $purchase->status === 'under_review') return redirect('/activar');
+        if ($purchase->activated_at || $purchase->status === 'under_review') return redirect($this->destination($request));
         $file = $request->file('receipt');
         abort_unless(in_array($file->getMimeType(), ['image/jpeg', 'image/png', 'application/pdf'], true), 422);
         try {
             $purchase = $checkout->sync($purchase);
-            if (!in_array($purchase->status, ['awaiting_payment', 'rejected'], true)) return redirect('/activar');
+            if (!in_array($purchase->status, ['awaiting_payment', 'rejected'], true)) return redirect($this->destination($request));
             $bytes = file_get_contents($file->getRealPath());
             $response = app(ClubPurchaseClient::class)->request('POST', '/'.$purchase->id.'/receipt', [
                 'content_base64' => base64_encode($bytes), 'sha256' => hash('sha256', $bytes),
@@ -96,9 +100,9 @@ final class PublicMembershipController extends Controller {
             // The upload temporary file is never promoted to public CLUB storage.
             $checkout->apply($purchase, $response->json());
         } catch (\RuntimeException) {
-            return redirect('/activar')->withErrors(['receipt' => 'No pudimos confirmar el envío. Actualiza el estado y vuelve a intentarlo con el mismo comprobante.']);
+            return redirect($this->destination($request))->withErrors(['receipt' => 'No pudimos confirmar el envío. Actualiza el estado y vuelve a intentarlo con el mismo comprobante.']);
         }
-        return redirect('/activar');
+        return redirect($this->destination($request));
     }
     public function qr(Request $request, PublicMembershipCheckout $checkout): \Symfony\Component\HttpFoundation\Response {
         $purchase = $checkout->current($request); abort_unless($purchase && $purchase->qr_ready && in_array($purchase->status, ['awaiting_payment', 'rejected'], true), 404);

@@ -29,6 +29,7 @@ return Application::configure(basePath: dirname(__DIR__))
                 | Request::HEADER_X_FORWARDED_PORT,
         );
 
+        $middleware->encryptCookies(except: ['_fbp', '_fbc', '_ttp']);
         $middleware->web(append: [HandleInertiaRequests::class]);
         $middleware->redirectUsersTo('/dashboard');
     })

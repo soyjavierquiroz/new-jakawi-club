@@ -11,4 +11,4 @@ docker run --rm --name jakawi-club-crm-worker \
   --volume /srv/sites/jakawi.club/bootstrap-cache:/var/www/html/bootstrap/cache:ro \
   --volume /srv/sites/jakawi.club/secrets/crm-hmac:/run/secrets/crm_club_hmac:ro \
   --workdir /var/www/html jakawi-club-php:8.4-base-v1 \
-  php -d memory_limit=96M artisan queue:work database --queue=crm --stop-when-empty --max-jobs=20 --max-time=40 --timeout=12 --tries=12 --sleep=1 --memory=90
+  php -d memory_limit=96M artisan queue:work database --queue=crm,ads --stop-when-empty --max-jobs=20 --max-time=40 --timeout=12 --tries=12 --sleep=1 --memory=90

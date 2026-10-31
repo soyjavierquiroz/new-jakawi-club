@@ -3,12 +3,13 @@ import type { ComponentType, ReactNode } from 'react';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import '../css/app.css';
+import Advertising from './components/Advertising';
 import type { Landing } from './types';
 
 function MetadataLayout({ children }: { children: ReactNode }) {
     const page = usePage();
     const landing = ['Welcome', 'MembershipSales'].includes(page.component) ? page.props.landing as Landing | undefined : undefined;
-    return <><Head><meta head-key="robots" name="robots" content={landing?.social?.robots || 'noindex, nofollow'} /></Head>{children}</>;
+    return <><Head><meta head-key="robots" name="robots" content={landing?.social?.robots || 'noindex, nofollow'} /></Head>{children}<Advertising /></>;
 }
 
 const pages = import.meta.glob<{ default: ComponentType }>('./pages/**/*.tsx');

@@ -70,6 +70,7 @@ class WelcomeController extends Controller
             $launch['registration_open'] = false;
         }
         $social = \App\Support\LandingSeo::forLanding($landing, $preview);
+        if ($request->is('ads/*')) $social['robots'] = 'noindex, nofollow';
         return Inertia::render($landing->slug === 'membresia' ? 'MembershipSales' : 'Welcome', [
             'launch' => $launch,
             'landing' => ['id' => $landing->id, 'slug' => $landing->slug, 'content' => $content, 'preview' => $preview, 'revision' => $landing->revision, 'social' => $social],

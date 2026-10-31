@@ -52,3 +52,14 @@ Artisan::command('short-links:prepare-pilot', function (): int {
 Illuminate\Support\Facades\Schedule::call(function (): void {
     if (Artisan::call('media:gc') !== 0) throw new RuntimeException('No se pudo completar GC de CLUB.');
 })->name('club-media-gc')->dailyAt('03:20')->timezone('America/La_Paz')->withoutOverlapping(120);
+
+// Existing CLUB scheduler and database queues; bounded cleanup and recovery, no new services.
+Illuminate\Support\Facades\Schedule::call(function (): void {
+    Illuminate\Support\Facades\DB::table('membership_purchases')->whereIn('ad_visit_id',
+        Illuminate\Support\Facades\DB::table('ad_visits')->select('id')->where('expires_at', '<=', now()))->update(['ad_visit_id' => null]);
+    Illuminate\Support\Facades\DB::table('ad_events')->where('expires_at', '<=', now())->delete();
+    Illuminate\Support\Facades\DB::table('ad_visits')->where('expires_at', '<=', now())->delete();
+    App\Models\AdEvent::where('status', 'received')->limit(20)->get()->each(function ($event): void {
+        app(App\Services\Advertising::class)->safely(fn () => app(App\Services\Advertising::class)->enqueue($event));
+    });
+})->name('club-ads-maintenance')->everyTenMinutes()->withoutOverlapping();
