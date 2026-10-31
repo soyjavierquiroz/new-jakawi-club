@@ -26,3 +26,14 @@ SSO son aislados; no se inició sesión en nombre del owner LIVE.
 
 Operación y rollback: [contrato 10D](../../docs/integrations/club-partner-sso-10d.md).
 El SHA LIVE se entrega tras verificar despliegue, `/up` y assets publicados.
+
+## Comprobación posterior al despliegue
+
+Código funcional publicado: `dfe8b802ed7ce3e57d316f0763e70cd06c92fa67`.
+Migración aplicada y cachés regeneradas; app, web y DB saludables. `/up` devuelve
+200. Validación local correcta tras completar el primer healthcheck de app.
+Chromium con assets LIVE pasó 390/1440 usando props aisladas.
+
+La verificación final registra el SHA LIVE completo y comprueba el inicio OIDC
+anónimo desde `/afiliados`, rechazo de callback sin transacción, coincidencia
+de assets publicados y secretos/arranques COM/CRM intactos en `LIVE.json`.

@@ -50,6 +50,11 @@ for cache in config:cache route:cache view:cache; do
 done
 docker compose restart app
 curl --fail --silent --show-error --retry 5 --retry-delay 2 --retry-all-errors --max-time 20 https://jakawi.club/up -o /dev/null
+# FPM's first HTTP response can precede Docker's next healthcheck after restart.
+for attempt in $(seq 1 20); do
+ if [ "$(docker inspect jakawi-club-app --format '{{.State.Health.Status}}')" = healthy ]; then break; fi
+ sleep 2
+done
 JAKAWI_BASELINE_PATH="$rollback_dir/validation-baseline.json" JAKAWI_EVIDENCE_DIR="$source_dir/artifacts/partner-sso-10d" python3 scripts/validate-local.py
 python3 - "$rollback_dir" <<'PY'
 import json,sys,hashlib,subprocess

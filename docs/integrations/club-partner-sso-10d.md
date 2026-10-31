@@ -69,6 +69,8 @@ No cambia checkout, com_origin, eventos, atribución, ledger, reglas, CRM o medi
 `scripts/deploy-partner-sso.sh` exige commit limpio en origin/main, pruebas y
 rollback privado. Aplica solo la migración de proyección, publica assets/código,
 regenera cachés y reinicia únicamente app CLUB. Verifica `/up` y base local.
+`scripts/verify-partner-sso-live.py` verifica SHA, entrada OIDC, rechazo de callback
+sin transacción y hashes de assets publicados.
 Rollback: restaurar el commit y manifest del respaldo privado
 `/srv/sites/jakawi.club/rollback-partner-sso-10d`, regenerar cachés y reiniciar
 solo app CLUB. Conservar columna, email nullable y sujetos proyectados; no revertir
