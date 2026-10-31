@@ -236,3 +236,5 @@ credentials.json
 /artifacts/partners-10c/browser-live.json
 
 /artifacts/partners-10c/**/*fixtures.json
+
+/artifacts/partners-10c/validation.json

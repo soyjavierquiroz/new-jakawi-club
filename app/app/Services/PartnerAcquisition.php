@@ -138,6 +138,19 @@ final class PartnerAcquisition
         $candidate = $this->resolve($data['acquisition'] ?? null);
         $person = $this->person($refs,$candidate);
         DB::table('acquisition_facts')->insertOrIgnore(['event_id'=>$event->id,'payment_reference'=>$data['payment_reference'] ?? null,'club_reference'=>$data['club_reference'] ?? null,'club_user_uuid'=>$data['club_user_uuid'] ?? null,'global_subject_id'=>$data['global_subject_id'] ?? null,'acquisition'=>isset($data['acquisition']) ? json_encode($data['acquisition'], JSON_THROW_ON_ERROR) : null]);
+        // Earlier releases already acknowledged activation events while the new
+        // attribution events stayed in COM RETRY. Join those authenticated facts too.
+        if ($event->event_type !== 'membership.activated' && (!empty($data['payment_reference']) || !empty($data['global_subject_id']) || !empty($data['club_reference']))) {
+            $earlier = DB::table('commercial_events as e')->where('e.source','jakawi.com')->where('e.event_type','membership.activated')
+                ->where(function($q) use($data): void {
+                    if (!empty($data['payment_reference'])) $q->orWhereRaw("e.raw_body::jsonb->>'payment_reference' = ?",[$data['payment_reference']]);
+                    if (!empty($data['club_reference'])) $q->orWhereRaw("e.raw_body::jsonb->>'club_reference' = ?",[$data['club_reference']]);
+                    if (!empty($data['global_subject_id'])) $q->orWhere('e.global_subject_id',$data['global_subject_id']);
+                })->whereNotExists(fn($q)=>$q->selectRaw('1')->from('acquisition_activations as a')->whereColumn('a.event_id','e.id'))->orderBy('e.id')->get();
+            foreach ($earlier as $old) $this->event($old,json_decode($old->raw_body,true,32,JSON_THROW_ON_ERROR));
+            // A recovered fact may have merged a known CLUB identity.
+            $person = $this->person($refs,$candidate);
+        }
         if ($event->event_type === 'membership.activated') {
             $prior = DB::table('acquisition_activations')->where('membership_reference',$data['membership_reference'])->first();
             abort_unless(!$prior || $prior->person_id === $person->id,409);

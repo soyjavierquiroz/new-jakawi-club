@@ -20,6 +20,9 @@ if not (backup/'baseline.json').exists():
  (backup/'source.tar').write_bytes(subprocess.check_output(['git','archive',baseline['sha']],cwd=live))
  shutil.copy2(live/'app/public/build/manifest.json',backup/'manifest.json')
  (backup/'baseline.json').write_text(json.dumps(baseline,indent=2))
+items=json.loads(subprocess.check_output(['docker','inspect','jakawi-club-app','jakawi-club-web','jakawi-club-db']))
+validation={'containers':{i['Name'].lstrip('/'):{'id':i['Id'],'started_at':i['State']['StartedAt'],'restarts':i['RestartCount']} for i in items}}
+(backup/'validation-baseline.json').write_text(json.dumps(validation,indent=2))
 print('Rollback privado preparado; fuente probada coincide con origin/main.')
 PY
 # Migrate using the tested checkout before switching the live source.
@@ -61,4 +64,4 @@ DB::table('affiliate_partners')->insertOrIgnore(['source'=>'jakawi.com','partner
 app(App\Services\PartnerAcquisition::class)->replay();
 echo "Referencia comercial Dossis COM 1 habilitada; sin representantes ni reglas nuevas.\n";
 PHP
-JAKAWI_EVIDENCE_DIR="$source_dir/artifacts/partners-10c" python3 scripts/validate-local.py
+JAKAWI_BASELINE_PATH="$rollback_dir/validation-baseline.json" JAKAWI_EVIDENCE_DIR="$source_dir/artifacts/partners-10c" python3 scripts/validate-local.py

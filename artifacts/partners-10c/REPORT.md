@@ -5,7 +5,7 @@ desplegado, origen firmado y atribución durable. Panel empresarial separado de 
 actividad personal y permisos expresos por UUID. Escalas configurables en ledger
 existente; solo activación confirmada y regla aplicable permiten valoración.
 
-Pruebas aisladas: 39 comprobaciones específicas de Partners, 57 de checkout,
+Pruebas aisladas: 41 comprobaciones específicas de Partners, 57 de checkout,
 82 de ledger previo y 81 de resultados. TypeScript/build y Chromium 390/1440,
 sin desbordes, errores JS ni escrituras LIVE. Los importes de los fixtures viven
 únicamente en esquemas PostgreSQL temporales eliminados tras las pruebas.
@@ -15,6 +15,7 @@ sincronizado de CLUB. Su referencia comercial se habilita durante el despliegue,
 sin asignar representantes ni crear cuentas, compras, reglas económicas o pagos.
 La administración puede autorizar representantes en /admin/partners-afiliados.
 
+Las atribuciones tardías recuperan activaciones HMAC ya recibidas por la versión anterior.
 Los originales se preservan, incluso al vincular invitados posteriormente. No se
 recuperan ni atribuyen compras por coincidencia de email. Un conflicto posterior
 a la valoración conserva el snapshot y bloquea aprobación para revisión manual.

@@ -13,6 +13,8 @@
         "COM membership activation attributed to retained lead",
         "no rule means no membership ledger entry",
         "business activation and rate",
+        "delayed registration joins activation acknowledged by preceding release",
+        "previously authenticated activation recovered without new conversion",
         "activation retry reconciles against configured rule",
         "Partner ledger has business beneficiary, separate scale, no owner",
         "renewal creates no second eligible acquisition",
