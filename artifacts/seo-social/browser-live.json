@@ -1,0 +1,50 @@
+{
+  "passed": true,
+  "checks": [
+    {
+      "path": "/",
+      "title": "JAKAWI Cochabamba | Reserva gratis tu lugar en el webinar",
+      "robots": [
+        "index, follow"
+      ],
+      "canonical": [
+        "https://jakawi.club/"
+      ],
+      "descriptions": 1,
+      "og": "https://img.jakawi.com/eHZIox_sYkqXEv8zjrJBq3Ix-B-TvwXohSD0vF_yjHQ/rs:fill:1200:630:1/q:85/bg:fffdf9/f:jpg/plain/s3://jakawi-media/club/landings/1/cover/c60f97c0-084f-4c6d-a743-82ce323224f9.webp"
+    },
+    {
+      "path": "/principal",
+      "title": "JAKAWI Cochabamba | Reserva gratis tu lugar en el webinar",
+      "robots": [
+        "index, follow"
+      ],
+      "canonical": [
+        "https://jakawi.club/"
+      ],
+      "descriptions": 1,
+      "og": "https://img.jakawi.com/eHZIox_sYkqXEv8zjrJBq3Ix-B-TvwXohSD0vF_yjHQ/rs:fill:1200:630:1/q:85/bg:fffdf9/f:jpg/plain/s3://jakawi-media/club/landings/1/cover/c60f97c0-084f-4c6d-a743-82ce323224f9.webp"
+    },
+    {
+      "inertia_navigation": "privacy",
+      "robots": [
+        "noindex, nofollow"
+      ],
+      "canonical": 0,
+      "og": 0
+    },
+    {
+      "editor_fixture": {
+        "seo": true,
+        "title": true,
+        "description": true,
+        "robots": [
+          "noindex, nofollow"
+        ]
+      }
+    }
+  ],
+  "no_live_mutations": true,
+  "real_whatsapp_preview": false,
+  "real_meta_preview": false
+}

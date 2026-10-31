@@ -1,0 +1,18 @@
+{
+  "typecheck": true,
+  "vite_build": true,
+  "catalog_and_seo_checks": 154,
+  "landing_editor_checks": 578,
+  "isolated_postgresql": true,
+  "live_test_accounts": 0,
+  "browser_and_inertia": true,
+  "public_images": [
+    "brand",
+    "club",
+    "com"
+  ],
+  "image_contract": "HTTPS 200 image/jpeg 1200x630 without cookies",
+  "real_whatsapp_preview": false,
+  "real_meta_preview": false,
+  "meta_debugger": "HTTP 429; no authenticated session"
+}

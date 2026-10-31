@@ -94,13 +94,14 @@ try {
     const fixture=JSON.parse(await readFile('/evidence/capture-cards-fixtures.json','utf8')).editor;
     const fixtureHtml=shell.replace(/(<script\b[^>]*data-page="app"[^>]*>)([\s\S]*?)(<\/script>)/,(_,a,b,c)=>a+JSON.stringify(fixture).replaceAll('<','\\u003c')+c);
     on('Fetch.requestPaused',async e=>{
+        if(e.request.url.endsWith('/marketing/poster-fixture.png')) return call('Fetch.fulfillRequest',{requestId:e.requestId,responseCode:200,responseHeaders:[{name:'Content-Type',value:'image/png'}],body:(await readFile('/workspace/public/marketing/club-card.png')).toString('base64')});
         if(e.request.url.includes('/admin/landings/')) {
             assert.equal(e.request.method,'GET');
             return call('Fetch.fulfillRequest',{requestId:e.requestId,responseCode:200,responseHeaders:[{name:'Content-Type',value:'text/html'}],body:Buffer.from(fixtureHtml).toString('base64')});
         }
         return call('Fetch.continueRequest',{requestId:e.requestId});
     });
-    await call('Fetch.enable',{patterns:[{urlPattern:'*jakawi.club/admin/landings/*'}]});
+    await call('Fetch.enable',{patterns:[{urlPattern:'*jakawi.club/admin/landings/*'},{urlPattern:'*jakawi.club/marketing/poster-fixture.png'}]});
     await navigate('/admin/landings/'+fixture.props.landing.id+'/editar');
     const editor=await evaluate(`({seo:document.body.textContent.includes('SEO Y REDES SOCIALES'),title:!!document.querySelector('#seo-title'),description:!!document.querySelector('#seo-description'),robots:[...document.querySelectorAll('meta[name="robots"]')].map(x=>x.content)})`);
     assert(editor.seo && editor.title && editor.description);assert.deepEqual(editor.robots,['noindex, nofollow']);

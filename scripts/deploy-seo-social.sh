@@ -26,4 +26,4 @@ os.replace(root/'build/manifest.seo-next.json',root/'build/manifest.json')
 PY
 docker compose exec -T --user www-data app php artisan view:cache
 docker compose restart app
-curl --fail --silent --show-error --max-time 20 https://jakawi.club/up -o /dev/null
+curl --fail --silent --show-error --retry 5 --retry-delay 2 --retry-all-errors --max-time 20 https://jakawi.club/up -o /dev/null

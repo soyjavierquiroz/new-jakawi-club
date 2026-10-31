@@ -1,0 +1,22 @@
+{
+    "marketing_landings": {
+        "count": 1,
+        "sha256": "ce485802dddce1533f3b5ddf406e3cb852c6b8ba0415f7a8ce0cbc448e4f5cb1"
+    },
+    "marketing_landing_snapshots": {
+        "count": 1,
+        "sha256": "6f03e6a10d60eb569990fe7ae242489ffc568dd5aa5fa80138557023fb57c102"
+    },
+    "affiliate_short_links": {
+        "count": 4,
+        "sha256": "d341a3efd660c4aca02bc5dac5864505e8384bf256b204735e18c031588f27b1"
+    },
+    "affiliate_link_daily_clicks": {
+        "count": 1,
+        "sha256": "e66d487f82e908db8599ba7fab040470705e44fff6b04c9d7522b5b69a375ade"
+    },
+    "commercial_events": {
+        "count": 0,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    }
+}
