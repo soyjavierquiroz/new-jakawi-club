@@ -436,7 +436,10 @@ WhatsApp/Meta requiere una comprobación adicional en esas plataformas.
 ### Membresías y resultados — Fase 08
 
 Entrada privada de Bs 100 en el dashboard, verificación SSO del sujeto y checkout
-único COM. QR todavía pendiente: no se promete cobro disponible. Mis resultados
+único COM. La URL comercial `/activar` conserva intención en login, registro y correo;
+el dashboard distingue la activación confirmada y COM ya tiene QR habilitado. Mis resultados
 destaca leads captados y personas con membresía activada; el receptor comercial
 HMAC existente conserva activaciones pendientes de vínculo sin generar comisiones.
 [Contrato, pruebas y despliegue](docs/integrations/club-membership-funnel-08.md).
+
+URL corta de activación: [recorrido y despliegue](docs/integrations/club-activation-url.md).

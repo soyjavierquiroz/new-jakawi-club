@@ -7,7 +7,7 @@ use Illuminate\Notifications\Notification;
 
 class ActivateAccount extends Notification
 {
-    public function __construct(public readonly string $token) {}
+    public function __construct(public readonly string $token, public readonly bool $membership = false) {}
 
     public function via(object $notifiable): array
     {
@@ -18,6 +18,7 @@ class ActivateAccount extends Notification
     {
         $url = rtrim(config('app.url'), '/').'/activar/'.$this->token.'?'.http_build_query(['email' => $notifiable->email]);
 
+        if ($this->membership) $url .= '&continue=membership';
         return (new MailMessage)
             ->subject('Activa tu cuenta JAKAWI')
             ->greeting('¡Bienvenido a JAKAWI!')

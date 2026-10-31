@@ -202,3 +202,10 @@ credentials.json
 /artifacts/membership-funnel/browser-live.json
 /artifacts/membership-funnel/validation.json
 /artifacts/membership-funnel/state-after.json
+
+/artifacts/activation-url/LIVE.json
+/artifacts/activation-url/*fixtures.json
+/artifacts/activation-url/*.png
+/artifacts/activation-url/browser-live.json
+/artifacts/activation-url/validation.json
+/artifacts/activation-url/state-after.json

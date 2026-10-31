@@ -4,8 +4,8 @@ from pathlib import Path
 from hashlib import sha256
 import json, os, subprocess
 ROOT=Path('/opt/sites/jakawi.club')
-EVIDENCE=ROOT/'artifacts/membership-funnel'
-PRIVATE=Path('/srv/sites/jakawi.club/rollback-membership-funnel')
+EVIDENCE=Path(os.environ.get('JAKAWI_EVIDENCE_DIR',str(ROOT/'artifacts/membership-funnel')))
+PRIVATE=Path(os.environ.get('JAKAWI_ROLLBACK_DIR','/srv/sites/jakawi.club/rollback-membership-funnel'))
 def out(args,**kwargs):return subprocess.check_output(args,cwd=ROOT,**kwargs)
 env={**os.environ,'JAKAWI_EVIDENCE_DIR':str(EVIDENCE),'JAKAWI_BASELINE_PATH':str(PRIVATE/'baseline.json')}
 subprocess.run(['python3','scripts/validate-local.py'],cwd=ROOT,env=env,check=True)
@@ -21,7 +21,7 @@ for name,before in baseline['containers'].items():
 assert json.loads((EVIDENCE/'browser-live.json').read_text())['no_live_mutations']
 assert not out(['git','status','--porcelain'])
 files={}
-for path in ['app/app/Http/Controllers/MembershipCheckoutController.php','app/app/Http/Controllers/JakawiLoginController.php','app/app/Http/Controllers/CommercialEventController.php','app/app/Services/AffiliateResults.php','app/routes/web.php','app/public/build/manifest.json']:
+for path in ['app/app/Http/Controllers/MembershipCheckoutController.php','app/app/Http/Controllers/JakawiLoginController.php','app/app/Http/Controllers/CommercialEventController.php','app/app/Services/AffiliateResults.php','app/routes/web.php','app/app/Http/Controllers/AuthController.php','app/app/Http/Controllers/DashboardController.php','app/app/Services/MemberActivation.php','app/app/Support/MembershipJourney.php','app/app/Services/AccountMail.php','app/app/Notifications/ActivateAccount.php','app/public/build/manifest.json']:
     digest=sha256((ROOT/path).read_bytes()).hexdigest()
     served=out(['docker','compose','exec','-T','--user','www-data','app','php','-r','echo hash_file("sha256", $argv[1]);',path.removeprefix('app/')]).decode()
     assert digest==served,path+' runtime differs'

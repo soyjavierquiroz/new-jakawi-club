@@ -11,7 +11,7 @@ export type IdentityState = {
     message?: string;
 };
 
-export default function IdentityAccess({ initial }: { initial?: IdentityState }) {
+export default function IdentityAccess({ initial, continueToMembership = false }: { initial?: IdentityState; continueToMembership?: boolean }) {
     const [state, setState] = useState<IdentityState>(initial ?? { status: 'DISABLED', connected: false });
     const [unavailable, setUnavailable] = useState(false);
     const [clock, setClock] = useState(Date.now());
@@ -29,6 +29,7 @@ export default function IdentityAccess({ initial }: { initial?: IdentityState })
                 if (!response.ok) { setUnavailable(true); return; }
                 const next: IdentityState = await response.json();
                 if (controller.signal.aborted) return;
+                if (next.connected && continueToMembership && !initial?.connected) { window.location.assign('/activar'); return; }
                 setState(next); setUnavailable(false); setClock(Date.now());
             } catch { if (!controller.signal.aborted) setUnavailable(true); }
         }
@@ -37,7 +38,7 @@ export default function IdentityAccess({ initial }: { initial?: IdentityState })
         const timer = ['AUTH_REQUIRED', 'QUEUED', 'SENDING', 'RETRY'].includes(state.status)
             ? window.setInterval(refresh, 15000) : undefined;
         return () => { controller.abort(); window.removeEventListener('focus', refresh); if (timer) window.clearInterval(timer); };
-    }, [state.status]);
+    }, [state.status, continueToMembership, initial?.connected]);
     const retryAt = state.retry_at ? Date.parse(state.retry_at) : 0;
     useEffect(() => {
         if (!retryAt || retryAt <= Date.now()) return;

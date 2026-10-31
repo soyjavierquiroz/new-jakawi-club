@@ -56,6 +56,8 @@ Route::get('/r/{code}', [ReferralController::class, 'show'])->where('code', '[A-
 Route::post('/preferencias', [ReferralController::class, 'preferences'])->middleware('throttle:30,1')->name('preferences');
 Route::get('/bienvenida', [RegistrationController::class, 'welcome'])->name('welcome');
 
+Route::get('/activar', [\App\Http\Controllers\MembershipCheckoutController::class, 'entry'])->middleware('throttle:30,1')->block(20, 10)->name('membership.activate');
+
 Route::get('/auth/jakawi/callback', [\App\Http\Controllers\JakawiLoginController::class, 'callback'])->middleware('throttle:20,1')->block(20, 10)->name('jakawi.callback');
 
 Route::middleware('guest')->group(function (): void {

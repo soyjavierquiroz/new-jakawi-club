@@ -3,7 +3,7 @@
 import json, os, shutil, subprocess
 from pathlib import Path
 ROOT=Path('/opt/sites/jakawi.club')
-PRIVATE=Path('/srv/sites/jakawi.club/rollback-membership-funnel')
+PRIVATE=Path(os.environ.get('JAKAWI_ROLLBACK_DIR','/srv/sites/jakawi.club/rollback-membership-funnel'))
 os.umask(0o077)
 PRIVATE.mkdir(exist_ok=True)
 assert not (PRIVATE/'baseline.json').exists(), 'Do not overwrite the release baseline'

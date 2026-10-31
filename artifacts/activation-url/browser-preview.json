@@ -1,0 +1,26 @@
+{
+  "live_assets": false,
+  "data": "isolated kernel fixtures",
+  "checks": [
+    {
+      "width": 390,
+      "registration_choice": true,
+      "fixed_activation_url": true,
+      "qr_pending_removed": true,
+      "activated_no_purchase": true,
+      "no_overflow": true
+    },
+    {
+      "width": 1440,
+      "registration_choice": true,
+      "fixed_activation_url": true,
+      "qr_pending_removed": true,
+      "activated_no_purchase": true,
+      "no_overflow": true
+    }
+  ],
+  "linked_continuation": true,
+  "runtime_errors": [],
+  "failed_assets": [],
+  "no_live_mutations": true
+}

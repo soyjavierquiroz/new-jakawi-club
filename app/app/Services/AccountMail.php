@@ -19,7 +19,7 @@ class AccountMail
         try {
             Password::sendResetLink(['email' => $email], function (User $user, string $token): void {
                 if (! $user->activated_at || ! $user->hasVerifiedEmail()) {
-                    $user->notify(new ActivateAccount($token));
+                    $user->notify(new ActivateAccount($token, \App\Support\MembershipJourney::pending(request())));
                 } else {
                     $user->sendPasswordResetNotification($token);
                 }

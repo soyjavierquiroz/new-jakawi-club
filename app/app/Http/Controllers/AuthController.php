@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Services\AccountMail;
 use App\Support\Normalize;
+use App\Support\MembershipJourney;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Database\Eloquent\Builder;
@@ -25,6 +26,7 @@ class AuthController extends Controller
     {
         return Inertia::render('Auth', [
             'mode' => 'login', 'jakawiSso' => (bool) config('oidc.enabled'),
+            'membershipIntent' => MembershipJourney::pending($request),
             'linkRequired' => (bool) $request->session()->get('jakawi_link_required', false),
         ]);
     }
@@ -44,7 +46,7 @@ class AuthController extends Controller
         }
         $request->session()->regenerate();
 
-        return redirect()->intended(route('dashboard'));
+        return MembershipJourney::pending($request) ? redirect()->route('membership.activate') : redirect()->intended(route('dashboard'));
     }
 
     public function logout(Request $request): RedirectResponse
@@ -84,6 +86,7 @@ class AuthController extends Controller
     private function tokenPage(Request $request, string $token, string $mode): Response
     {
         abort_unless(preg_match('/^[a-f0-9]{64}$/', $token), 404);
+        if ($request->query('continue') === 'membership') MembershipJourney::remember($request);
 
         return Inertia::render('Auth', [
             'mode' => $mode, 'token' => $token, 'email' => Normalize::email($request->query('email')),
@@ -159,7 +162,7 @@ class AuthController extends Controller
             }
             $request->session()->put('welcome_expires_at', now()->addMinutes(15)->timestamp);
 
-            return redirect()->route('welcome');
+            return MembershipJourney::pending($request) ? redirect()->route('membership.activate') : redirect()->route('welcome');
         }
 
         return redirect()->route('login')->with('status', 'Contraseña actualizada. Ya puedes iniciar sesión.');

@@ -2,15 +2,17 @@
 set -euo pipefail
 cd /opt/sites/jakawi.club
 python3 - <<'PY'
-import json, subprocess
+import json, os, subprocess
 from pathlib import Path
 root=Path('/opt/sites/jakawi.club')
+evidence=Path(os.environ.get('JAKAWI_EVIDENCE_DIR',str(root/'artifacts/membership-funnel')))
+private=Path(os.environ.get('JAKAWI_ROLLBACK_DIR','/srv/sites/jakawi.club/rollback-membership-funnel'))
 assert subprocess.check_output(['git','branch','--show-current']).strip()==b'main'
 assert not subprocess.check_output(['git','status','--porcelain'])
-assert json.loads((root/'artifacts/membership-funnel/tests.json').read_text())['live_fixtures']==0
-assert json.loads((root/'artifacts/membership-funnel/sso-tests.json').read_text())['live_users_created']==0
-assert json.loads((root/'artifacts/membership-funnel/browser-preview.json').read_text())['no_live_mutations']
-assert Path('/srv/sites/jakawi.club/rollback-membership-funnel/baseline.json').is_file()
+assert json.loads((evidence/'tests.json').read_text())['live_fixtures']==0
+assert json.loads((evidence/'sso-tests.json').read_text())['live_users_created']==0
+assert json.loads((evidence/'browser-preview.json').read_text())['no_live_mutations']
+assert (private/'baseline.json').is_file()
 assert (root/'app/public/build-next/manifest.json').is_file()
 PY
 # Preserve existing chunks and switch the manifest last. No migrations or env changes.

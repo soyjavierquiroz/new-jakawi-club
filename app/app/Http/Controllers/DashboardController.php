@@ -16,6 +16,8 @@ class DashboardController extends Controller
         $user = $request->user();
 
         return Inertia::render('Dashboard', [
+            'membership_activated' => app(\App\Services\MemberActivation::class)->confirmed($user),
+            'membership_continue' => \App\Support\MembershipJourney::pending($request),
             'member' => $user->only('name', 'email', 'phone', 'city'),
             'can_access_affiliates' => $user->activated_at !== null && $user->hasVerifiedEmail(),
             'referral_url' => $user->referralUrl(),

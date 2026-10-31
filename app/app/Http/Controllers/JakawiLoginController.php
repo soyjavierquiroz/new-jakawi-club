@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Support\MembershipJourney;
 use App\Services\Identity\IdentityLink;
 use App\Services\Identity\JakawiOidc;
 use Illuminate\Http\RedirectResponse;
@@ -55,6 +56,8 @@ final class JakawiLoginController extends Controller
                     || ! $identity->refresh($local)['connected']) {
                     return redirect()->route('dashboard')->with('status', 'La sesión JAKAWI.COM no corresponde a tu cuenta vinculada. Cierra esa sesión en COM e inténtalo de nuevo.');
                 }
+                MembershipJourney::forget($request);
+                if (app(\App\Services\MemberActivation::class)->confirmed($local->fresh())) return redirect()->route('dashboard');
                 return redirect()->away('https://jakawi.com/membresia/checkout');
             }
             // Identity is resolved solely by the signed subject, never by email/profile claims.
@@ -71,6 +74,7 @@ final class JakawiLoginController extends Controller
             Auth::login($user);
             $request->session()->forget('jakawi_link_required');
             $request->session()->regenerate(true);
+            if (MembershipJourney::pending($request)) return redirect()->route('membership.activate');
             // A fixed local destination also strips the authorization code from subsequent URLs.
             return redirect()->route('dashboard');
         } catch (\Throwable) {

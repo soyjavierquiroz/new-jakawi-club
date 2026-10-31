@@ -149,7 +149,8 @@ try{
     $after=$existing->fresh()->getRawOriginal();unset($after['global_subject_id'],$before['global_subject_id']);
     check($before===$after && $existing->fresh()->is_marketing_admin,'identidad compartida conserva contraseña referente y rol CLUB');
     require '/tests/membership-sso-flow-checks.php';
-    $result=['passed'=>count($passed),'com_implementation'=>'deployed immutable COM image in disposable containers','com_sha'=>'98de3ee70b2e49d8e515e47f0f3afaecc1426d45','com_database'=>'dedicated disposable PostgreSQL','club_database'=>'isolated schema','live_users_created'=>0,'pilot_authorization_simulated'=>false];
+    if (getenv('JAKAWI_ACTIVATION_URL_TESTS') === '1') require '/tests/activation-url-checks.php';
+    $result=['passed'=>count($passed),'com_implementation'=>'deployed immutable COM image in disposable containers','com_sha'=>getenv('JAKAWI_COM_SHA') ?: '98de3ee70b2e49d8e515e47f0f3afaecc1426d45','com_database'=>'dedicated disposable PostgreSQL','club_database'=>'isolated schema','live_users_created'=>0,'pilot_authorization_simulated'=>false];
     file_put_contents('/evidence/sso-tests.json',json_encode($result,JSON_PRETTY_PRINT).PHP_EOL);echo json_encode($result).PHP_EOL;
 }catch(Throwable $e){fwrite(STDERR,'FAILED '.get_class($e).' '.$e->getMessage().' at '.$e->getLine().PHP_EOL);$failed=true;}
 finally{DB::statement('DROP SCHEMA IF EXISTS '.$schema.' CASCADE');}

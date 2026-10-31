@@ -8,8 +8,8 @@ import subprocess
 import time
 
 ROOT=Path(__file__).resolve().parents[1]
-PRIVATE=Path('/srv/sites/jakawi.club/rollback-membership-funnel')
-EVIDENCE=ROOT/'artifacts/membership-funnel'
+PRIVATE=Path(os.environ.get('JAKAWI_ROLLBACK_DIR','/srv/sites/jakawi.club/rollback-membership-funnel'))
+EVIDENCE=Path(os.environ.get('JAKAWI_EVIDENCE_DIR',str(ROOT/'artifacts/membership-funnel')))
 DB='jakawi-club-sso-test-db'
 COM='jakawi-club-sso-test-com'
 created=[]
@@ -24,7 +24,7 @@ for name in [DB,COM]:
     if subprocess.run(['docker','inspect',name],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL).returncode==0:
         raise SystemExit('Existing test container retained: '+name)
 image=output(['docker','inspect','jakawi-app-1','--format','{{.Image}}'])
-assert output(['docker','inspect','jakawi-app-1','--format','{{index .Config.Labels "org.opencontainers.image.revision"}}'])=='98de3ee70b2e49d8e515e47f0f3afaecc1426d45'
+assert output(['docker','inspect','jakawi-app-1','--format','{{index .Config.Labels "org.opencontainers.image.revision"}}'])==os.environ.get('JAKAWI_COM_SHA','98de3ee70b2e49d8e515e47f0f3afaecc1426d45')
 PRIVATE.mkdir(parents=True,exist_ok=True)
 EVIDENCE.mkdir(parents=True,exist_ok=True)
 fixture_env=PRIVATE/'contract-test.env'
@@ -63,10 +63,12 @@ try:
       '--memory','256m','--memory-swap','320m','--cpus','0.65','--pids-limit','96','--env-file','/srv/sites/jakawi.club/secrets/app.env']
     for env in ['APP_ENV=testing','APP_DEBUG=false','LOG_CHANNEL=null','APP_CONFIG_CACHE=/tmp/config.php','APP_ROUTES_CACHE=/tmp/routes.php',
       'SESSION_DRIVER=database','CACHE_STORE=array','MAIL_MAILER=array','BCRYPT_ROUNDS=4']:args+=['--env',env]
+    if os.environ.get('JAKAWI_ACTIVATION_URL_TESTS')=='1':args+=['--env','JAKAWI_ACTIVATION_URL_TESTS=1','--env','JAKAWI_COM_SHA='+os.environ['JAKAWI_COM_SHA']]
     for source,target in [(ROOT/'app','/var/www/html'),(ROOT/'scripts','/tests'),(EVIDENCE,'/evidence')]:args+=['--volume',str(source)+':'+target+('' if target=='/evidence' else ':ro')]
     args+=['--tmpfs','/var/www/html/storage:rw,mode=1777,size=32m','--tmpfs','/var/www/html/bootstrap/cache:rw,mode=1777,size=8m','jakawi-club-php:8.4-base-v1','php','/tests/membership-sso-tests.php']
     run(args)
-    check=r'''<?php require 'vendor/autoload.php';$app=require 'bootstrap/app.php';$app->make(Illuminate\Contracts\Console\Kernel::class)->bootstrap();$before=json_decode(file_get_contents(storage_path('com-fixture-before.json')),true);$rows=Illuminate\Support\Facades\DB::table('users')->whereIn('email',['existing-com@example.test','other-com@example.test'])->orderBy('id')->get()->all();$new=App\Models\User::where('email','new-com-account@example.test')->firstOrFail();$result=['original_com_users_unchanged'=>$before['digest']===hash('sha256',json_encode($rows)),'exactly_one_provisioned_user'=>App\Models\User::count()===3,'new_user_not_admin'=>!$new->is_admin,'new_user_verified'=>$new->email_verified_at!==null,'new_links'=>Illuminate\Support\Facades\DB::table('identity_links')->count()===2,'one_checkout_intent'=>Illuminate\Support\Facades\DB::table('membership_bank_payments')->count()===1,'one_initiate_checkout'=>Illuminate\Support\Facades\DB::table('analytics_events')->where('event_name','initiate_checkout')->count()===1,'no_memberships'=>Illuminate\Support\Facades\DB::table('memberships')->count()===0,'no_partner_roles'=>Illuminate\Support\Facades\DB::table('partner_user')->count()===0,'no_crm_deliveries'=>Illuminate\Support\Facades\DB::table('crm_deliveries')->count()===0];echo json_encode($result);if(in_array(false,$result,true))exit(1);'''
+    check=r'''<?php require 'vendor/autoload.php';$app=require 'bootstrap/app.php';$app->make(Illuminate\Contracts\Console\Kernel::class)->bootstrap();$before=json_decode(file_get_contents(storage_path('com-fixture-before.json')),true);$rows=Illuminate\Support\Facades\DB::table('users')->whereIn('email',['existing-com@example.test','other-com@example.test'])->orderBy('id')->get()->all();$new=App\Models\User::where('email','new-com-account@example.test')->firstOrFail();$result=['original_com_users_unchanged'=>$before['digest']===hash('sha256',json_encode($rows)),'expected_provisioned_user_count'=>App\Models\User::count()===3,'new_user_not_admin'=>!$new->is_admin,'new_user_verified'=>$new->email_verified_at!==null,'new_links'=>Illuminate\Support\Facades\DB::table('identity_links')->count()===2,'one_checkout_intent'=>Illuminate\Support\Facades\DB::table('membership_bank_payments')->count()===1,'one_initiate_checkout'=>Illuminate\Support\Facades\DB::table('analytics_events')->where('event_name','initiate_checkout')->count()===1,'no_memberships'=>Illuminate\Support\Facades\DB::table('memberships')->count()===0,'no_partner_roles'=>Illuminate\Support\Facades\DB::table('partner_user')->count()===0,'no_crm_deliveries'=>Illuminate\Support\Facades\DB::table('crm_deliveries')->count()===0];echo json_encode($result);if(in_array(false,$result,true))exit(1);'''
+    if os.environ.get('JAKAWI_ACTIVATION_URL_TESTS')=='1':check=check.replace('count()===3','count()===4').replace('count()===2','count()===3')
     result=subprocess.check_output(['docker','exec','-i',COM,'php'],input=check.encode(),cwd=ROOT)
     checks=json.loads(result);(EVIDENCE/'sso-com-invariants.json').write_text(json.dumps(checks,indent=2)+'\n');print(json.dumps(checks))
 finally:

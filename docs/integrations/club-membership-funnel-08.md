@@ -3,9 +3,8 @@
 La entrada privada **Activar mi membresía — Bs 100** está en `/dashboard`.
 `POST /cuenta/membresia` requiere cuenta CLUB activada/verificada, CSRF y límite de
 intentos. No hay cambios en captación pública ni en la confirmación con WhatsApp.
-El aviso del QR refleja el estado de esta entrega: COM todavía bloquea cobros.
-CLUB no tiene un endpoint remoto de disponibilidad del QR; actualizar ese aviso
-cuando el propietario autorice y confirme la habilitación real en COM.
+Actualización posterior: COM habilitó el QR real. El aviso estático se retiró y
+la entrada comercial es `/activar`; ver [recorrido actual](club-activation-url.md).
 
 Sin vínculo, la acción reutiliza Fase 03: evidencia de correo y consentimiento
 explícito, handoff HMAC y lookup autenticado del UUID CLUB. Una cuenta existente
