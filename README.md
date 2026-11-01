@@ -33,7 +33,9 @@ Identidad global COM: [Fase 03, operación y pruebas](artifacts/identity-phase03
 
 Aplicación Laravel independiente publicada en **https://jakawi.club** mediante Traefik compartido y Let's Encrypt. `https://www.jakawi.club` redirige permanentemente al dominio principal.
 
-- Código y Git: `/opt/sites/jakawi.club/`; aplicación Laravel en `app/`.
+- Fuente Git oficial: `/srv/repos/jakawi.club/`; aplicación Laravel en `app/`.
+- Copia operativa LIVE conservada: `/opt/sites/jakawi.club/` (bind mounts activos).
+- Worktrees aislados: `/srv/workspaces/jakawi/club/`.
 - Persistencia exclusiva: `/srv/sites/jakawi.club/`.
 - Stack: Laravel 13, PHP 8.4, Inertia 3, React 19, TypeScript, Tailwind 4 y PostgreSQL 16.
 - Compose y recursos: proyecto `jakawi-club`; contenedores `jakawi-club-app`, `jakawi-club-web`, `jakawi-club-db`.
@@ -103,18 +105,26 @@ Rollback preparado y no ejecutado: [procedimiento corto](artifacts/https-publica
 
 ## Flujo de Git y despliegue
 
-Repositorio oficial: `git@github.com:soyjavierquiroz/new-jakawi-club.git`. La rama principal es `main`; conservar su historial y publicar sin push forzado. Antes de trabajar, comprobar `git status` y sincronizar con `git pull --ff-only origin main`. Revisar el diff, seleccionar los archivos necesarios y crear commits pequeños:
+Repositorio oficial: `git@github.com:soyjavierquiroz/new-jakawi-club.git`, con alias SSH local `git@github-new-jakawi-club:soyjavierquiroz/new-jakawi-club.git`. Fuente canónica independiente: `/srv/repos/jakawi.club`. `main` sigue el remoto; trabajar en ramas y publicar sin push forzado ni merge automático.
 
 ```bash
-git diff
-git add -p
-git commit -m "Describe el cambio"
-git push origin main
+cd /srv/repos/jakawi.club
+git fetch origin
+git worktree add -b feat/nombre /srv/workspaces/jakawi/club/nombre origin/main
+cd /srv/workspaces/jakawi/club/nombre
+bash scripts/prepare-source-build.sh
+bash scripts/build-frontend.sh
 ```
 
-Git versiona código, configuración sin secretos y documentación. El estado LIVE incluye además los assets generados, cachés, contenedores, base de datos, archivos persistentes y secretos de `/srv/sites/jakawi.club/`, que nunca deben copiarse a Git. Un push no ejecuta un despliegue ni acredita el estado LIVE. Como `app/` se monta desde esta copia del servidor, editar o actualizar sus archivos puede afectar a lo servido.
+En ramas anteriores a esta consolidación, integrar primero los ajustes operativos de `ops/canonical-club-repository`. El instalador de fuente ejecuta únicamente `npm ci` en un contenedor limitado. El build ejecuta TypeScript y Vite en secuencia, usa dependencias de ese checkout y genera `app/public/build-next`. No utiliza secretos, volúmenes persistentes ni dependencias LIVE.
 
-El despliegue es manual y requiere una petición explícita: revisar el commit objetivo, aplicar únicamente los pasos operativos existentes que correspondan al cambio y validar con `python3 scripts/validate-local.py`; usar `python3 scripts/validate-public.py` para comprobar HTTPS. Conectar GitHub no requiere ejecutar instalaciones, builds, migraciones ni reinicios.
+Después de revisar y hacer commit, `bash scripts/package-source-release.sh /srv/workspaces/jakawi/club/paquete-nombre` prepara archivos tar de código Git y frontend, SHA y hashes para revisión; no instala ni despliega. No incluir estos paquetes en Git. Ver [consolidación y dependencias históricas](docs/operations/canonical-repository.md).
+
+`/opt/sites/jakawi.club` permanece como copia operativa: Docker monta directamente su `app/`, assets, documentos y configuración. No mover, convertir a symlink, editar, hacer pull ni cambiar sus montajes durante trabajo de desarrollo. Un push no despliega. Los secretos, datos, cachés y evidencias privadas permanecen en `/srv/sites/jakawi.club` y en la copia operativa; no se copian a la fuente.
+
+Los scripts históricos `deploy-*`, `prepare-*-deployment.py`, `install-dependencies.sh`, `build-php.sh`, `prepare-host.py` y `start-local.sh` conservan su destino operativo y sus precondiciones específicas. No son instaladores para un checkout ni un despliegue genérico; algunos aplican migraciones o acciones económicas dirigidas. Revisarlos para la entrega concreta y ejecutarlos únicamente con autorización explícita de despliegue. La consolidación no los ejecuta ni repite entregas antiguas. Scheduler y cola siguen usando los scripts de `/opt/sites/jakawi.club`.
+
+La validación operativa existente es `python3 /opt/sites/jakawi.club/scripts/validate-local.py`; realiza un roundtrip temporal de caché y comprueba HTTP, assets y contenedores. No ejecutar Compose up desde la fuente canónica: `compose.yaml` se conserva para portabilidad, pero su proyecto y nombres corresponden al entorno LIVE.
 
 ## Operación
 
