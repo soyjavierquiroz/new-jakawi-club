@@ -19,7 +19,7 @@ Adaptación del checkout existente `/activar` al contrato COM Fase 11C, sin otro
 
 Copia de trabajo separada de LIVE en `/srv/sites/jakawi.club/phase11d-source`. Kernel HTTP real, migraciones reales y esquema PostgreSQL temporal eliminado al terminar. COM simulado, firma HMAC y unicidad de todos los nonces verificadas; ninguna compra ni pago de prueba LIVE.
 
-- `JAKAWI_EVIDENCE_DIR=.../artifacts/payment-report-11d bash scripts/test-public-checkout.sh`: 81 comprobaciones. Incluye validación estricta, CSRF, body vacío/422, 422 COM, doble aviso, timeout antes/después del commit, GET de recuperación, comprobante tardío, invitada, retorno tras logout, compra aprobada sin archivo y respuestas fuera de orden.
+- `JAKAWI_EVIDENCE_DIR=.../artifacts/payment-report-11d bash scripts/test-public-checkout.sh`: 82 comprobaciones. Incluye validación estricta, CSRF, body vacío/422, 422 COM, doble aviso, timeout antes/después del commit, GET de recuperación, comprobante tardío, invitada, retorno tras logout, compra aprobada sin archivo y respuestas fuera de orden.
 - `bash scripts/build-frontend.sh`: TypeScript estricto y build secuenciales en contenedores limitados, sin reinstalar dependencias.
 - `JAKAWI_EVIDENCE_DIR=.../artifacts/payment-report-11d bash scripts/check-public-checkout.sh`: navegador 390/1440, estados cuenta/checkout, doble clic, historial, bfcache y refresh. Solicitudes de escritura interceptadas; fixtures y capturas excluidos de Git.
 

@@ -1,5 +1,5 @@
 {
-    "passed": 81,
+    "passed": 82,
     "checks": [
         "isolated schema before writes",
         "editable public sales and original referral",
@@ -81,7 +81,8 @@
         "second authenticated account receives its own QR intention without previous buyer data",
         "authenticated checkout does not require email confirmation",
         "retry of automatic creation preserves frozen payload and reference",
-        "bank-approved purchase without file is active and never asks for receipt"
+        "bank-approved purchase without file is active and never asks for receipt",
+        "linked guest shows membership active from authorized COM GET before activation event"
     ],
     "live_fixtures": 0,
     "real_bank_payments": 0,

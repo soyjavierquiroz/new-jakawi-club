@@ -26,7 +26,7 @@ class DashboardController extends Controller
             'membership_purchase' => $purchase ? ['receipt_pending' => $purchase->receipt_pending && !$purchase->activated_at,
                 'receipt_received' => $purchase->receipt_received || (bool) $purchase->receipt_sha256,
                 'status' => $purchase->status] : null,
-            'membership_activated' => app(\App\Services\MemberActivation::class)->confirmed($user),
+            'membership_activated' => (bool) $purchase?->activated_at || app(\App\Services\MemberActivation::class)->confirmed($user),
             'membership_continue' => \App\Support\MembershipJourney::pending($request),
             'member' => $user->only('name', 'email', 'phone', 'city'),
             'can_access_affiliates' => $user->activated_at !== null && $user->hasVerifiedEmail(),

@@ -327,6 +327,17 @@ try {
     $remote[$secondPurchase->id]['state']['receipt_pending']=false;
     $fixtures['approved_no_receipt']=payload(web('GET','/activar'));
     check($fixtures['approved_no_receipt']['props']['active'] && !$fixtures['approved_no_receipt']['props']['purchase']['receipt_received'] && !$fixtures['approved_no_receipt']['props']['purchase']['receipt_pending'],'bank-approved purchase without file is active and never asks for receipt');
+    // An authorized linked guest can be approved through GET before its event arrives.
+    app(App\Services\PublicMembershipCheckout::class)->sync($claimPurchase);
+    $remote[$claimPurchase->id]['state']['status']='approved';
+    $remote[$claimPurchase->id]['state']['membership_reference']='904';
+    $remote[$claimPurchase->id]['state']['activated_at']=now()->toIso8601String();
+    $remote[$claimPurchase->id]['state']['identity_status']='linked';
+    $remote[$claimPurchase->id]['state']['global_subject_id']=$claimant->global_subject_id;
+    $claimant->forceFill(['password'=>'FixturePassword123','activated_at'=>now()])->save();
+    web('POST','/logout');web('POST','/login',['email'=>$claimant->email,'password'=>'FixturePassword123']);
+    $linkedDashboard=payload(web('GET','/dashboard'));
+    check($linkedDashboard['props']['membership_activated'] && $claimPurchase->fresh()->activated_at && !$claimPurchase->fresh()->user_id,'linked guest shows membership active from authorized COM GET before activation event');
     if (getenv('JAKAWI_ADS_TESTS') === '1') require '/tests/ads-tests.php';
     file_put_contents('/evidence/checkout-browser-fixtures.json',json_encode($fixtures,JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE));
     file_put_contents('/evidence/tests.json',json_encode(['passed'=>count($passed),'checks'=>$passed,'live_fixtures'=>0,'real_bank_payments'=>0,'outbound_hmac_verified'=>true],JSON_PRETTY_PRINT));
