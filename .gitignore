@@ -258,3 +258,9 @@ credentials.json
 /artifacts/acquisition-10g/validation.json
 /artifacts/acquisition-10g/*fixture*.json
 /artifacts/acquisition-10g/com-live.json
+
+/artifacts/payment-report-11d/*fixtures.json
+/artifacts/payment-report-11d/*.png
+/artifacts/payment-report-11d/LIVE.json
+/artifacts/payment-report-11d/browser-live.json
+/artifacts/payment-report-11d/validation.json

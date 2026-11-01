@@ -81,9 +81,10 @@ try {
     Artisan::call('migrate',['--force'=>true]);
     app('router')->setCompiledRoutes(app('router')->getRoutes()->compile());
     app(Illuminate\Contracts\Debug\ExceptionHandler::class)->reportable(function(Throwable $e): void { fwrite(STDERR, get_class($e).' '.explode(' (SQL:', $e->getMessage())[0].PHP_EOL); });
+    Illuminate\Support\Facades\RateLimiter::for('membership-checkout', fn () => Illuminate\Cache\RateLimiting\Limit::perMinute(1000)->by('isolated-checkout-tests'));
     Notification::fake(); Http::preventStrayRequests();
-    $remote=[]; $calls=[]; $nonces=[]; $failNext=false;
-    Http::fake(function (Illuminate\Http\Client\Request $request) use (&$remote,&$calls,&$nonces,&$failNext) {
+    $remote=[]; $calls=[]; $nonces=[]; $failNext=false; $reportMode=null;
+    Http::fake(function (Illuminate\Http\Client\Request $request) use (&$remote,&$calls,&$nonces,&$failNext,&$reportMode) {
         $path=parse_url($request->url(),PHP_URL_PATH); $raw=$request->body();
         $header=fn(string $key): string => $request->header($key)[0] ?? '';
         $canonical=implode("\n",['jakawi-club-purchases-v1','club-purchases-v1',$header('X-Jakawi-Timestamp'),$header('X-Jakawi-Nonce'),$request->method(),$path,hash('sha256',$raw)]);
@@ -97,14 +98,28 @@ try {
             if(isset($remote[$id])) {if($remote[$id]['intent']!==$d)throw new RuntimeException('Intent changed');return Http::response($remote[$id]['state']);}
             $remote[$id]=['intent'=>$d,'state'=>['contract'=>'jakawi-club-purchases-v1','club_reference'=>$id,'payment_reference'=>(string)Illuminate\Support\Str::uuid(),
                 'amount'=>'100.00','currency'=>'BOB','origin'=>'CLUB','club_user_uuid'=>$d['club_user_uuid'],'guest_purchase_id'=>$d['guest_purchase_id'],
-                'status'=>'awaiting_payment','identity_status'=>'pending','global_subject_id'=>null,'membership_reference'=>null,'activated_at'=>null,'receipt_received'=>false,'receipt_sha256'=>null,'qr_ready'=>true]];
+                'beneficiary_name'=>$d['name'], 'payment_confirmed'=>false, 'payment_confirmed_at'=>null, 'reported_at'=>null, 'receipt_pending'=>false, 'status'=>'awaiting_payment','identity_status'=>'pending','global_subject_id'=>null,'membership_reference'=>null,'activated_at'=>null,'receipt_received'=>false,'receipt_sha256'=>null,'qr_ready'=>true]];
             return Http::response($remote[$id]['state'],201);
         }
         $parts=explode('/',trim($path,'/'));$id=$parts[3];
+        if (!isset($remote[$id])) return Http::response(['error'=>'NOT_FOUND'],404);
+        if (($parts[4]??'')==='report') {
+            if ($raw !== '{"payment_confirmed":true}') return Http::response(['errors'=>['payment_confirmed'=>['Confirmation required']]],422);
+            if ($reportMode === '422') { $reportMode=null; return Http::response(['error'=>'PAYMENT_UNAVAILABLE'],422); }
+            if ($reportMode === 'timeout_before') { $reportMode=null; throw new Illuminate\Http\Client\ConnectionException('Isolated timeout'); }
+            $remote[$id]['state']['payment_confirmed']=true;
+            $remote[$id]['state']['reported_at'] ??= now()->toIso8601String();
+            $remote[$id]['state']['payment_confirmed_at'] ??= now()->toIso8601String();
+            if (!in_array($remote[$id]['state']['status'],['approved','under_review'],true)) {
+                $remote[$id]['state']['status']='PAYMENT_REPORTED';
+                $remote[$id]['state']['receipt_pending']=!$remote[$id]['state']['receipt_received'];
+            }
+            if ($reportMode === 'timeout_after') { $reportMode=null; throw new Illuminate\Http\Client\ConnectionException('Isolated timeout'); }
+        }
         if(($parts[4]??'')==='receipt') {
             $d=json_decode($raw,true);$bytes=base64_decode($d['content_base64'],true);
             if(hash('sha256',$bytes)!==$d['sha256'])throw new RuntimeException('Receipt signature mismatch');
-            $remote[$id]['state']['status']='under_review';$remote[$id]['state']['receipt_received']=true;$remote[$id]['state']['receipt_sha256']=$d['sha256'];
+            $remote[$id]['state']['status']='under_review';$remote[$id]['state']['receipt_pending']=false;$remote[$id]['state']['receipt_received']=true;$remote[$id]['state']['receipt_sha256']=$d['sha256'];
         }
         return Http::response($remote[$id]['state']);
     });
@@ -128,6 +143,35 @@ try {
     check(App\Models\MembershipPurchase::count()===1 && User::count()===3,'repeat purchase preserves reference and immutable original payload');
     $qr=web('GET','/activar/qr?download=1',[],false);
     check($qr->getStatusCode()===200 && str_contains($qr->headers->get('Content-Disposition'),'attachment') && str_contains($qr->headers->get('Cache-Control'),'no-store'),'existing QR proxied download and never publicly cached');
+    $awaitingSnapshot=$remote[$purchase->id]['state'];
+    $reportCount=fn()=>count(array_filter($calls,fn($call)=>str_ends_with($call,'/report')));
+    foreach ([[],['payment_confirmed'=>false],['payment_confirmed'=>'true'],['payment_confirmed'=>'yes'],['payment_confirmed'=>1]] as $invalid) {
+        $beforeCalls=count($calls); web('POST','/activar/aviso',$invalid);
+        check(count($calls)===$beforeCalls && !$purchase->fresh()->reported_at,'backend rejects absent/false/non-boolean confirmation without COM call');
+    }
+    $app->instance('env','production');
+    check(web('POST','/activar/aviso',['payment_confirmed'=>true])->getStatusCode()===419,'notice protected by CSRF');
+    $app->instance('env','testing');
+    $emptyRejected=false;
+    try { app(App\Services\ClubPurchaseClient::class)->request('POST','/'.$purchase->id.'/report',attempts:1); }
+    catch(App\Services\ClubPurchaseFailure $e) { $emptyRejected=$e->status===422; }
+    check($emptyRejected && !$purchase->fresh()->reported_at,'COM empty body 422 never becomes a notice');
+    $reportMode='422';web('POST','/activar/aviso',['payment_confirmed'=>true]);
+    check(!$purchase->fresh()->reported_at && App\Models\MembershipPurchase::count()===1,'COM 422 retained as recoverable error without another purchase');
+    $reportMode='timeout_before';$offset=count($calls);web('POST','/activar/aviso',['payment_confirmed'=>true]);
+    check(!$purchase->fresh()->reported_at && str_starts_with(end($calls),'GET ') && App\Models\MembershipPurchase::count()===1,'timeout before commit queries GET and keeps the same purchase for retry');
+    $reportMode='timeout_after';$offset=count($calls);
+    $r=web('POST','/activar/aviso',['payment_confirmed'=>true,'beneficiary_name'=>'Injected name']);
+    $pending=payload(web('GET','/activar'));$fixtures['pending']=$pending;
+    check($r->getStatusCode()===302 && $purchase->fresh()->payment_confirmed && $purchase->fresh()->receipt_pending && !$purchase->fresh()->activated_at,'timeout after commit recovered through GET without activating membership');
+    check($pending['props']['purchase']['beneficiary_name']==='Buyer new' && $pending['props']['purchase']['reported'] && $pending['props']['purchase']['status']==='PAYMENT_REPORTED','COM beneficiary and declared notice restored on return, browser name ignored');
+    $beforeReport=$reportCount();$reportedAt=$purchase->fresh()->reported_at->toIso8601String();
+    web('POST','/activar/aviso',['payment_confirmed'=>true]);web('POST','/activar/aviso',['payment_confirmed'=>true]);
+    check($reportCount()===$beforeReport && $purchase->fresh()->reported_at->toIso8601String()===$reportedAt && App\Models\MembershipPurchase::count()===1,'duplicate notice requests preserve first timestamp and stable reference');
+    app(App\Services\PublicMembershipCheckout::class)->apply($purchase->fresh(),$awaitingSnapshot);
+    check($purchase->fresh()->receipt_pending && $purchase->fresh()->status==='PAYMENT_REPORTED','late pre-notice GET cannot undo persisted notice or pending receipt');
+    $sessionBeforeLeave=$cookies;web('GET','/membresia');
+    check(payload(web('GET','/activar'))['props']['purchase']['receipt_pending'],'late receipt remains available after leaving and returning');
     file_put_contents('/tmp/receipt.png',base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+j8e8AAAAASUVORK5CYII='));
     $upload=function () use (&$cookies): Symfony\Component\HttpFoundation\Response {
         Auth::forgetGuards();$file=new Illuminate\Http\UploadedFile('/tmp/receipt.png','comprobante.png','image/png',null,true);
@@ -136,7 +180,7 @@ try {
     };
     check($upload()->getStatusCode()===302,'one receipt sent through signed backend transfer');
     $review=payload(web('GET','/activar'));$fixtures['review']=$review;
-    check($purchase->fresh()->status==='under_review' && !$purchase->fresh()->activated_at && $review['props']['purchase']['receipt_received'],'under_review after receipt, never prematurely activated');
+    check($purchase->fresh()->status==='under_review' && !$purchase->fresh()->activated_at && !$purchase->fresh()->receipt_pending && $review['props']['purchase']['receipt_received'],'under_review after receipt, never prematurely activated');
     check(app(App\Services\AffiliateResults::class)->summary($ref)['memberships_activated']===0 && DB::table('commission_ledger')->count()===0,'no activation metric or commission on upload');
     $upload(); web('POST','/activar/compra');
     check(count(array_filter($calls,fn($v)=>str_ends_with($v,'/receipt')))===1 && App\Models\MembershipPurchase::count()===1,'review blocks duplicate intent and second receipt');
@@ -145,6 +189,9 @@ try {
     $late=$remote[$purchase->id]['state'];$late['status']='awaiting_payment';
     app(App\Services\PublicMembershipCheckout::class)->apply($purchase->fresh(),$late);
     check($purchase->fresh()->status==='under_review','late awaiting response cannot undo submitted receipt');
+    $late['status']='PAYMENT_REPORTED';$late['receipt_received']=false;$late['receipt_pending']=true;
+    app(App\Services\PublicMembershipCheckout::class)->apply($purchase->fresh(),$late);
+    check($purchase->fresh()->status==='under_review' && $purchase->fresh()->receipt_received && !$purchase->fresh()->receipt_pending,'late notice GET cannot restore pending after file reception');
     $incomplete=$remote[$purchase->id]['state'];$incomplete['status']='approved';$blocked=false;
     try { app(App\Services\PublicMembershipCheckout::class)->apply($purchase->fresh(),$incomplete); } catch(RuntimeException) { $blocked=true; }
     check($blocked && !$purchase->fresh()->activated_at,'approval without confirmed activation cannot enable membership');
@@ -165,6 +212,7 @@ try {
     check(send($conflict)->getStatusCode()===409,'conflicting duplicate event rejected');
     $guestCookies=$cookies; $cookies=[];Auth::forgetGuards();app('session')->flush();app('session')->regenerate();
     check(payload(web('GET','/activar'))['props']['purchase']===null && web('GET','/activar/qr',[],false)->getStatusCode()===404,'other session cannot access purchase or receipt via reference');
+    check(web('POST','/activar/aviso',['payment_confirmed'=>true])->getStatusCode()===404,'other session cannot report another purchase');
     check(web('POST','/activar/comprobante')->getStatusCode()===404,'other session cannot upload receipt for another purchase');
     $before=$buyer->fresh()->toArray();
     $guestResponse=web('POST','/activar/compra',['name'=>'Declared different','email'=>$buyer->email,'phone'=>'+59171111111']);
@@ -172,6 +220,10 @@ try {
     if(!$guest || User::count()!==3 || $buyer->fresh()->toArray()!==$before) fwrite(STDERR,json_encode(['guest_http'=>$guestResponse->getStatusCode(),'guest_exists'=>(bool)$guest,'users'=>User::count(),'user_changed'=>$buyer->fresh()->toArray()!==$before]).PHP_EOL);
     check($guest && $guest->intent['club_user_uuid']===null && $guest->intent['guest_purchase_id'] && User::count()===3 && $buyer->fresh()->toArray()===$before,'existing email guest purchase neither takes account nor changes its data or referral');
     $fixtures['existing']=payload(web('GET','/activar'));
+    web('POST','/activar/aviso',['payment_confirmed'=>true]);
+    $fixtures['guest_pending']=payload(web('GET','/activar'));
+    check($guest->fresh()->receipt_pending && User::count()===3 && $buyer->fresh()->toArray()===$before,'existing-email guest can report without registration password or account takeover');
+    check($upload()->getStatusCode()===302 && $guest->fresh()->receipt_received && !$guest->fresh()->activated_at,'guest late receipt uses original purchase and never activates');
     $user=login(false);$user->phone='+59172222222';$user->save();
     $beforeAuthed=App\Models\MembershipPurchase::count();
     web('HEAD','/activar',[],false);
@@ -187,6 +239,14 @@ try {
     $own=App\Models\MembershipPurchase::where('user_id',$user->id)->first();
     check($own->intent['email']===$user->email && $own->intent['club_user_uuid']===$user->uuid,'authenticated intent cannot override identity');
     web('POST','/activar/compra');check(App\Models\MembershipPurchase::where('user_id',$user->id)->count()===1,'authenticated purchase idempotent');
+    web('POST','/activar/aviso',['payment_confirmed'=>true]);
+    $fixtures['signed_pending']=payload(web('GET','/activar'));
+    $fixtures['dashboard_pending']=payload(web('GET','/dashboard'));
+    check($fixtures['dashboard_pending']['props']['membership_purchase']['receipt_pending'],'membership area shows authorized pending receipt');
+    web('POST','/logout');web('POST','/login',['email'=>$user->email,'password'=>'FixturePassword123']);
+    check(payload(web('GET','/activar'))['props']['purchase']['receipt_pending'] && App\Models\MembershipPurchase::where('user_id',$user->id)->value('id')===$own->id,'logout and new login restore pending receipt on original owned purchase');
+    check($upload()->getStatusCode()===302 && $own->fresh()->receipt_received,'authenticated late receipt accepted after new login');
+    $fixtures['dashboard_review']=payload(web('GET','/dashboard'));
     $own->update(['status'=>'under_review']);$remote[$own->id]['state']['status']='under_review';
     $fixtures['signed_review']=payload(web('GET','/activar'));
     check($fixtures['signed_review']['props']['purchase']['status']==='under_review','authenticated user resumes review');
@@ -196,6 +256,10 @@ try {
     check($upload()->getStatusCode()===302 && $own->fresh()->status==='under_review','rejected receipt correction uses the same intention');
     $own->update(['status'=>'approved','activated_at'=>now(),'membership_reference'=>'902']);
     $fixtures['signed_active']=payload(web('GET','/activar'));$count=App\Models\MembershipPurchase::count();web('POST','/activar/compra');
+    $beforeLocked=$reportCount();$beforeUploads=count(array_filter($calls,fn($v)=>str_ends_with($v,'/receipt')));
+    web('POST','/activar/aviso',['payment_confirmed'=>true]);$upload();
+    check($reportCount()===$beforeLocked && count(array_filter($calls,fn($v)=>str_ends_with($v,'/receipt')))===$beforeUploads,'approved purchase never reports or requests another receipt');
+    $fixtures['dashboard_active']=payload(web('GET','/dashboard'));
     check($fixtures['signed_active']['props']['active'] && App\Models\MembershipPurchase::count()===$count,'active member protected from second charge');
     check((int)DB::table('marketing_event_totals')->where('event','InitiateCheckout')->sum('total')===3,'InitiateCheckout once per stable intention without duplicate COM event');
     check(DB::table('commission_ledger')->count()===0,'membership events never create commission');
@@ -213,6 +277,10 @@ try {
     check(app(App\Services\PublicMembershipCheckout::class)->current($unverifiedRequest)===null,'verified email alone never recovers or attributes a guest purchase');
     $unverifiedRequest->setLaravelSession($isolatedSession);$unverifiedRequest->setUserResolver(fn()=>$user);
     check(app(App\Services\PublicMembershipCheckout::class)->current($unverifiedRequest)?->id===$own->id,'different logged-in account never adopts a guest session purchase');
+    $claimant->global_subject_id=(string)Illuminate\Support\Str::uuid();$claimant->save();
+    $claimPurchase->update(['global_subject_id'=>$claimant->global_subject_id,'identity_status'=>'linked']);
+    $unverifiedRequest->setLaravelSession($cleanSession);$unverifiedRequest->setUserResolver(fn()=>$claimant);
+    check(app(App\Services\PublicMembershipCheckout::class)->current($unverifiedRequest)?->id===$claimPurchase->id,'linked guest recoverable in new session only through authorized COM subject');
     $testimonials=App\Support\LandingContent::defaults();$testimonials['testimonials']=[['name'=>'Fixture','quote'=>'Authorized only','authorized'=>false]];
     check(App\Support\LandingContent::validate($testimonials)['testimonials'][0]['authorized']===false,'CMS preserves explicit testimonial authorization without inferring consent');
     // The switch-account endpoint is tested through actual web CSRF middleware.
@@ -252,6 +320,13 @@ try {
     $countBeforeRetry=App\Models\MembershipPurchase::where('user_id',$second->id)->count();
     web('GET','/activar');web('GET','/activar');
     check(App\Models\MembershipPurchase::where('user_id',$second->id)->count()===$countBeforeRetry,'retry of automatic creation preserves frozen payload and reference');
+    web('POST','/activar/aviso',['payment_confirmed'=>true]);
+    $remote[$secondPurchase->id]['state']['status']='approved';
+    $remote[$secondPurchase->id]['state']['activated_at']=now()->toIso8601String();
+    $remote[$secondPurchase->id]['state']['membership_reference']='903';
+    $remote[$secondPurchase->id]['state']['receipt_pending']=false;
+    $fixtures['approved_no_receipt']=payload(web('GET','/activar'));
+    check($fixtures['approved_no_receipt']['props']['active'] && !$fixtures['approved_no_receipt']['props']['purchase']['receipt_received'] && !$fixtures['approved_no_receipt']['props']['purchase']['receipt_pending'],'bank-approved purchase without file is active and never asks for receipt');
     if (getenv('JAKAWI_ADS_TESTS') === '1') require '/tests/ads-tests.php';
     file_put_contents('/evidence/checkout-browser-fixtures.json',json_encode($fixtures,JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE));
     file_put_contents('/evidence/tests.json',json_encode(['passed'=>count($passed),'checks'=>$passed,'live_fixtures'=>0,'real_bank_payments'=>0,'outbound_hmac_verified'=>true],JSON_PRETTY_PRINT));

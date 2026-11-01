@@ -20,7 +20,7 @@ final class ClubPurchaseClient {
 
     private function signedRequest(string $method, string $path, ?array $data, int $timeout, int $attempts): Response {
         $secret = config('purchases.secret');
-        if (!is_string($secret) || strlen($secret) < 32) throw new \RuntimeException('Purchase service unavailable');
+        if (!is_string($secret) || strlen($secret) < 32) throw new ClubPurchaseFailure();
         $raw = $data === null ? '' : json_encode($data, JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR);
         for ($attempt = 0; $attempt < $attempts; $attempt++) {
             $time = (string) time(); $nonce = (string) Str::uuid();
@@ -33,7 +33,7 @@ final class ClubPurchaseClient {
                 ])->withBody($raw, 'application/json')->send($method, 'https://jakawi.com'.$path);
             } catch (\Illuminate\Http\Client\ConnectionException) {
                 if ($attempt + 1 < $attempts) { usleep(random_int(100000, 250000)); continue; }
-                throw new \RuntimeException('Purchase service unavailable');
+                throw new ClubPurchaseFailure();
             }
             if ($attempt + 1 < $attempts && ($response->serverError() || $response->status() === 429)) {
                 // Respect long server backoffs by leaving retry to a later user action.
@@ -44,6 +44,6 @@ final class ClubPurchaseClient {
             break;
         }
         // Never propagate response bodies, buyer data or signed request headers to logs.
-        throw new \RuntimeException('Purchase service unavailable');
+        throw new ClubPurchaseFailure($response->status());
     }
 }

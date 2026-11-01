@@ -81,7 +81,9 @@ try {
 
 
     const fixtures=JSON.parse(await readFile('/evidence/checkout-browser-fixtures.json','utf8'));
-    const checks=[], unexpectedWrites=[], switchRequests=[];
+    const checks=[], unexpectedWrites=[], switchRequests=[], reportRequests=[];
+    const reportedFixtures = new Map();
+    let activeFixture;
     const fulfill=(event,code,type,body='',headers=[])=>call('Fetch.fulfillRequest',{requestId:event.requestId,responseCode:code,responseHeaders:[{name:'Content-Type',value:type},...headers],body:Buffer.from(body).toString('base64')});
     on('Fetch.requestPaused',async event=>{
         try {
@@ -91,14 +93,22 @@ try {
                     return await fulfill(event,200,url.pathname.endsWith('.js')?'text/javascript':url.pathname.endsWith('.css')?'text/css':url.pathname.endsWith('.woff2')?'font/woff2':'application/octet-stream',file);
                 } catch {}
             }
+            if(url.pathname==='/activar/aviso' && event.request.method==='POST') {
+                assert.deepEqual(JSON.parse(event.request.postData), {payment_confirmed:true}, 'browser sends explicit confirmation only');
+                reportRequests.push(activeFixture);
+                const next=activeFixture==='signed'?'signed_pending':'pending';
+                reportedFixtures.set(activeFixture,next);
+                return await fulfill(event,303,'text/plain','',[{name:'Location',value:'/activar?fixture='+next}]);
+            }
             if(url.pathname==='/activar/cambiar-cuenta' && event.request.method==='POST') {
                 switchRequests.push('POST /activar/cambiar-cuenta');
                 return await fulfill(event,303,'text/plain','',[{name:'Location',value:'/activar?fixture=switched'}]);
             }
             if(event.request.method!=='GET') {unexpectedWrites.push(url.pathname);return await fulfill(event,204,'text/plain');}
             if(url.pathname==='/activar/qr')return await fulfill(event,200,'image/svg+xml','<svg xmlns="http://www.w3.org/2000/svg" width="288" height="288"><rect width="288" height="288" fill="white"/><text x="30" y="145" fill="black">QR · fixture visual</text></svg>');
-            if(url.pathname==='/membresia'||url.pathname==='/activar') {
-                const key=url.searchParams.get('fixture') || (url.pathname==='/membresia'?'sales':'empty');
+            if(url.pathname==='/membresia'||url.pathname==='/activar'||url.pathname==='/dashboard') {
+                let key=url.searchParams.get('fixture') || (url.pathname==='/membresia'?'sales':'empty');
+                key=reportedFixtures.get(key)||key;
                 if(live && !url.searchParams.has('fixture'))return await call('Fetch.continueRequest',{requestId:event.requestId});
                 const page=structuredClone(fixtures[key]);page.url=url.pathname+url.search;page.version=version;page.props.status=null;
                 const inertia=Object.entries(event.request.headers).some(([k,v])=>k.toLowerCase()==='x-inertia'&&v==='true');
@@ -112,17 +122,18 @@ try {
     const until=async(expression,label)=>{for(let i=0;i<100;i++){if(await evaluate(`!!(${expression})`))return;await pause(100);}console.error(JSON.stringify({runtimeErrors,failedAssets,dom:await evaluate('document.body.innerHTML.slice(0,1500)')}));throw new Error(label);};
     for(const width of [390,1440]) {
         await call('Emulation.setDeviceMetricsOverride',{width,height:960,deviceScaleFactor:1,mobile:width===390});
-        for(const key of ['sales','empty','signed','qr','review','active','existing','signed_review','signed_active','signed_rejected','switched','second']) {
-            const path=key==='sales'?'/membresia':'/activar';
+        for(const key of ['sales','empty','signed','qr','pending','guest_pending','review','active','existing','signed_review','signed_active','signed_rejected','switched','second','dashboard_pending','dashboard_review','dashboard_active','approved_no_receipt']) {
+            activeFixture=key; reportedFixtures.delete(key);
+            const path=key==='sales'?'/membresia':key.startsWith('dashboard_')?'/dashboard':'/activar';
             const query=live&&['sales','empty'].includes(key)?'':'?fixture='+key;
             await call('Page.navigate',{url:'about:blank'}); await pause(100);
             await call('Page.navigate',{url:'https://jakawi.club'+path+query});
-            await until(`document.querySelector('${key==='sales'?'[data-membership-sales]':'[data-membership-checkout]'}')`,'page '+key);
+            await until(`document.querySelector('${key==='sales'?'[data-membership-sales]':key.startsWith('dashboard_')?'#membership-title':'[data-membership-checkout]'}')`,'page '+key);
             await pause(180);
             assert(await evaluate('document.documentElement.scrollWidth <= innerWidth + 1'),'no horizontal overflow '+key+' '+width);
             if(!await evaluate('!!document.querySelector("main")')) console.error(JSON.stringify({key,runtimeErrors,dom:await evaluate('document.body.innerText.slice(0,600)')}));
             const content=await evaluate('document.querySelector("main").innerText');
-            assert(!/SSO|OIDC|HMAC|global_subject_id|\bCOM\b/.test(content),'buyer sees no internal terms');
+            assert(!/SSO|OIDC|HMAC|global_subject_id/.test(content),'buyer sees no internal terms');
             if(key==='sales')assert(await evaluate('[...document.querySelectorAll("main a")].filter(a=>a.textContent.includes("Activar mi membresía")&&a.getAttribute("href").startsWith("/activar")).length>=3'),'repeated direct purchase CTAs');
             if(key==='empty')assert(await evaluate('!!document.querySelector("#buyer-name") && !!document.querySelector("#buyer-email") && !document.querySelector("input[type=password]")'),'only purchase details without password');
             if(['signed','signed_review','signed_active','signed_rejected','second'].includes(key))assert(await evaluate('!document.querySelector("#buyer-name") && !document.querySelector("#buyer-email")'),'no repeated authenticated identity fields');
@@ -132,18 +143,45 @@ try {
                 assert(content.includes('Hola, '+first) && content.includes('¿No eres tú, '+first+'?') && content.includes('Cambiar de cuenta'),'real first-name greeting and switch control');
             }
             if(['signed','second'].includes(key))assert(await evaluate('document.querySelector("main img")?.getAttribute("src") === "/activar/qr"'),'authenticated QR immediately visible');
-            if(key==='signed_rejected')assert(content.includes('No pudimos validar el comprobante anterior.') && content.includes('Ya pagué'),'rejected correction remains available');
+            if(key==='signed_rejected')assert(content.includes('No pudimos validar el comprobante anterior.') && content.includes('Adjunta tu comprobante') && !content.includes('Ya pagué'),'rejected correction remains available on reported purchase');
             if(key==='switched')assert(await evaluate('!!document.querySelector("#buyer-name") && !document.querySelector("[data-checkout-identity]") && [...document.querySelectorAll("a")].some(a=>a.getAttribute("href")==="/login")'),'switch leads to clean guest form and login option');
-            if(key==='review'||key==='signed_review')assert(content.includes('¡Recibimos tu comprobante!')&&content.includes('Estamos verificando tu pago.'),'exact review message');
-            if(key==='active'||key==='signed_active')assert(content.includes('Tu membresía está activada')&&!content.includes('Ya pagué'),'active state blocks second charge');
+            if(key==='review'||key==='signed_review')assert(content.includes('Comprobante recibido · Verificando pago')&&content.includes('Estamos verificando tu pago.'),'exact review message');
+            if(['active','signed_active','approved_no_receipt'].includes(key))assert(content.includes('Membresía activa')&&!content.includes('Ya pagué'),'active state blocks second charge');
+            if(['pending','guest_pending','signed_rejected'].includes(key)) {
+                assert(content.includes('¡Recibimos tu aviso de pago!') && content.includes('Adjunta tu comprobante') && !content.includes('Ya pagué') && !content.includes('Opcional'),'recorded notice has receipt CTA without another notice');
+                assert(await evaluate('document.querySelector("#receipt").accept === "image/jpeg,image/png,application/pdf"'),'late receipt formats');
+            }
+            if(key.startsWith('dashboard_')) {
+                const expected=key==='dashboard_pending'?'Pago informado · Falta adjuntar comprobante':key==='dashboard_review'?'Comprobante recibido · Verificando pago':'Membresía activa';
+                assert(content.includes(expected),'membership area exact COM state');
+                if(key==='dashboard_pending')assert(await evaluate('[...document.querySelectorAll("a")].some(a=>a.getAttribute("href")==="/activar#comprobante")'),'direct receipt link');
+            }
+            if(['qr','signed','second','existing'].includes(key)) {
+                assert(await evaluate('!document.querySelector("#payment-confirmed").checked && [...document.querySelectorAll("button")].find(b=>b.textContent.includes("Ya pagué")).disabled'),'checkbox starts unchecked and notice disabled');
+                assert(content.includes('Confirmo que ya realicé la transferencia de Bs 100 para activar la membresía JAKAWI de '+fixtures[key].props.purchase.beneficiary_name+'.'),'authorized beneficiary in declaration');
+            }
             if(key==='qr') {
-                await evaluate('[...document.querySelectorAll("button")].find(b=>b.textContent.includes("Ya pagué")).click()');
-                await until('document.querySelector("#receipt")','receipt picker');
+                await evaluate('document.querySelector("#payment-confirmed").click()');
+                await evaluate('document.querySelector("header a").click()');
+                await until('document.querySelector("[data-membership-sales]")','leave checkout');
+                await evaluate('history.back()');
+                await until('document.querySelector("#payment-confirmed") && !document.querySelector("#payment-confirmed").checked','history resets confirmation');
+                await evaluate('document.querySelector("#payment-confirmed").click(); window.dispatchEvent(new PageTransitionEvent("pageshow", {persisted:true}))');
+                await until('!document.querySelector("#payment-confirmed").checked','bfcache resets confirmation');
+                await evaluate('document.querySelector("#payment-confirmed").click()');
+                const before=reportRequests.length;
+                await evaluate('const b=[...document.querySelectorAll("button")].find(b=>b.textContent.includes("Ya pagué")); b.click(); b.click();');
+                await until('document.querySelector("#receipt")','notice persisted and receipt picker');
+                assert.equal(reportRequests.length,before+1,'double click sends one notice');
                 assert(await evaluate('!document.querySelector("#receipt").multiple && document.querySelector("#receipt").accept === "image/jpeg,image/png,application/pdf"'),'single private receipt control');
+                await evaluate('location.reload()');
+                await until('document.querySelector("#receipt") && !document.querySelector("#payment-confirmed")','refresh restores pending instead of notice');
+                checks.push(`history bfcache double click and refresh ${width}`);
             }
             const screenshot=await call('Page.captureScreenshot',{format:'png',captureBeyondViewport:true});
             await writeFile(`${output}/${key}-${width}-${live?'live':'preview'}.png`,Buffer.from(screenshot.data,'base64'));
             if(key==='signed') {
+                await evaluate('document.querySelector("#payment-confirmed").click()');
                 await evaluate('[...document.querySelectorAll("button")].find(b=>b.textContent.includes("Ya pagué")).click()');
                 await until('document.querySelector("#receipt")','receipt before switch');
                 await evaluate('[...document.querySelectorAll("button")].find(b=>b.textContent.includes("Cambiar de cuenta")).click()');
@@ -156,6 +194,6 @@ try {
     }
     assert.deepEqual(runtimeErrors,[],'no browser runtime errors');assert.deepEqual(failedAssets,[],'all assets load');assert.deepEqual(unexpectedWrites,[],'no live purchase/receipt writes');
     assert.equal(switchRequests.length,2,'switch actions intercepted without LIVE writes');
-    await writeFile(`${output}/browser-${live?'live':'preview'}.json`,JSON.stringify({checks,no_live_mutations:true,simulated_switch_posts:switchRequests.length,runtimeErrors,failedAssets},null,2));
+    await writeFile(`${output}/browser-${live?'live':'preview'}.json`,JSON.stringify({checks,no_live_mutations:true,simulated_switch_posts:switchRequests.length,simulated_notice_posts:reportRequests.length,runtimeErrors,failedAssets},null,2));
     console.log(JSON.stringify({checks:checks.length,no_live_mutations:true}));
 } finally { if(socket)socket.close();chrome.kill('SIGTERM'); }

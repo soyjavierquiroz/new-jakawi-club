@@ -486,3 +486,11 @@ integración actual solo acredita activaciones pasadas. No inferir FREE/PAID.
 [Implementación, contrato mínimo faltante y pruebas](docs/economics/commissions-10e.md).
 
 Comisiones de adquisición: [Fase 10G, evidencia COM real y operación](docs/economics/commissions-10g.md). Reutiliza PRELAUNCH-10E-v1, aprobación manual y ledger; UNKNOWN pendiente, sin retroactividad.
+
+### Aviso consciente de pago — Fase 11D
+
+`/activar` registra «Ya pagué» en la compra COM existente mediante HMAC con
+`{"payment_confirmed":true}` después de una confirmación explícita validada en CLUB.
+El beneficiario procede de COM; aviso y comprobante se conservan por separado de
+la activación bancaria. Pendientes visibles en cuenta y checkout, con comprobante
+posterior y flujo invitado. [Pruebas, despliegue y rollback](artifacts/payment-report-11d/REPORT.md).

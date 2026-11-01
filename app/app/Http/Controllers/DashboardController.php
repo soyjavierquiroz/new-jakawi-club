@@ -15,7 +15,17 @@ class DashboardController extends Controller
     {
         $user = $request->user();
 
+        $checkout = app(\App\Services\PublicMembershipCheckout::class);
+        $purchase = $checkout->current($request);
+        if ($purchase && !$request->isMethod('HEAD')) {
+            try { $purchase = $checkout->refresh($purchase); }
+            catch (\RuntimeException) { /* Retain the last authorized COM state. */ }
+        }
+
         return Inertia::render('Dashboard', [
+            'membership_purchase' => $purchase ? ['receipt_pending' => $purchase->receipt_pending && !$purchase->activated_at,
+                'receipt_received' => $purchase->receipt_received || (bool) $purchase->receipt_sha256,
+                'status' => $purchase->status] : null,
             'membership_activated' => app(\App\Services\MemberActivation::class)->confirmed($user),
             'membership_continue' => \App\Support\MembershipJourney::pending($request),
             'member' => $user->only('name', 'email', 'phone', 'city'),

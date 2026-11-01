@@ -69,6 +69,7 @@ Route::get('/activar', [\App\Http\Controllers\PublicMembershipController::class,
 Route::post('/activar/cambiar-cuenta', [\App\Http\Controllers\PublicMembershipController::class, 'switchAccount'])->middleware('throttle:membership-checkout')->block(20, 10);
 
 Route::post('/activar/compra', [\App\Http\Controllers\PublicMembershipController::class, 'store'])->middleware('throttle:membership-checkout')->block(20, 10);
+Route::post('/activar/aviso', [\App\Http\Controllers\PublicMembershipController::class, 'report'])->middleware('throttle:membership-checkout')->block(20, 10);
 Route::post('/activar/comprobante', [\App\Http\Controllers\PublicMembershipController::class, 'receipt'])->middleware('throttle:membership-checkout')->block(20, 10);
 Route::get('/activar/qr', [\App\Http\Controllers\PublicMembershipController::class, 'qr'])->middleware('throttle:membership-checkout');
 

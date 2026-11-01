@@ -40,7 +40,7 @@ final class PublicMembershipController extends Controller {
                         'club_user_uuid' => $user->uuid, 'claim_secret' => $purchase->intent['claim_secret'],
                     ]);
                     $purchase->user_id = $user->id; $purchase->save();
-                    $purchase = $checkout->apply($purchase, $response->json());
+                    $purchase = $checkout->accept($purchase, $response->json());
                 }
             } catch (\RuntimeException) { $unavailable = true; }
         }
@@ -49,7 +49,9 @@ final class PublicMembershipController extends Controller {
             'buyer' => $buyer, 'signed_in' => (bool) $request->user(),
             'active' => ($request->user() && app(MemberActivation::class)->confirmed($request->user())) || (bool) $purchase?->activated_at,
             'purchase' => $purchase ? ['status' => $purchase->status, 'qr_ready' => $purchase->qr_ready,
-                'receipt_received' => (bool) $purchase->receipt_sha256] : null,
+                'receipt_received' => $purchase->receipt_received || (bool) $purchase->receipt_sha256,
+                'receipt_pending' => $purchase->receipt_pending && !$purchase->activated_at, 'reported' => (bool) $purchase->reported_at || $purchase->payment_confirmed,
+                'payment_confirmed' => $purchase->payment_confirmed, 'beneficiary_name' => $purchase->beneficiary_name] : null,
             'recipient' => config('purchases.recipient'), 'unavailable' => $unavailable, 'profile_incomplete' => $profileIncomplete,
         ])->toResponse($request)->withHeaders(['Cache-Control' => 'private, no-store']);
     }
@@ -83,6 +85,22 @@ final class PublicMembershipController extends Controller {
         Inertia::clearHistory();
         return redirect()->route('membership.activate');
     }
+    public function report(Request $request, PublicMembershipCheckout $checkout): RedirectResponse {
+        $purchase = $checkout->current($request); abort_unless($purchase, 404);
+        $request->validate(['payment_confirmed' => ['required', function (string $attribute, mixed $value, \Closure $fail): void {
+            if ($value !== true) $fail('Confirma que ya realizaste la transferencia de Bs 100 para registrar tu aviso.');
+        }]]);
+        try {
+            $checkout->report($purchase);
+        } catch (\RuntimeException $failure) {
+            $message = $failure instanceof \App\Services\ClubPurchaseFailure && $failure->status === 422
+                ? 'No pudimos registrar tu aviso. Actualiza el estado y confirma de nuevo tu transferencia.'
+                : 'No pudimos confirmar tu aviso. Tu compra se conserva. Actualiza el estado antes de volver a intentarlo.';
+            return redirect($this->destination($request))->withErrors(['payment_confirmed' => $message]);
+        }
+        return redirect($this->destination($request));
+    }
+
     public function receipt(Request $request, PublicMembershipCheckout $checkout): RedirectResponse {
         $purchase = $checkout->current($request); abort_unless($purchase, 404);
         $request->validate(['receipt' => ['required', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:10240']]);
@@ -90,14 +108,14 @@ final class PublicMembershipController extends Controller {
         $file = $request->file('receipt');
         abort_unless(in_array($file->getMimeType(), ['image/jpeg', 'image/png', 'application/pdf'], true), 422);
         try {
-            $purchase = $checkout->sync($purchase);
-            if (!in_array($purchase->status, ['awaiting_payment', 'rejected'], true)) return redirect($this->destination($request));
+            $purchase = $checkout->refresh($purchase);
+            if (!in_array($purchase->status, ['awaiting_payment', 'PAYMENT_REPORTED', 'rejected'], true)) return redirect($this->destination($request));
             $bytes = file_get_contents($file->getRealPath());
             $response = app(ClubPurchaseClient::class)->request('POST', '/'.$purchase->id.'/receipt', [
                 'content_base64' => base64_encode($bytes), 'sha256' => hash('sha256', $bytes),
             ]);
             // The upload temporary file is never promoted to public CLUB storage.
-            $checkout->apply($purchase, $response->json());
+            $checkout->accept($purchase, $response->json());
         } catch (\RuntimeException) {
             return redirect($this->destination($request))->withErrors(['receipt' => 'No pudimos confirmar el envío. Actualiza el estado y vuelve a intentarlo con el mismo comprobante.']);
         }
