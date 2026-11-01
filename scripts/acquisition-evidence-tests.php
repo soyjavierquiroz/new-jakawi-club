@@ -59,6 +59,7 @@ foreach ([false,'unknown'] as $firstG) {
  $first10g=$firstG;$e=$makeG();check(send($e)->getStatusCode()===201 && $amountG($e)===null,'10G false or unknown cannot create commission');
 }
 $first10g=true;$state10g='UNKNOWN';$e=$makeG($individualOrigin);check(send($e)->getStatusCode()===201 && $amountG($e)===null,'10G UNKNOWN affiliate unvalued');
+check(app(App\Services\AffiliateResults::class)->summary($individual)['commission_verification_pending']===true,'11H affiliate sees actual pending economic evidence without invented amount');
 $state10g='FREE';
 $unlinkedAffiliate=App\Models\User::create(['name'=>'Unlinked affiliate','email'=>'unlinked-g@example.test']);
 $unlinkedOrigin=['source'=>'jakawi.com','kind'=>'club_referral','club_referral_code'=>$unlinkedAffiliate->referral_code];
@@ -86,7 +87,15 @@ $guestFixedG['guest_purchase_id']=$guestG['guest_purchase_id'];$guestFixedG['eve
 check(send($guestFixedG)->getStatusCode()===201 && $amountG($guestG)===null,'10G guest UNKNOWN pending');
 $first10g=true;$guestLinkedG=$guestFixedG;$guestLinkedG['event_type']='membership.attribution_identity_linked';
 $guestLinkedG['event_id']='com:membership:'.$guestPayG.':attribution-identity-linked';$guestLinkedG['global_subject_id']=(string)Illuminate\Support\Str::uuid();$guestLinkedG['purchase_acquisition']=$origin;
+// 11H: handoff can reveal the subject before purchase attach. Cache UNKNOWN in
+// that exact identity context, then require the signed attach event to requery.
+$person11h=DB::transaction(fn()=>app(App\Services\PartnerAcquisition::class)->person(['purchase'=>$guestG['club_reference'],'subject'=>$guestLinkedG['global_subject_id']]));
+$activation11h=DB::table('acquisition_activations')->where('person_id',$person11h->id)->first();
+$first10g='unknown';app(App\Services\Commissions\CommissionEngine::class)->recordMembership($person11h,$activation11h);
+check($amountG($guestG)===null,'11H handoff before attach keeps UNKNOWN unvalued');
+$first10g=true;$requestsBefore11h=count($requests10g);
 check(send($guestLinkedG)->getStatusCode()===201 && $amountG($guestG)==='30.0000','10G late buyer identity reconsults evidence immediately');
+check(count($requests10g)>$requestsBefore11h,'11H signed identity event invalidates pending evidence despite unchanged aliases');
 $n=DB::table('commission_ledger')->count();send($guestLinkedG);check(DB::table('commission_ledger')->count()===$n,'10G identity repeat never second acquisition');
 // Publish a new amount using the existing admin version workflow, while preserving v1.
 $draftG=['beneficiary_type'=>'INDIVIDUAL','membership_status'=>'FREE','nature'=>'ONE_TIME_ACQUISITION','partner_id'=>'*','event_type'=>'membership.activated','fixed_amount'=>'20','currency'=>'BOB','effective_at'=>now()->addMinute()->toIso8601String()];

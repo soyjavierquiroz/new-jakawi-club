@@ -264,3 +264,10 @@ credentials.json
 /artifacts/payment-report-11d/LIVE.json
 /artifacts/payment-report-11d/browser-live.json
 /artifacts/payment-report-11d/validation.json
+
+/artifacts/member-access-11h/**/*fixture*.json
+/artifacts/member-access-11h/fixtures.json
+/artifacts/member-access-11h/**/*.png
+/artifacts/member-access-11h/LIVE.json
+/artifacts/member-access-11h/browser-live.json
+/artifacts/member-access-11h/validation.json

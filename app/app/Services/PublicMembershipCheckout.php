@@ -24,6 +24,16 @@ final class PublicMembershipCheckout {
         }))->first();
         return $owned;
     }
+    public function forBenefits(Request $request): ?MembershipPurchase {
+        if ($purchase = $this->current($request)) return $purchase;
+        // Only the original guest capability can offer an explicit claim. This does
+        // not attach an account and must never be used by checkout creation/reporting.
+        $reference = $request->session()->get('membership_purchase');
+        $guest = is_string($reference) ? MembershipPurchase::find($reference) : null;
+        return $request->user() && $guest && !$guest->user_id && empty($guest->intent['club_user_uuid'])
+            && $guest->identity_status !== 'linked' && $guest->activated_at ? $guest : null;
+    }
+
     public function create(Request $request, array $data): MembershipPurchase {
         $purchase = $this->current($request);
         if ($purchase) return $purchase;

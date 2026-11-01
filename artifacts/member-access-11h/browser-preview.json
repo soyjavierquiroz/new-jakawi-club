@@ -1,0 +1,12 @@
+{
+  "checks": [
+    "pending 390: consent, retry, double click, fragment, benefits continuation",
+    "linked 390: consent, retry, double click, fragment, benefits continuation",
+    "pending 1440: consent, retry, double click, fragment, benefits continuation",
+    "linked 1440: consent, retry, double click, fragment, benefits continuation"
+  ],
+  "no_live_mutations": true,
+  "com_continuation": "browser mock; COM owns actual consumption and account-switch confirmation",
+  "runtimeErrors": [],
+  "failedAssets": []
+}

@@ -1,0 +1,20 @@
+{
+  "purchase": "97cb9a04-9f79-448d-be20-7a0b2bbb795d",
+  "membership": "2",
+  "identity": "pending",
+  "authorized_owner_verified": true,
+  "original_claim_present": true,
+  "original_uuid_matches": true,
+  "identity_evidence_present": true,
+  "lead_count": 1,
+  "beneficiary_matches_original_referrer": true,
+  "evidence_status": "pending",
+  "first_paid_acquisition": "unknown",
+  "buyer_reason": "BUYER_IDENTITY_UNRESOLVED",
+  "affiliate_state": "PAID",
+  "affiliate_reason": "EFFECTIVE_PAID_MEMBERSHIP",
+  "after_economic_cutoff": true,
+  "rules_effective_at_activation": 3,
+  "commission_entries": 0,
+  "live_writes": 0
+}

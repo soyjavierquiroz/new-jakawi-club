@@ -110,8 +110,16 @@ class MembershipAcquisitionEvidence
 
     private function identityContext(object $person): string
     {
-        return hash('sha256', DB::table('acquisition_aliases')->where('person_id', $person->id)
-            ->whereIn('kind', ['user','subject'])->orderBy('kind')->orderBy('reference')->get(['kind','reference'])->toJson());
+        $aliases = DB::table('acquisition_aliases')->where('person_id', $person->id);
+        $identities = (clone $aliases)->whereIn('kind', ['user','subject'])->orderBy('kind')->orderBy('reference')->get(['kind','reference']);
+        // A local handoff may be confirmed before COM attaches the purchase. The
+        // later authenticated identity event must invalidate that pending response,
+        // even when the subject alias was already known. Duplicate events keep it stable.
+        $linkedFacts = DB::table('acquisition_facts as f')->join('commercial_events as e', 'e.id', '=', 'f.event_id')
+            ->whereIn('e.event_type', ['membership.identity_linked', 'membership.attribution_identity_linked'])
+            ->whereIn('f.payment_reference', (clone $aliases)->where('kind', 'payment')->select('reference'))
+            ->orderBy('e.id')->pluck('e.id');
+        return hash('sha256', json_encode([$identities, $linkedFacts], JSON_THROW_ON_ERROR));
     }
 
     private function store(object $person, object $event, ?string $payment, ?string $subject, ?string $raw, string $status, string $reason, ?array $result = null): void

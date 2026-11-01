@@ -35,6 +35,10 @@ final class AffiliateResults
         $leads += (clone $external)->count();
         $activated += (clone $external)->whereExists(fn($q)=>$q->selectRaw('1')->from('acquisition_activations as act')->whereColumn('act.person_id','p.id'))->count();
         return [
+            'commission_verification_pending' => DB::table('acquisition_evidence as e')->join('acquisition_people as p', 'p.id', '=', 'e.person_id')
+                ->where('p.beneficiary_type', 'INDIVIDUAL')->where('p.beneficiary_id', $user->uuid)->where('e.status', 'pending')
+                ->whereIn('e.id', DB::table('acquisition_evidence')->selectRaw('max(id)')->groupBy('event_id'))
+                ->whereNotExists(fn ($q) => $q->selectRaw('1')->from('commission_ledger as l')->whereColumn('l.acquisition_person_id', 'p.id'))->exists(),
             'leads_captured' => $leads,
             'memberships_activated' => $activated,
             'activation_rate' => $leads ? round($activated * 100 / $leads, 1) : 0,

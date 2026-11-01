@@ -1,4 +1,5 @@
 export type AffiliateResults = {
+    commission_verification_pending?: boolean;
     leads_captured: number;
     memberships_activated: number;
     activation_rate: number;

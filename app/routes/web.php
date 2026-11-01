@@ -91,6 +91,8 @@ Route::middleware('guest')->group(function (): void {
 Route::middleware('auth')->group(function (): void {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
     Route::get('/verificar-email', [AuthController::class, 'forgot'])->name('verification.notice');
+    Route::get('/mi-cuenta', [DashboardController::class, 'show'])->middleware('verified');
+    Route::post('/cuenta/beneficios', [\App\Http\Controllers\MemberBenefitsController::class, 'store'])->middleware(['verified', 'throttle:6,1'])->block(20, 10);
     Route::get('/dashboard', [DashboardController::class, 'show'])->middleware('verified')->name('dashboard');
     Route::patch('/perfil', [DashboardController::class, 'update'])->middleware('verified')->name('profile.update');
 });

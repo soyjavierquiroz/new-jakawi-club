@@ -44,6 +44,7 @@ final class ClubPurchaseClient {
             break;
         }
         // Never propagate response bodies, buyer data or signed request headers to logs.
-        throw new ClubPurchaseFailure($response->status());
+        $reason = $response->json('error') ?? $response->json('message');
+        throw new ClubPurchaseFailure($response->status(), in_array($reason, ['IDENTITY_LINK_REQUIRED', 'IDENTITY_CONFLICT'], true) ? $reason : null);
     }
 }

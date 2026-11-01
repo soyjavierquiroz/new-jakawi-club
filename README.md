@@ -494,3 +494,11 @@ Comisiones de adquisición: [Fase 10G, evidencia COM real y operación](docs/eco
 El beneficiario procede de COM; aviso y comprobante se conservan por separado de
 la activación bancaria. Pendientes visibles en cuenta y checkout, con comprobante
 posterior y flujo invitado. [Pruebas, despliegue y rollback](artifacts/payment-report-11d/REPORT.md).
+
+### Acceso a beneficios después del pago — Fase 11H
+
+`/mi-cuenta` prioriza la membresía confirmada y su acceso a beneficios. Reutiliza
+consentimiento, handoff y claim cifrado original; ticket temporal en memoria con
+continuación segura a COM. Estado económico pendiente basado en evidencia real,
+sin nuevas reglas ni escrituras de despliegue en ledger.
+[Implementación, pruebas y límites de verificación LIVE](artifacts/member-access-11h/REPORT.md).
