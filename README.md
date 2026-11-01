@@ -22,9 +22,9 @@ Recepción comercial COM → CLUB: [Fase 05](artifacts/commercial-phase05/REPORT
 Receptor HMAC exclusivo `POST /internal/commercial/events`, idempotente y sin altas
 de usuarios ni efectos CRM. Panel privado **CONVERSIONES COM** en
 `/admin/conversiones-com`. [Contrato exacto para Codex COM](docs/integrations/com-commercial-events-v1.md).
-Motor económico Fase 06E: [corte, reglas y aprobación manual](docs/economics/commissions-06e.md).
-Reglas en `/admin/reglas-comisiones`, libro en `/admin/comisiones`; aprobación manual
-sin conciliación histórica COM. Corte: `2026-10-30T07:45:11.067511-04:00`,
+Motor económico: [aprobación automática verificada](artifacts/automatic-commissions/REPORT.md).
+Reglas en `/admin/reglas-comisiones`, libro en `/admin/comisiones`; aprobación automática
+de primeras adquisiciones con evidencia completa, sin conciliación histórica COM. Corte: `2026-10-30T07:45:11.067511-04:00`,
 según la fecha original firmada de COM. Sin reglas activas predeterminadas, pagos ni saldos retirables.
 
 Acceso SSO COM → CLUB: [Fase 04](artifacts/identity-phase04/REPORT.md). Login principal **INGRESAR CON JAKAWI** en `https://jakawi.club/login`; acceso local conservado.
@@ -502,3 +502,11 @@ consentimiento, handoff y claim cifrado original; ticket temporal en memoria con
 continuación segura a COM. Estado económico pendiente basado en evidencia real,
 sin nuevas reglas ni escrituras de despliegue en ledger.
 [Implementación, pruebas y límites de verificación LIVE](artifacts/member-access-11h/REPORT.md).
+
+### Comisiones automáticas verificadas
+
+Las primeras adquisiciones con evidencia COM y controles CLUB completos se aprueban
+automáticamente, conservando tarifas versionadas y ledger. UNKNOWN y alertas requieren
+revisión. Aprobación, liquidación y desembolso siguen separados; no hay pagos automáticos.
+La interfaz administrativa y del afiliado muestra importes BOB legibles y aprobadas
+pendientes de liquidación. [Operación, pruebas y rollback](artifacts/automatic-commissions/REPORT.md).

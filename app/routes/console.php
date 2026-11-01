@@ -29,7 +29,7 @@ Artisan::command('commissions:sync', function (): int {
                 $count++;
             }
         });
-    $this->info('Eventos existentes evaluados: '.$count.'. No se aprobaron comisiones ni se ejecutaron pagos.');
+    $this->info('Eventos existentes evaluados: '.$count.'. Las adquisiciones verificadas pueden aprobarse automáticamente; no se ejecutaron pagos.');
     return 0;
 })->purpose('Sincronizar candidatos idempotentes desde eventos COM existentes');
 
@@ -63,3 +63,26 @@ Illuminate\Support\Facades\Schedule::call(function (): void {
         app(App\Services\Advertising::class)->safely(fn () => app(App\Services\Advertising::class)->enqueue($event));
     });
 })->name('club-ads-maintenance')->everyTenMinutes()->withoutOverlapping();
+
+// Same economic verifier for existing entries and bounded evidence recovery.
+Artisan::command('commissions:automatic {--entry=}', function (): int {
+    $engine = app(App\Services\Commissions\CommissionEngine::class);
+    if ($id = $this->option('entry')) {
+        if (!ctype_digit($id)) return 1;
+        $entry = $engine->approveExistingAcquisition((int)$id);
+        $this->info(json_encode(['id'=>$entry->id,'status'=>$entry->status,'review_required'=>$entry->review_required,'amount'=>$entry->amount,'currency'=>$entry->currency,'approval_mode'=>$entry->approval_mode], JSON_THROW_ON_ERROR));
+        return 0;
+    }
+    $items = Illuminate\Support\Facades\DB::table('acquisition_evidence as e')
+        ->whereIn('e.id', Illuminate\Support\Facades\DB::table('acquisition_evidence')->selectRaw('max(id)')->groupBy('event_id'))
+        ->whereIn('e.status', ['pending', 'verified'])->where('e.created_at', '<=', now()->subMinutes(5))
+        ->whereNotExists(fn ($q) => $q->selectRaw('1')->from('commission_ledger as l')->whereColumn('l.original_event_id', 'e.event_id'))
+        ->orderBy('e.id')->limit(20)->get();
+    foreach ($items as $item) {
+        $activation = Illuminate\Support\Facades\DB::table('acquisition_activations')->where('event_id', $item->event_id)->first();
+        if ($activation) $engine->recordMembership(Illuminate\Support\Facades\DB::table('acquisition_people')->find($activation->person_id), $activation);
+    }
+    $this->info('Verificaciones procesadas: '.$items->count().'. Sin desembolsos.');
+    return 0;
+})->purpose('Aprobar adquisiciones verificadas sin recalcular tarifas ni ejecutar pagos');
+Illuminate\Support\Facades\Schedule::command('commissions:automatic')->everyTenMinutes()->withoutOverlapping();

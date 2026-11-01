@@ -1,0 +1,23 @@
+{
+  "checks": [
+    {
+      "width": 390,
+      "localized_currency": true,
+      "categories": true,
+      "no_normal_decisions_or_json": true,
+      "affiliate_settlement": true,
+      "no_overflow": true
+    },
+    {
+      "width": 1440,
+      "localized_currency": true,
+      "categories": true,
+      "no_normal_decisions_or_json": true,
+      "affiliate_settlement": true,
+      "no_overflow": true
+    }
+  ],
+  "no_live_mutations": true,
+  "runtimeErrors": [],
+  "failedAssets": []
+}

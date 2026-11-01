@@ -42,6 +42,7 @@ final class ClubPurchaseEvents {
             $event = DB::table('commercial_events')->where('source', 'jakawi.com')->where('event_id', $data['event_id'])->first();
             if (!hash_equals($event->payload_sha256, $digest)) {
                 DB::table('commercial_event_conflicts')->insertOrIgnore([...$provenance, 'commercial_event_id' => $event->id, 'detected_at' => now()->utc()]);
+                app(\App\Services\Commissions\CommissionEngine::class)->flagOperationReview($event);
                 return response()->json(['error' => 'event_id_conflict', 'event_id' => $data['event_id']], 409);
             }
             $purchase = MembershipPurchase::lockForUpdate()->find($data['club_reference']);

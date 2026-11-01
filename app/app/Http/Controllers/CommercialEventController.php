@@ -120,6 +120,7 @@ class CommercialEventController extends Controller
             DB::table('commercial_event_conflicts')->insertOrIgnore([
                 ...$provenance, 'commercial_event_id' => $event->id, 'detected_at' => now()->utc(),
             ]);
+            app(\App\Services\Commissions\CommissionEngine::class)->flagOperationReview($event);
             return response()->json(['error' => 'event_id_conflict', 'event_id' => $event->event_id], 409);
         }
         return response()->json(['status' => $inserted ? 'accepted' : 'duplicate', 'event_id' => $event->event_id], $inserted ? 201 : 200);

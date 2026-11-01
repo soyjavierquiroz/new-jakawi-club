@@ -71,7 +71,7 @@ $historic = $make10e($origin); $historic['occurred_at']=Carbon::parse($rules10e[
 check(send($historic)->getStatusCode() === 201 && !DB::table('commission_ledger')->where('com_reference_id',$historic['membership_reference'])->whereIn('rule_id',array_column($rules10e,'id'))->exists(),'10E new tariffs never apply before publication');
 check(DB::table('commission_ledger')->find($freeEntry->id)->status === 'candidate','10E approval remains manual');
 $approved10e = app(App\Services\Commissions\CommissionEngine::class)->review($freeEntry->id,['action'=>'approve','version'=>$freeEntry->version,'reason'=>'Isolated 10E manual approval'],$admin);
-check($approved10e->status === 'approved' && $approved10e->amount === '15.0000','10E manual administrative approval preserved');
+check($approved10e->status === 'candidate' && $approved10e->review_required && $approved10e->amount === '15.0000','insufficient evidence cannot use manual approval bypass');
 // Existing authenticated guest, identity merge and original-referrer competition cases
 // above exercise the same acquisition resolver. Revalue the retained guest with new
 // rules forbidden by its original activation date.

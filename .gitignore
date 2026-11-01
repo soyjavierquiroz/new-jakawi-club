@@ -271,3 +271,9 @@ credentials.json
 /artifacts/member-access-11h/LIVE.json
 /artifacts/member-access-11h/browser-live.json
 /artifacts/member-access-11h/validation.json
+
+/artifacts/automatic-commissions/LIVE.json
+/artifacts/automatic-commissions/*fixture*.json
+/artifacts/automatic-commissions/*.png
+/artifacts/automatic-commissions/browser-live.json
+/artifacts/automatic-commissions/validation.json

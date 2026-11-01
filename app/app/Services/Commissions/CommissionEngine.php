@@ -135,7 +135,7 @@ final class CommissionEngine
             $entry = $existing ?? $other;
             $enabled = $person->beneficiary_type !== 'PARTNER' || DB::table('affiliate_partners')->where('source','jakawi.com')->where('partner_id',$person->beneficiary_id)->where('status','enabled')->exists();
             if (!$enabled || $entry->beneficiary_type !== $person->beneficiary_type || $entry->beneficiary_id !== $person->beneficiary_id) return $this->save($entry,['eligible'=>false,'review_required'=>true],'identity_review',null,'Revisar beneficiario original o estado Partner antes de aprobar.');
-            return $entry;
+            return $this->automaticallyApprove($entry, $person, $activation);
         }
         if ($person->beneficiary_type === 'PARTNER' && !DB::table('affiliate_partners')->where('source','jakawi.com')->where('partner_id',$person->beneficiary_id)->where('status','enabled')->exists()) return null;
         $at = $this->occurredAt($event);
@@ -181,8 +181,83 @@ final class CommissionEngine
             'amount'=>$rule->fixed_amount,'currency'=>$rule->currency,'status'=>'candidate','eligible'=>true,'created_at'=>now(),'updated_at'=>now(),
         ]);
         $entry=DB::table('commission_ledger')->find($id);
-        $this->audit(null,$entry,'registered',null,'Membresía activada; beneficiario original y regla diferenciada. Requiere aprobación manual.');
-        return $entry;
+        $this->audit(null,$entry,'registered',null,'Membresía activada; beneficiario original y regla diferenciada. Se verificará aprobación automática sin desembolso.');
+        return $this->automaticallyApprove($entry, $person, $activation);
+    }
+
+    // Shared by receipt processing, bounded retries and explicit existing-entry approval.
+    // Never modifies the immutable economic snapshot or initiates a payment.
+    private function automaticallyApprove(object $entry, object $person, object $activation): object
+    {
+        $entry = DB::table('commission_ledger')->where('id', $entry->id)->lockForUpdate()->firstOrFail();
+        $snapshot = json_decode($entry->rule_snapshot ?? '{}', true, 32, JSON_THROW_ON_ERROR);
+        if (($snapshot['nature'] ?? null) !== 'ONE_TIME_ACQUISITION' || $entry->status === 'discarded') return $entry;
+        $event = DB::table('commercial_events')->find($entry->original_event_id);
+        $evidence = app(MembershipAcquisitionEvidence::class)->resolve($person, $event, $this->occurredAt($event));
+        $first = DB::table('acquisition_activations')->where('person_id', $person->id)->orderBy('activated_at')->orderBy('id')->first();
+        $rivals = DB::table('commission_ledger')->where('id', '<>', $entry->id)->where(function (Builder $q) use ($person): void {
+            $q->where('acquisition_person_id', $person->id)->orWhereIn('com_reference_id', DB::table('acquisition_activations')->where('person_id', $person->id)->select('membership_reference'));
+        })->exists();
+        $conflicts = DB::table('commercial_event_conflicts')->where(function (Builder $q) use ($event, $person): void {
+            $q->whereIn('commercial_event_id', $this->operation($event)->select('id'))->orWhereIn('commercial_event_id', DB::table('acquisition_facts')->where(function (Builder $f) use ($person): void {
+                foreach (['payment_reference' => 'payment', 'global_subject_id' => 'subject', 'club_user_uuid' => 'user'] as $column => $kind) {
+                    $f->orWhereIn($column, DB::table('acquisition_aliases')->where('person_id', $person->id)->where('kind', $kind)->selectRaw($kind === 'payment' ? 'reference' : 'reference::uuid'));
+                }
+            })->select('event_id'));
+        })->exists();
+        $latest = $this->operation($event)->where('event_type', '<>', 'membership.identity_linked')->orderByRaw(self::EVENT_TIME_SQL.' DESC')->orderByDesc('id')->first();
+        $beneficiary = $person->beneficiary_type === 'INDIVIDUAL' ? User::where('uuid', $person->beneficiary_id)->first() : null;
+        $validBeneficiary = $beneficiary
+            ? $beneficiary->activated_at !== null && $beneficiary->hasVerifiedEmail()
+                && $beneficiary->referral_code === $entry->affiliate_code && $person->referral_code === $entry->affiliate_code
+                && !DB::table('acquisition_aliases')->where('person_id', $person->id)->where(function (Builder $q) use ($beneficiary): void {
+                    $q->where(fn (Builder $a) => $a->where('kind', 'user')->where('reference', $beneficiary->uuid));
+                    if ($beneficiary->global_subject_id) $q->orWhere(fn (Builder $a) => $a->where('kind', 'subject')->where('reference', $beneficiary->global_subject_id));
+                })->exists()
+            : $person->beneficiary_type === 'PARTNER' && DB::table('affiliate_partners')->where('source', 'jakawi.com')->where('partner_id', $person->beneficiary_id)->where('status', 'enabled')->exists();
+        $rule = DB::table('commission_rules')->where('id', $entry->rule_id)->sharedLock()->first();
+        $valid = $entry->eligible && !$entry->review_required && !$rivals && !$conflicts
+            && $validBeneficiary && $entry->beneficiary_type === $person->beneficiary_type && $entry->beneficiary_id === $person->beneficiary_id
+            && $first && $first->id === $activation->id && $first->event_id === $event->id
+            && $this->occurredAt($event)->gt(Carbon::parse(config('commissions.economic_cutoff')))
+            && $event->source === 'jakawi.com' && $event->event_type === 'membership.activated' && $latest->conversion_status === 'activated'
+            && (json_decode($event->raw_body, true)['identity_status'] ?? null) !== 'conflict'
+            && $evidence && $evidence['first_acquisition'] === true && !empty($evidence['body']['global_subject_id'])
+            && !empty($evidence['reference']) && ($snapshot['membership_evidence']['first_acquisition'] ?? null) === true
+            && $evidence['membership_status'] === ($snapshot['membership_evidence']['membership_status'] ?? null)
+            && $evidence['body']['global_subject_id'] === ($snapshot['membership_evidence']['body']['global_subject_id'] ?? null)
+            && ($person->beneficiary_type === 'PARTNER' || in_array($evidence['membership_status'], ['FREE', 'PAID'], true))
+            && $rule && $rule->nature === 'ONE_TIME_ACQUISITION' && $rule->rule_version === ($snapshot['rule_version'] ?? null)
+            && $rule->status === 'active' && Carbon::parse($rule->effective_at)->lte(Carbon::parse($snapshot['acquisition_at']))
+            && (string)$entry->amount === (string)$snapshot['fixed_amount'] && $entry->currency === $snapshot['currency'];
+        if (!$valid) return $this->save($entry, ['review_required' => true], 'automatic_review', null,
+            'Requiere revisión: evidencia, identidad, beneficiario, tarifa, duplicado o alerta sin confirmar. Importe histórico conservado.');
+        if ($entry->status !== 'candidate') return $entry;
+        return $this->save($entry, ['status' => 'approved', 'approval_mode' => 'automatic', 'approved_by' => null, 'approved_at' => now()],
+            'automatically_approved', null, 'Primera adquisición COM verificada; atribución, identidad, beneficiario y tarifa original válidos, sin conflictos ni alertas. Pendiente de liquidación; sin desembolso.');
+    }
+
+    public function flagOperationReview(object $event): void
+    {
+        $fact = DB::table('acquisition_facts')->where('event_id', $event->id)->first();
+        $people = DB::table('acquisition_aliases')->whereIn('reference', array_filter([$fact?->payment_reference, $fact?->club_user_uuid, $fact?->global_subject_id]))->select('person_id');
+        $entries = DB::table('commission_ledger')->where(function (Builder $q) use ($event, $people): void {
+            $q->where(fn (Builder $operation) => $operation->where('source', $event->source)->where('com_reference_type', $event->com_reference_type)->where('com_reference_id', $event->com_reference_id))
+                ->orWhereIn('acquisition_person_id', $people)
+                ->orWhere(fn (Builder $memberships) => $memberships->where('com_reference_type', 'membership')->whereIn('com_reference_id', DB::table('acquisition_activations')->whereIn('person_id', $people)->select('membership_reference')));
+        })->orderBy('id')->lockForUpdate()->get();
+        foreach ($entries as $entry) $this->save($entry, ['review_required' => true], 'event_conflict', null, 'Conflicto de evento firmado COM; aprobación bloqueada y valoración conservada.');
+    }
+
+    public function approveExistingAcquisition(int $id): object
+    {
+        return DB::transaction(function () use ($id): object {
+            DB::select("select pg_advisory_xact_lock(hashtextextended('club_acquisition', 0))");
+            $entry = DB::table('commission_ledger')->where('id', $id)->lockForUpdate()->firstOrFail();
+            abort_unless($entry->acquisition_person_id, 422);
+            $activation = DB::table('acquisition_activations')->where('event_id', $entry->original_event_id)->firstOrFail();
+            return $this->automaticallyApprove($entry, DB::table('acquisition_people')->find($activation->person_id), $activation);
+        }, 3);
     }
 
     private function save(object $entry, array $changes, string $action, ?User $actor, string $reason, bool $forceAudit = false): object
@@ -201,11 +276,13 @@ final class CommissionEngine
             $old = DB::table('commission_ledger')->find($id);
             abort_unless($old, 404);
             $event = DB::table('commercial_events')->find($old->original_event_id);
+            if ($old->acquisition_person_id) DB::select("select pg_advisory_xact_lock(hashtextextended('club_acquisition', 0))");
             $this->lock($event);
             $entry = DB::table('commission_ledger')->where('id', $id)->lockForUpdate()->firstOrFail();
             if ($entry->version !== (int) $data['version']) throw ValidationException::withMessages(['review' => 'El registro cambió. Recarga antes de decidir.']);
             $entry = $this->record($event, $actor);
             $action = $data['action'];
+            if ($entry->acquisition_person_id && (json_decode($entry->rule_snapshot ?? '{}', true)['nature'] ?? null) === 'ONE_TIME_ACQUISITION' && $action !== 'discard') return $entry;
             if ($action === 'approve' && $entry->version !== (int) $data['version']) {
                 throw ValidationException::withMessages(['review' => 'La valoración cambió. Evalúa y recarga antes de aprobar.']);
             }

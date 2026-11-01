@@ -1,6 +1,7 @@
 import { Link } from '@inertiajs/react';
 
-export const commissionStatus: Record<string, string> = { registered: 'Conversión registrada', candidate: 'Pendiente de evaluación', approved: 'Comisión aprobada', discarded: 'Comisión descartada', draft: 'Borrador', active: 'Activa', inactive: 'Inactiva' };
+export const commissionStatus: Record<string, string> = { registered: 'Conversión registrada', candidate: 'Pendiente de evidencia', approved: 'Comisión aprobada', discarded: 'Comisión descartada', draft: 'Borrador', active: 'Activa', inactive: 'Inactiva' };
+export const commissionMoney = (amount: string | null, currency: string | null = 'BOB') => amount === null ? 'Sin importe asignado' : `${currency === 'BOB' ? 'Bs' : currency} ${new Intl.NumberFormat('es-BO', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(Number(amount))}`;
 export type Audit = { action: string; actor_uuid: string | null; reason: string; created_at: string; before?: string | object | null; after?: string | object };
 export type Pagination<T> = { data: T[]; total: number; current_page: number; last_page: number; prev_page_url: string | null; next_page_url: string | null };
 export const economicDate = (value: string) => new Intl.DateTimeFormat('es-BO', { dateStyle: 'medium', timeStyle: 'short', timeZone: 'America/La_Paz' }).format(new Date(value));

@@ -33,7 +33,14 @@ class MembershipAcquisitionEvidence
         // changes the input; explicit admin retry uses this same bounded mechanism.
         $cached = DB::table('acquisition_evidence')->where('event_id', $event->id)
             ->where('affiliate_subject', $subject)->where('identity_context', $this->identityContext($person))->where('created_at', '>', now()->subMinutes(5))->orderByDesc('id')->first();
-        if ($cached) return $cached->result ? json_decode($cached->result, true, 32, JSON_THROW_ON_ERROR) : null;
+        if ($cached) {
+            $result = $cached->result ? json_decode($cached->result, true, 32, JSON_THROW_ON_ERROR) : null;
+            if ($result) {
+                try { $this->validate(json_decode($cached->response_body, true, 32, JSON_THROW_ON_ERROR), $person, $event, $at, $payment, $subject); }
+                catch (\Throwable) { return null; }
+            }
+            return $result;
+        }
         $raw = null;
         try {
             $response = app(ClubPurchaseClient::class)->acquisitionEvidence($payment, $subject);
@@ -55,7 +62,7 @@ class MembershipAcquisitionEvidence
             'reference' => $body['evidence_reference'], 'acquisition_at' => $body['evaluated_at'], 'body' => $body];
         $status = $first === false ? 'excluded' : ($first === true && $state !== 'UNKNOWN' ? 'verified' : 'pending');
         $reason = $first === false ? 'Compra posterior, renovación o reactivación; sin comisión.' : ($status === 'verified'
-            ? 'Evidencia COM certificada; requiere regla vigente y aprobación manual.'
+            ? 'Evidencia COM certificada; requiere tarifa y verificaciones CLUB para aprobación automática.'
             : 'Pendiente de evidencia COM: '.$this->reason($body['reason'] ?? 'UNKNOWN').' / '.$this->reason($body['affiliate']['reason'] ?? ''));
         $this->store($person, $event, $payment, $subject, $raw, $status, $reason, $result);
         return $result;
@@ -88,6 +95,9 @@ class MembershipAcquisitionEvidence
         foreach ($body['evidence_references'] as $reference) {
             if (!is_string($reference) || !preg_match('/^com:membership-evidence:[0-9]+$/D', $reference)) throw new \UnexpectedValueException();
         }
+        if (preg_match('/fraud|disput|revers|refund|conflict|review|revok/i', json_encode([$body['reason'] ?? '', $body['affiliate']['reason'] ?? '', $body['alerts'] ?? [], $body['risk_flags'] ?? []]))
+            || !empty($body['alerts']) || !empty($body['risk_flags']) || !empty($body['review_required']) || !empty($body['fraud']) || !empty($body['disputed']) || !empty($body['reversed'])) throw new \UnexpectedValueException();
+        if ($body['first_paid_acquisition'] === true && preg_match('/UNKNOWN|UNRESOLVED|UNAUTHORIZED|BEFORE_OBSERVATION/i', $body['reason'] ?? '')) throw new \UnexpectedValueException();
         $unsigned = $body;
         unset($unsigned['evidence_reference']);
         if (!hash_equals('com:acquisition-evidence:sha256:'.hash('sha256', json_encode($unsigned, JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR)), $body['evidence_reference'])) throw new \UnexpectedValueException();

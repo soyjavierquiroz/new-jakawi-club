@@ -84,14 +84,22 @@ class CommissionAdminController extends Controller
 
     public function ledger(Request $request, CommissionEngine $engine): Response
     {
-        $filters = $request->validate(['status' => ['nullable', Rule::in(['registered','candidate','approved','discarded'])]]);
+        $filters = $request->validate(['status' => ['nullable', Rule::in(['registered','candidate','approved','discarded','evidence','review','pending_payment'])]]);
         $entries = DB::table('commission_ledger as l')->join('commercial_events as e', 'e.id', '=', 'l.original_event_id')
-            ->when($filters['status'] ?? null, fn ($q, $v) => $q->where('l.status', $v))
+            ->when($filters['status'] ?? null, function ($q, $v): void {
+                if (in_array($v, ['approved', 'pending_payment'], true)) $q->where('l.status', 'approved')->where('l.review_required', false);
+                elseif ($v === 'review') $q->where('l.review_required', true)->where('l.status', '<>', 'discarded');
+                elseif ($v === 'evidence') $q->whereIn('l.status', ['registered', 'candidate'])->where('l.review_required', false);
+                else $q->where('l.status', $v);
+            })
             ->orderByDesc('l.id')->paginate(25, ['l.*','e.event_id','e.partner_id','e.partner_name','e.event_type'])->withQueryString();
         $ids = $entries->getCollection()->pluck('id');
         $audit = DB::table('commission_audit')->whereIn('ledger_id', $ids)->orderBy('id')
             ->get(['ledger_id','action','actor_uuid','reason','created_at','before','after'])->groupBy('ledger_id');
         $entries->through(function (object $entry) use ($audit, $engine): object {
+            $entry->beneficiary_name = $entry->beneficiary_type === 'PARTNER'
+                ? DB::table('affiliate_partners')->where('partner_id', $entry->beneficiary_id)->value('name')
+                : DB::table('users')->where('uuid', $entry->affiliate_uuid)->value('name');
             $confirmation = $engine->firstConfirmation($entry);
             $entry->economic_occurred_at = $confirmation ? $engine->occurredAt($confirmation)->format('Y-m-d\TH:i:s.uP') : null;
             $entry->after_cutoff = $confirmation !== null && $engine->occurredAt($confirmation)->gt(Carbon::parse(config('commissions.economic_cutoff')));
@@ -100,7 +108,14 @@ class CommissionAdminController extends Controller
             return $entry;
         });
         $evidence = DB::table('acquisition_evidence as a')->whereIn('a.id', DB::table('acquisition_evidence')->selectRaw('max(id)')->groupBy('event_id'))
+            ->whereIn('a.status', ['pending', 'invalid', 'verified'])
+            ->whereNotExists(fn ($q) => $q->selectRaw('1')->from('commission_ledger as l')->whereColumn('l.original_event_id', 'a.event_id'))
+            ->when(in_array($filters['status'] ?? '', ['approved', 'pending_payment', 'discarded'], true), fn ($q) => $q->whereRaw('false'))
+            ->when(($filters['status'] ?? '') === 'review', fn ($q) => $q->whereRaw("(a.status = 'invalid' OR a.result->>'first_acquisition' = 'unknown' OR a.result->>'membership_status' = 'UNKNOWN')"))
+            ->when(($filters['status'] ?? '') === 'evidence', fn ($q) => $q->whereRaw("a.status = 'pending' AND coalesce(a.result->>'first_acquisition', '') <> 'unknown' AND coalesce(a.result->>'membership_status', '') <> 'UNKNOWN'"))
             ->orderByDesc('a.id')->limit(50)->get(['a.id','a.event_id','a.purchase_reference','a.status','a.reason','a.created_at'])->map(function (object $item): object {
+                $result = json_decode(DB::table('acquisition_evidence')->where('id', $item->id)->value('result') ?? '{}', true);
+                $item->requires_review = $item->status === 'invalid' || ($result['first_acquisition'] ?? null) === 'unknown' || ($result['membership_status'] ?? null) === 'UNKNOWN';
                 if ($item->status === 'verified' && !DB::table('commission_ledger')->where('original_event_id', $item->event_id)->exists()) {
                     $item->reason = 'Evidencia COM válida; sin tarifa aplicable por fecha original o elegibilidad CLUB. No se emitió comisión.';
                 }

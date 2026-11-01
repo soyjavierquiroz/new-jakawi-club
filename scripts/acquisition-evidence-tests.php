@@ -33,9 +33,11 @@ Http::fake(function ($request) use (&$first10g, &$state10g, &$corrupt10g, &$http
     $body=['contract'=>'jakawi-acquisition-evidence-v1','purchase_reference'=>$input['purchase_reference'],
         'purchase_source'=>'membership_bank_payments','membership_reference'=>$event->com_reference_id,
         'global_subject_id'=>$buyer,'identity_reference'=>$buyer ? 'com:user:123' : null,
-        'first_activated_at'=>$at,'first_paid_acquisition'=>$first10g,'reason'=>'HISTORY_BEFORE_OBSERVATION_BOUNDARY','evaluated_at'=>$at,
+        'first_activated_at'=>$at,'first_paid_acquisition'=>$first10g,'reason'=>$first10g === true ? 'COMPLETE_COM_HISTORY_SINCE_IDENTITY_CREATION' : 'HISTORY_BEFORE_OBSERVATION_BOUNDARY','evaluated_at'=>$at,
         'affiliate'=>$input['affiliate_global_subject_id'] ? ['global_subject_id'=>$input['affiliate_global_subject_id'],'state'=>$state10g,'reason'=>'FIXTURE','evaluated_at'=>$at,'membership_references'=>[]] : null,
         'history_observed_from'=>now()->subDay()->toIso8601String(),'evidence_references'=>['com:membership-evidence:123']];
+    if (in_array($corrupt10g, ['FRAUD', 'DISPUTED', 'REVERSED'], true)) $body['reason']=$corrupt10g;
+    if ($corrupt10g === 'CONTRADICTION') $body['reason']='HISTORY_BEFORE_OBSERVATION_BOUNDARY';
     if ($corrupt10g === 'buyer') $body['global_subject_id']=(string)Illuminate\Support\Str::uuid();
     if ($corrupt10g === 'subject') $body['affiliate']['global_subject_id']=(string)Illuminate\Support\Str::uuid();
     if ($corrupt10g === 'reference') $body['purchase_reference']='OTHER';
@@ -107,12 +109,13 @@ Carbon::setTestNow(now()->addMinutes(2));
 check(send($lateG)->getStatusCode()===201 && $amountG($lateG)==='15.0000','10G old activation delivered after new tariff keeps Bs15');
 $newG=$makeG($individualOrigin);check(send($newG)->getStatusCode()===201 && $amountG($newG)==='20.0000','10G subsequent activation uses new Bs20 version');
 check($amountG($gfree)==='15.0000','10G new version never recalculates ledger');
-foreach($ledgerStart as $id=>$oldG) check(json_encode(DB::table('commission_ledger')->find($id))===json_encode($oldG),'10G historical ledger row intact');
+foreach($ledgerStart as $id=>$oldG) check(DB::table('commission_ledger')->find($id)->amount===$oldG->amount && DB::table('commission_ledger')->find($id)->rule_snapshot===$oldG->rule_snapshot,'historical economic snapshot intact');
 $n=DB::table('commission_ledger')->count();send($gfree);send($gpaid);check(DB::table('commission_ledger')->count()===$n,'10G repeated evidence and events deduplicated');
 check(DB::table('acquisition_evidence')->where('response_body','<>',null)->exists(),'10G private raw evidence persisted');
 $realEntry=DB::table('commission_ledger')->where('com_reference_id',$gfree['membership_reference'])->first();
-check($realEntry->status==='candidate','10G real evidence never approves automatically');
-$realApproved=app(App\Services\Commissions\CommissionEngine::class)->review($realEntry->id,['action'=>'approve','version'=>$realEntry->version,'reason'=>'Isolated real resolver approval'],$adminG);
-check($realApproved->status==='approved' && $realApproved->amount==='15.0000','10G manual approval preserves frozen tariff after change');
+check($realEntry->status==='approved' && $realEntry->approval_mode==='automatic' && $realEntry->approved_by===null,'automatic real evidence approves with explicit engine provenance');
+$realApproved=app(App\Services\Commissions\CommissionEngine::class)->approveExistingAcquisition($realEntry->id);
+check($realApproved->status==='approved' && $realApproved->amount==='15.0000','automatic approval retry preserves frozen tariff after change');
 $adminPage=payload(web('GET','/admin/comisiones'));check(count($adminPage['props']['evidence'])>0 && !isset($adminPage['props']['evidence'][0]['response_body']),'10G admin reasons visible without private body');
+require '/tests/automatic-commission-tests.php';
 Carbon::setTestNow();
