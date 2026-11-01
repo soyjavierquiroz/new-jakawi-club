@@ -14,6 +14,7 @@ const browserMessages = [];
 chrome.stderr.on('data', data => browserMessages.push(data.toString()));
 chrome.on('exit', (code, signal) => { if (code !== 0 && signal !== 'SIGTERM') console.error('Browser exit', code, signal); });
 let socket;
+let finish = () => {};
 const pause = ms => new Promise(resolve => setTimeout(resolve, ms));
 try {
     let target;
@@ -27,6 +28,7 @@ try {
     let sequence = 0;
     const pending = new Map();
     const events = new Map();
+    finish = () => { events.clear(); for (const item of pending.values()) { clearTimeout(item.timer); item.resolve({}); } pending.clear(); };
     const runtimeErrors = [];
     const failedAssets = [];
     const call = (method, params = {}) => new Promise((resolve, reject) => {
@@ -138,4 +140,4 @@ try {
     assert.deepEqual(runtimeErrors,[]);assert.deepEqual(failedAssets,[]);assert.deepEqual(writes,[]);
     await writeFile(`${output}/browser-${live?'live':'preview'}.json`,JSON.stringify({checks,no_live_mutations:true,com_continuation:'browser mock; COM owns actual consumption and account-switch confirmation',runtimeErrors,failedAssets},null,2));
     console.log(JSON.stringify({checks:checks.length,no_live_mutations:true}));
-} finally {if(socket)socket.close();chrome.kill('SIGTERM');}
+} finally {finish();if(socket)socket.close();chrome.kill('SIGTERM');}
