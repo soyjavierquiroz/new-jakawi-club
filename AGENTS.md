@@ -3,7 +3,7 @@
 Este repositorio pertenece exclusivamente a `jakawi.club`.
 
 - Fuente Git canónica: `/srv/repos/jakawi.club`; operación LIVE: `/opt/sites/jakawi.club`; persistencia y secretos: `/srv/sites/jakawi.club`.
-- Trabajar en ramas. Para aislamiento usar worktrees bajo `/srv/workspaces/jakawi/club`; no crear carpetas de fase en `/root`.
+- Trabajar en ramas. Para aislamiento usar worktrees bajo `/srv/workspaces/jakawi/club`; no crear nuevos worktrees en `/opt/sites` ni carpetas de fase/worktrees en `/root`.
 - No editar ni actualizar la copia LIVE sin autorización de despliegue. Sus bind mounts Docker deben permanecer en `/opt/sites/jakawi.club`.
 - Builds desde la fuente canónica o sus worktrees con dependencias locales; nunca escribir en dependencias LIVE.
 - No fusionar `main` ni desplegar automáticamente.

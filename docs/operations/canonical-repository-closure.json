@@ -1,0 +1,94 @@
+{
+  "closed_at": "2026-11-01T20:45:42.306260-04:00",
+  "operational_base_commit": "055891524f952d1313df4f563857d46d896673d8",
+  "live_sha": "b085d1f9f0be8bcaf97ab6a61be23fef0055f319",
+  "removed": [
+    {
+      "path": "/opt/sites/jakawi.club-10e",
+      "sha": "fd22c76a8a67f97d0dfcef3830a182e062a09d84"
+    },
+    {
+      "path": "/opt/sites/jakawi.club/.worktrees/capture-cards",
+      "sha": "8f2f22c946889935cf3397a1cb383ea81445a7ce"
+    },
+    {
+      "path": "/opt/sites/jakawi.club/.worktrees/webinar-numbers",
+      "sha": "b84a7ea8e85d04881e9a69ee8c242aac70a16e45"
+    },
+    {
+      "path": "/opt/sites/jakawi.club/.worktrees/webinar-release",
+      "sha": "c83f0196d59ee7a513d819e3451c945869c053dc"
+    },
+    {
+      "path": "/srv/sites/jakawi.club/phase11d-source",
+      "sha": "29c5f4517592eb8110916ae833c339153f76a4dc"
+    },
+    {
+      "path": "/srv/sites/jakawi.club/releases/commercial-phase05",
+      "sha": "e4e1c8dc4c84bc17fd7f1cdfee80220ae8738fe5"
+    },
+    {
+      "path": "/srv/sites/jakawi.club/releases/commissions-06e",
+      "sha": "5926081a8174b422cca4af06921e112d31ff394f"
+    },
+    {
+      "path": "/srv/sites/jakawi.club/releases/identity-phase04",
+      "sha": "668ba5a171dda464088c5001e58d88c868f9fded"
+    },
+    {
+      "path": "/srv/sites/jakawi.club/releases/partner-sso-10d",
+      "sha": "8741c076f9d1f85bcbf634746dc1ccbabe38d0a9"
+    },
+    {
+      "path": "/srv/sites/jakawi.club/releases/partners-10c",
+      "sha": "e1df6b10ce01a0eab3bb51becbdc8dc884bb93b0"
+    },
+    {
+      "path": "/srv/sites/jakawi.club/releases/short-links-07a",
+      "sha": "67fb6969abe8b3f90a1938cca375f77b5402bcae"
+    },
+    {
+      "path": "/tmp/jakawi-club-auto",
+      "sha": "b085d1f9f0be8bcaf97ab6a61be23fef0055f319"
+    }
+  ],
+  "retained_historical_paths": [
+    "/opt/sites/jakawi.club",
+    "/opt/sites/jakawi.club/.worktrees/benefit-icons",
+    "/opt/sites/jakawi.club/.worktrees/landing-ai-kit",
+    "/opt/sites/jakawi.club/.worktrees/landing-json-v3",
+    "/opt/sites/jakawi.club/.worktrees/landing-json-v3-release",
+    "/opt/sites/jakawi.club/.worktrees/minio-media",
+    "/opt/sites/jakawi.club/.worktrees/registration-copy",
+    "/opt/sites/jakawi.club/.worktrees/webinar",
+    "/opt/sites/jakawi.club/.worktrees/webinar-hero",
+    "/opt/sites/jakawi.club/.worktrees/webinar-mobile",
+    "/opt/sites/jakawi.club/.worktrees/webinar-refinement",
+    "/opt/sites/jakawi.club/.worktrees/webinar-visual",
+    "/srv/sites/jakawi.club/releases/affiliate-mvp",
+    "/srv/sites/jakawi.club/releases/commissions-06c",
+    "/root/jakawi-club-direct-v1",
+    "/root/jakawi-club-referral-v1"
+  ],
+  "preserved_ignored_evidence_files": 150,
+  "private_evidence_archives": "/srv/sites/jakawi.club/repository-consolidation/closure/preserved-evidence",
+  "removed_allocated_bytes_du": 628973568,
+  "preserved_archives_allocated_bytes_du": 6021120,
+  "estimated_net_freed_bytes_du": 622952448,
+  "space_measurement": "Sum of allocated directory sizes before removal, less allocated preservation archives; approximate, excluding Git metadata and small reports.",
+  "original_branches_retained": 26,
+  "health": {
+    "live_sha": "b085d1f9f0be8bcaf97ab6a61be23fef0055f319",
+    "containers_ids_starts_restarts_mounts_unchanged": true,
+    "all_containers_healthy": true,
+    "live_git_clean": true,
+    "live_manifest_unchanged": true,
+    "systemd_units_unchanged": true,
+    "timers_active_enabled": true,
+    "up_local": 200,
+    "up_https": 200
+  },
+  "deploy": false,
+  "migrations": false,
+  "com_crm_modified": false
+}
