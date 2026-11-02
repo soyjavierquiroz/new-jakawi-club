@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
 use App\Support\MembershipJourney;
 use App\Services\Identity\IdentityLink;
 use App\Services\Identity\JakawiOidc;
@@ -37,6 +36,7 @@ final class JakawiLoginController extends Controller
 
     public function callback(Request $request, IdentityLink $identity): RedirectResponse
     {
+        $stage = 'transaction';
         try {
             // The route session lock serializes callbacks. Persist consumption before any network call.
             $encrypted = $request->session()->pull('jakawi_oidc');
@@ -52,6 +52,7 @@ final class JakawiLoginController extends Controller
             $code = $request->query('code');
             if (! is_string($code) || $code === '' || strlen($code) > 8192) return $this->failure();
             if (! isset($pending['checkout']) && empty($pending['partner']) && $request->user()) return redirect()->route('dashboard');
+            $stage = 'oidc_token_validation';
             $client = new JakawiOidc;
             $subject = $client->complete($values, $code, $state);
             if (!empty($pending['partner']) && $request->user() && $request->user()->global_subject_id !== $subject) return $this->failure();
@@ -68,15 +69,16 @@ final class JakawiLoginController extends Controller
                 return redirect()->away('https://jakawi.com/membresia/checkout');
             }
             // Identity is resolved solely by the signed subject, never by email/profile claims.
-            $user = User::where('global_subject_id', $subject)->first();
-            if (! $user) $user = app(\App\Services\Identity\SsoAccount::class)->resolve($subject, (array) $client->getVerifiedClaims());
-            if (! $user->activated_at || ! $user->hasVerifiedEmail()) return $this->failure();
+            $stage = 'subject_projection';
+            $user = app(\App\Services\Identity\SsoAccount::class)->resolve($subject, (array) $client->getVerifiedClaims());
+            if (! $user->activated_at) return $this->failure();
+            $stage = 'local_link';
             // Preserve historical CLUB link checks for ordinary login. Partner entry is
             // authorized independently by signed OIDC subject + the fresh COM permission lookup.
             if (empty($pending['partner']) && !$user->sso_provisioned_at
-                && (! $identity->refresh($user)['connected'] || $user->fresh()->global_subject_id !== $subject)) return $this->failure();
+                && (! $identity->refresh($user, $subject)['connected'] || $user->fresh()->global_subject_id !== $subject)) return $this->failure();
             $user->refresh();
-            if (! $user->activated_at || ! $user->hasVerifiedEmail()) return $this->failure();
+            if (! $user->activated_at) return $this->failure();
             Auth::login($user);
             $request->session()->forget('jakawi_link_required');
             $request->session()->put('jakawi_sso_subject', $subject);
@@ -89,7 +91,8 @@ final class JakawiLoginController extends Controller
             // A fixed local destination also strips the authorization code from subsequent URLs.
             return redirect()->route('dashboard');
         } catch (\Throwable) {
-            // Provider messages, codes, tokens and HTTP exception bodies must never enter logs/UI.
+            // Only a bounded local stage; no exception text, identities, codes or tokens.
+            \Illuminate\Support\Facades\Log::notice('CLUB OIDC callback rejected', ['stage' => $stage]);
             return $this->failure();
         }
     }

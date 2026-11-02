@@ -22,11 +22,15 @@ class DashboardController extends Controller
             catch (\RuntimeException) { /* Retain the last authorized COM state. */ }
         }
 
+        $membership = app(\App\Services\ComMembershipStatus::class)->forUser($user);
+
         return Inertia::render('Dashboard', [
+            'com_membership' => $membership,
+            'email_verified' => $user->hasVerifiedEmail(),
             'membership_purchase' => $purchase ? ['needs_access_consent' => !$purchase->user_id && $purchase->identity_status !== 'linked', 'receipt_pending' => $purchase->receipt_pending && !$purchase->activated_at,
                 'receipt_received' => $purchase->receipt_received || (bool) $purchase->receipt_sha256,
                 'status' => $purchase->status] : null,
-            'membership_activated' => (bool) $purchase?->activated_at || app(\App\Services\MemberActivation::class)->confirmed($user),
+            'membership_activated' => $membership !== null ? ($membership['is_active'] && ($membership['benefits']['exclusive_member_benefits'] ?? false)) : ((bool) $purchase?->activated_at || app(\App\Services\MemberActivation::class)->confirmed($user)),
             'membership_continue' => \App\Support\MembershipJourney::pending($request),
             'member' => $user->only('name', 'email', 'phone', 'city'),
             'can_access_affiliates' => $user->activated_at !== null && $user->hasVerifiedEmail(),

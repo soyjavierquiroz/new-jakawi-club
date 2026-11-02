@@ -164,7 +164,7 @@ try {
  check(web('GET','/dashboard')->getStatusCode()===200,'proyección SSO puede consultar área personal');
  $state=app(App\Services\Identity\IdentityLink::class)->state($projection);
  check($state['connected'] && !$state['can_activate'],'identidad COM proyectada no pide vinculación duplicada');
- check(web('POST','/admin/partners-afiliados/'.$id.'/acceso',['user_uuid'=>$projection->uuid,'authorized'=>true])->getStatusCode()===403,'representante no puede conceder permisos por ruta admin directa');
+ check(!$projection->hasVerifiedEmail() && web('POST','/admin/partners-afiliados/'.$id.'/acceso',['user_uuid'=>$projection->uuid,'authorized'=>true])->isRedirect(),'colisión de correo no acredita verificación y bloquea ruta admin sensible');
  $admin=login(true);check(web('POST','/admin/partners-afiliados/'.$id.'/acceso',['user_uuid'=>$projection->uuid,'authorized'=>true])->getStatusCode()===410,'asignación manual retirada incluso para admin');
  $page=web('GET','/admin/partners-afiliados');check($page->getStatusCode()===200,'administración programa y enlaces conservada');
  $nonces=array_map(fn($r)=>$r->header('X-Jakawi-Nonce')[0],$calls);check(count($nonces)===count(array_unique($nonces)),'nonce nuevo en cada consulta');

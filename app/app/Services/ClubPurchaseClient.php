@@ -8,6 +8,10 @@ final class ClubPurchaseClient {
         return $this->signedRequest($method, '/internal/club/purchases'.$suffix, $data, $timeout, $attempts);
     }
 
+    public function membershipStatus(string $subject): Response {
+        return $this->signedRequest('POST', '/internal/club/memberships/status', ['global_subject_id' => $subject], 8, 1);
+    }
+
     public function partnerAccess(string $subject): Response {
         return $this->signedRequest('POST', '/internal/club/partners/access', ['global_subject_id' => $subject], 8, 1);
     }

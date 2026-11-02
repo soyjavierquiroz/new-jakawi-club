@@ -57,9 +57,12 @@ final class IdentityLink
     }
 
     /** Reconcile only by authenticated UUID lookups; never provision on a GET. */
-    public function refresh(User $user): array
+    public function refresh(User $user, ?string $authenticatedSubject = null): array
     {
-        $this->account($user);
+        if ($authenticatedSubject === null) $this->account($user);
+        elseif (!config('identity.enabled') || !$user->activated_at || $user->global_subject_id !== $authenticatedSubject) {
+            throw new IdentityFailure('LOCAL_VERIFICATION', false);
+        }
         $client = app(ComIdentityClient::class);
         $link = $client->link($user->uuid);
         if ($link !== null) {
