@@ -32,8 +32,8 @@ final class PartnerAffiliateController extends Controller {
   $url=$target === 'com' ? $p->com_url : 'https://jakawi.com/p/'.$slug.'/club/'.($target === 'checkout'?'checkout':'carta');
   return redirect()->away($url)->header('Cache-Control','private, no-store')->header('Referrer-Policy','no-referrer');
  }
- public static function panels(User $user): array {
-  $authorized=app(\App\Services\PartnerEconomicAccess::class)->partners(request(),$user);
+ public static function panels(User $user, ?array $authorized = null): array {
+  $authorized ??=app(\App\Services\PartnerEconomicAccess::class)->partners(request(),$user);
   if (!$authorized) return [];
   return DB::table('affiliate_partners as p')->where('p.source','jakawi.com')->where('p.status','enabled')->whereIn('p.partner_id',$authorized)->get(['p.*'])->map(function($p): array {
    $people=DB::table('acquisition_people as people')->where('beneficiary_type','PARTNER')->where('beneficiary_id',$p->partner_id)

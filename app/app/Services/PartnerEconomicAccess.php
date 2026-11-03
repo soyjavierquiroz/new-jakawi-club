@@ -15,6 +15,21 @@ final class PartnerEconomicAccess
         if (! is_string($subject) || ! Str::isUuid($subject)
             || $request->user()?->id !== $user->id
             || $request->session()->get('jakawi_sso_subject') !== $subject) return [];
+        return $this->lookup($request, $subject);
+    }
+
+    public function forSupport(Request $request, User $target): array
+    {
+        app(\App\Services\Support\SupportAccess::class)->requireActor($request);
+        $context = $request->session()->get('support_view');
+        abort_unless(is_array($context) && ($context['target_uuid'] ?? null) === $target->uuid
+            && ($context['subject'] ?? null) === $target->global_subject_id && $context['expires_at'] > time(), 403);
+        if (!is_string($target->global_subject_id) || !Str::isUuid($target->global_subject_id)) return [];
+        return $this->lookup($request, $target->global_subject_id);
+    }
+
+    private function lookup(Request $request, string $subject): array
+    {
         $key = self::class.':'.$subject;
         if ($request->attributes->has($key)) return $request->attributes->get($key);
         $partners = [];

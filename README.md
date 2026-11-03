@@ -1,5 +1,9 @@
 # JAKAWI Launch Engine — jakawi.club
 
+Soporte superadmin de solo lectura: `/admin/soporte`, autorización privada por sub COM
+más UUID CLUB, reautenticación OIDC completa, límite de 15 minutos y auditoría privada.
+[Acceso, pantallas, validación y operación](docs/operations/admin-support.md).
+
 Kit de copywriting disponible: «Crear con IA» en listado y editor de
 landings ofrece prompt maestro, ejemplo WEBINAR, contrato v3 y ZIP. Las descargas
 reutilizan los permisos administrativos y los tres archivos de `docs/landings/`.

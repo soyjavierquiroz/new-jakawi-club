@@ -51,10 +51,22 @@ final class JakawiLoginController extends Controller
             if ($request->query('error') !== null) return $this->failure();
             $code = $request->query('code');
             if (! is_string($code) || $code === '' || strlen($code) > 8192) return $this->failure();
-            if (! isset($pending['checkout']) && empty($pending['partner']) && $request->user()) return redirect()->route('dashboard');
+            if (!isset($pending['support_actor']) && ! isset($pending['checkout']) && empty($pending['partner']) && $request->user()) return redirect()->route('dashboard');
             $stage = 'oidc_token_validation';
             $client = new JakawiOidc;
             $subject = $client->complete($values, $code, $state);
+            if (isset($pending['support_actor'])) {
+                $access = app(\App\Services\Support\SupportAccess::class);
+                $actor = $access->requireActor($request);
+                if ($actor->uuid !== $pending['support_actor'] || $subject !== $actor->global_subject_id
+                    || $subject !== $pending['support_subject'] || $request->session()->has('support_view')) {
+                    return redirect('/admin/soporte')->with('status', 'La reautenticación no corresponde a tu identidad administrativa.');
+                }
+                $access->audit($request, 'reauthenticated');
+                $request->session()->regenerate(true);
+                $request->session()->put('support_reauth', ['actor' => $actor->uuid, 'subject' => $subject, 'at' => time()]);
+                return redirect('/admin/soporte'.(!empty($pending['support_return_sub']) ? '?sub='.rawurlencode($pending['support_return_sub']) : ''));
+            }
             if (!empty($pending['partner']) && $request->user() && $request->user()->global_subject_id !== $subject) return $this->failure();
             if (isset($pending['checkout'])) {
                 $local = $request->user();

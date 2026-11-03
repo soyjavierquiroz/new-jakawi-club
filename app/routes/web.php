@@ -11,6 +11,15 @@ use App\Http\Middleware\MarketingAdmin;
 use App\Http\Controllers\LandingAdminController;
 use Illuminate\Support\Facades\Route;
 
+Route::prefix('admin/soporte')->middleware(['auth', 'throttle:60,1'])->group(function (): void {
+    Route::get('/', [\App\Http\Controllers\SupportController::class, 'index']);
+    Route::post('/reautenticar', [\App\Http\Controllers\SupportController::class, 'reauthenticate'])->block(20, 10);
+    Route::post('/iniciar', [\App\Http\Controllers\SupportController::class, 'start'])->block(20, 10);
+    Route::post('/salir', [\App\Http\Controllers\SupportController::class, 'stop'])->block(20, 10);
+    Route::get('/cuenta', [\App\Http\Controllers\SupportController::class, 'show'])->block(20, 10);
+    Route::get('/afiliados', [\App\Http\Controllers\SupportController::class, 'show'])->block(20, 10);
+});
+
 Route::prefix('admin')->middleware(['auth', 'verified', MarketingAdmin::class])->group(function (): void {
     Route::get('/ofertas-comerciales', [\App\Http\Controllers\CommercialOfferAdminController::class, 'index'])->name('commercial-offers.index');
     Route::put('/ofertas-comerciales/{offer}', [\App\Http\Controllers\CommercialOfferAdminController::class, 'update'])->middleware('throttle:30,1');
@@ -119,3 +128,8 @@ Route::get('/{slug}', [WelcomeController::class, 'show'])
     ->where('slug', \App\Support\LandingSlug::pattern())->name('landing.show');
 
 Route::get('/a/{code}/{target}', [\App\Http\Controllers\PartnerAffiliateController::class,'link'])->where('code','[A-Za-z0-9]{24}')->where('target','carta|checkout|com');
+
+// Serialize browser requests so entering/exiting support cannot race an economic action in another tab.
+foreach (Route::getRoutes() as $browserRoute) {
+    $browserRoute->block(30, 10);
+}
