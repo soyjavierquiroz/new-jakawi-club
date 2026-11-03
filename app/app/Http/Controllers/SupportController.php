@@ -14,10 +14,18 @@ final class SupportController extends Controller
 {
     public function index(Request $request, SupportAccess $access): Response|\Inertia\Response
     {
+        $data = $request->validate(['subject' => 'nullable|uuid', 'sub' => 'nullable|uuid', 'q' => 'nullable|string|max:120']);
+        abort_if(isset($data['subject'], $data['sub']) && strtolower($data['subject']) !== strtolower($data['sub']), 422);
+        $selected = isset($data['subject']) || isset($data['sub']) ? strtolower($data['subject'] ?? $data['sub']) : null;
+        $data['sub'] = $selected;
+        if (!$request->user()) {
+            $request->session()->put('support_selection', $selected);
+            return app(JakawiLoginController::class)->start($request, support: true);
+        }
         $access->requireActor($request);
         $context = $request->session()->get('support_view');
-        if ($context && empty($context['expired'])) return redirect('/admin/soporte/cuenta');
-        $data = $request->validate(['sub' => 'nullable|uuid', 'q' => 'nullable|string|max:120']);
+        $switch = $context && $selected && $selected !== $context['subject'];
+        if ($context && !$switch && empty($context['expired'])) return redirect('/admin/soporte/cuenta');
         $accounts = [];
         if ($access->recent($request) && !$context) {
             if (!empty($data['sub'])) {
@@ -29,6 +37,7 @@ final class SupportController extends Controller
             }
         }
         return Inertia::render('admin/Support', ['recent' => $access->recent($request), 'expired' => (bool)($context['expired'] ?? false),
+            'switch_required' => (bool) $switch, 'support_context' => $context ? ['subject' => $context['subject'], 'expires_at' => $context['expires_at']] : null,
             'query' => $data, 'accounts' => $accounts, 'searched' => !empty($data['sub']) || !empty($data['q']), 'view' => null]);
     }
 
@@ -88,5 +97,28 @@ final class SupportController extends Controller
         $request->session()->forget(['support_view', 'support_reauth']);
         $request->session()->regenerate(true);
         return redirect('/dashboard');
+    }
+
+    public function select(Request $request, SupportAccess $access): Response
+    {
+        $access->requireActor($request);
+        $data = $request->validate(['subject' => 'required|uuid']);
+        if ($request->session()->has('support_view')) $access->audit($request, 'stopped_for_selection');
+        $request->session()->forget(['support_view', 'support_reauth']);
+        $request->session()->regenerate(true);
+        return redirect('/admin/soporte?subject='.strtolower($data['subject']));
+    }
+
+    public function com(Request $request, SupportAccess $access): Response
+    {
+        // The subject is obtained exclusively from the server's existing support context.
+        $context = $request->session()->get('support_view');
+        abort_unless(is_array($context) && ($context['actor'] ?? null) === $request->user()?->uuid
+            && Str::isUuid($context['subject'] ?? ''), 403);
+        $access->audit($request, 'stopped_for_com');
+        $request->session()->forget(['support_view', 'support_reauth']);
+        $request->session()->regenerate(true);
+        $request->session()->save();
+        return Inertia::location('https://jakawi.com/admin/soporte?subject='.rawurlencode($context['subject']));
     }
 }

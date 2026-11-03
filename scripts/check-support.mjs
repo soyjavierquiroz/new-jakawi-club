@@ -103,21 +103,31 @@ try {
     const until=async(expression,label)=>{for(let i=0;i<100;i++){if(await evaluate(`!!(${expression})`))return;await pause(100);}throw new Error(label);};
     for(const width of [390,1440]) {
         await call('Emulation.setDeviceMetricsOverride',{width,height:960,deviceScaleFactor:1,mobile:width===390});
-        for(current of ['free','pioneer','affiliate','missing','expired','down']) {
+        for(current of ['free','pioneer','affiliate','missing','expired','down','selection','authorization']) {
             await call('Page.navigate',{url:'about:blank'});await pause(100);
             await call('Page.navigate',{url:'https://jakawi.club/admin/soporte/cuenta'});
+            if (['selection','authorization'].includes(current)) {
+                await until('document.body.innerText.includes("Usuario preseleccionado")','selection preserved');
+                assert(await evaluate('document.documentElement.scrollWidth <= innerWidth+1'),'responsive selection');
+                if(current==='authorization') {
+                    assert(await evaluate('!!document.querySelector("textarea[required]")'),'only reason authorization remains');
+                    assert(await evaluate('!document.querySelector("select") && !document.querySelector("input")'),'no repeated target selection');
+                }
+            } else {
             await until('document.querySelector("#support-banner")','support banner loads');
             assert(await evaluate('document.documentElement.scrollWidth <= innerWidth+1'),'responsive width');
             assert(await evaluate('getComputedStyle(document.querySelector("#support-banner")).position === "fixed"'),'fixed support banner');
             assert(await evaluate('document.body.innerText.includes("MODO SOPORTE — Viendo a")'),'real support context visible');
             assert(await evaluate('document.body.innerText.includes("Salir del modo soporte")'),'explicit exit');
-            assert.equal(await evaluate('document.querySelectorAll("button").length'),1,'only exit action available while viewing');
+            assert.equal(await evaluate('document.querySelectorAll("button").length'),2,'only exit and POST return to COM available');
+            assert(await evaluate('document.body.innerText.includes("Ver en COM")'),'return to COM visible');
             assert(await evaluate(`!document.querySelector('a[href^="https://jakawi.com"]')`),'no target OIDC or remote action links');
             if(current==='pioneer')assert(await evaluate('document.body.innerText.includes("15 meses calendario")'),'Pionero official policy');
             if(current==='free')assert(await evaluate('document.body.innerText.includes("pendiente de verificación")'),'target restrictions preserved');
             if(current==='missing')assert(await evaluate('document.body.innerText.includes("Sin cuenta CLUB")'),'missing target is explicit');
             if(current==='affiliate')assert(await evaluate('document.body.innerText.includes("15.0000")'),'real scoped commission amount');
             if(current==='expired')assert(await evaluate('document.body.innerText.includes("sesión de soporte venció")'),'expired data hidden');
+            }
             const screenshot=await call('Page.captureScreenshot',{format:'png',captureBeyondViewport:true});await writeFile(`${output}/${current}-${width}-${live?'live':'preview'}.png`,Buffer.from(screenshot.data,'base64'));
             checks.push(`${current} ${width}: support, permissions, exit, responsive`);
         }

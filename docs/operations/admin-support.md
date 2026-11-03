@@ -93,3 +93,34 @@ ambos, regenerar config/rutas/vistas y reiniciar únicamente app. Nunca borrar d
 auditoría, grants ni chunks. No fusionar main automáticamente.
 
 Resultados previos al despliegue: 77 comprobaciones de soporte, 153 de regresión Partner y 45 OIDC; 12 escenarios visuales responsive.
+
+## Navegación COM ↔ CLUB
+
+Entrada canónica `/admin/soporte?subject=<UUID-COM>`; `sub` sigue siendo alias.
+UUID inválido o aliases contradictorios se rechazan. La selección no concede
+permiso alguno. Sin sesión CLUB, la entrada inicia OIDC normal del actor y conserva
+el destino en la transacción cifrada con state/nonce/PKCE. El callback regresa a
+la entrada fija y el servidor exige el superadmin CLUB autorizado antes de mostrar
+datos. COM sigue bloqueando OIDC bajo su modo soporte: para autenticar al actor,
+este debe usar su identidad real fuera del modo soporte COM. No se evade ese control.
+
+Una consulta vigente para el mismo sub se reutiliza sin ampliar su expiración.
+Otro destino se preselecciona y exige cerrar por POST la consulta anterior;
+la nueva consulta conserva reautenticación y motivo obligatorios. Con selección
+exacta no se repiten los formularios de búsqueda/elección. La ausencia de cuenta
+CLUB se informa sin crearla. Una sesión vencida puede continuar la selección tras
+cerrar explícitamente el contexto anterior.
+
+«Ver en COM» hace POST/CSRF a `/admin/soporte/com`: registra `stopped_for_com`,
+elimina soporte y reautenticación y persiste la salida antes de abrir exclusivamente
+`https://jakawi.com/admin/soporte?subject=<sub-guardado>`. Ignora URL o sub del POST;
+COM comprueba su propia sesión y permiso. No se comparten credenciales ni sesiones.
+También permite salir después de vencimiento o revocación, como la salida normal.
+
+Despliegue puntual: `scripts/deploy-support-navigation.sh <paquete>`, con evidencia
+en `/srv/sites/jakawi.club/support-navigation-evidence` y respaldo independiente
+en `/srv/sites/jakawi.club/rollback-support-navigation`. Sin migraciones ni cambios
+de grants, COM, CRM o infraestructura. Pruebas de soporte incluyen entrada guest,
+retorno OIDC, selección, reutilización, cambio explícito, UUID inválido, CSRF real,
+salida auditada a COM y bloqueo de escrituras. Navegador: 16 escenarios a 390/1440,
+fixtures privados sin sesión real del propietario, con assets preview y LIVE.

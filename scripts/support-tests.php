@@ -141,6 +141,20 @@ try {
  check(Artisan::call('support:superadmin',['subject'=>$actor->global_subject_id])===0,'comando autoriza solo identidad CLUB existente por sub');
  $target=User::create(['name'=>'Usuario gratuito de prueba','email'=>'support-target@example.test']);
  $target->forceFill(['global_subject_id'=>(string)Illuminate\Support\Str::uuid(),'activated_at'=>now(),'sso_provisioned_at'=>now()])->save();
+ // Incoming COM selection survives an entirely normal OIDC login of the administrator.
+ $cookies=[];Auth::forgetGuards();app('session')->flush();app('session')->regenerate();
+ $r=web('GET','/admin/soporte?subject='.$target->global_subject_id,[],false);
+ check($r->isRedirect()&&str_starts_with($r->headers->get('Location'),'https://jakawi.com/oauth/authorize'),'entrada guest inicia OIDC normal del actor');
+ $pending=json_decode(Illuminate\Support\Facades\Crypt::decryptString(app('session')->get('jakawi_oidc')),true);
+ check($pending['support_return_sub']===$target->global_subject_id&&$pending['support_entry'],'selección guardada en transacción cifrada, sin autorización');
+ check(!str_contains($r->headers->get('Location'),$target->global_subject_id),'OIDC no recibe identidad del destino');
+ $claims=['iss'=>'https://jakawi.com','sub'=>$actor->global_subject_id,'aud'=>config('oidc.client_id'),'iat'=>time(),'exp'=>time()+3600,'nonce'=>$pending['values']['openid_connect_nonce'],'email'=>$actor->email,'email_verified'=>true];
+ $r=web('GET','/auth/jakawi/callback?code=normal-admin-login&state='.$pending['values']['openid_connect_state'],[],false);
+ check($r->headers->get('Location')==='https://jakawi.club/admin/soporte?subject='.$target->global_subject_id&&Auth::id()===$actor->id,'callback normal regresa a selección sin login del destino');
+ $entry=payload(web('GET','/admin/soporte?subject='.$target->global_subject_id));
+ check($entry['props']['query']['sub']===$target->global_subject_id&&!$entry['props']['recent']&&!app('session')->has('support_view'),'preselección conserva reauth y autorización pendientes');
+ check(web('GET','/admin/soporte?subject=invalid',[],true,['HTTP_ACCEPT'=>'application/json'])->getStatusCode()===422,'UUID de selección inválido rechazado');
+ check(web('GET','/admin/soporte?subject='.$target->global_subject_id.'&sub='.$actor->global_subject_id)->getStatusCode()===422,'aliases contradictorios rechazados');
  $probe=web('GET','/admin/soporte');
  check($probe->getStatusCode()===200,'superadmin vinculado explícitamente por UUID global y local');
  check(web('POST','/admin/soporte/iniciar',['sub'=>$target->global_subject_id,'reason'=>'Motivo de prueba válido'])->getStatusCode()===403,'reauth reciente obligatoria');
@@ -153,6 +167,11 @@ try {
  check(web('POST','/admin/soporte/iniciar',['sub'=>$target->global_subject_id,'reason'=>'Motivo de prueba válido'])->getStatusCode()===403,'reauth de más de cinco minutos rechazada');
  $before=snapshot();$fixtures=[];
  $page=openSupport($target);$fixtures['free']=$page;
+ $supportId=app('session')->get('support_view.id');$deadline=app('session')->get('support_view.expires_at');
+ check(web('GET','/admin/soporte?subject='.$target->global_subject_id)->isRedirect()&&app('session')->get('support_view.id')===$supportId&&app('session')->get('support_view.expires_at')===$deadline,'destino vigente reutiliza soporte sin nueva autorización ni extensión');
+ $otherSelection=(string)Illuminate\Support\Str::uuid();
+ $switchPage=payload(web('GET','/admin/soporte?subject='.$otherSelection));
+ check($switchPage['props']['switch_required']&&$switchPage['props']['query']['sub']===$otherSelection&&app('session')->get('support_view.id')===$supportId,'otro destino se preselecciona sin reemplazar consulta por GET');
  check($page['props']['view']['membership']['type']==='free'&&!$page['props']['view']['affiliate_allowed'],'gratuito no verificado no recibe afiliación');
  $pinned=payload(web('GET','/admin/soporte/cuenta?sub='.$actor->global_subject_id));
  check($pinned['props']['view']['target']['uuid']===$target->uuid,'query del navegador no sustituye destino autorizado');
@@ -176,7 +195,14 @@ try {
  web('POST','/admin/soporte/salir');check(!app('session')->has('support_view')&&Auth::id()===$actor->id,'salir conserva sesión real y elimina soporte');
  $missing=(string)Illuminate\Support\Str::uuid();$count=User::count();$page=openSupport(null,$missing);$fixtures['missing']=$page;
  check($page['props']['view']['target']===null&&User::count()===$count,'sub COM sin cuenta CLUB no se crea ni se consulta como usuario inventado');
- web('POST','/admin/soporte/salir');
+ // Exercise real CSRF middleware rather than its normal testing bypass.
+ $app['env']='production';
+ try {
+  check(web('POST','/admin/soporte/com')->getStatusCode()===419&&app('session')->has('support_view'),'Ver en COM requiere CSRF y conserva soporte ante fallo');
+  $r=web('POST','/admin/soporte/com',['_token'=>app('session')->token(),'subject'=>$actor->global_subject_id,'url'=>'https://example.test']);
+  check($r->getStatusCode()===409&&$r->headers->get('X-Inertia-Location')==='https://jakawi.com/admin/soporte?subject='.$missing,'Ver en COM usa destino del servidor, nunca URL o subject del POST');
+  check(!app('session')->has('support_view')&&Auth::id()===$actor->id,'retorno COM finaliza soporte y conserva actor real');
+ } finally {$app['env']='testing';}
  $target->forceFill(['email_verified_at'=>now()])->save();
  $event=DB::table('commercial_events')->insertGetId(['source'=>'jakawi.com','event_id'=>'support-event','schema_version'=>1,'event_type'=>'order.confirmed','occurred_at'=>now(),'received_at'=>now(),
  'com_reference_type'=>'order','com_reference_id'=>'support-sale','partner_name'=>'Partner de prueba','club_referral_code'=>$target->referral_code,'referrer_club_uuid'=>$target->uuid,
@@ -184,6 +210,11 @@ try {
  $rule=DB::table('commission_rules')->insertGetId(['partner_id'=>'fixture','event_type'=>'order.confirmed','fixed_amount'=>15,'currency'=>'BOB','effective_at'=>now(),'status'=>'active','created_by'=>$actor->uuid,'created_at'=>now(),'updated_at'=>now()]);
  DB::table('commission_ledger')->insert(['source'=>'jakawi.com','com_reference_type'=>'order','com_reference_id'=>'support-sale','original_event_id'=>$event,'latest_event_id'=>$event,'commission_event_id'=>$event,
  'affiliate_uuid'=>$target->uuid,'affiliate_code'=>$target->referral_code,'rule_id'=>$rule,'rule_snapshot'=>'{}','amount'=>15,'currency'=>'BOB','status'=>'approved','eligible'=>true,'review_required'=>false,'approved_by'=>$actor->uuid,'approved_at'=>now(),'created_at'=>now(),'updated_at'=>now()]);
+ openSupport($target);
+ $r=web('POST','/admin/soporte/seleccionar',['subject'=>$missing]);
+ check($r->headers->get('Location')==='https://jakawi.club/admin/soporte?subject='.$missing&&!app('session')->has('support_view'),'cambio explícito termina consulta y conserva nueva selección');
+ $fixtures['selection']=payload(web('GET','/admin/soporte?subject='.$target->global_subject_id));
+ reauth();$fixtures['authorization']=payload(web('GET','/admin/soporte?subject='.$target->global_subject_id));
  $before=snapshot();openSupport($target);$page=payload(web('GET','/admin/soporte/afiliados'));$fixtures['affiliate']=$page;
  check($page['props']['view']['affiliate_allowed']&&count($page['props']['view']['commissions']['data'])===1,'afiliado ve únicamente sus comisiones permitidas');
  check($page['props']['view']['economics']['currencies'][0]['approved']==='15.0000','importe aprobado BOB real');
@@ -195,6 +226,7 @@ try {
  check(web('POST','/admin/soporte/salir')->isRedirect(),'salida disponible tras revocación');
  $audit=array_map(fn($line)=>json_decode($line,true),file('/evidence/audit-test.jsonl',FILE_IGNORE_NEW_LINES));
  check(collect($audit)->contains(fn($row)=>$row['action']==='started'&&$row['actor_uuid']===$actor->uuid&&$row['target_uuid']===$target->uuid&&strlen($row['reason'])>=10),'auditoría durable de actor destino motivo');
+ check(collect($audit)->contains(fn($row)=>$row['action']==='stopped_for_com'&&$row['target_subject']===$missing),'salida a COM auditada con destino original');
  check(collect($audit)->contains(fn($row)=>$row['action']==='expired')&&collect($audit)->contains(fn($row)=>$row['action']==='blocked'),'auditoría de expiración e intentos bloqueados');
  file_put_contents('/evidence/grants-test.json',json_encode([$actor->global_subject_id=>$actor->uuid]));
  $actor->forceFill(['password'=>'FixturePassword123'])->save();

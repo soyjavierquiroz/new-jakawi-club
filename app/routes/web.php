@@ -11,13 +11,15 @@ use App\Http\Middleware\MarketingAdmin;
 use App\Http\Controllers\LandingAdminController;
 use Illuminate\Support\Facades\Route;
 
-Route::prefix('admin/soporte')->middleware(['auth', 'throttle:60,1'])->group(function (): void {
+Route::prefix('admin/soporte')->middleware(['throttle:60,1'])->group(function (): void {
     Route::get('/', [\App\Http\Controllers\SupportController::class, 'index']);
-    Route::post('/reautenticar', [\App\Http\Controllers\SupportController::class, 'reauthenticate'])->block(20, 10);
-    Route::post('/iniciar', [\App\Http\Controllers\SupportController::class, 'start'])->block(20, 10);
-    Route::post('/salir', [\App\Http\Controllers\SupportController::class, 'stop'])->block(20, 10);
-    Route::get('/cuenta', [\App\Http\Controllers\SupportController::class, 'show'])->block(20, 10);
-    Route::get('/afiliados', [\App\Http\Controllers\SupportController::class, 'show'])->block(20, 10);
+    Route::post('/reautenticar', [\App\Http\Controllers\SupportController::class, 'reauthenticate'])->middleware('auth')->block(20, 10);
+    Route::post('/iniciar', [\App\Http\Controllers\SupportController::class, 'start'])->middleware('auth')->block(20, 10);
+    Route::post('/salir', [\App\Http\Controllers\SupportController::class, 'stop'])->middleware('auth')->block(20, 10);
+    Route::post('/seleccionar', [\App\Http\Controllers\SupportController::class, 'select'])->middleware('auth')->block(20, 10);
+    Route::post('/com', [\App\Http\Controllers\SupportController::class, 'com'])->middleware('auth')->block(20, 10);
+    Route::get('/cuenta', [\App\Http\Controllers\SupportController::class, 'show'])->middleware('auth')->block(20, 10);
+    Route::get('/afiliados', [\App\Http\Controllers\SupportController::class, 'show'])->middleware('auth')->block(20, 10);
 });
 
 Route::prefix('admin')->middleware(['auth', 'verified', MarketingAdmin::class])->group(function (): void {

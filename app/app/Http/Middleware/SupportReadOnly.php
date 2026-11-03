@@ -14,7 +14,7 @@ final class SupportReadOnly
         $context = $request->session()->get('support_view');
         if ($context) {
             $access = app(SupportAccess::class);
-            if ($request->isMethod('POST') && $request->is('admin/soporte/salir')) return $next($request);
+            if ($request->isMethod('POST') && $request->is('admin/soporte/salir', 'admin/soporte/com', 'admin/soporte/seleccionar')) return $next($request);
             $actor = $access->requireActor($request);
             abort_unless(($context['actor'] ?? null) === $actor->uuid, 403);
             if (($context['expires_at'] ?? 0) <= time()) {

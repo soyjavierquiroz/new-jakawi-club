@@ -14,7 +14,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 final class JakawiLoginController extends Controller
 {
-    public function start(Request $request, ?array $checkout = null, bool $partner = false): Response
+    public function start(Request $request, ?array $checkout = null, bool $partner = false, bool $support = false): Response
     {
         try {
             $client = new JakawiOidc;
@@ -22,6 +22,7 @@ final class JakawiLoginController extends Controller
             $request->session()->regenerate(true);
             $request->session()->put('jakawi_oidc', Crypt::encryptString(json_encode([
                 'expires_at' => time() + 600, 'values' => $client->transaction, 'checkout' => $checkout, 'partner' => $partner,
+                'support_entry' => $support, 'support_return_sub' => $support ? $request->session()->pull('support_selection') : null,
             ], JSON_THROW_ON_ERROR)));
             return $request->header('X-Inertia') ? Inertia::location($url) : redirect()->away($url);
         } catch (\Throwable) {
@@ -51,7 +52,7 @@ final class JakawiLoginController extends Controller
             if ($request->query('error') !== null) return $this->failure();
             $code = $request->query('code');
             if (! is_string($code) || $code === '' || strlen($code) > 8192) return $this->failure();
-            if (!isset($pending['support_actor']) && ! isset($pending['checkout']) && empty($pending['partner']) && $request->user()) return redirect()->route('dashboard');
+            if (empty($pending['support_entry']) && !isset($pending['support_actor']) && ! isset($pending['checkout']) && empty($pending['partner']) && $request->user()) return redirect()->route('dashboard');
             $stage = 'oidc_token_validation';
             $client = new JakawiOidc;
             $subject = $client->complete($values, $code, $state);
@@ -65,7 +66,7 @@ final class JakawiLoginController extends Controller
                 $access->audit($request, 'reauthenticated');
                 $request->session()->regenerate(true);
                 $request->session()->put('support_reauth', ['actor' => $actor->uuid, 'subject' => $subject, 'at' => time()]);
-                return redirect('/admin/soporte'.(!empty($pending['support_return_sub']) ? '?sub='.rawurlencode($pending['support_return_sub']) : ''));
+                return redirect('/admin/soporte'.(!empty($pending['support_return_sub']) ? '?subject='.rawurlencode($pending['support_return_sub']) : ''));
             }
             if (!empty($pending['partner']) && $request->user() && $request->user()->global_subject_id !== $subject) return $this->failure();
             if (isset($pending['checkout'])) {
@@ -95,6 +96,10 @@ final class JakawiLoginController extends Controller
             $request->session()->forget('jakawi_link_required');
             $request->session()->put('jakawi_sso_subject', $subject);
             $request->session()->regenerate(true);
+            if (!empty($pending['support_entry'])) {
+                $request->session()->forget('url.intended');
+                return redirect('/admin/soporte'.(!empty($pending['support_return_sub']) ? '?subject='.rawurlencode($pending['support_return_sub']) : ''));
+            }
             if (MembershipJourney::pending($request)) return redirect()->route('membership.activate');
             if (!empty($pending['partner'])) {
                 $request->session()->forget('url.intended');
