@@ -286,15 +286,10 @@ main[data-landing-template=WEBINAR] .faq-item p { font-size: 1rem; line-height: 
 main[data-landing-template=WEBINAR] .webinar-event-card .eyebrow { font-size: .75rem; }
 
 /* Compact, shared account chrome and spacious referral cards. */
-[data-account-context] .site-header { background: var(--surface); }
 [data-account-context] .btn-primary { font-size: .9375rem; }
 [data-account-context] .input { font-family: var(--font-discovery); }
 [data-account-context] .feature-card { background: var(--surface); }
 [data-account-context] .account-main { max-width: 76rem; }
-.account-theme-control { display: flex; flex-direction: column; gap: .25rem; font-size: .6875rem; font-weight: 700; color: var(--text-secondary); }
-.account-theme-control select { min-height: 44px; max-width: 10rem; padding: .5rem .6rem; border: 1px solid var(--border-strong); border-radius: .75rem; background: var(--surface); color: var(--foreground); font: inherit; font-size: .8125rem; }
-[data-account-context] .account-menu-toggle { min-height: 44px; padding: .625rem .75rem; font-size: .75rem; }
-[data-account-context] .brand-logo { height: 2rem; }
 .account-summary .feature-card { padding: 1.125rem; border-radius: 1rem; }
 .account-summary h2 { min-height: 2.5em; }
 .account-summary article:nth-child(3) { border-top: 3px solid var(--success); }
@@ -303,10 +298,37 @@ main[data-landing-template=WEBINAR] .webinar-event-card .eyebrow { font-size: .7
 .account-offer .account-whatsapp-secondary { min-height: 44px; background: transparent; border-color: var(--account-whatsapp-text); color: var(--account-whatsapp-text); font-size: .8125rem; }
 .account-offer .account-whatsapp-secondary:hover { background: var(--surface-subtle); }
 @media (max-width: 639px) {
-    [data-account-context] .site-header > .shell { padding-block: .75rem; }
-    [data-account-context] .site-header .flex.items-center.justify-between { gap: .625rem; }
     .account-summary .feature-card { padding: .875rem; }
 }
-@media (min-width: 1024px) {
-    [data-account-context] .site-header .account-menu-toggle { display: none; }
+
+[data-account-context] .brand-logo { height: 2rem; }
+
+/* Account header follows COM ConsumerLayout and ThemeToggle; content is unchanged. */
+.site-header.account-header { position: sticky; top: 0; z-index: 30; background: color-mix(in srgb, var(--background) 90%, transparent); backdrop-filter: blur(12px); border-bottom: 1px solid color-mix(in srgb, var(--border) 70%, transparent); font-family: var(--font-discovery); }
+.account-header-bar { position: relative; display: flex; align-items: center; gap: 24px; height: 64px; max-width: 72rem; margin-inline: auto; padding-inline: 32px; }
+.account-header-brand { flex-shrink: 0; }
+.account-header .brand-logo { height: 36px; width: auto; }
+.account-desktop-nav { display: flex; flex: 1; min-width: 0; align-items: center; justify-content: flex-end; gap: 24px; white-space: nowrap; }
+.account-nav-link { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; color: var(--text-secondary); font-size: 14px; font-weight: 600; white-space: nowrap; }
+.account-nav-link:hover, .account-nav-link[aria-current] { color: var(--foreground); }
+.account-nav-link[aria-current] { text-decoration: underline; text-decoration-color: var(--brand); text-underline-offset: 8px; text-decoration-thickness: 2px; }
+.account-header :focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+.account-icon-button { display: inline-flex; flex-shrink: 0; width: 44px; height: 44px; align-items: center; justify-content: center; border-radius: 50%; color: var(--foreground); transition: background-color 150ms ease; }
+.account-icon-button:hover { background: var(--surface-subtle); }
+.account-icon-button:active { background: var(--surface-raised); }
+.account-mobile-toggle { display: none; }
+.account-more { position: relative; }
+.account-dropdown { position: absolute; right: 0; top: calc(100% + 6px); min-width: 220px; display: flex; flex-direction: column; padding: 8px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); box-shadow: var(--shadow); }
+.account-dropdown .account-nav-link { padding-inline: 12px; border-radius: 8px; }
+.account-dropdown .account-nav-link:hover { background: var(--surface-subtle); }
+.account-nav-measure { position: absolute; visibility: hidden; pointer-events: none; display: flex; gap: 24px; font-size: 14px; font-weight: 600; white-space: nowrap; }
+@media (max-width: 1023px) {
+    .account-header-bar { height: 56px; padding-inline: 16px; gap: 4px; }
+    .account-header-brand { margin-right: auto; }
+    .account-header .brand-logo { height: 32px; }
+    .account-desktop-nav { display: none; }
+    .account-mobile-toggle { display: inline-flex; }
+    .account-mobile-menu { top: calc(100% + 6px); right: 16px; max-width: calc(100vw - 32px); }
 }
+.account-nav-measure { width: 0; overflow: hidden; }
+.account-nav-measure > span { flex-shrink: 0; }

@@ -16,10 +16,11 @@ media.addEventListener('change', apply);
 window.addEventListener('storage', event => { if (event.key === key || event.key === null) { preference = read(); apply(); } });
 const subscribe = (listener: () => void) => { listeners.add(listener); return () => { listeners.delete(listener); }; };
 export default function AccountTheme() {
-    const theme = useSyncExternalStore(subscribe, () => preference);
-    return <label className="account-theme-control"><span>Tema</span><select aria-label="Tema de cuenta" value={theme} onChange={event => {
-        preference = valid(event.target.value);
-        try { localStorage.setItem(key, preference); } catch { /* Keep the control usable when storage is blocked. */ }
+    const theme = useSyncExternalStore(subscribe, () => `${preference}:${media.matches}`);
+    const isDark = theme.startsWith('dark:') || (theme.startsWith('system:') && media.matches);
+    return <button type="button" className="account-icon-button" aria-label={isDark ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'} onClick={() => {
+        preference = isDark ? 'light' : 'dark';
+        try { localStorage.setItem(key, preference); } catch { /* Immediate theme remains usable if storage is blocked. */ }
         apply();
-    }}><option value="light">Claro</option><option value="dark">Oscuro</option><option value="system">Automático</option></select></label>;
+    }}><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{isDark ? <><circle cx="12" cy="12" r="4" /><path d="M12 2v2m0 16v2M2 12h2m16 0h2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42" /></> : <path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.44.402.784a6.25 6.25 0 0 0 8.268 8.268c.344-.215.806-.004.783.42" />}</svg></button>;
 }
