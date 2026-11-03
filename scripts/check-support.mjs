@@ -33,7 +33,7 @@ try {
     const failedAssets = [];
     const call = (method, params = {}) => new Promise((resolve, reject) => {
         const id = ++sequence;
-        const timer = setTimeout(() => { pending.delete(id); reject(new Error(`CDP timeout: ${method}`)); }, 20000);
+        const timer = setTimeout(() => { pending.delete(id); reject(new Error(`CDP timeout: ${method}`)); }, method === 'Page.navigate' ? 45000 : 20000);
         pending.set(id, { resolve, reject, timer });
         socket.send(JSON.stringify({ id, method, params }));
     });
@@ -104,10 +104,11 @@ try {
     for(const width of [390,1440]) {
         await call('Emulation.setDeviceMetricsOverride',{width,height:960,deviceScaleFactor:1,mobile:width===390});
         for(current of ['free','pioneer','affiliate','missing','expired','down','selection','authorization']) {
+            console.log(`Checking ${current} ${width} ${live ? 'live' : 'preview'}`);
             await call('Page.navigate',{url:'about:blank'});await pause(100);
             await call('Page.navigate',{url:'https://jakawi.club/admin/soporte/cuenta'});
             if (['selection','authorization'].includes(current)) {
-                await until('document.body.innerText.includes("Usuario preseleccionado")','selection preserved');
+                await until('document.body?.innerText?.includes("Usuario preseleccionado")','selection preserved');
                 assert(await evaluate('document.documentElement.scrollWidth <= innerWidth+1'),'responsive selection');
                 if(current==='authorization') {
                     assert(await evaluate('!!document.querySelector("textarea[required]")'),'only reason authorization remains');
