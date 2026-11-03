@@ -1,5 +1,8 @@
 # JAKAWI Launch Engine — jakawi.club
 
+Centro administrativo: `/admin`, resumen superadmin y navegación común con permisos existentes.
+[Menú, indicadores, pruebas y despliegue](docs/operations/admin-dashboard.md).
+
 Soporte superadmin de solo lectura: `/admin/soporte`, autorización privada por sub COM
 más UUID CLUB, reautenticación OIDC completa, límite de 15 minutos y auditoría privada.
 [Acceso, pantallas, validación y operación](docs/operations/admin-support.md).

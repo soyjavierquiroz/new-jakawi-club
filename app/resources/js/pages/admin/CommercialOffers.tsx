@@ -1,6 +1,7 @@
+import AdminLayout from '../../components/admin/AdminLayout';
 import { Head, Link, useForm } from '@inertiajs/react';
-import { PageFrame, ErrorText } from '../../components/UI';
-import { EconomicNav, EconomicPages, economicDate, type Pagination } from '../../components/CommissionUI';
+import { ErrorText } from '../../components/UI';
+import { EconomicPages, economicDate, type Pagination } from '../../components/CommissionUI';
 import { catalogStates, type CatalogOffer } from '../../components/CatalogOffer';
 
 type ShortLink = { url: string; referral_code: string; created_at: string };
@@ -21,8 +22,8 @@ function OfferControl({ offer }: { offer: CatalogOffer }) {
     </article>;
 }
 export default function CommercialOffers({ offers, selected, links, q, last_sync, last_success }: { offers: Pagination<CatalogOffer>; selected: string; links: Pagination<ShortLink>; q: string; last_sync: Run | null; last_success: Run | null }) {
-    return <><Head title="Ofertas comerciales" /><PageFrame>
-        <p className="eyebrow">ADMINISTRACIÓN CLUB</p><h1 className="section-title mt-4">OFERTAS COMERCIALES</h1><EconomicNav />
+    return <><Head title="Ofertas comerciales" /><AdminLayout>
+        <p className="eyebrow">ADMINISTRACIÓN CLUB</p><h1 className="section-title mt-4">OFERTAS COMERCIALES</h1>
         <p className="mb-4 text-text-secondary">COM controla sus datos operativos. La pausa local solo restringe la promoción; quitarla respeta la disponibilidad de origen.</p>
         <p className="mb-3 text-sm">Último recorrido válido: {last_success ? `${economicDate(last_success.completed_at)} · ${last_success.offers} ofertas COM · ${last_success.pages} páginas` : 'Pendiente'}.</p>
         {last_sync?.status === 'failed' && <p role="status" className="message mb-4">El último intento falló. Se conserva el catálogo válido anterior.</p>}
@@ -32,5 +33,5 @@ export default function CommercialOffers({ offers, selected, links, q, last_sync
         <section className="mt-10"><h2 className="break-all text-2xl font-extrabold">Enlaces asociados · {selected}</h2><p className="my-4 text-sm text-text-secondary">{links.total} enlaces permanentes. Los enlaces no representan conversiones.</p>
             <div className="space-y-3">{links.data.map(link => <article key={link.url} className="feature-card text-sm"><a href={link.url} target="_blank" rel="noreferrer" className="break-all font-semibold underline">{link.url}</a><p className="mt-2 break-all text-text-secondary">Código CLUB: {link.referral_code}</p></article>)}</div><EconomicPages page={links} />
         </section>
-    </PageFrame></>;
+    </AdminLayout></>;
 }

@@ -111,3 +111,20 @@
 @utility rounded-card { border-radius: var(--radius-card); }
 @utility rounded-control { border-radius: var(--radius-control); }
 @utility rounded-chip { border-radius: var(--radius-chip); }
+
+/* Administrative controls keep the official palette and readable white labels. */
+.admin-shell {
+    --surface: var(--surface-raised);
+    --primary: #d34035;
+    --primary-foreground: var(--surface-raised);
+    --primary-hover: color-mix(in srgb, var(--primary) 90%, var(--ink));
+    font-family: var(--font-discovery);
+}
+.admin-shell .btn-primary { font-size: .875rem; }
+.admin-shell .input { font-family: inherit; }
+.admin-shell .feature-card.border-brand { border-top: 4px solid var(--brand); }
+.admin-shell .feature-card.border-success { border-top: 4px solid var(--success); }
+.admin-shell .feature-card.border-reward { border-top: 4px solid var(--reward); }
+@media (min-width: 1024px) {
+    .admin-shell .btn[aria-controls='admin-menu'] { display: none; }
+}

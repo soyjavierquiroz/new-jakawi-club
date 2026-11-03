@@ -11,6 +11,8 @@ use App\Http\Middleware\MarketingAdmin;
 use App\Http\Controllers\LandingAdminController;
 use Illuminate\Support\Facades\Route;
 
+Route::get('/admin', \App\Http\Controllers\AdminDashboardController::class)->middleware(['auth', 'verified'])->name('admin.index');
+
 Route::prefix('admin/soporte')->middleware(['throttle:60,1'])->group(function (): void {
     Route::get('/', [\App\Http\Controllers\SupportController::class, 'index']);
     Route::post('/reautenticar', [\App\Http\Controllers\SupportController::class, 'reauthenticate'])->middleware('auth')->block(20, 10);

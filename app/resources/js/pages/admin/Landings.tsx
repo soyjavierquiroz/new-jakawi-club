@@ -1,12 +1,13 @@
+import AdminLayout from '../../components/admin/AdminLayout';
 import { Head, Link } from '@inertiajs/react';
-import { PageFrame } from '../../components/UI';
+
 import { LandingAiKit } from '../../components/admin/LandingAiKit';
 import type { LandingRecord } from '../../types';
 
 export const statusLabel = { draft: 'Borrador', published: 'Publicada', archived: 'Archivada' };
 
 export default function Landings({ landings, home_slug, ai_kit_zip_available = false }: { landings: LandingRecord[]; home_slug: string; ai_kit_zip_available?: boolean }) {
-    return <><Head title="Administrar landings" /><PageFrame>
+    return <><Head title="Administrar landings" /><AdminLayout>
         <div className="mb-8 flex flex-wrap items-end justify-between gap-5"><div><p className="eyebrow">JAKAWI LAUNCH ENGINE</p><h1 className="section-title mt-4">Tus landings</h1><p className="mt-4 text-text-secondary">Crea un borrador, revísalo y publica cuando esté listo.</p></div><Link className="btn btn-primary" href="/admin/landings/crear">Crear landing</Link></div>
         <LandingAiKit zipAvailable={ai_kit_zip_available} />
         <nav aria-label="Administración" className="mb-8 flex flex-wrap gap-3"><Link className="btn btn-secondary" href="/admin/ofertas-comerciales">OFERTAS COMERCIALES</Link><Link className="btn btn-secondary" href="/admin/conversiones-com">CONVERSIONES COM</Link></nav>
@@ -15,5 +16,5 @@ export default function Landings({ landings, home_slug, ai_kit_zip_available = f
             <h2 className="mt-4 text-xl font-bold">{landing.title}</h2><p className="mt-3 break-all text-sm text-text-secondary">{landing.slug === home_slug ? '/ · ' : ''}/{landing.slug}</p><p className="mt-2 text-sm">Campaña: {landing.campaign || 'Sin asignar'}</p>
             <div className="mt-6 flex flex-wrap gap-3"><Link className="btn btn-secondary" href={`/admin/landings/${landing.id}/editar`}>Editar</Link>{landing.status === 'published' && <a className="btn btn-secondary" href={`/${landing.slug}`} target="_blank" rel="noreferrer">Ver pública</a>}</div>
         </article>)}</div>
-    </PageFrame></>;
+    </AdminLayout></>;
 }

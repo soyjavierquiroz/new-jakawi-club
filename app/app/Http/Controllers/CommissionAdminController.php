@@ -107,9 +107,7 @@ class CommissionAdminController extends Controller
             $entry->history = $audit->get($entry->id, collect())->all();
             return $entry;
         });
-        $evidence = DB::table('acquisition_evidence as a')->whereIn('a.id', DB::table('acquisition_evidence')->selectRaw('max(id)')->groupBy('event_id'))
-            ->whereIn('a.status', ['pending', 'invalid', 'verified'])
-            ->whereNotExists(fn ($q) => $q->selectRaw('1')->from('commission_ledger as l')->whereColumn('l.original_event_id', 'a.event_id'))
+        $evidence = self::unissuedEvidence()
             ->when(in_array($filters['status'] ?? '', ['approved', 'pending_payment', 'discarded'], true), fn ($q) => $q->whereRaw('false'))
             ->when(($filters['status'] ?? '') === 'review', fn ($q) => $q->whereRaw("(a.status = 'invalid' OR a.result->>'first_acquisition' = 'unknown' OR a.result->>'membership_status' = 'UNKNOWN')"))
             ->when(($filters['status'] ?? '') === 'evidence', fn ($q) => $q->whereRaw("a.status = 'pending' AND coalesce(a.result->>'first_acquisition', '') <> 'unknown' AND coalesce(a.result->>'membership_status', '') <> 'UNKNOWN'"))
@@ -122,6 +120,13 @@ class CommissionAdminController extends Controller
                 return $item;
             });
         return Inertia::render('admin/CommissionLedger', ['evidence' => $evidence, 'entries' => $entries, 'filters' => $filters, 'economic_cutoff' => config('commissions.economic_cutoff')]);
+    }
+
+    public static function unissuedEvidence(): \Illuminate\Database\Query\Builder
+    {
+        return DB::table('acquisition_evidence as a')->whereIn('a.id', DB::table('acquisition_evidence')->selectRaw('max(id)')->groupBy('event_id'))
+            ->whereIn('a.status', ['pending', 'invalid', 'verified'])
+            ->whereNotExists(fn ($q) => $q->selectRaw('1')->from('commission_ledger as l')->whereColumn('l.original_event_id', 'a.event_id'));
     }
 
     public function retryEvidence(int $evidence, CommissionEngine $engine): RedirectResponse

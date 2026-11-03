@@ -1,7 +1,8 @@
+import AdminLayout from '../../components/admin/AdminLayout';
 import { Head, useForm } from '@inertiajs/react';
 import type { FormEvent } from 'react';
-import { ErrorText, PageFrame } from '../../components/UI';
-import { commissionStatus, EconomicCutoff, EconomicHistory, EconomicNav, EconomicPages, economicDate, type Audit, type Pagination } from '../../components/CommissionUI';
+import { ErrorText } from '../../components/UI';
+import { commissionStatus, EconomicCutoff, EconomicHistory, EconomicPages, economicDate, type Audit, type Pagination } from '../../components/CommissionUI';
 
 type Rule = { id: number; partner_id: string; beneficiary_type: string; membership_status: string; nature: string; rule_version: string | null; event_type: string; fixed_amount: string; currency: string; effective_at: string; status: string; history: Audit[] };
 function RuleCard({ rule }: { rule: Rule }) {
@@ -21,8 +22,8 @@ export default function CommissionRules({ rules, economic_cutoff, acquisition_co
         form.transform(data => ({ ...data, effective_at: `${data.effective_at}:00-04:00` }));
         form.post('/admin/reglas-comisiones', { onSuccess: () => form.reset(), preserveScroll: true });
     }
-    return <><Head title="Reglas de comisiones" /><PageFrame>
-        <p className="eyebrow">ADMINISTRACIÓN CLUB</p><h1 className="section-title mt-4">REGLAS DE COMISIONES</h1><EconomicNav /><a href="/admin/partners-afiliados" className="my-4 inline-block underline">Administrar Partners afiliados</a><EconomicCutoff value={economic_cutoff} />
+    return <><Head title="Reglas de comisiones" /><AdminLayout>
+        <p className="eyebrow">ADMINISTRACIÓN CLUB</p><h1 className="section-title mt-4">REGLAS DE COMISIONES</h1><a href="/admin/partners-afiliados" className="my-4 inline-block underline">Administrar Partners afiliados</a><EconomicCutoff value={economic_cutoff} />
         <p className="max-w-3xl text-text-secondary">Solo montos fijos. Cada cambio económico requiere una nueva versión; las valoraciones existentes se conservan. Activar una regla permite evaluar candidatos, sin aprobar comisiones automáticamente.</p>
         {!acquisition_contract_ready && <p role="status" className="feature-card my-5">Tarifas de adquisición configurables. Emisión bloqueada: COM aún no certifica primera compra histórica ni estado FREE/PAID vigente a la fecha de adquisición. Una activación previa o un correo verificado no acreditan membresía de pago vigente.</p>}
         <form onSubmit={submit} className="feature-card my-8 grid gap-5 md:grid-cols-2" id="commission-rule-form">
@@ -39,5 +40,5 @@ export default function CommissionRules({ rules, economic_cutoff, acquisition_co
         <p className="mb-5 text-sm">{rules.total} reglas configuradas. Cada tarifa requiere aprobación administrativa de sus comisiones.</p>
         {rules.data.length ? <div className="grid gap-5 lg:grid-cols-2">{rules.data.map(rule => <RuleCard key={`${rule.id}:${rule.status}`} rule={rule} />)}</div> : <p className="feature-card">No hay reglas configuradas. Los candidatos se conservarán sin importe.</p>}
         <EconomicPages page={rules} />
-    </PageFrame></>;
+    </AdminLayout></>;
 }

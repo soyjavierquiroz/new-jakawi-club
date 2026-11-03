@@ -31,6 +31,8 @@ class HandleInertiaRequests extends Middleware
         return [
             ...parent::share($request),
             'ads' => fn () => $request->is('admin/soporte', 'admin/soporte/*') ? null : app(\App\Services\Advertising::class)->safely(fn () => app(\App\Services\Advertising::class)->browser($request)),
+            'admin_support_mode' => fn () => $request->session()->has('support_view'),
+            'admin_navigation' => fn () => \App\Http\Controllers\AdminDashboardController::navigation($request),
             'signed_in' => (bool) $request->user(),
             'can_manage_landings' => $request->user()?->is_marketing_admin === true && $request->user()?->hasVerifiedEmail() && $request->user()?->activated_at !== null,
             'status' => fn () => $request->session()->get('status'),
