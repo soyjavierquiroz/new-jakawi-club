@@ -38,14 +38,13 @@ class HandleInertiaRequests extends Middleware
                 if (!$user || $request->session()->has('support_view')) return [];
                 $links = [
                     ['label' => 'Mi cuenta', 'href' => '/mi-cuenta'],
-                    ['label' => 'Mi membresía', 'href' => '/mi-cuenta#mi-membresia'],
                 ];
                 // Match verified + ActiveAffiliate; Partner grants remain enforced by the panel.
                 if ($user->activated_at !== null && $user->hasVerifiedEmail()) {
-                    $links[] = ['label' => 'Mis referidos y comisiones', 'href' => '/afiliados'];
+                    $links[] = ['label' => 'Mis referidos y ganancias', 'href' => '/afiliados'];
                 }
                 $links[] = ['label' => 'Explorar beneficios', 'href' => 'https://jakawi.com/beneficios'];
-                $links[] = ['label' => 'Editar mi perfil', 'href' => 'https://jakawi.com/perfil'];
+                $links[] = ['label' => 'Editar perfil COM', 'href' => 'https://jakawi.com/perfil'];
                 $admin = \App\Http\Controllers\AdminDashboardController::navigation($request);
                 if (in_array('/admin', array_column($admin, 'href'), true)) {
                     $links[] = ['label' => 'Administración CLUB', 'href' => '/admin'];

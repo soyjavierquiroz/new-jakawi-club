@@ -22,7 +22,7 @@ export function OfferCard({ offer }: { offer: CatalogOffer }) {
         try { await navigator.clipboard.writeText(offer.personal_url); setMessage('¡Enlace copiado!'); }
         catch { setMessage('Selecciona y copia el enlace del campo.'); }
     }
-    return <article data-catalog-offer={offer.key} className="flex min-w-0 flex-col overflow-hidden rounded-card border border-border bg-surface">
+    return <article data-catalog-offer={offer.key} className="account-offer flex min-w-0 flex-col overflow-hidden rounded-card border border-border bg-surface">
         {offer.source === 'club' ? <ClubCardImage image={offer.image_url} title={offer.name} /> : offer.image_url && !imageFailed ? <img src={offer.image_url} alt="" loading="lazy" referrerPolicy="no-referrer" className="aspect-[16/9] w-full object-cover" onError={() => setImageFailed(true)} /> : <div className="flex aspect-[16/9] items-center justify-center bg-surface-subtle p-6 text-lg font-bold text-text-secondary">{catalogTypes[offer.type]}</div>}
         <div className="flex grow flex-col p-5">
             <div className="flex flex-wrap justify-between gap-2 text-xs font-semibold"><span>{catalogTypes[offer.type]} · {offer.source.toUpperCase()}</span><span data-availability={offer.effective_state}>{catalogStates[offer.effective_state]}</span></div>
@@ -38,8 +38,8 @@ export function OfferCard({ offer }: { offer: CatalogOffer }) {
                     <label className="label" htmlFor={`link-${offer.key}`}>Tu enlace permanente</label>
                     <input id={`link-${offer.key}`} data-personal-link readOnly value={offer.personal_url} className="input w-full min-w-0 text-sm" onFocus={event => event.target.select()} />
                     <div className="mt-3 flex flex-wrap gap-3">
-                        <button type="button" className="btn btn-primary w-full" onClick={() => void copy()}>COPIAR ENLACE</button>
-                        <a href={`https://wa.me/?text=${encodeURIComponent(`${offer.name}\n${offer.personal_url}`)}`} target="_blank" rel="noopener noreferrer" className="btn community-whatsapp-cta w-full text-center"><CommunityWhatsAppIcon /> WHATSAPP</a>
+                        <button type="button" className="btn btn-primary w-full" onClick={() => void copy()}>Copiar enlace</button>
+                        <a href={`https://wa.me/?text=${encodeURIComponent(`${offer.name}\n${offer.personal_url}`)}`} target="_blank" rel="noopener noreferrer" className="btn account-whatsapp-secondary w-full text-center"><CommunityWhatsAppIcon /> Compartir por WhatsApp</a>
                     </div>
                     <p role="status" className="mt-2 min-h-5 text-xs">{message}</p>
                     <details className="mt-2 text-xs"><summary>Ver destino vigente</summary><p className="mt-2 break-all">{offer.source === 'club' ? 'Invitación CLUB mediante tu código de referido permanente.' : offer.destination_url}</p></details>

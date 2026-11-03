@@ -128,3 +128,36 @@
 @media (min-width: 1024px) {
     .admin-shell .btn[aria-controls='admin-menu'] { display: none; }
 }
+
+/* Account only: marketing and administration retain their existing contexts. */
+html[data-account-context] {
+    --background: #fff8f2;
+    --foreground: #111111;
+    --surface: #ffffff;
+    --primary: #d34035;
+    --primary-foreground: #ffffff;
+    --primary-hover: #b83229;
+    --input: var(--border-strong);
+    --brand-foreground: #ffffff;
+    --account-whatsapp-text: #377a1a;
+    color-scheme: light;
+}
+html[data-account-context][data-account-theme='dark'] {
+    --background: #111111;
+    --foreground: #f8f5f2;
+    --surface: #1c1c1c;
+    --surface-raised: #202020;
+    --surface-subtle: #272727;
+    --text-primary: #f8f5f2;
+    --text-secondary: #c8c2bd;
+    --text-muted: #aea59f;
+    --border: #363330;
+    --border-strong: #655e58;
+    --brand-subtle: #39211f;
+    --success-surface: #18382c;
+    --success-foreground: #a9efcf;
+    --danger: #ff9388;
+    --account-whatsapp-text: #9ed58a;
+    --shadow: 0 8px 24px rgb(0 0 0 / 16%);
+    color-scheme: dark;
+}

@@ -1,6 +1,7 @@
 import { Link, usePage } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
 import { BrandLogo } from './UI';
+import AccountTheme from './AccountTheme';
 
 type AccountLink = { label: string; href: string };
 export default function AccountHeader() {
@@ -18,14 +19,14 @@ export default function AccountHeader() {
         <div className="shell py-4">
             <div className="flex items-center justify-between gap-4">
                 <Link href="/mi-cuenta" aria-label="JAKAWI, mi cuenta"><BrandLogo /></Link>
-                <span className="hidden text-xs font-bold tracking-widest text-text-secondary lg:block">CLUB · MI CUENTA</span>
-                <button type="button" className="btn btn-secondary lg:hidden" aria-expanded={open} aria-controls="account-menu" onClick={() => setOpen(!open)}>{open ? 'Cerrar menú' : 'Menú de cuenta'}</button>
+                <div className="ml-auto"><AccountTheme /></div>
+                <button type="button" className="btn btn-secondary account-menu-toggle lg:hidden" aria-expanded={open} aria-controls="account-menu" onClick={() => setOpen(!open)}>{open ? 'Cerrar menú' : 'Menú de cuenta'}</button>
             </div>
             <nav id="account-menu" aria-label="Mi cuenta" className={`${open ? 'block' : 'hidden'} mt-4 lg:block`}>
                 <div className="flex flex-col gap-1 lg:flex-row lg:flex-wrap">
                     {(props.account_navigation || []).map(link => {
                         const active = link.href.includes('#') ? path === '/mi-cuenta' && hash === '#mi-membresia' : path === link.href && !hash;
-                        const style = `flex min-h-11 items-center rounded-control px-3 py-3 text-sm font-semibold ${active ? 'bg-brand-subtle text-ink border-b-2 border-brand' : 'text-text-secondary hover:bg-surface-subtle'}`;
+                        const style = `flex min-h-11 items-center rounded-control px-3 py-3 text-sm font-semibold ${active ? 'bg-brand-subtle text-foreground border-b-2 border-brand' : 'text-text-secondary hover:bg-surface-subtle'}`;
                         return link.href.startsWith('https:') || link.href.includes('#')
                             ? <a key={link.href} href={link.href} aria-current={active ? 'location' : undefined} onClick={() => setOpen(false)} className={style}>{link.label}</a>
                             : <Link key={link.href} href={link.href} aria-current={active ? 'page' : undefined} onClick={() => setOpen(false)} className={style}>{link.label}</Link>;

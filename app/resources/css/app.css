@@ -284,3 +284,29 @@ main[data-landing-template=WEBINAR] .faq-item p { font-size: 1rem; line-height: 
     main[data-landing-template=WEBINAR] .webinar-event-card { padding: 1.25rem; }
 }
 main[data-landing-template=WEBINAR] .webinar-event-card .eyebrow { font-size: .75rem; }
+
+/* Compact, shared account chrome and spacious referral cards. */
+[data-account-context] .site-header { background: var(--surface); }
+[data-account-context] .btn-primary { font-size: .9375rem; }
+[data-account-context] .input { font-family: var(--font-discovery); }
+[data-account-context] .feature-card { background: var(--surface); }
+[data-account-context] .account-main { max-width: 76rem; }
+.account-theme-control { display: flex; flex-direction: column; gap: .25rem; font-size: .6875rem; font-weight: 700; color: var(--text-secondary); }
+.account-theme-control select { min-height: 44px; max-width: 10rem; padding: .5rem .6rem; border: 1px solid var(--border-strong); border-radius: .75rem; background: var(--surface); color: var(--foreground); font: inherit; font-size: .8125rem; }
+[data-account-context] .account-menu-toggle { min-height: 44px; padding: .625rem .75rem; font-size: .75rem; }
+[data-account-context] .brand-logo { height: 2rem; }
+.account-summary .feature-card { padding: 1.125rem; border-radius: 1rem; }
+.account-summary h2 { min-height: 2.5em; }
+.account-summary article:nth-child(3) { border-top: 3px solid var(--success); }
+.account-summary article:nth-child(4) { border-top: 3px solid var(--reward); }
+.account-offer { box-shadow: var(--shadow); }
+.account-offer .account-whatsapp-secondary { min-height: 44px; background: transparent; border-color: var(--account-whatsapp-text); color: var(--account-whatsapp-text); font-size: .8125rem; }
+.account-offer .account-whatsapp-secondary:hover { background: var(--surface-subtle); }
+@media (max-width: 639px) {
+    [data-account-context] .site-header > .shell { padding-block: .75rem; }
+    [data-account-context] .site-header .flex.items-center.justify-between { gap: .625rem; }
+    .account-summary .feature-card { padding: .875rem; }
+}
+@media (min-width: 1024px) {
+    [data-account-context] .site-header .account-menu-toggle { display: none; }
+}

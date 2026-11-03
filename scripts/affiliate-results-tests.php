@@ -203,7 +203,8 @@ try {
     $fixtures=[];
     foreach(['explore','links','history','results'] as $tab)$fixtures[$tab]=payload(web('GET','/afiliados?tab='.$tab));
     $fixtures['filter']=payload(web('GET','/afiliados?q=Segunda'));
-    $fixtures['dashboard']=payload(web('GET','/dashboard'));
+    $fixtures['dashboard']=payload(web('GET','/mi-cuenta'));
+    check($fixtures['explore']['props']['links_count']===DB::table('affiliate_short_links')->where('affiliate_id',$a->id)->count(), 'account summary uses total owned links, independent of filters and pages');
     $filesBefore=DB::table('affiliate_link_daily_clicks')->orderBy('link_code')->orderBy('day')->get()->toJson();
     web('GET','/afiliados?tab=results');
     check(DB::table('affiliate_link_daily_clicks')->orderBy('link_code')->orderBy('day')->get()->toJson()===$filesBefore,'results reads do not fabricate clicks');

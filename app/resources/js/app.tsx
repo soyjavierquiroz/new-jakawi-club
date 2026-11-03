@@ -1,6 +1,6 @@
 import { Head, createInertiaApp, usePage } from '@inertiajs/react';
 import type { ComponentType, ReactNode } from 'react';
-import { StrictMode } from 'react';
+import { StrictMode, useLayoutEffect } from 'react';
 import { createRoot } from 'react-dom/client';
 import '../css/app.css';
 import Advertising from './components/Advertising';
@@ -8,6 +8,9 @@ import type { Landing } from './types';
 
 function MetadataLayout({ children }: { children: ReactNode }) {
     const page = usePage();
+    useLayoutEffect(() => {
+        document.documentElement.toggleAttribute('data-account-context', ['Dashboard', 'Affiliates'].includes(page.component));
+    }, [page.component]);
     const landing = ['Welcome', 'MembershipSales'].includes(page.component) ? page.props.landing as Landing | undefined : undefined;
     return <><Head><meta head-key="robots" name="robots" content={landing?.social?.robots || 'noindex, nofollow'} /></Head>{children}<Advertising /></>;
 }

@@ -58,6 +58,7 @@ class AffiliateController extends Controller
             'partner_panels' => Inertia::always($panels),
             'partner_access_unavailable' => Inertia::always((bool) $request->attributes->get('partner_access_unavailable', false)),
             'partner_sso_required' => $request->session()->get('jakawi_sso_subject') !== $user->global_subject_id || !$user->global_subject_id,
+            'links_count' => (clone $personal)->count(),
             'results' => app(\App\Services\AffiliateResults::class)->summary($user),
             'tab' => $tab, 'filters' => $filters, 'offers' => $offerPage,
             'cities' => DB::table('commercial_offers')->where('catalog_present', true)
