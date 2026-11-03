@@ -106,7 +106,7 @@ Route::middleware('auth')->group(function (): void {
     Route::get('/verificar-email', [AuthController::class, 'forgot'])->name('verification.notice');
     Route::get('/mi-cuenta', [DashboardController::class, 'show']);
     Route::post('/cuenta/beneficios', [\App\Http\Controllers\MemberBenefitsController::class, 'store'])->middleware(['verified', 'throttle:6,1'])->block(20, 10);
-    Route::get('/dashboard', [DashboardController::class, 'show'])->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'redirect'])->name('dashboard');
     Route::patch('/perfil', [DashboardController::class, 'update'])->middleware('verified')->name('profile.update');
 });
 

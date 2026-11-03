@@ -1,5 +1,6 @@
 import { Link, usePage } from '@inertiajs/react';
 import { useRef, useState, type ReactNode } from 'react';
+import AccountHeader from './AccountHeader';
 import type { Launch } from '../types';
 import { CommunityWhatsAppIcon } from './CommunityWhatsAppIcon';
 
@@ -11,10 +12,11 @@ export function BrandLogo() {
 }
 export function Header({ capture = false, compact = false }: { capture?: boolean; compact?: boolean }) {
     const { signed_in, can_manage_landings } = usePage<{ signed_in: boolean; can_manage_landings: boolean }>().props;
-    return <header className={`site-header ${compact ? 'webinar-mobile-header' : ''}`}><div className="shell flex min-h-20 items-center justify-between gap-5">{capture ? <BrandLogo /> : <Link href="/" aria-label="JAKAWI, inicio"><BrandLogo /></Link>}<nav aria-label="Navegación principal" className="flex items-center gap-5 text-sm font-semibold sm:gap-9">{!capture && <>{can_manage_landings && <Link href="/admin/landings">Landings</Link>}<a className="hidden text-text-secondary hover:underline md:block" href="/#como-funciona">La comunidad</a><a className="hidden text-text-secondary hover:underline sm:block" href="/#en-vivo">En vivo</a></>}<Link className={capture ? 'text-xs text-text-secondary underline underline-offset-4' : 'nav-access'} href={signed_in ? '/dashboard' : '/login'}>{signed_in ? 'Mi cuenta' : 'Ingresar'}{!capture && <Arrow />}</Link></nav></div></header>;
+    if (signed_in && !capture) return <AccountHeader />;
+    return <header className={`site-header ${compact ? 'webinar-mobile-header' : ''}`}><div className="shell flex min-h-20 items-center justify-between gap-5">{capture ? <BrandLogo /> : <Link href="/" aria-label="JAKAWI, inicio"><BrandLogo /></Link>}<nav aria-label="Navegación principal" className="flex items-center gap-5 text-sm font-semibold sm:gap-9">{!capture && <>{can_manage_landings && <Link href="/admin/landings">Landings</Link>}<a className="hidden text-text-secondary hover:underline md:block" href="/#como-funciona">La comunidad</a><a className="hidden text-text-secondary hover:underline sm:block" href="/#en-vivo">En vivo</a></>}<Link className={capture ? 'text-xs text-text-secondary underline underline-offset-4' : 'nav-access'} href={signed_in ? '/mi-cuenta' : '/login'}>{signed_in ? 'Mi cuenta' : 'Ingresar'}{!capture && <Arrow />}</Link></nav></div></header>;
 }
 export function Footer({ capture = false }: { capture?: boolean }) {
-    return <footer className="border-t border-border bg-background"><div className="shell flex flex-col justify-between gap-6 py-10 text-sm sm:flex-row sm:items-center"><div>{capture ? <BrandLogo /> : <Link href="/" aria-label="JAKAWI, inicio"><BrandLogo /></Link>}<p className="mt-2 text-text-secondary">VIVE MÁS. GASTA MENOS.</p></div><div className="flex flex-wrap gap-6"><Link href="/privacidad">Privacidad y cookies</Link>{!capture && <Link href="/login">Mi cuenta</Link>}<span className="text-text-muted">jakawi.club</span></div></div></footer>;
+    return <footer className="border-t border-border bg-background"><div className="shell flex flex-col justify-between gap-6 py-10 text-sm sm:flex-row sm:items-center"><div>{capture ? <BrandLogo /> : <Link href="/" aria-label="JAKAWI, inicio"><BrandLogo /></Link>}<p className="mt-2 text-text-secondary">VIVE MÁS. GASTA MENOS.</p></div><div className="flex flex-wrap gap-6"><Link href="/privacidad">Privacidad y cookies</Link>{!capture && <Link href="/mi-cuenta">Mi cuenta</Link>}<span className="text-text-muted">jakawi.club</span></div></div></footer>;
 }
 export function Flash() {
     const { status } = usePage<{ status?: string }>().props;

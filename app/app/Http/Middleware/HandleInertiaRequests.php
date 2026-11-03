@@ -33,6 +33,27 @@ class HandleInertiaRequests extends Middleware
             'ads' => fn () => $request->is('admin/soporte', 'admin/soporte/*') ? null : app(\App\Services\Advertising::class)->safely(fn () => app(\App\Services\Advertising::class)->browser($request)),
             'admin_support_mode' => fn () => $request->session()->has('support_view'),
             'admin_navigation' => fn () => \App\Http\Controllers\AdminDashboardController::navigation($request),
+            'account_navigation' => function () use ($request) {
+                $user = $request->user();
+                if (!$user || $request->session()->has('support_view')) return [];
+                $links = [
+                    ['label' => 'Mi cuenta', 'href' => '/mi-cuenta'],
+                    ['label' => 'Mi membresía', 'href' => '/mi-cuenta#mi-membresia'],
+                ];
+                // Match verified + ActiveAffiliate; Partner grants remain enforced by the panel.
+                if ($user->activated_at !== null && $user->hasVerifiedEmail()) {
+                    $links[] = ['label' => 'Mis referidos y comisiones', 'href' => '/afiliados'];
+                }
+                $links[] = ['label' => 'Explorar beneficios', 'href' => 'https://jakawi.com/beneficios'];
+                $links[] = ['label' => 'Editar mi perfil', 'href' => 'https://jakawi.com/perfil'];
+                $admin = \App\Http\Controllers\AdminDashboardController::navigation($request);
+                if (in_array('/admin', array_column($admin, 'href'), true)) {
+                    $links[] = ['label' => 'Administración CLUB', 'href' => '/admin'];
+                } elseif ($admin !== []) {
+                    $links[] = ['label' => 'Administración CLUB', 'href' => $admin[0]['href']];
+                }
+                return $links;
+            },
             'signed_in' => (bool) $request->user(),
             'can_manage_landings' => $request->user()?->is_marketing_admin === true && $request->user()?->hasVerifiedEmail() && $request->user()?->activated_at !== null,
             'status' => fn () => $request->session()->get('status'),

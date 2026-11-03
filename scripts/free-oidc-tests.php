@@ -138,7 +138,10 @@ try {
  $r=oidc($subject,false);check($r->headers->get('Location')==='https://jakawi.club/dashboard','gratuito no verificado completa callback');
  $user=User::where('global_subject_id',$subject)->firstOrFail();check(!$user->hasVerifiedEmail() && $user->password===null,'login no inventa verificación ni contraseña');
  check(count($calls)===0,'callback independiente de pago y consulta membresía');
- $p=dashboard();check($p['com_membership']['type']==='free'&&!$p['membership_activated']&&!$p['email_verified'],'Gratuito sin beneficios exclusivos');
+ $redirect=web('GET','/dashboard',[],false);check($redirect->isRedirect() && $redirect->headers->get('Location')==='https://jakawi.club/mi-cuenta','dashboard redirige a cuenta sin consultar membresía');
+ $p=dashboard();check(!in_array('/afiliados',array_column($p['account_navigation'],'href')) && !in_array('/admin',array_column($p['account_navigation'],'href')),'gratuito no verificado oculta opciones privadas');
+ check(in_array('/mi-cuenta#mi-membresia',array_column($p['account_navigation'],'href')),'menú enlaza estado efectivo en cuenta');
+ check($p['com_membership']['type']==='free'&&!$p['membership_activated']&&!$p['email_verified'],'Gratuito sin beneficios exclusivos');
  check(web('PATCH','/perfil',['name'=>'Changed'])->isRedirect(),'edición sensible conserva verified');
  check(web('POST','/cuenta/beneficios')->isRedirect(),'acceso sensible conserva verified');
  $count=User::count();oidc($subject,false);check(User::count()===$count,'retorno repetido reutiliza sub sin duplicados');
@@ -147,7 +150,7 @@ try {
  foreach(['down','mismatch'] as $mode){$p=dashboard();check(!$p['com_membership']['available']&&!$p['membership_activated'],'error '.$mode.' bloquea beneficios sin impedir acceso');}
  $mode='free';$other=(string)Illuminate\Support\Str::uuid();oidc($other,false,'free@example.test');$projection=User::where('global_subject_id',$other)->firstOrFail();
  check(User::count()===$count+1&&$projection->email===null&&$user->fresh()->global_subject_id===$subject,'coincidencia de correo no vincula cuentas distintas');dashboard();
- oidc($subject,true);check($user->fresh()->hasVerifiedEmail(),'claim verificado posterior acredita mismo correo sin duplicación');
+ oidc($subject,true);$mode='verified';$p=dashboard();check(in_array('/afiliados',array_column($p['account_navigation'],'href')),'afiliado verificado conserva acceso autorizado');check($user->fresh()->hasVerifiedEmail(),'claim verificado posterior acredita mismo correo sin duplicación');
  $badNonce=true;$before=User::count();$r=oidc((string)Illuminate\Support\Str::uuid(),false,'bad@example.test');check($r->headers->get('Location')==='https://jakawi.club/login'&&User::count()===$before,'nonce inválido sigue rechazado');$badNonce=false;
  $r=oidc($subject,false,'free@example.test',true);check($r->headers->get('Location')==='https://jakawi.club/afiliados','retorno Partner COM conserva destino local');
  check($origin===hash('sha256',json_encode(DB::table('acquisition_people')->get()).json_encode(DB::table('acquisition_aliases')->get())),'origen Dossis 43 Partner 1 inmutable');

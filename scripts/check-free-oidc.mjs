@@ -1,5 +1,6 @@
 // Uses the existing Chromium through CDP and Node's native WebSocket; no npm dependencies.
 // Protected pages use browser-only fixtures. No account or registration is created.
+import { createHash } from 'node:crypto';
 import { spawn } from 'node:child_process';
 import { writeFile, readFile, mkdir, rm } from 'node:fs/promises';
 import assert from 'node:assert/strict';
@@ -84,6 +85,8 @@ try {
 
     const fixtures=JSON.parse(await readFile('/evidence/fixtures.json','utf8'));
     const checks=[],writes=[];let current='free';
+    const adminFixtures=JSON.parse(await readFile('/evidence/admin/fixtures.json','utf8'));
+    fixtures.admin=structuredClone(fixtures.pioneer);fixtures.admin.props.account_navigation=adminFixtures.account.props.account_navigation;
     const fulfill=(event,code,type,body='')=>call('Fetch.fulfillRequest',{requestId:event.requestId,responseCode:code,responseHeaders:[{name:'Content-Type',value:type}],body:Buffer.from(body).toString('base64')});
     on('Fetch.requestPaused',async event=>{
         try {
@@ -103,23 +106,28 @@ try {
     const until=async(expression,label)=>{for(let i=0;i<100;i++){if(await evaluate(`!!(${expression})`))return;await pause(100);}throw new Error(label);};
     for(const width of [390,1440]) {
         await call('Emulation.setDeviceMetricsOverride',{width,height:960,deviceScaleFactor:1,mobile:width===390});
-        for(current of ['free','standard','pioneer','expired','down']) {
+        for(current of ['free','standard','pioneer','expired','down','verified','admin']) {
             await call('Page.navigate',{url:'about:blank'});await pause(100);
             await call('Page.navigate',{url:'https://jakawi.club/mi-cuenta'});
             await until('document.querySelector("#com-plan-title")','plan card loads');
+            if(width===390)await evaluate('document.querySelector("button[aria-controls=account-menu]").click()');
+            await until('document.querySelector("#account-menu").getBoundingClientRect().height > 0','account menu visible');
+            assert.deepEqual(await evaluate('Array.from(document.querySelectorAll("#account-menu a")).map(a=>a.getAttribute("href"))'),fixtures[current].props.account_navigation.map(a=>a.href),'only server authorized menu links');
+            assert(await evaluate(`!!document.querySelector('#account-menu a[aria-current="page"][href="/mi-cuenta"]')`),'active account');
+            assert(await evaluate(`!document.querySelector('header a[href="/admin/landings"]')`),'no public admin header');
             assert(await evaluate('document.documentElement.scrollWidth <= innerWidth+1'),'responsive width');
             const title=await evaluate('document.querySelector("#com-plan-title").textContent');
-            assert.equal(title,'Plan '+({free:'Gratuito',standard:'Estándar',pioneer:'Pionero',expired:'Pionero',down:'Estado por confirmar'}[current]));
+            assert.equal(title,'Plan '+({free:'Gratuito',standard:'Estándar',pioneer:'Pionero',expired:'Pionero',down:'Estado por confirmar',verified:'Gratuito',admin:'Pionero'}[current]));
             assert(await evaluate('!!Array.from(document.querySelectorAll("a")).find(a=>a.href==="https://jakawi.com/perfil")'),'profile owned by COM');
             assert(await evaluate('!document.querySelector("#profile-name")'),'no duplicate profile form');
             if(current==='free')assert(await evaluate('document.body.innerText.includes("bloqueados") && document.body.innerText.includes("correo está pendiente")'),'free unverified account and locked benefits');
             if(current==='pioneer')assert(await evaluate('document.body.innerText.includes("15 meses calendario")'),'official Pionero policy');
-            assert.equal(await evaluate(`!!document.querySelector('a[href="https://jakawi.com/beneficios"]')`),['standard','pioneer'].includes(current),'only active plan enables exclusive benefits');
+            assert.equal(await evaluate(`!!document.querySelector('section[aria-labelledby="com-plan-title"] a[href="https://jakawi.com/beneficios"]')`),['standard','pioneer','admin'].includes(current),'only active plan enables exclusive benefits');
             const screenshot=await call('Page.captureScreenshot',{format:'png',captureBeyondViewport:true});await writeFile(`${output}/${current}-${width}-${live?'live':'preview'}.png`,Buffer.from(screenshot.data,'base64'));
             checks.push(`${current} ${width}: plan, benefits, profile, responsive`);
         }
     }
     assert.deepEqual(runtimeErrors,[]);assert.deepEqual(failedAssets,[]);assert.deepEqual(writes,[]);
-    await writeFile(`${output}/browser-${live?'live':'preview'}.json`,JSON.stringify({checks,no_live_mutations:true,protected_pages:'isolated browser fixtures',runtimeErrors,failedAssets},null,2));
+    await writeFile(`${output}/browser-${live?'live':'preview'}.json`,JSON.stringify({checks,manifest_sha256:createHash('sha256').update(await readFile(live?'/workspace/public/build/manifest.json':'/workspace/public/build-next/manifest.json')).digest('hex'),no_live_mutations:true,protected_pages:'isolated browser fixtures',runtimeErrors,failedAssets},null,2));
     console.log(JSON.stringify({checks:checks.length,no_live_mutations:true}));
 } finally {finish();if(socket)socket.close();chrome.kill('SIGTERM');}

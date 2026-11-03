@@ -75,6 +75,7 @@ try {
  Http::preventStrayRequests();
  check(web('GET','/admin')->isRedirect(),'guest redirected to login');
  login(false);check(web('GET','/admin')->getStatusCode()===403,'ordinary account blocked');
+ $ordinary=payload(web('GET','/mi-cuenta'));check(!in_array('/admin',array_column($ordinary['props']['account_navigation'],'href')),'ordinary account menu hides admin');
  $actor=login(true);
  check(web('GET','/admin')->getStatusCode()===403,'marketing does not grant global administration');
  check(web('GET','/admin/soporte')->getStatusCode()===403,'marketing does not grant support');
@@ -88,7 +89,8 @@ try {
  check(web('GET','/admin/')->getStatusCode()===200,'original trailing slash admin URL HTTP 200');
  check($page['component']==='admin/Dashboard','authorized administrator receives dashboard HTTP 200');
  check($page['props']['summary']['approved']===0&&$page['props']['summary']['amounts']===[],'empty ledger does not invent monetary balances');
- $fixtures=['dashboard'=>$page];
+ check(in_array('/admin',array_column($page['props']['account_navigation'],'href')),'account menu exposes admin for actual OIDC superadmin');
+ $fixtures=['dashboard'=>$page, 'account'=>payload(web('GET','/mi-cuenta'))];
  $event=function(string $ref): int {
   return DB::table('commercial_events')->insertGetId(['source'=>'jakawi.com','event_id'=>$ref,'schema_version'=>1,'event_type'=>'order.confirmed','occurred_at'=>now(),'received_at'=>now(),
   'com_reference_type'=>'order','com_reference_id'=>$ref,'conversion_status'=>'confirmed','key_id'=>'fixture','signed_at'=>time(),'payload_sha256'=>str_repeat('a',64),'raw_body_sha256'=>str_repeat('a',64),'raw_body'=>json_encode(['occurred_at'=>now()->toIso8601String()])]);

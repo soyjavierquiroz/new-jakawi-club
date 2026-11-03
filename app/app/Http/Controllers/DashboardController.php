@@ -11,6 +11,11 @@ use Inertia\Response;
 
 class DashboardController extends Controller
 {
+    public function redirect(): RedirectResponse
+    {
+        return redirect('/mi-cuenta');
+    }
+
     public function show(Request $request): Response
     {
         $user = $request->user();
