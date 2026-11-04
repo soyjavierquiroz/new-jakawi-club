@@ -1,14 +1,16 @@
 import { Link, useForm, usePage } from '@inertiajs/react';
 import { useContext, useEffect, useRef, type FormEvent } from 'react';
 import { Arrow, ErrorText, Flash } from '../UI';
-import { useRegistrationCTA } from '../marketing/primitives';
+import { useRegistrationSubmitCTA } from '../marketing/primitives';
 import { LandingContext } from '../marketing/LandingContext';
 import { InternationalPhoneInput } from './InternationalPhoneInput';
 
 export function RegistrationForm({ open, referralCode, landingId }: { open: boolean; referralCode: string | null; landingId?: number }) {
-    const cta = useRegistrationCTA();
+    const cta = useRegistrationSubmitCTA();
     const ads = usePage().props.ads as { funnel?: string } | null;
     const copy = useContext(LandingContext)?.content.registration;
+    const separated = !!copy?.navigation_label;
+    const accountExplained = /cuenta\s+gratuita/i.test([copy?.form_title, copy?.form_subtitle, copy?.submit_microcopy].filter(Boolean).join(' '));
     const form = useForm({ name: '', phone: '', email: '', privacy: true, referral_code: referralCode || '', ...(landingId ? { landing_id: landingId } : {}) });
     const phoneValue = useRef('');
     const submitting = useRef(false);
@@ -46,10 +48,11 @@ export function RegistrationForm({ open, referralCode, landingId }: { open: bool
                 <input type="hidden" name="referral_code" value={form.data.referral_code} />
                 <label className="checkbox-label"><input className="checkbox" id="privacy" type="checkbox" name="privacy" required checked={form.data.privacy} onChange={event => form.setData('privacy', event.target.checked)} aria-invalid={!!form.errors.privacy} aria-describedby={form.errors.privacy ? 'privacy-error' : undefined} /><span>Acepto el <Link href="/privacidad" className="underline underline-offset-2">acuerdo de privacidad</Link></span></label>
                 <ErrorText id="privacy-error">{form.errors.privacy}</ErrorText><ErrorText>{form.errors.referral_code}</ErrorText>
-                <button className="btn btn-primary w-full" disabled={!open || form.processing} aria-busy={form.processing} aria-describedby={!open ? 'registration-status' : undefined} type="submit">{form.processing ? 'Un momento…' : cta}<Arrow /></button>
+                <button className={`btn btn-primary w-full ${separated ? 'registration-submit-separated' : ''}`} disabled={!open || form.processing} aria-busy={form.processing} aria-describedby={!open ? 'registration-status' : undefined} type="submit">{form.processing ? 'Un momento…' : cta}<Arrow /></button>
             </fieldset>
         </form>
         {copy?.submit_microcopy && <p className="mt-3 text-center text-xs text-text-muted" data-submit-microcopy>{copy.submit_microcopy}</p>}
+        {separated && !accountExplained && <p className="mt-3 text-center text-xs text-text-muted" data-account-microcopy>Al registrarte creas una cuenta gratuita JAKAWI.</p>}
         {!open && <p id="registration-status" role="status" className="mt-3 text-center text-xs text-text-muted">Registro no disponible.</p>}
         <p className="mt-5 text-center text-xs text-text-muted">{copy?.existing_account_label ?? '¿Ya tienes cuenta?'} <Link className="font-semibold underline underline-offset-2" href="/login">{copy?.existing_account_link_label ?? 'Ingresa aquí'}</Link></p>
     </div>;

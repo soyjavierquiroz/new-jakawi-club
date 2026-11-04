@@ -8,9 +8,16 @@ import { focusRegistration } from './registration-navigation';
 
 export const REGISTRATION_CTA = 'QUIERO SER PARTE DE JAKAWI';
 
-export function useRegistrationCTA() {
+// Missing navigation_label retains the historical shared label for existing funnels.
+export function useRegistrationSubmitCTA() {
     const content = useContext(LandingContext)?.content;
     return content?.registration.submit_label || (content?.presentation.template === 'WEBINAR' ? content.hero.cta : REGISTRATION_CTA);
+}
+
+export function useRegistrationCTA() {
+    const content = useContext(LandingContext)?.content;
+    const legacy = useRegistrationSubmitCTA();
+    return content?.registration.navigation_label || legacy;
 }
 
 export function MarketingCTA({ location, className = '' }: { location: 'hero' | 'benefits' | 'final'; className?: string }) {

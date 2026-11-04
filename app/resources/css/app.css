@@ -358,3 +358,6 @@ main[data-landing-template=WEBINAR] .webinar-event-card .eyebrow { font-size: .7
 .opportunity-status { margin-top: 1rem; font-size: .75rem; font-weight: 700; color: var(--text-secondary); }
 
 @media (min-width: 1024px) { .opportunity-metric { font-size: clamp(4.5rem, 6vw, 6rem); } }
+
+/* Explicit split CTA configuration preserves legacy funnels and theme-independent ink. */
+.registration-submit-separated, .registration-submit-separated:hover:not(:disabled), main[data-landing-template=WEBINAR] #registro button.registration-submit-separated[type=submit] { background: var(--ink); color: var(--palette-light-surface-raised); }

@@ -1,0 +1,13 @@
+# Navegación y envío WEBINAR — CLUB
+
+CTA de navegación: **QUIERO RESERVAR MI LUGAR GRATIS**, coral oficial y blanco, ancla real `#registro` con scroll/foco. Botón de envío: **COMPLETAR MI REGISTRO**, tinta oficial y blanco. Conserva guard de envío único, loading/error, validaciones, payload y endpoints. Debajo se aclara «Al registrarte creas una cuenta gratuita JAKAWI.» si los textos del formulario aún no explican la cuenta gratuita.
+
+Se añade solamente `registration.navigation_label` opcional/null en V3. Enlaces Hero/cierre/sticky consumen ese campo; el envío reutiliza `registration.submit_label`. Ambos se editan, importan/exportan y previsualizan por el flujo existente. Sin campo nuevo o con null/vacío, los funnels conservan textos/estilos anteriores. Las nuevas semillas WEBINAR tienen los dos defaults separados. No hay JSON V4, componentes duplicados ni cambios de registro, atribución, Pixel/CAPI, COM/CRM o economía.
+
+Pruebas focalizadas: 18 HTTP/JSON/edición/publicación en esquema PostgreSQL temporal; 38 regresiones del registro Meta con proveedores/notificaciones simulados, incluido CompleteRegistration solo tras usuario nuevo y deduplicación. TypeScript/build y navegador a 390/1440 con mutaciones interceptadas. Resultados en `tests.json`, `meta/tests.json`, `build.json` y `browser.json`.
+
+Capturas: [navegación desktop](navigation-1440.png), [envío desktop](submit-1440.png), [navegación móvil](navigation-390.png), [envío móvil](submit-390.png). Fixtures de prueba; cero registros o conversiones LIVE.
+
+Publicación solo CLUB desde `9c3831d`. Se conservan assets y backup de SHA/manifest. No se publica el borrador entero. La única corrección de contenido autorizada por la excepción del requerimiento aplica los dos valores predeterminados al webinar principal: navigation_label y submit_label. Conserva todos los demás textos y campos. El borrador recibe esos defaults únicamente si sus etiquetas aún coinciden con la configuración publicada; un texto CTA de borrador distinto se respeta. Revisión incrementada para bloquear escrituras concurrentes. Las tres rutas resuelven la misma configuración publicada.
+
+Backup privado en `/srv/sites/jakawi.club/rollback-webinar-cta`: `release.json`, `manifest.json`, `before.json` y `cta-before.json`. El script revierte automáticamente código/manifest y los dos defaults si falla. Para rollback posterior, restaurar las etiquetas con el modo `$ctaRestore` de `scripts/webinar-cta-defaults.php` usando `cta-before.json` (rechaza revisiones posteriores para no pisar ediciones), volver al SHA anterior, restaurar manifest y reiniciar solo `app`; conservar chunks y datos. SHA/resultado en `LIVE.json`.

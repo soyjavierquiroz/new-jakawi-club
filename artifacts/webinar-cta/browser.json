@@ -1,0 +1,23 @@
+{
+  "checks": [
+    "navigation only, labels, coral/ink, account explanation, no overflow / 1440",
+    "navigation only, labels, coral/ink, account explanation, no overflow /principal 1440",
+    "navigation only, labels, coral/ink, account explanation, no overflow /ads/meta/webinar 1440",
+    "dark preference preserves marketing contrast 1440",
+    "one submit only, existing endpoint/E164, loading/error preserved 1440",
+    "legacy labels/styles in all three templates 1440",
+    "future funnel labels configurable 1440",
+    "editor exposes separate fields 1440",
+    "navigation only, labels, coral/ink, account explanation, no overflow / 390",
+    "navigation only, labels, coral/ink, account explanation, no overflow /principal 390",
+    "navigation only, labels, coral/ink, account explanation, no overflow /ads/meta/webinar 390",
+    "dark preference preserves marketing contrast 390",
+    "one submit only, existing endpoint/E164, loading/error preserved 390",
+    "legacy labels/styles in all three templates 390",
+    "future funnel labels configurable 390",
+    "editor exposes separate fields 390"
+  ],
+  "no_live_mutations": true,
+  "submissions_intercepted": 2,
+  "manifest_sha256": "48862206df58fab2a5210739ea52e21cc228202f2c4f9a09d5b957f5fb429874"
+}

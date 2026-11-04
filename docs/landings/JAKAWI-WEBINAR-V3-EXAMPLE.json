@@ -105,10 +105,11 @@
       "name_placeholder": "Tu nombre completo",
       "phone_placeholder": "Tu WhatsApp",
       "email_placeholder": "Tu correo electrónico",
-      "submit_label": "RESERVAR MI LUGAR GRATIS",
+      "submit_label": "COMPLETAR MI REGISTRO",
       "submit_microcopy": "Registro gratuito. Activa tu cuenta por correo.",
       "existing_account_label": "¿Ya tienes cuenta en JAKAWI?",
-      "existing_account_link_label": "Ingresa aquí"
+      "existing_account_link_label": "Ingresa aquí",
+      "navigation_label": "QUIERO RESERVAR MI LUGAR GRATIS"
     },
     "faq": {
       "eyebrow": "ANTES DE REGISTRARTE",

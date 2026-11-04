@@ -76,7 +76,7 @@ migración. Los JSON antiguos sin `icon` siguen siendo válidos. Un parche que o
 incluidos sus iconos. Importación, exportación y previews conservan el valor.
 
 En WEBINAR completo se muestran únicamente los primeros **tres beneficios**.
-`registration.submit_label` controla los CTA hacia registro; en WEBINAR,
+`registration.navigation_label` separa los enlaces hacia registro del envío. Sin ese campo, `registration.submit_label` conserva el control histórico compartido; en WEBINAR,
 sin valor explícito, utiliza `hero.cta`.
 `final.cta` y `after_registration.cta_label` se conservan por compatibilidad, pero
 no controlan botones independientes. En LEAD_VSL/WAITLIST, sin CTA explícito, se conserva la etiqueta histórica. El título visible del evento es distinto de `seo.title`.
@@ -251,6 +251,7 @@ estos nueve campos opcionales. No crea otro formulario ni cambia su acción.
 | `name_placeholder` | Tu nombre completo |
 | `phone_placeholder` | WhatsApp |
 | `email_placeholder` | Tu correo electrónico |
+| `navigation_label` | `null`: comportamiento anterior; texto: CTA de navegación independiente |
 | `submit_label` | `null`: automático |
 | `submit_microcopy` | Cadena vacía; sin microcopy |
 | `existing_account_label` | ¿Ya tienes cuenta? |
@@ -334,3 +335,7 @@ En el editor: seleccionar texto en el campo y pulsar el estilo, «Normal / quita
 énfasis. Las previsualizaciones inmediatas son locales; la preview completa utiliza
 el borrador guardado. Importar, guardar y publicar conservan el flujo editorial
 actual y `published_configuration` sigue siendo la única fuente pública compartida.
+
+### CTA de navegación y envío separados
+
+`registration.navigation_label` es texto plano opcional o null (mismos límites de los textos de registro). Con texto, configura enlaces Hero/cierre/sticky a `#registro`; `registration.submit_label` conserva su nombre y controla únicamente el envío, con botón tinta. Sin navigation_label, o con null/vacío, se mantiene el comportamiento histórico compartido. Los valores iniciales de nuevos WEBINAR son «QUIERO RESERVAR MI LUGAR GRATIS» y «COMPLETAR MI REGISTRO». El editor, import/export y preview usan estos mismos campos V3. No cambia ningún endpoint ni evento.

@@ -1,0 +1,23 @@
+{
+    "passed": [
+        "Opportunity isolated database schema",
+        "Opportunity existing admin login",
+        "separate seed labels",
+        "legacy explicit shared CTA preserved",
+        "navigation optional null",
+        "navigation optional \"\"",
+        "navigation optional \"IR AL FORMULARIO\"",
+        "V3 roundtrip separated labels",
+        "save separate CTA draft",
+        "save does not publish labels",
+        "preview uses separated fields",
+        "explicit publication of CTA labels",
+        "channel labels same \/",
+        "channel labels same \/principal",
+        "channel labels same \/ads\/meta\/webinar",
+        "two labels independently configurable",
+        "HTTP export preserves navigation label",
+        "GET CTA destinations create neither accounts nor conversions"
+    ],
+    "live_mutations": false
+}

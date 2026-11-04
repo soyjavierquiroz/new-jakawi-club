@@ -30,7 +30,7 @@ export type LandingContent = {
     seo: { title: string; description: string };
     hero: EditorialTitle & { emphasis_segments?: TitleSegment[] | null; ending_segments?: TitleSegment[] | null; eyebrow: string; title: string; emphasis: string; ending: string; description: string; cta: string };
     benefits: EditorialTitle & { eyebrow: string; title: string; description: string; items: OpportunityCard[] };
-    registration: { eyebrow: string; title: string; description: string; form_title?: string; form_subtitle?: string; name_placeholder?: string; phone_placeholder?: string; email_placeholder?: string; submit_label?: string | null; submit_microcopy?: string; existing_account_label?: string; existing_account_link_label?: string };
+    registration: { eyebrow: string; title: string; description: string; form_title?: string; form_subtitle?: string; name_placeholder?: string; phone_placeholder?: string; email_placeholder?: string; navigation_label?: string | null; submit_label?: string | null; submit_microcopy?: string; existing_account_label?: string; existing_account_link_label?: string };
     faq: EditorialTitle & { eyebrow: string; title: string; items: { question: string; answer: string }[] };
     final: EditorialTitle & { eyebrow: string; title: string; description: string; cta: string };
     video: LandingVideoSettings;

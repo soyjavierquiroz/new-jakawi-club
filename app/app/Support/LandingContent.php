@@ -62,7 +62,7 @@ class LandingContent
             'sections' => array_map(fn (string $id): array => ['id' => $id, 'visible' => true], self::WEBINAR_SECTIONS),
         ];
         $content['hero']['description'] = 'Descubre JAKAWI y cómo participar desde el comienzo en nuestro próximo webinar gratuito.';
-        $content['hero']['cta'] = $content['final']['cta'] = 'RESERVAR MI LUGAR GRATIS';
+        $content['hero']['cta'] = $content['final']['cta'] = 'QUIERO RESERVAR MI LUGAR GRATIS';
         $content['benefits'] = ['eyebrow' => 'QUÉ DESCUBRIRÁS', 'title' => 'Conoce el comienzo de JAKAWI.', 'description' => 'Tres temas para acompañar el prelanzamiento.', 'items' => [
             ['title' => 'Qué es JAKAWI', 'description' => 'Conoce la propuesta que estamos preparando para Cochabamba.'],
             ['title' => 'Cómo ser parte', 'description' => 'Descubre cómo crear tu cuenta gratuita y acompañar el comienzo.'],
@@ -81,7 +81,7 @@ class LandingContent
                 ['title' => 'Participa en el webinar', 'description' => 'Consulta la fecha confirmada y las indicaciones del encuentro cuando estén disponibles.'],
             ]],
         ];
-        $content['registration'] = [...self::registrationDefaults(), 'eyebrow' => 'TU PRÓXIMO PASO', 'title' => 'Reserva tu lugar gratis.', 'description' => 'Regístrate para acompañar el prelanzamiento de JAKAWI.'];
+        $content['registration'] = [...self::registrationDefaults(), 'navigation_label' => 'QUIERO RESERVAR MI LUGAR GRATIS', 'submit_label' => 'COMPLETAR MI REGISTRO', 'eyebrow' => 'TU PRÓXIMO PASO', 'title' => 'Reserva tu lugar gratis.', 'description' => 'Regístrate para acompañar el prelanzamiento de JAKAWI.'];
         $content['faq']['items'] = [
             ['question' => '¿Tiene costo?', 'answer' => 'El registro y el webinar de esta etapa son gratuitos.'],
             ['question' => '¿Cuándo es el webinar?', 'answer' => 'La fecha y la hora se mostrarán aquí cuando estén confirmadas. Si aún no aparecen, el encuentro sigue en preparación.'],
@@ -95,7 +95,7 @@ class LandingContent
     {
         return ['form_title' => 'Tu lugar en JAKAWI', 'form_subtitle' => '',
             'name_placeholder' => 'Tu nombre completo', 'phone_placeholder' => 'WhatsApp',
-            'email_placeholder' => 'Tu correo electrónico', 'submit_label' => null,
+            'email_placeholder' => 'Tu correo electrónico', 'navigation_label' => null, 'submit_label' => null,
             'submit_microcopy' => '', 'existing_account_label' => '¿Ya tienes cuenta?',
             'existing_account_link_label' => 'Ingresa aquí'];
     }
@@ -340,7 +340,7 @@ class LandingContent
         }
         foreach (array_keys(self::registrationDefaults()) as $key) {
             $rules['content.registration.'.$key] = ['sometimes',
-                ...(in_array($key, ['submit_label', 'form_subtitle', 'submit_microcopy']) ? ['nullable'] : ['required']),
+                ...(in_array($key, ['navigation_label', 'submit_label', 'form_subtitle', 'submit_microcopy']) ? ['nullable'] : ['required']),
                 'string', 'max:1200', 'not_regex:~[<>]|[a-z][a-z0-9+.-]*://|(?:javascript|data|mailto|tel):|//|www\\.|\\b[a-z0-9-]+\\.[a-z]{2,}(?:\\b|/)~iu'];
         }
         $rules['content.next_step'] = [$presence, 'array:action,redirect_seconds'];
@@ -440,6 +440,9 @@ class LandingContent
         }
         if (is_string($content['registration']['submit_label'] ?? null) && trim($content['registration']['submit_label']) === '') {
             $content['registration']['submit_label'] = null;
+        }
+        if (is_string($content['registration']['navigation_label'] ?? null) && trim($content['registration']['navigation_label']) === '') {
+            $content['registration']['navigation_label'] = null;
         }
         foreach (['form_subtitle', 'submit_microcopy'] as $key) {
             if (array_key_exists($key, $content['registration'] ?? []) && $content['registration'][$key] === null) {

@@ -305,3 +305,8 @@ credentials.json
 /artifacts/card-clarification/*fixture*.json
 /artifacts/card-clarification/*.png
 /artifacts/card-clarification/LIVE.json
+
+/artifacts/webinar-cta/*fixture*.json
+/artifacts/webinar-cta/meta/*fixture*.json
+/artifacts/webinar-cta/*.png
+/artifacts/webinar-cta/LIVE.json

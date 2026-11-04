@@ -17,7 +17,7 @@ type Value = string | null | { [key: string]: Value } | Value[];
 const labels: Record<string, string> = {
     webinar: 'Contenido del webinar', opportunity: 'Problema / oportunidad', early: 'Beneficios de participar desde el comienzo', steps: 'Cómo funciona', seo: 'SEO y redes sociales', hero: 'Mensaje', benefits: 'Beneficios', registration: 'Introducción al registro', faq: 'Preguntas frecuentes', final: 'Cierre', video: 'Video VSL',
     message: 'Mensaje de confirmación', instructions: 'Instrucción de revisar correo', cta_label: 'Texto del botón siguiente', title: 'Título', description: 'Descripción', eyebrow: 'Antetítulo', emphasis: 'Texto destacado', ending: 'Final del titular', cta: 'Texto del botón',
-    form_title: 'Título del formulario', form_subtitle: 'Subtítulo del formulario (opcional)', name_placeholder: 'Placeholder del nombre', phone_placeholder: 'Placeholder del teléfono', email_placeholder: 'Placeholder del email', submit_label: 'CTA del formulario (vacío: automático)', submit_microcopy: 'Microcopy debajo del botón (opcional)', existing_account_label: 'Texto de cuenta existente', existing_account_link_label: 'Texto del enlace de acceso',
+    form_title: 'Título del formulario', form_subtitle: 'Subtítulo del formulario (opcional)', name_placeholder: 'Placeholder del nombre', phone_placeholder: 'Placeholder del teléfono', email_placeholder: 'Placeholder del email', navigation_label: 'CTA de navegación al formulario (opcional)', submit_label: 'Botón de envío del formulario (vacío: automático)', submit_microcopy: 'Microcopy debajo del botón (opcional)', existing_account_label: 'Texto de cuenta existente', existing_account_link_label: 'Texto del enlace de acceso',
     value: 'Valor destacado', unit: 'Unidad (%, Bs u otra)', condition: 'Aclaración (opcional)', offer_status: 'Estado de oferta (opcional)', metric: 'Métrica editorial', icon: 'Icono', items: 'Elementos', question: 'Pregunta', answer: 'Respuesta', youtube_url: 'URL de YouTube', poster: 'Poster local (opcional)', aspect_ratio: 'Marco del reproductor', source_aspect_ratio: 'Proporción del video original',
 };
 
@@ -46,11 +46,12 @@ function Fields({ value, path, onChange, emphasis = false }: { value: Value; pat
         </>}</div>;
     }
     const options = key === 'icon' ? [['', 'Automático (icono actual)'], ...benefitIconOptions] : key === 'source_aspect_ratio' ? ['9:16', '3:4', '16:9'].map(option => [option, option]) : null;
-    const optional = ['poster', 'youtube_url', 'submit_label', 'form_subtitle', 'submit_microcopy'].includes(key);
-    const nullable = ['poster', 'youtube_url', 'submit_label'].includes(key);
+    const optional = ['poster', 'youtube_url', 'navigation_label', 'submit_label', 'form_subtitle', 'submit_microcopy'].includes(key);
+    const nullable = ['poster', 'youtube_url', 'navigation_label', 'submit_label'].includes(key);
     return <div><label className="label" htmlFor={path}>{labels[key] || key}</label>{options ? <select className="input" id={path} value={value || ''} onChange={event => onChange(event.target.value)}>{options.map(([option, label]) => <option key={option} value={option}>{label}</option>)}</select> :
         <textarea className="input" id={path} rows={key === 'description' || key === 'answer' ? 3 : 2} maxLength={['poster', 'youtube_url'].includes(key) ? 500 : 1200} required={!optional} value={value || ''} onChange={event => onChange(nullable && !event.target.value ? null : event.target.value)} />}
-        {key === 'submit_label' && <p className="mt-2 text-xs text-text-secondary">Vacío usa el CTA del hero en WEBINAR y el CTA histórico en las demás plantillas. Los botones hacia registro y el sticky comparten esta acción. Solo texto, sin HTML ni URLs.</p>}
+        {key === 'submit_label' && <p className="mt-2 text-xs text-text-secondary">Controla el envío del formulario. Vacío usa el CTA del hero en WEBINAR o el texto histórico. Si defines el CTA de navegación, ambos textos quedan separados; sin él se conserva el comportamiento anterior. Solo texto, sin HTML ni URLs.</p>}
+        {key === 'navigation_label' && <p className="mt-2 text-xs text-text-secondary">Hero, cierre y sticky solo llevan al formulario, sin enviar datos. Vacío conserva los textos y estilos del funnel anterior. Al definirlo, el envío usa su etiqueta independiente y botón tinta.</p>}
         {key === 'poster' && <p className="mt-2 text-xs text-text-secondary">Archivo PNG, JPEG o WebP existente en /marketing/. Vacío conserva el estado sin poster.</p>}
     </div>;
 }
