@@ -54,4 +54,4 @@ Regresión focalizada del editor: 584 comprobaciones PASS; nuevas pruebas focali
 
 Se permite desplegar únicamente código/assets CLUB después de validar. El script comprueba SHA base `0ce367e`, alcance de archivos, build y huellas de manifest; respalda código anterior/manifest y verifica configuración editorial, reglas, ledger, auditoría y migraciones. Solo reinicia CLUB app para OPcache; conserva contenedores ajenos, configuración y textos. No migra, no publica contenido ni modifica formularios, fechas, video, WhatsApp, Pixel/CAPI, conversiones, membresías, COM o CRM.
 
-El SHA LIVE y resultado verificado se registran en `LIVE.json` local después de desplegar, sin autorreferencia en el commit de código. Respaldo/reversión: directorio operativo privado `/srv/sites/jakawi.club/rollback-editorial-metrics`.
+El SHA LIVE y resultado verificado se registran en `LIVE.json` local después de desplegar, sin autorreferencia en el commit de código. Respaldo/reversión: directorio operativo privado `/srv/sites/jakawi.club/rollback-editorial-metrics-release`.

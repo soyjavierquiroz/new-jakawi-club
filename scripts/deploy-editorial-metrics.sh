@@ -25,12 +25,12 @@ assert len(tests['passed'])>=48 and tests['live_mutations'] is False
 assert len(browser['checks'])>=16 and browser['no_live_mutations']
 assert browser['manifest_sha256']==hashlib.sha256((build/'manifest.json').read_bytes()).hexdigest()
 assert json.loads((evidence/'build.json').read_text())['exit_code']==0
-rollback=Path('/srv/sites/jakawi.club/rollback-editorial-metrics');rollback.mkdir(exist_ok=False,mode=0o700)
+rollback=Path('/srv/sites/jakawi.club/rollback-editorial-metrics-release');rollback.mkdir(exist_ok=False,mode=0o700)
 shutil.copy2(live/'app/public/build/manifest.json',rollback/'manifest.json')
 (rollback/'release.json').write_text(json.dumps({'previous_sha':previous,'target_sha':sha},indent=2)+'\n')
 snapshot=lambda:subprocess.check_output(['docker','compose','exec','-T','--user','www-data','app','php'],cwd=live,input=(source/'scripts/editorial-metrics-live-snapshot.php').read_bytes())
 before=json.loads(snapshot());(rollback/'before.json').write_text(json.dumps(before,indent=2)+'\n')
-container_names=[name for name in read(['docker','ps','--format','{{.Names}}']).splitlines() if name != 'jakawi-club-app']
+container_names=[name for name in read(['docker','ps','--format','{{.Names}}']).splitlines() if name not in ['jakawi-club-app', 'jakawi-club-crm-worker']]
 baseline={c['Name']:(c['Id'],c['State']['StartedAt'],c['RestartCount']) for c in json.loads(read(['docker','inspect',*container_names]))}
 run(['docker','compose','config','--quiet'])
 run(['git','fetch',str(source),sha]);run(['git','merge-base','--is-ancestor',previous,sha])
