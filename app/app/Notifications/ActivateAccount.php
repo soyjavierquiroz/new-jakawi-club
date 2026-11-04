@@ -20,11 +20,8 @@ class ActivateAccount extends Notification
 
         if ($this->membership) $url .= '&continue=membership';
         return (new MailMessage)
-            ->subject('Activa tu cuenta JAKAWI')
-            ->greeting('¡Bienvenido a JAKAWI!')
-            ->line('Verifica tu correo y elige una contraseña para activar tu cuenta.')
-            ->action('Activar mi cuenta', $url)
-            ->line('Este enlace es de un solo uso y vence en 60 minutos.')
-            ->line('Si no solicitaste esta cuenta, puedes ignorar este mensaje.');
+            ->from(config('mail.from.address'), 'JAKAWI')
+            ->subject('¡Bienvenido a JAKAWI! Activa tu cuenta')
+            ->view('mail.activate-account', ['activationUrl' => $url]);
     }
 }

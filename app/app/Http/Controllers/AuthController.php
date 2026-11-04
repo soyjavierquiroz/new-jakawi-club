@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Services\AccountMail;
+use App\Services\ActivationTokens;
 use App\Support\Normalize;
 use App\Support\MembershipJourney;
 use Illuminate\Auth\Events\PasswordReset;
@@ -86,7 +87,14 @@ class AuthController extends Controller
 
     private function tokenPage(Request $request, string $token, string $mode): Response
     {
-        abort_unless(preg_match('/^[a-f0-9]{64}$/', $token), 404);
+        $email = Normalize::email($request->query('email'));
+        if ($mode === 'activate') {
+            $user = User::where('email', $email)->first();
+            $valid = preg_match('/^[a-f0-9]{64}$/', $token) && $user && app(ActivationTokens::class)->valid($user, $token);
+            if (! $valid) return Inertia::render('Auth', ['mode' => 'activation-recovery', 'email' => $email]);
+        } else {
+            abort_unless(preg_match('/^[a-f0-9]{64}$/', $token), 404);
+        }
         if ($request->query('continue') === 'membership') MembershipJourney::remember($request);
 
         return Inertia::render('Auth', [
@@ -127,14 +135,14 @@ class AuthController extends Controller
         $activatedUser = null;
         $status = DB::transaction(function () use ($data, $activation, &$activatedUser): string {
             // Serialize validation, consumption and account update for single-use tokens.
-            DB::table('password_reset_tokens')->where('email', $data['email'])->lockForUpdate()->first();
+            if (! $activation) DB::table('password_reset_tokens')->where('email', $data['email'])->lockForUpdate()->first();
             $user = User::where('email', $data['email'])->lockForUpdate()->first();
             if (! $user || ($activation && $user->activated_at && $user->hasVerifiedEmail())
                 || (! $activation && (! $user->activated_at || ! $user->hasVerifiedEmail()))) {
                 return Password::INVALID_TOKEN;
             }
 
-            return Password::reset($data, function (User $user, string $password) use ($activation, &$activatedUser): void {
+            $save = function (User $user, string $password) use ($activation, &$activatedUser): void {
                 $user->password = $password;
                 $user->setRememberToken(Str::random(60));
                 if ($activation) {
@@ -148,22 +156,20 @@ class AuthController extends Controller
                 // Revoke all other sessions after a password change.
                 DB::table('sessions')->where('user_id', $user->id)->delete();
                 event(new PasswordReset($user));
-            });
+            };
+            if (! $activation) return Password::reset($data, $save);
+            if (! app(ActivationTokens::class)->valid($user, $data['token'])) return Password::INVALID_TOKEN;
+            $save($user, $data['password']);
+            DB::table('account_activation_tokens')->where('user_id', $user->id)->delete();
+            return Password::PASSWORD_RESET;
         }, 3);
 
         if ($status !== Password::PASSWORD_RESET) {
+            if ($activation) return redirect()->route('activation.show', ['token' => $data['token'], 'email' => $data['email']]);
             throw ValidationException::withMessages(['email' => 'El enlace no es válido o ha vencido. Solicita uno nuevo.']);
         }
         if ($activatedUser) {
-            Auth::login($activatedUser);
-            $request->session()->regenerate();
-            $digest = hash_hmac('sha256', $activatedUser->email, config('app.key'));
-            if (! hash_equals($digest, (string) $request->session()->get('registration_email_digest', ''))) {
-                $request->session()->forget(['registration_receipt', 'registration_email_digest']);
-            }
-            $request->session()->put('welcome_expires_at', now()->addMinutes(15)->timestamp);
-
-            return MembershipJourney::pending($request) ? redirect()->route('membership.activate') : redirect()->route('welcome');
+            return redirect()->route('login')->with('status', '¡Tu cuenta JAKAWI está activada! Ya puedes ingresar con tu correo y contraseña.');
         }
 
         return redirect()->route('login')->with('status', 'Contraseña actualizada. Ya puedes iniciar sesión.');

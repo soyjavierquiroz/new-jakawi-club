@@ -1,5 +1,5 @@
 {
-    "passed": 33,
+    "passed": 38,
     "checks": [
         "isolated PostgreSQL schema",
         "webinar switch leaves membership disabled",
@@ -25,6 +25,11 @@
         "no purchases created or queried",
         "existing email or repeated submit creates no conversion",
         "existing-account receipt sends no false browser conversion",
+        "Meta account resends activation without registration",
+        "Meta replacement invalidates previous activation",
+        "Meta account activates and offers normal login",
+        "activation and resend emit no browser conversion, CAPI or new event_id",
+        "Meta activation preserves source, attribution and unique registration",
         "explicit withdrawal still revokes the previous visit",
         "webinar route activation does not change stored refusal for other funnels",
         "organic with Ads UTMs stays Pixel-free after webinar",

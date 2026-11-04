@@ -287,3 +287,8 @@ credentials.json
 !/artifacts/webinar-shared/REPORT.md
 !/artifacts/webinar-shared/tests.json
 !/artifacts/webinar-shared/browser-preview.json
+
+/artifacts/activation-durable/*.html
+/artifacts/activation-durable/*.png
+/artifacts/activation-durable/LIVE.json
+/artifacts/activation-durable/validation.json

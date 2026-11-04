@@ -142,6 +142,7 @@ try {
     $again=http('POST','/ads/meta/webinar/registro',$data);
     check($again->isRedirect('https://jakawi.club/ads/meta/webinar/gracias') && App\Models\AdEvent::count()===1,'existing email or repeated submit creates no conversion');
     check(payload(http('GET','/ads/meta/webinar/gracias',[],true))['props']['ads']['events']===[],'existing-account receipt sends no false browser conversion');
+    require '/tests/activation-durable-meta-checks.php';
     http('POST','/preferencias',['allow_ads'=>false]);
     check(!app('session')->has('ad_webinar_visit_id') && $visit->fresh()->revoked_at!==null,'explicit withdrawal still revokes the previous visit');
     $refused=payload(http('GET','/ads/meta/webinar',[],true));

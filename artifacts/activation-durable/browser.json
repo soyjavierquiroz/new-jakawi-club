@@ -1,0 +1,15 @@
+{
+  "checks": [
+    "email 390: PASS",
+    "recovery 390: PASS",
+    "activation 390: PASS",
+    "email 1440: PASS",
+    "recovery 1440: PASS",
+    "activation 1440: PASS"
+  ],
+  "manifest_sha256": "e5f0a1c704f13afbde17ae8e6d884a60adb62361f8aa9292b979d14751452190",
+  "no_live_mutations": true,
+  "runtimeErrors": [],
+  "failedAssets": [],
+  "outbound": []
+}
