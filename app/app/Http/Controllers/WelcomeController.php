@@ -45,7 +45,8 @@ class WelcomeController extends Controller
 
     private function render(Request $request, ReferralAttribution $referrals, MarketingLanding $landing, bool $preview = false): Response
     {
-        if (!$preview && !$request->session()->has('registration_utms.'.$landing->id)) {
+        $utmKey = ($request->route('page') === 'webinar' ? 'webinar_registration_utms.' : 'registration_utms.').$landing->id;
+        if (!$preview && !$request->session()->has($utmKey)) {
             $utms = [];
             foreach (['utm_source','utm_medium','utm_campaign','utm_content','utm_term'] as $key) {
                 $value = $request->query($key);
@@ -53,7 +54,7 @@ class WelcomeController extends Controller
                     $utms[$key] = mb_substr(preg_replace('/[\x00-\x1f<>]/u', '', trim($value)) ?? '', 0, 200);
                 }
             }
-            if ($utms) $request->session()->put('registration_utms.'.$landing->id, $utms);
+            if ($utms) $request->session()->put($utmKey, $utms);
         }
         if (!$preview) {
             $code = $request->query('ref', $request->query('club_ref'));

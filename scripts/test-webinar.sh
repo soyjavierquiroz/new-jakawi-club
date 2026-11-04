@@ -6,6 +6,7 @@ evidence_dir="${JAKAWI_EVIDENCE_DIR:-$source_dir/artifacts/webinar}"
 mkdir -p "$evidence_dir"
 # Run the existing focused suites against an isolated source tree, never LIVE files.
 case "${1:-landings}" in
+    meta) runner=webinar-meta-tests.php ;;
     landings) runner=landing-tests.php ;;
     postconversion) runner=postconversion-tests.php ;;
     mvp) runner=mvp-tests.php ;;
@@ -14,7 +15,7 @@ case "${1:-landings}" in
     commercial) runner=commercial-tests.php ;;
     short-links) runner=short-links-tests.php ;;
     identity) runner=identity-link-tests.php ;;
-    *) echo 'Usage: test-webinar.sh [landings|postconversion|mvp|commissions|affiliates|commercial|short-links|identity]' >&2; exit 2 ;;
+    *) echo 'Usage: test-webinar.sh [meta|landings|postconversion|mvp|commissions|affiliates|commercial|short-links|identity]' >&2; exit 2 ;;
 esac
 docker run --rm --name jakawi-club-webinar-tests --network jakawi-club-private \
     --memory 256m --memory-swap 320m --cpus 0.65 --pids-limit 96 \

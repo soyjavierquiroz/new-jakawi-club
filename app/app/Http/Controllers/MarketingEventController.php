@@ -16,6 +16,7 @@ class MarketingEventController extends Controller
         $data = $request->validate([
             'event' => ['required', Rule::in(['landing_visit', 'cta_click', 'video_start'])],
             'placement' => ['required', Rule::in(['landing', 'hero', 'benefits', 'final', 'video'])],
+            'channel' => ['sometimes', Rule::in(['meta', 'organic'])],
             'landing_id' => ['nullable', 'integer', 'min:1'],
         ]);
         $allowed = [
@@ -30,6 +31,9 @@ class MarketingEventController extends Controller
         abort_if($data['event'] === 'video_start' && LaunchSettings::youtubeUrl($video) === null, 422);
         $analytics->recordVisitEvent($request, $data['event'], $data['placement'], $landing);
 
+        if ($data['event'] === 'landing_visit' && $landing && ($landing->published_configuration['presentation']['template'] ?? null) === 'WEBINAR') {
+            $analytics->recordVisitEvent($request, 'webinar_visit', $data['channel'] ?? 'organic', $landing);
+        }
         return response()->noContent();
     }
 }

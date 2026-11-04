@@ -1,4 +1,4 @@
-import { Link, useForm } from '@inertiajs/react';
+import { Link, useForm, usePage } from '@inertiajs/react';
 import { useContext, useEffect, useRef, type FormEvent } from 'react';
 import { Arrow, ErrorText, Flash } from '../UI';
 import { useRegistrationCTA } from '../marketing/primitives';
@@ -7,6 +7,7 @@ import { InternationalPhoneInput } from './InternationalPhoneInput';
 
 export function RegistrationForm({ open, referralCode, landingId }: { open: boolean; referralCode: string | null; landingId?: number }) {
     const cta = useRegistrationCTA();
+    const ads = usePage().props.ads as { funnel?: string } | null;
     const copy = useContext(LandingContext)?.content.registration;
     const form = useForm({ name: '', phone: '', email: '', privacy: true, referral_code: referralCode || '', ...(landingId ? { landing_id: landingId } : {}) });
     const phoneValue = useRef('');
@@ -24,7 +25,7 @@ export function RegistrationForm({ open, referralCode, landingId }: { open: bool
         if (!phoneValue.current) { form.setError('phone', 'Revisa el número y el país seleccionado.'); document.getElementById('phone')?.focus(); return; }
         form.transform(data => ({ ...data, phone: phoneValue.current, referral_code: referralCode || '' }));
         submitting.current = true;
-        form.post('/registro', {
+        form.post(ads?.funnel === 'webinar' ? '/ads/meta/webinar/registro' : '/registro', {
             preserveScroll: 'errors',
             // Confirmation must open at the top even with the landing's smooth scrolling.
             onSuccess: page => { if (page.component === 'Registered') window.scrollTo({ top: 0, left: 0, behavior: 'instant' }); },

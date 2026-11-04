@@ -19,7 +19,7 @@ final class DeliverAdEvent implements ShouldQueue {
             if (!$visit || $visit->revoked_at || $visit->expires_at->isPast() || $event->expires_at->isPast() || $event->occurred_at->lt(now()->subDays(7))) {
                 $event->update(['status' => 'rejected', 'response_code' => 'consent_or_expiry']); return false;
             }
-            if (!app(Advertising::class)->ready($event->provider)) {
+            if (!app(Advertising::class)->ready($event->provider, ($event->payload['funnel'] ?? null) === 'webinar')) {
                 $event->update(['status' => 'received', 'response_code' => 'integration_disabled']); return false;
             }
             $event->increment('attempts');

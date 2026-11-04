@@ -7,6 +7,6 @@ export function trackMarketing(event: 'landing_visit' | 'cta_click' | 'video_sta
     void fetch('/medicion', {
         method: 'POST', credentials: 'same-origin', keepalive: true,
         headers: { 'Content-Type': 'application/json', Accept: 'application/json', 'X-XSRF-TOKEN': decodeURIComponent(token) },
-        body: JSON.stringify({ event, placement, ...(landingId ? { landing_id: landingId } : {}) }),
+        body: JSON.stringify({ event, placement, channel: window.location.pathname === '/ads/meta/webinar' ? 'meta' : 'organic', ...(landingId ? { landing_id: landingId } : {}) }),
     }).catch(() => undefined);
 }

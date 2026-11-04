@@ -27,10 +27,15 @@ class RegistrationController extends Controller
         $referrer = $referrals->current($request, $data['referral_code'] ?? null);
         $created = false;
         $receipt = null;
+        $webinarMeta = $request->routeIs('webinar.meta.register');
+        $request->session()->forget('webinar_ad_event_id');
         try {
             DB::transaction(function () use ($request, $data, $referrer, $analytics, &$created, &$receipt): void {
                 // Capture the same published landing/campaign used for the conversion.
                 $landing = isset($data['landing_id']) ? MarketingLanding::query()->sharedLock()->find($data['landing_id']) : null;
+                if ($request->routeIs('webinar.meta.register')) {
+                    abort_unless($landing?->isPublic() && $landing->slug === config('ads.webinar_landing_slug') && ($landing->published_configuration['presentation']['template'] ?? null) === 'WEBINAR', 422);
+                }
                 if (isset($data['landing_id'])) {
                     abort_unless($landing?->isPublic() && LandingSlug::allowed($landing->slug), 422);
                     $content = LandingContent::withPresentation($landing->published_configuration);
@@ -51,12 +56,20 @@ class RegistrationController extends Controller
                 $user->privacy_version = config('jakawi.privacy_version');
                 $user->registration_origin = ['landing_id'=>$landing?->id, 'landing_slug'=>$landing?->slug,
                     'campaign'=>$landing?->published_campaign,
-                    'utms'=>$landing ? $request->session()->get('registration_utms.'.$landing->id, []) : []];
+                    'channel'=>$request->routeIs('webinar.meta.register') ? 'meta_webinar' : 'organic',
+                    'utms'=>$landing ? $request->session()->get(($request->routeIs('webinar.meta.register') ? 'webinar_registration_utms.' : 'registration_utms.').$landing->id, []) : []];
                 $user->save();
+                if ($request->routeIs('webinar.meta.register')) {
+                    $event = app(\App\Services\Advertising::class)->safely(fn () => app(\App\Services\Advertising::class)->registration($request, $user, $landing));
+                    if ($event) $request->session()->put('webinar_ad_event_id', $event->id);
+                }
                 app(\App\Services\PartnerAcquisition::class)->register($user, $request);
                 app(\App\Services\Crm\ClubContact::class)->enqueue($user);
                 // Confirmed server-side, in the same transaction as the new account.
                 $analytics->record('registration_completed', 'form', $landing?->isPublic() ? $landing : null);
+                if ($landing && ($content['presentation']['template'] ?? null) === 'WEBINAR') {
+                    $analytics->record('webinar_registration', $request->routeIs('webinar.meta.register') ? 'meta' : 'organic', $landing);
+                }
                 $created = true;
             }, 3);
         } catch (UniqueConstraintViolationException $exception) {
@@ -76,6 +89,7 @@ class RegistrationController extends Controller
         $referrals->forget($request);
 
         // Identical receipt for new and existing accounts. No email, name or code leaks.
+        if ($webinarMeta && $receipt) return redirect()->route('webinar.meta.thanks');
         return $receipt ? redirect()->route('registration.thanks', ['slug' => $receipt['slug']]) : redirect()->route('welcome');
     }
 

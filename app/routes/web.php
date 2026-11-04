@@ -75,6 +75,15 @@ Route::get('/r/{code}', [ReferralController::class, 'show'])->where('code', '[A-
 Route::post('/preferencias', [ReferralController::class, 'preferences'])->middleware('throttle:30,1')->name('preferences');
 Route::get('/bienvenida', [RegistrationController::class, 'welcome'])->name('welcome');
 
+// Webinar uses the published home landing; membership Ads routes remain independent.
+Route::get('/ads/meta/webinar', [\App\Http\Controllers\WebinarMetaController::class, 'show'])
+    ->defaults('provider', 'meta')->defaults('page', 'webinar')->name('webinar.meta');
+Route::get('/ads/meta/webinar/gracias', [\App\Http\Controllers\WebinarMetaController::class, 'thanks'])
+    ->defaults('provider', 'meta')->defaults('page', 'webinar')->name('webinar.meta.thanks');
+Route::post('/ads/meta/webinar/registro', [RegistrationController::class, 'store'])
+    ->defaults('provider', 'meta')->defaults('page', 'webinar')
+    ->middleware(['guest', RegistrationOpen::class, 'throttle:registration'])->name('webinar.meta.register');
+
 Route::get('/ads/{provider}/{page}', [\App\Http\Controllers\AdsController::class, 'show'])->where('provider', 'meta|tiktok')->where('page', 'membresia|activar')->middleware('throttle:membership-checkout')->block(20, 10);
 
 Route::get('/activar', [\App\Http\Controllers\PublicMembershipController::class, 'show'])->middleware('throttle:membership-checkout')->block(20, 10)->name('membership.activate');

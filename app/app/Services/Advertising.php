@@ -4,8 +4,8 @@ use App\Models\{AdEvent, AdVisit, MembershipPurchase};
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 final class Advertising {
-    public function ready(string $provider): bool {
-        return in_array($provider, ['meta', 'tiktok'], true) && config('ads.privacy_ready') && config("ads.$provider.enabled")
+    public function ready(string $provider, bool $webinar = false): bool {
+        return in_array($provider, ['meta', 'tiktok'], true) && config('ads.privacy_ready') && ($webinar ? $provider === 'meta' && config('ads.webinar_enabled') : config("ads.$provider.enabled"))
             && (bool) config("ads.$provider.pixel_id") && (bool) config("ads.$provider.token");
     }
     // Tracking must never change the outcome of a business operation. Do not log personal data or API exceptions.
@@ -13,14 +13,17 @@ final class Advertising {
     public function capture(Request $request): void {
         $provider = $request->route('provider');
         if (!in_array($provider, ['meta', 'tiktok'], true)) return;
-        if ($request->session()->get('ads_provider') !== $provider) $request->session()->put('ads_entered_at', now()->toIso8601String());
-        $request->session()->put('ads_provider', $provider);
+        $webinar = $request->route('page') === 'webinar';
+        $visitKey = $webinar ? 'ad_webinar_visit_id' : 'ad_visit_id';
+        if (!$webinar && $request->session()->get('ads_provider') !== $provider) $request->session()->put('ads_entered_at', now()->toIso8601String());
+        if (!$webinar) $request->session()->put('ads_provider', $provider);
         if ($request->cookie('jakawi_ads_consent') !== 'yes') return;
-        $visit = AdVisit::find($request->session()->get('ad_visit_id'));
-        $existing = $visit && !$visit->revoked_at && $visit->expires_at->isFuture() && $visit->provider === $provider;
+        $visit = AdVisit::find($request->session()->get($visitKey));
+        $existing = $visit && !$visit->revoked_at && $visit->expires_at->isFuture() && $visit->provider === $provider && (($visit->context['funnel'] ?? null) === ($webinar ? 'webinar' : null));
         $context = $existing ? $visit->context : [];
         if (!$existing) $context =
         ['url' => rtrim(config('app.url'), '/').'/ads/'.$provider.'/'.$request->route('page'),
+            'funnel' => $webinar ? 'webinar' : null,
             'entered_at' => $request->session()->get('ads_entered_at', now()->toIso8601String()), 'consent_version' => 'ads-v1'];
         foreach (['utm_source','utm_medium','utm_campaign','utm_content','utm_term','utm_id','campaign_id','adset_id','ad_id', $provider === 'meta' ? 'fbclid' : 'ttclid'] as $key) {
             $value = $request->query($key);
@@ -37,7 +40,7 @@ final class Advertising {
         if (!$request->cookie('jakawi_ads_scope')) \Illuminate\Support\Facades\Cookie::queue(cookie('jakawi_ads_scope', $scope, 60 * 24 * config('ads.retention_days'), '/', null, true, true, false, 'lax'));
         $visit = AdVisit::create(['consent_scope' => $scope, 'id' => (string) Str::uuid(), 'provider' => $provider, 'context' => $context,
             'consented_at' => now(), 'expires_at' => now()->addDays(config('ads.retention_days'))]);
-        $request->session()->put('ad_visit_id', $visit->id);
+        $request->session()->put($visitKey, $visit->id);
     }
     public function visit(Request $request): ?AdVisit {
         if ($request->cookie('jakawi_ads_consent') !== 'yes') return null;
@@ -57,20 +60,41 @@ final class Advertising {
         return $event;
     }
     public function enqueue(AdEvent $event): void {
-        if (!$this->ready($event->provider)) return;
+        if (!$this->ready($event->provider, ($event->payload['funnel'] ?? null) === 'webinar')) return;
         \App\Jobs\DeliverAdEvent::dispatch($event->id)->onQueue('ads')->beforeCommit();
         $event->update(['status' => 'pending']);
     }
+    public function webinarVisit(Request $request): ?AdVisit {
+        if ($request->cookie('jakawi_ads_consent') !== 'yes') return null;
+        $visit = AdVisit::whereKey($request->session()->get('ad_webinar_visit_id'))->where('provider', 'meta')->whereNull('revoked_at')->where('expires_at', '>', now())->first();
+        return $visit && ($visit->context['funnel'] ?? null) === 'webinar' ? $visit : null;
+    }
+    public function registration(Request $request, \App\Models\User $user, \App\Models\MarketingLanding $landing): ?AdEvent {
+        if (!$request->routeIs('webinar.meta.register') || $landing->slug !== config('ads.webinar_landing_slug')) return null;
+        $visit = $this->webinarVisit($request);
+        if (!$visit) return null;
+        $event = AdEvent::firstOrCreate(['provider' => 'meta', 'club_reference' => $user->uuid, 'event_name' => 'CompleteRegistration'],
+            ['id' => (string) Str::uuid(), 'visit_id' => $visit->id, 'occurred_at' => now(), 'expires_at' => $visit->expires_at,
+             'payload' => ['funnel' => 'webinar', 'email' => hash('sha256', strtolower(trim($user->email))),
+                 'phone' => hash('sha256', preg_replace('/[^0-9]/', '', $user->phone))]]);
+        if ($event->wasRecentlyCreated) $this->enqueue($event);
+        return $event;
+    }
     public function browser(Request $request): array {
         $provider = $request->route('provider');
-        $visit = $this->visit($request);
-        $allowed = $visit && $provider === $visit->provider && $this->ready($provider);
+        $webinar = $request->route('page') === 'webinar';
+        $visit = $webinar ? $this->webinarVisit($request) : $this->visit($request);
+        $allowed = $visit && $provider === $visit->provider && $this->ready($provider, $webinar);
         $events = [];
-        if ($allowed && ($purchase = app(PublicMembershipCheckout::class)->current($request)) && $purchase->ad_visit_id === $visit->id) {
+        if ($allowed && $webinar && ($id = $request->session()->get('webinar_ad_event_id'))) {
+            $event = AdEvent::whereKey($id)->where('visit_id', $visit->id)->where('provider', 'meta')->where('event_name', 'CompleteRegistration')->first();
+            if ($event && $request->routeIs('webinar.meta.thanks') && $request->session()->get('welcome_expires_at', 0) > now()->timestamp) $events[] = ['id' => $event->id, 'name' => $event->event_name];
+        }
+        if ($allowed && !$webinar && ($purchase = app(PublicMembershipCheckout::class)->current($request)) && $purchase->ad_visit_id === $visit->id) {
             $events = AdEvent::where('club_reference', $purchase->id)->where('provider', $provider)->where('event_name', '!=', 'Purchase')
                 ->get()->map(fn (AdEvent $e): array => ['id' => $e->id, 'name' => $e->event_name])->all();
         }
-        return ['provider' => $provider, 'allowed' => (bool) $allowed, 'pixel_id' => $allowed ? config("ads.$provider.pixel_id") : null,
+        return ['funnel' => $webinar ? 'webinar' : null, 'canonical' => $webinar ? rtrim(config('app.url'), '/').'/' : null, 'provider' => $provider, 'allowed' => (bool) $allowed, 'pixel_id' => $allowed ? config("ads.$provider.pixel_id") : null,
             'preference' => $request->cookie('jakawi_ads_consent'), 'retention_days' => config('ads.retention_days'), 'events' => $events];
     }
 }

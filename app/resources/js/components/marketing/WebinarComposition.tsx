@@ -26,7 +26,7 @@ function WebinarEvent({ title, startsAt }: { title: string; startsAt: string | n
         return () => window.clearInterval(timer);
     }, [target]);
     const dated = Number.isFinite(target);
-    return <section className="shell section-space" aria-labelledby="webinar-event-title" data-webinar-schedule>
+    return <section id="en-vivo" className="shell section-space" aria-labelledby="webinar-event-title" data-webinar-schedule>
         <div className="feature-card webinar-event-card"><p className="eyebrow">WEBINAR GRATUITO · EN VIVO</p><h2 id="webinar-event-title" className="section-title mt-4">{title}</h2>
             {dated ? <><div className="webinar-event-details"><p><EventIcon /><time dateTime={startsAt!}>{boliviaDate(startsAt!)} (Bolivia)</time></p><p><EventIcon kind="clock" />Hora de Bolivia · America/La_Paz</p><p><EventIcon kind="online" />Formato online</p></div>
                 {seconds > 0 ? <div className="webinar-countdown" role="timer" aria-label="Tiempo hasta el webinar" data-webinar-countdown>{[

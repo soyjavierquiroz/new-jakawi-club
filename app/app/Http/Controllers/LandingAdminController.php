@@ -36,6 +36,11 @@ class LandingAdminController extends Controller
             'landing' => [...$landing->toArray(), 'configuration' => LandingContent::withPresentation($landing->configuration), 'published_configuration' => $landing->published_configuration ? LandingContent::withPresentation($landing->published_configuration) : null], 'defaults' => null, 'webinar_defaults' => LandingContent::webinarDefaults(), 'ai_kit_zip_available' => LandingAiKitController::zipAvailable(), 'home_slug' => config('jakawi.home_landing_slug'), 'registration_open' => LaunchSettings::registrationOpen(), 'whatsapp_group_available' => RegistrationNextStep::whatsappGroup() !== null,
             'metrics' => DB::table('marketing_landing_event_totals')->where('landing_id', $landing->id)
                 ->select('event', 'campaign')->selectRaw('SUM(total) AS total')->groupBy('event', 'campaign')->get(),
+            'webinar_metrics' => ($landing->published_configuration['presentation']['template'] ?? null) === 'WEBINAR' ? [
+                'totals' => DB::table('marketing_landing_event_totals')->where('landing_id', $landing->id)->whereIn('event', ['webinar_visit', 'webinar_registration'])->select('event', 'placement')->selectRaw('SUM(total) AS total')->groupBy('event', 'placement')->get(),
+                'origins' => DB::table('users')->whereRaw("registration_origin->>'landing_slug' = ?", [$landing->slug])->selectRaw("COALESCE(registration_origin->>'channel', 'anterior') AS channel, registration_origin->'utms'->>'utm_source' AS source, registration_origin->'utms'->>'utm_campaign' AS campaign, COUNT(*) AS total")->groupByRaw('1,2,3')->get(),
+                'meta_events' => DB::table('ad_events')->where('provider', 'meta')->where('event_name', 'CompleteRegistration')->select('status')->selectRaw('COUNT(*) AS total')->groupBy('status')->get(),
+            ] : null,
             'confirmation_video_default_url' => LaunchSettings::defaultVideoUrl(config('jakawi.confirmation_video_url')),
         ]);
     }

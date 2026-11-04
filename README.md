@@ -527,3 +527,24 @@ automáticamente, conservando tarifas versionadas y ledger. UNKNOWN y alertas re
 revisión. Aprobación, liquidación y desembolso siguen separados; no hay pagos automáticos.
 La interfaz administrativa y del afiliado muestra importes BOB legibles y aprobadas
 pendientes de liquidación. [Operación, pruebas y rollback](artifacts/automatic-commissions/REPORT.md).
+
+### Medición Meta del webinar
+
+La landing publicada `principal` sirve `/` y `/principal`. Su entrada Meta es
+`/ads/meta/webinar`; el formulario usa `POST /ads/meta/webinar/registro` y confirma
+con recibo de sesión en `/ads/meta/webinar/gracias`. No reutiliza las campañas de
+membresía. Solo una cuenta nueva persistida genera `CompleteRegistration`; un correo
+existente recibe la confirmación genérica sin otra conversión ni nueva inscripción.
+No existe una lista independiente de asistentes o reinscripciones.
+
+`META_WEBINAR_ENABLED` habilita exclusivamente este funnel, junto con
+`ADS_PRIVACY_READY`, las credenciales Meta existentes y consentimiento explícito.
+`META_ADS_ENABLED` sigue controlando membresías. Pixel y CAPI comparten el UUID de
+`ad_events`; no se emiten Lead, asistencia ni Purchase para este registro.
+El panel existente `/admin/landings/1/editar`, «Funnel del webinar», muestra visitas,
+registros y tasa por canal desde la implementación, UTMs de las cuentas y estados
+CAPI durante la retención. `accepted` significa recepción API, no atribución de anuncios.
+
+Verificación aislada: `bash scripts/test-webinar.sh meta` y
+`bash scripts/check-webinar-meta.sh` con `JAKAWI_EVIDENCE_DIR` apuntando al directorio
+de evidencia. Proveedores simulados; no crear conversiones ficticias en producción.

@@ -1,7 +1,7 @@
 import { Head, router, usePage } from '@inertiajs/react';
 import { useEffect } from 'react';
 
-type Ads = { provider?: 'meta' | 'tiktok'; allowed: boolean; pixel_id?: string; preference?: string; retention_days: number; events: { id: string; name: string }[] };
+type Ads = { funnel?: string; canonical?: string; provider?: 'meta' | 'tiktok'; allowed: boolean; pixel_id?: string; preference?: string; retention_days: number; events: { id: string; name: string }[] };
 type Pixel = ((...args: unknown[]) => void) & { callMethod?: (...args: unknown[]) => void; queue: unknown[][]; loaded: boolean; version: string; push: Pixel };
 type TikTok = { track: (...args: unknown[]) => void; page: () => void; load: (id: string) => void; [key: string]: unknown };
 declare global { interface Window { fbq?: Pixel; ttq?: TikTok; adProvider?: string } }
@@ -67,11 +67,11 @@ export default function Advertising() {
     }, [ads, page.url]);
     const visible = ads?.provider || page.url.split('?')[0] === '/privacidad';
     if (!visible) return null;
-    const canonical = ads?.provider ? `${window.location.origin}/${page.url.split('?')[0].endsWith('/membresia') ? 'membresia' : 'activar'}` : null;
+    const canonical = ads?.canonical || (ads?.provider ? `${window.location.origin}/${page.url.split('?')[0].endsWith('/membresia') ? 'membresia' : 'activar'}` : null);
     function preference(allow: boolean) {
         const token = document.cookie.split('; ').find(v => v.startsWith('XSRF-TOKEN='))?.slice(11);
         void fetch('/preferencias', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-XSRF-TOKEN': decodeURIComponent(token || '') }, body: JSON.stringify({ allow_ads: allow }) })
             .then(response => { if (response.ok) window.location.reload(); }).catch(() => {});
     }
-    return <>{canonical && <Head><meta head-key="robots" name="robots" content="noindex, nofollow" /><link head-key="canonical" rel="canonical" href={canonical} /></Head>}<section aria-label="Preferencias publicitarias" className="shell py-5"><div className="rounded-card border border-border bg-surface p-5 text-sm"><p>Medición publicitaria opcional: Meta o TikTok, según la ruta de entrada. Con tu permiso compartimos eventos de registro, inicio de compra y compra confirmada, identificadores de campaña y correo/teléfono con hash. Conservación: hasta {ads?.retention_days || 30} días. Puedes retirar el permiso aquí o en Privacidad y cookies.</p><p className="mt-2">Preferencia: {ads?.preference === 'yes' ? 'permitida' : ads?.preference === 'no' ? 'rechazada' : 'sin elegir'}.</p><div className="mt-4 flex flex-wrap gap-3"><button type="button" className="btn btn-secondary" onClick={() => preference(true)}>Permitir medición publicitaria</button><button type="button" className="btn btn-secondary" onClick={() => preference(false)}>Rechazar o retirar permiso publicitario</button></div></div></section></>;
+    return <>{canonical && <Head><meta head-key="robots" name="robots" content="noindex, nofollow" /><link head-key="canonical" rel="canonical" href={canonical} /></Head>}<section aria-label="Preferencias publicitarias" className="shell py-5"><div className="rounded-card border border-border bg-surface p-5 text-sm"><p>Medición publicitaria opcional: Meta o TikTok, según la ruta de entrada. {ads?.funnel === 'webinar' ? 'Con tu permiso compartimos con Meta la visita y el registro real de una cuenta nueva desde este webinar, identificadores de campaña y correo/teléfono con hash. No medimos asistencia.' : 'Con tu permiso compartimos eventos de registro, inicio de compra y compra confirmada, identificadores de campaña y correo/teléfono con hash.'} Conservación: hasta {ads?.retention_days || 30} días. Puedes retirar el permiso aquí o en Privacidad y cookies.</p><p className="mt-2">Preferencia: {ads?.preference === 'yes' ? 'permitida' : ads?.preference === 'no' ? 'rechazada' : 'sin elegir'}.</p><div className="mt-4 flex flex-wrap gap-3"><button type="button" className="btn btn-secondary" onClick={() => preference(true)}>Permitir medición publicitaria</button><button type="button" className="btn btn-secondary" onClick={() => preference(false)}>Rechazar o retirar permiso publicitario</button></div></div></section></>;
 }

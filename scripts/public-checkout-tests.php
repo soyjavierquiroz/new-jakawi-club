@@ -241,12 +241,12 @@ try {
     web('POST','/activar/compra');check(App\Models\MembershipPurchase::where('user_id',$user->id)->count()===1,'authenticated purchase idempotent');
     web('POST','/activar/aviso',['payment_confirmed'=>true]);
     $fixtures['signed_pending']=payload(web('GET','/activar'));
-    $fixtures['dashboard_pending']=payload(web('GET','/dashboard'));
+    $fixtures['dashboard_pending']=payload(web('GET','/mi-cuenta'));
     check($fixtures['dashboard_pending']['props']['membership_purchase']['receipt_pending'],'membership area shows authorized pending receipt');
     web('POST','/logout');web('POST','/login',['email'=>$user->email,'password'=>'FixturePassword123']);
     check(payload(web('GET','/activar'))['props']['purchase']['receipt_pending'] && App\Models\MembershipPurchase::where('user_id',$user->id)->value('id')===$own->id,'logout and new login restore pending receipt on original owned purchase');
     check($upload()->getStatusCode()===302 && $own->fresh()->receipt_received,'authenticated late receipt accepted after new login');
-    $fixtures['dashboard_review']=payload(web('GET','/dashboard'));
+    $fixtures['dashboard_review']=payload(web('GET','/mi-cuenta'));
     $own->update(['status'=>'under_review']);$remote[$own->id]['state']['status']='under_review';
     $fixtures['signed_review']=payload(web('GET','/activar'));
     check($fixtures['signed_review']['props']['purchase']['status']==='under_review','authenticated user resumes review');
@@ -259,7 +259,7 @@ try {
     $beforeLocked=$reportCount();$beforeUploads=count(array_filter($calls,fn($v)=>str_ends_with($v,'/receipt')));
     web('POST','/activar/aviso',['payment_confirmed'=>true]);$upload();
     check($reportCount()===$beforeLocked && count(array_filter($calls,fn($v)=>str_ends_with($v,'/receipt')))===$beforeUploads,'approved purchase never reports or requests another receipt');
-    $fixtures['dashboard_active']=payload(web('GET','/dashboard'));
+    $fixtures['dashboard_active']=payload(web('GET','/mi-cuenta'));
     check($fixtures['signed_active']['props']['active'] && App\Models\MembershipPurchase::count()===$count,'active member protected from second charge');
     check((int)DB::table('marketing_event_totals')->where('event','InitiateCheckout')->sum('total')===3,'InitiateCheckout once per stable intention without duplicate COM event');
     check(DB::table('commission_ledger')->count()===0,'membership events never create commission');
@@ -336,8 +336,8 @@ try {
     $remote[$claimPurchase->id]['state']['global_subject_id']=$claimant->global_subject_id;
     $claimant->forceFill(['password'=>'FixturePassword123','activated_at'=>now()])->save();
     web('POST','/logout');web('POST','/login',['email'=>$claimant->email,'password'=>'FixturePassword123']);
-    $linkedDashboard=payload(web('GET','/dashboard'));
-    check($linkedDashboard['props']['membership_activated'] && $claimPurchase->fresh()->activated_at && !$claimPurchase->fresh()->user_id,'linked guest shows membership active from authorized COM GET before activation event');
+    $linkedDashboard=payload(web('GET','/mi-cuenta'));
+    check(!$linkedDashboard['props']['membership_activated'] && $linkedDashboard['props']['com_membership']['available'] === false && $claimPurchase->fresh()->activated_at && !$claimPurchase->fresh()->user_id,'linked guest preserves activation but current entitlement requires independent COM evidence');
     if (getenv('JAKAWI_ADS_TESTS') === '1') require '/tests/ads-tests.php';
     file_put_contents('/evidence/checkout-browser-fixtures.json',json_encode($fixtures,JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE));
     file_put_contents('/evidence/tests.json',json_encode(['passed'=>count($passed),'checks'=>$passed,'live_fixtures'=>0,'real_bank_payments'=>0,'outbound_hmac_verified'=>true],JSON_PRETTY_PRINT));

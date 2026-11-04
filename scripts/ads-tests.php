@@ -8,14 +8,19 @@ $configured = ['ads.privacy_ready'=>true, 'ads.meta.enabled'=>true, 'ads.meta.pi
     'ads.tiktok.enabled'=>true, 'ads.tiktok.pixel_id'=>'TESTTIKTOK', 'ads.tiktok.token'=>'test-tiktok'];
 config($configured);
 $cookies=[];Auth::forgetGuards();app('session')->flush();app('session')->regenerate();
-$adsCalls=[];$adsFailure=false;$approvedState=null;
+$adsCalls=[];$adsFailure=false;$approvedState=null;$adsRemote=[];
 Http::swap(new Illuminate\Http\Client\Factory);
 Http::preventStrayRequests();
-Http::fake(function (Illuminate\Http\Client\Request $request) use (&$adsCalls,&$adsFailure,&$approvedState) {
+Http::fake(function (Illuminate\Http\Client\Request $request) use (&$adsCalls,&$adsFailure,&$approvedState,&$adsRemote) {
     if (str_starts_with($request->url(),'https://jakawi.com/')) {
         if ($approvedState) return Http::response($approvedState);
         $input=$request->data();
-        return Http::response(['contract'=>'jakawi-club-purchases-v1','club_reference'=>$input['club_reference']??'',
+        $id=basename(parse_url($request->url(),PHP_URL_PATH));
+        if($request->method()==='GET') return isset($adsRemote[$id]) ? Http::response($adsRemote[$id]) : Http::response([],404);
+        if(!isset($input['club_reference'])) return Http::response([],404);
+        $id=$input['club_reference'];
+        return Http::response($adsRemote[$id] = ['contract'=>'jakawi-club-purchases-v1','club_reference'=>$input['club_reference']??'',
+            'beneficiary_name'=>'Fixture recipient','payment_confirmed'=>false,'payment_confirmed_at'=>null,'reported_at'=>null,'receipt_pending'=>false,'receipt_received'=>false,
             'payment_reference'=>(string)Illuminate\Support\Str::uuid(),'amount'=>'100.00','currency'=>'BOB','status'=>'awaiting_payment','identity_status'=>'pending','qr_ready'=>true]);
     }
     $adsCalls[]=['url'=>$request->url(),'body'=>json_decode(json_encode($request->data()),true)];
@@ -77,7 +82,7 @@ $guestAd=MembershipPurchase::whereNull('user_id')->whereNotNull('ad_visit_id')->
 $ttLead=AdEvent::where('club_reference',$guestAd->id)->where('event_name','CompleteRegistration')->firstOrFail();
 (new DeliverAdEvent($ttLead->id))->handle();$last=end($adsCalls)['body']['data'][0];
 check($last['event_id']===$ttLead->id && $last['event']==='CompleteRegistration' && $last['user']['phone']===hash('sha256','+59177777777') && $last['user']['ttclid']==='tiktokclick','TikTok Events API deduplicates browser ID and uses E164 hash and authorized click');
-$guestActivation=$activationAds;$guestActivation['club_reference']=$guestAd->id;$guestActivation['club_user_uuid']=null;$guestActivation['guest_purchase_id']=$guestAd->intent['guest_purchase_id'];
+$guestActivation=$activationAds;$guestActivation['membership_reference']='ads-902';$guestActivation['com_reference']['id']='ads-902';$guestActivation['club_reference']=$guestAd->id;$guestActivation['club_user_uuid']=null;$guestActivation['guest_purchase_id']=$guestAd->intent['guest_purchase_id'];
 $guestActivation['payment_reference']=$guestAd->fresh()->payment_reference;$guestActivation['event_id']='com:membership:'.$guestActivation['payment_reference'].':activated';
 check(send($guestActivation)->getStatusCode()===201 && AdEvent::where('club_reference',$guestAd->id)->where('event_name','Purchase')->count()===1,'guest activation attributes by club_reference without email or identity link');
 $fixtures['ads_tiktok']=$tiktok;$fixtures['ads_tiktok_checkout']=payload(web('GET','/ads/tiktok/activar'));
