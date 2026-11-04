@@ -332,3 +332,13 @@ main[data-landing-template=WEBINAR] .webinar-event-card .eyebrow { font-size: .7
 }
 .account-nav-measure { width: 0; overflow: hidden; }
 .account-nav-measure > span { flex-shrink: 0; }
+
+/* Optional Opportunity media: retain the historical text-only rules when absent. */
+[data-webinar-section=opportunity] .webinar-opportunity-with-image { display: grid; align-items: center; gap: 2rem; }
+[data-webinar-section=opportunity] .webinar-opportunity-with-image::before { display: none; }
+.webinar-opportunity-with-image > div { min-width: 0; }
+.webinar-opportunity-with-image > div::before { content: ''; display: block; width: 3rem; height: 5px; margin-bottom: 1.25rem; background: var(--brand); }
+.webinar-opportunity-with-image > img { display: block; width: 100%; height: auto; object-fit: contain; min-width: 0; }
+@media (min-width: 1024px) {
+    [data-webinar-section=opportunity] .webinar-opportunity-with-image { grid-template-columns: minmax(0, 55fr) minmax(0, 45fr); }
+}

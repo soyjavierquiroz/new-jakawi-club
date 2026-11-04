@@ -1,0 +1,7 @@
+{
+  "passed": 635,
+  "suite": "Existing landing/editor/V3/legacy integration with initial 51 Opportunity checks",
+  "storage": "fake MinIO on tmpfs",
+  "database": "isolated PostgreSQL schema dropped on exit",
+  "live_mutations": false
+}

@@ -74,7 +74,7 @@ class WelcomeController extends Controller
         if ($request->is('ads/*')) $social['robots'] = 'noindex, nofollow';
         return Inertia::render($landing->slug === 'membresia' ? 'MembershipSales' : 'Welcome', [
             'launch' => $launch,
-            'landing' => ['id' => $landing->id, 'slug' => $landing->slug, 'content' => $content, 'preview' => $preview, 'revision' => $landing->revision, 'social' => $social],
+            'landing' => ['id' => $landing->id, 'slug' => $landing->slug, 'content' => $content, 'preview' => $preview, 'revision' => $landing->revision, 'social' => $social, 'opportunity_image_url' => app(\App\Services\MediaUrl::class)->url($content['webinar']['opportunity']['image']['asset_id'] ?? null, 'opportunity')],
             'referral_code' => $preview ? null : $referrals->current($request)?->referral_code,
             'commercial_image_url' => $landing->slug === 'membresia' ? app(\App\Services\MediaUrl::class)->url($content['commercial']['image'] ?? null, 'card') : null,
             'referral_preference' => $request->cookie('jakawi_referral_consent'),

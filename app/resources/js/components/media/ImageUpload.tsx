@@ -1,12 +1,18 @@
 import { useEffect, useRef, useState } from 'react';
 
+export type ImageMetadata = { format: string; bytes: number; width: number; height: number };
 type Props = {
+    purpose?: 'card' | 'opportunity'; metadata?: ImageMetadata | null;
     currentUrl?: string | null; error?: string; disabled?: boolean;
     onChange: (token: string, remove: boolean, preview: string | null) => void;
     onBusy: (busy: boolean) => void;
 };
 
-export function ImageUpload({ currentUrl, error, disabled, onChange, onBusy }: Props) {
+export function ImageUpload({ currentUrl, error, disabled, onChange, onBusy, purpose = 'card', metadata }: Props) {
+    const opportunity = purpose === 'opportunity';
+    const label = opportunity ? 'Imagen de apoyo' : 'Imagen promocional de tarjeta';
+    const maxMiB = opportunity ? 5 : 10;
+    const [details, setDetails] = useState<ImageMetadata | null>(metadata ?? null);
     const input = useRef<HTMLInputElement>(null);
     const request = useRef<XMLHttpRequest | null>(null);
     const [preview, setPreview] = useState<string | null>(null);
@@ -19,12 +25,13 @@ export function ImageUpload({ currentUrl, error, disabled, onChange, onBusy }: P
     useEffect(() => () => { request.current?.abort(); }, []);
     function choose(file?: File) {
         if (!file || disabled || busy) return;
-        if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type) || file.size > 10 * 1024 * 1024) {
-            setFailure('Selecciona JPEG, PNG o WebP de hasta 10 MiB.');
+        if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type) || file.size > maxMiB * 1024 * 1024) {
+            setFailure(`Selecciona JPEG, PNG o WebP de hasta ${maxMiB} MiB.`);
             return;
         }
         request.current?.abort();
         const local = URL.createObjectURL(file);
+        setDetails({ format: file.type, bytes: file.size, width: 0, height: 0 });
         setPreview(local); setRemoved(false); setFailure(''); setBusy(true); onBusy(true); setProgress(0); setState('Subiendo imagen…');
         onChange('', false, local);
         const xhr = new XMLHttpRequest(); request.current = xhr;
@@ -36,28 +43,29 @@ export function ImageUpload({ currentUrl, error, disabled, onChange, onBusy }: P
         xhr.upload.onload = () => setState('Procesando imagen…');
         const finish = () => { setBusy(false); onBusy(false); };
         const fail = (message: string) => {
-            finish(); setState(''); setFailure(message); setPreview(null);
+            finish(); setState(''); setFailure(message); setPreview(null); setDetails(metadata ?? null);
             onChange('', false, null);
         };
         xhr.onload = () => {
-            let data: { token?: string; url?: string; errors?: { image?: string[] } } = {};
+            let data: { token?: string; url?: string; metadata?: ImageMetadata; errors?: { image?: string[] } } = {};
             try { data = JSON.parse(xhr.responseText); } catch { /* Readable proxy error below. */ }
             if (xhr.status === 200 && data.token && data.url) {
-                finish(); setPreview(data.url); onChange(data.token, false, data.url); setState('Imagen lista. Guarda el borrador para conservarla.');
+                finish(); setDetails(data.metadata ?? null); setPreview(data.url); onChange(data.token, false, data.url); setState('Imagen lista. Guarda el borrador para conservarla.');
             } else fail(data.errors?.image?.[0] || (xhr.status === 419 ? 'Tu sesión caducó. Recarga el editor antes de subir la imagen.' : 'No pudimos subir la imagen. La imagen guardada sigue disponible.'));
         };
         xhr.onerror = xhr.ontimeout = () => fail('Error de conexión. Selecciona la imagen de nuevo.');
-        const body = new FormData(); body.append('image', file); xhr.send(body);
+        const body = new FormData(); body.append('image', file); body.append('purpose', purpose); xhr.send(body);
     }
-    return <fieldset disabled={disabled} className="min-w-0 space-y-3 rounded-card border border-border p-4" aria-label="Imagen promocional de tarjeta">
-        <legend className="px-1 font-bold">Imagen promocional de tarjeta (opcional)</legend>
+    return <fieldset disabled={disabled} className="min-w-0 space-y-3 rounded-card border border-border p-4" aria-label={label}>
+        <legend className="px-1 font-bold">{label} (opcional)</legend>
         <div className="rounded-control border-2 border-dashed border-border p-4 text-center" onDragOver={e => e.preventDefault()} onDrop={e => { e.preventDefault(); choose(e.dataTransfer.files[0]); }}>
             <p className="text-sm">ARRASTRA TU IMAGEN AQUÍ</p>
             <button type="button" disabled={busy} className="btn btn-secondary mt-3 w-full" onClick={() => input.current?.click()}>{preview || currentUrl ? 'REEMPLAZAR IMAGEN' : 'SELECCIONAR IMAGEN'}</button>
-            <input ref={input} type="file" aria-label="Seleccionar imagen promocional" accept="image/jpeg,image/png,image/webp" className="sr-only" disabled={busy} onChange={e => { choose(e.target.files?.[0]); e.target.value = ''; }} />
-            <p className="mt-3 text-xs text-text-secondary">JPEG, PNG o WebP · hasta 10 MiB · recomendado 16:9</p>
+            <input ref={input} type="file" aria-label={`Seleccionar ${label.toLowerCase()}`} accept="image/jpeg,image/png,image/webp" className="sr-only" disabled={busy} onChange={e => { choose(e.target.files?.[0]); e.target.value = ''; }} />
+            <p className="mt-3 text-xs text-text-secondary">JPEG, PNG o WebP · hasta {maxMiB} MiB · {opportunity ? 'sin recorte, conserva transparencia' : 'recomendado 16:9'}</p>
         </div>
-        {!removed && (preview || currentUrl) && <img src={preview || currentUrl || undefined} alt="Vista previa de la imagen promocional" className="aspect-video w-full rounded-control object-cover" />}
+        {!removed && (preview || currentUrl) && <img src={preview || currentUrl || undefined} alt={`Vista previa de ${label.toLowerCase()}`} onLoad={e => { const img = e.currentTarget; setDetails(value => value ? { ...value, width: img.naturalWidth, height: img.naturalHeight } : value); }} className={opportunity ? 'w-full h-auto object-contain' : 'aspect-video w-full rounded-control object-cover'} />}
+        {!removed && details && <p className="text-xs text-text-secondary">{details.format} · {(details.bytes / 1024).toFixed(1)} KiB · {details.width} × {details.height} px</p>}
         {busy && <progress aria-label="Progreso de subida" className="w-full" max={100} value={progress} />}
         <p role="status" className="text-sm">{state}</p>
         {(failure || error) && <p role="alert" className="text-sm text-danger">{failure || error}</p>}

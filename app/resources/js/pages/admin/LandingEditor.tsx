@@ -6,7 +6,7 @@ import { aiBrief, editorialJSON, sameConfiguration } from '../../lib/landing-edi
 import type { LandingContent, LandingRecord, LandingTemplate } from '../../types';
 import { benefitIconOptions } from '../../lib/benefit-icons';
 import { LandingAiKit } from '../../components/admin/LandingAiKit';
-import { ImageUpload } from '../../components/media/ImageUpload';
+import { ImageUpload, type ImageMetadata } from '../../components/media/ImageUpload';
 import { ClubCardImage } from '../../components/ClubCardPresentation';
 import { statusLabel } from './Landings';
 
@@ -28,7 +28,7 @@ function Fields({ value, path, onChange }: { value: Value; path: string; onChang
     if (value !== null && typeof value === 'object') {
         const benefitItem = /^content\.benefits\.items\.\d+$/.test(path);
         const fields = benefitItem ? { ...value, icon: value.icon ?? '' } : value;
-        return <div className="space-y-5">{Object.entries(fields).filter(([name]) => !(path === 'content.after_registration' && name === 'cta_label') && !(['content.hero', 'content.final'].includes(path) && name === 'cta')).map(([name, entry]) => <Fields key={name} value={entry} path={`${path}.${name}`} onChange={next => {
+        return <div className="space-y-5">{Object.entries(fields).filter(([name]) => !(path === 'content.webinar.opportunity' && name === 'image') && !(path === 'content.after_registration' && name === 'cta_label') && !(['content.hero', 'content.final'].includes(path) && name === 'cta')).map(([name, entry]) => <Fields key={name} value={entry} path={`${path}.${name}`} onChange={next => {
             const updated = { ...value, [name]: next };
             if (benefitItem && name === 'icon' && next === '') delete updated.icon;
             onChange(updated);
@@ -84,12 +84,16 @@ function SavedPreview({ landing, width, confirmation }: { landing: LandingRecord
 }
 
 type WebinarMetrics = { totals: { event: string; placement: string; total: number }[]; origins: { channel: string; source: string | null; campaign: string | null; total: number }[]; meta_events: { status: string; total: number }[] };
-type Props = { webinar_metrics?: WebinarMetrics | null; commercial_image_url?: string | null; commercial_card_url?: string | null; ai_kit_zip_available?: boolean; landing: LandingRecord | null; defaults: LandingContent | null; webinar_defaults: LandingContent; home_slug: string; registration_open: boolean; whatsapp_group_available: boolean; confirmation_video_default_url: string | null; metrics?: { event: string; campaign: string; total: number }[] };
-export default function LandingEditor({ webinar_metrics = null, commercial_image_url = null, commercial_card_url = null, ai_kit_zip_available = false, landing, defaults, webinar_defaults, home_slug, registration_open, whatsapp_group_available, confirmation_video_default_url, metrics = [] }: Props) {
-    const initial = () => ({ title: landing?.title || '', slug: landing?.slug || '', campaign: landing?.campaign || '', configuration: landing?.configuration || defaults!, revision: landing?.revision || 1, commercial_image_upload: '', commercial_image_remove: false });
+type Props = { opportunity_image_url?: string | null; opportunity_image_metadata?: ImageMetadata | null; webinar_metrics?: WebinarMetrics | null; commercial_image_url?: string | null; commercial_card_url?: string | null; ai_kit_zip_available?: boolean; landing: LandingRecord | null; defaults: LandingContent | null; webinar_defaults: LandingContent; home_slug: string; registration_open: boolean; whatsapp_group_available: boolean; confirmation_video_default_url: string | null; metrics?: { event: string; campaign: string; total: number }[] };
+export default function LandingEditor({ opportunity_image_url = null, opportunity_image_metadata = null, webinar_metrics = null, commercial_image_url = null, commercial_card_url = null, ai_kit_zip_available = false, landing, defaults, webinar_defaults, home_slug, registration_open, whatsapp_group_available, confirmation_video_default_url, metrics = [] }: Props) {
+    const initial = () => ({ title: landing?.title || '', slug: landing?.slug || '', campaign: landing?.campaign || '', configuration: landing?.configuration || defaults!, revision: landing?.revision || 1, commercial_image_upload: '', commercial_image_remove: false, opportunity_image_upload: '', opportunity_image_remove: false, opportunity_image_alt: landing?.configuration.webinar?.opportunity.image?.alt || '' });
     const form = useForm(initial());
     const operation = useForm({ revision: landing?.revision || 1 });
     const [width, setWidth] = useState(390);
+    const [opportunityMetadata, setOpportunityMetadata] = useState(opportunity_image_metadata);
+    const [opportunityUploadRevision, setOpportunityUploadRevision] = useState(0);
+    const [opportunityBusy, setOpportunityBusy] = useState(false);
+    const [opportunityPreview, setOpportunityPreview] = useState<string | null>(null);
     const [uploadBusy, setUploadBusy] = useState(false);
     const [uploadPreview, setUploadPreview] = useState<string | null>(null);
     const [stage, setStage] = useState<'landing' | 'confirmation'>('landing');
@@ -106,7 +110,7 @@ export default function LandingEditor({ webinar_metrics = null, commercial_image
         const next = initial();
         form.setData(next); form.setDefaults(next);
         operation.setData('revision', next.revision);
-        setNotice(''); setUploadPreview(null);
+        setNotice(''); setUploadPreview(null); setOpportunityPreview(null); setOpportunityMetadata(opportunity_image_metadata);
     }, [landing?.id, landing?.revision]);
     useEffect(() => {
         if (tool) dialog.current?.showModal();
@@ -119,7 +123,7 @@ export default function LandingEditor({ webinar_metrics = null, commercial_image
     }, [form.isDirty]);
     function save(event: FormEvent) {
         event.preventDefault();
-        if (uploadBusy) return;
+        if (uploadBusy || opportunityBusy) return;
         if (landing) form.put(`/admin/landings/${landing.id}`, { preserveScroll: true, onError: focusErrors });
         else form.post('/admin/landings', { onError: focusErrors });
     }
@@ -144,14 +148,16 @@ export default function LandingEditor({ webinar_metrics = null, commercial_image
             });
             if (response.status === 422) { const data = await response.json(); setImportErrors(data.errors); return; }
             if (!response.ok) throw new Error('No se pudo validar. Revisa tu sesión y vuelve a intentarlo.');
-            const data = await response.json() as { configuration: LandingContent };
-            form.setData('configuration', data.configuration);
+            const data = await response.json() as { configuration: LandingContent; opportunity_image_url: string | null; opportunity_image_metadata: ImageMetadata | null };
+            form.setData(current => ({ ...current, configuration: data.configuration, opportunity_image_upload: '', opportunity_image_remove: false, opportunity_image_alt: data.configuration.webinar?.opportunity.image?.alt || '' }));
+            setOpportunityUploadRevision(value => value + 1);
+            setOpportunityPreview(data.opportunity_image_url); setOpportunityMetadata(data.opportunity_image_metadata);
             setTool(null); setJson('');
             setNotice('JSON aplicado al formulario. Campos omitidos conservados. Pendiente de guardar; no se guardó ni publicó.');
         } catch { setImportErrors({ editorial_json: ['No se pudo validar el JSON. Revisa tu conexión y sesión.'] }); }
         finally { setImporting(false); }
     }
-    const busy = uploadBusy || form.processing || operation.processing || importing;
+    const busy = uploadBusy || opportunityBusy || form.processing || operation.processing || importing;
     const saved = !!landing && !form.isDirty;
     const pendingPublication = !!landing && (landing.status !== 'published' || !sameConfiguration(landing.configuration, landing.published_configuration ? { ...landing.published_configuration, commercial: { ...landing.published_configuration.commercial, public_name: landing.configuration.commercial?.public_name ?? null }, presentation: landing.published_configuration.presentation ?? { template: 'LEAD_VSL', show_video: true, show_faq: true } } : null) || landing.campaign !== landing.published_campaign || (!!landing.published_configuration?.commercial?.public_name && landing.title !== landing.published_configuration.commercial.public_name));
     const errors = { ...form.errors, ...operation.errors };
@@ -227,7 +233,7 @@ export default function LandingEditor({ webinar_metrics = null, commercial_image
 </>}{content.presentation.template === 'WAITLIST' && <><p className="text-sm">Hero compacto, formulario primero y hasta tres beneficios. El video principal es opcional y se configura en Video y medios.</p><label className="checkbox-label"><input type="checkbox" className="checkbox" checked={content.presentation.show_faq} onChange={event => presentation({ show_faq: event.target.checked })} />Mostrar FAQ en la lista de espera</label></>}</Group>
                         <Group title="IMAGEN Y PRESENTACIÓN COMERCIAL" open>
                             <p className="text-sm text-text-secondary">Se usa en el catálogo y al compartir. El título procede de Buscadores; vacío usa el nombre público al publicar.</p>
-                            <ImageUpload key={`${landing?.id || 'new'}-${landing?.revision || 1}`} currentUrl={form.data.commercial_image_remove ? null : uploadPreview || commercial_image_url} disabled={form.processing || operation.processing} error={form.errors.commercial_image_upload || (form.errors as Record<string, string>)['content.commercial.image']} onBusy={setUploadBusy} onChange={(token, remove, preview) => { setUploadPreview(preview); form.setData(data => ({ ...data, commercial_image_upload: token, commercial_image_remove: remove })); }} />
+                            <ImageUpload key={`${landing?.id || 'new'}-${landing?.revision || 1}`} currentUrl={form.data.commercial_image_remove ? null : uploadPreview || commercial_image_url} disabled={form.processing || operation.processing || opportunityBusy || importing} error={form.errors.commercial_image_upload || (form.errors as Record<string, string>)['content.commercial.image']} onBusy={setUploadBusy} onChange={(token, remove, preview) => { setUploadPreview(preview); form.setData(data => ({ ...data, commercial_image_upload: token, commercial_image_remove: remove })); }} />
                             <p className="text-xs text-text-secondary">La imagen se conserva al guardar el borrador. Solo Publicar cambios actualiza la tarjeta pública. Sin imagen se usa el poster publicado o la marca JAKAWI.</p>
                             <div><label htmlFor="commercial-description" className="label">Descripción corta comercial (opcional)</label><textarea id="commercial-description" className="input" rows={3} maxLength={320} value={content.commercial?.description || ''} onChange={event => form.setData('configuration', { ...content, commercial: { ...content.commercial, image: content.commercial?.image || null, description: event.target.value || null } })} /><p className="mt-2 text-xs text-text-secondary">Vacía usa la descripción del hero. Solo texto; se resume para la tarjeta.</p></div>
                             <div data-commercial-preview className="mx-auto max-w-sm overflow-hidden rounded-card border border-border bg-surface">
@@ -237,7 +243,13 @@ export default function LandingEditor({ webinar_metrics = null, commercial_image
                             <p className="text-xs text-text-secondary">Preview del borrador actual. Guardar borrador no cambia el catálogo; Publicar cambios actualiza su versión pública.</p>
                         </Group>
                         <Group title="Video y medios"><label className="checkbox-label"><input id="show-main-video" type="checkbox" className="checkbox" checked={content.presentation.show_video} onChange={event => presentation({ show_video: event.target.checked })} />Mostrar video principal</label><VideoFields video={content.video} path="content.video" onChange={video => form.setData('configuration', { ...content, video })} /></Group>
-                        {content.presentation.template === 'WEBINAR' && content.webinar && <Group title="Contenido del webinar">{(['opportunity', 'early', 'steps'] as const).map(name => <fieldset key={name} className="space-y-4 rounded-card border border-border p-4"><legend className="px-2 font-bold">{sectionNames[name]}</legend><Fields value={content.webinar![name] as Value} path={`content.webinar.${name}`} onChange={next => form.setData('configuration', { ...content, webinar: { ...content.webinar!, [name]: next } as LandingContent['webinar'] })} /></fieldset>)}</Group>}
+                        {content.presentation.template === 'WEBINAR' && content.webinar && <Group title="Contenido del webinar">{(['opportunity', 'early', 'steps'] as const).map(name => <fieldset key={name} className="space-y-4 rounded-card border border-border p-4"><legend className="px-2 font-bold">{sectionNames[name]}</legend><Fields value={content.webinar![name] as Value} path={`content.webinar.${name}`} onChange={next => form.setData('configuration', { ...content, webinar: { ...content.webinar!, [name]: next } as LandingContent['webinar'] })} />{name === 'opportunity' && <>
+                            <ImageUpload key={`opportunity-${opportunityUploadRevision}-${landing?.id || 'new'}-${landing?.revision || 1}-${content.webinar!.opportunity.image?.asset_id || ''}`} purpose="opportunity" metadata={opportunityMetadata} currentUrl={form.data.opportunity_image_remove ? null : opportunityPreview || (content.webinar!.opportunity.image?.asset_id === landing?.configuration.webinar?.opportunity.image?.asset_id ? opportunity_image_url : null)} disabled={form.processing || operation.processing || uploadBusy || importing} error={(errors as Record<string, string>).opportunity_image_upload || (errors as Record<string, string>)['content.webinar.opportunity.image.asset_id']} onBusy={setOpportunityBusy} onChange={(token, remove, preview) => { setOpportunityPreview(preview); form.setData(data => ({ ...data, opportunity_image_upload: token, opportunity_image_remove: remove })); }} />
+                            <div><label className="label" htmlFor="opportunity-image-alt">Texto alternativo de la imagen de apoyo</label><input id="opportunity-image-alt" className="input" maxLength={320} value={content.webinar!.opportunity.image?.alt ?? form.data.opportunity_image_alt} onChange={event => {
+                                const alt = event.target.value;
+                                form.setData(data => ({ ...data, opportunity_image_alt: alt, configuration: { ...data.configuration, webinar: { ...data.configuration.webinar!, opportunity: { ...data.configuration.webinar!.opportunity, ...(data.configuration.webinar!.opportunity.image ? { image: { ...data.configuration.webinar!.opportunity.image, alt } } : {}) } } } }));
+                            }} /></div>
+                        </>}</fieldset>)}</Group>}
                         <Group title="Beneficios">{section('benefits')}</Group>
                         <Group title="Registro">{section('registration')}<p className="message">Estado real: {registration_open ? 'registro abierto' : 'registro público cerrado'}. Los textos no cambian la habilitación operativa.</p></Group>
                         <Group title="FAQ">{section('faq')}</Group>

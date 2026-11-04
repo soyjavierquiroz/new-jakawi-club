@@ -39,7 +39,8 @@
     "webinar": {
       "opportunity": {
         "title": "Tu ciudad todavía tiene mucho por descubrir.",
-        "description": "La rutina puede hacernos pasar por alto lugares, experiencias y posibilidades cercanas. JAKAWI comienza con una invitación a mirar Cochabamba con otros ojos y descubrir juntos lo que viene."
+        "description": "La rutina puede hacernos pasar por alto lugares, experiencias y posibilidades cercanas. JAKAWI comienza con una invitación a mirar Cochabamba con otros ojos y descubrir juntos lo que viene.",
+        "image": null
       },
       "early": {
         "title": "Sé parte de esta primera etapa.",

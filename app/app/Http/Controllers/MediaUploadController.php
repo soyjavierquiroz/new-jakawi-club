@@ -12,13 +12,13 @@ final class MediaUploadController extends Controller
 {
     public function store(Request $request, MediaUploadService $media): JsonResponse
     {
-        $request->validate(['image' => ['required', 'file', 'max:10240']]);
+        $request->validate(['purpose' => ['sometimes', \Illuminate\Validation\Rule::in(['card', 'opportunity'])], 'image' => ['required', 'file', $request->input('purpose') === 'opportunity' ? 'max:5120' : 'max:10240']]);
         if (!config('filesystems.disks.'.config('media.disk').'.key') || !config('filesystems.disks.'.config('media.disk').'.secret') || !config('media.imgproxy_key') || !config('media.imgproxy_salt')) {
             throw ValidationException::withMessages(['image' => 'La subida de imágenes no está configurada. Contacta al administrador.']);
         }
         try {
             // One decoder at a time respects the bounded CLUB FPM container at 24 MP.
-            $result = Cache::lock('club:media:normalize', 120)->get(fn (): array => $media->temporary($request->file('image'), $request->user()->id));
+            $result = Cache::lock('club:media:normalize', 120)->get(fn (): array => $media->temporary($request->file('image'), $request->user()->id, $request->input('purpose', 'card')));
             if (!$result) throw ValidationException::withMessages(['image' => 'Estamos procesando otra imagen. Inténtalo de nuevo en unos segundos.']);
             return response()->json($result);
         } catch (ValidationException $exception) {

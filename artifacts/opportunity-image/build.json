@@ -1,0 +1,7 @@
+{
+  "typecheck": "PASS",
+  "vite": "PASS",
+  "exit_code": 0,
+  "manifest_sha256": "03d7ac4ee53a03932a80f5662ecc4ca65af50a517a63b81c5ebc08f593ff3f3a",
+  "dependencies_added": false
+}

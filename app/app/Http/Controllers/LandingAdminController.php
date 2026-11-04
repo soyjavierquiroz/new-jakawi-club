@@ -31,6 +31,8 @@ class LandingAdminController extends Controller
     public function edit(MarketingLanding $landing): Response
     {
         return Inertia::render('admin/LandingEditor', [
+            'opportunity_image_url' => app(\App\Services\MediaUrl::class)->url($landing->configuration['webinar']['opportunity']['image']['asset_id'] ?? null, 'opportunity'),
+            'opportunity_image_metadata' => app(\App\Services\MediaUploadService::class)->metadata($landing->configuration['webinar']['opportunity']['image']['asset_id'] ?? null),
             'commercial_image_url' => app(\App\Services\MediaUrl::class)->url($landing->configuration['commercial']['image'] ?? null, 'thumbnail'),
             'commercial_card_url' => app(\App\Services\MediaUrl::class)->url($landing->configuration['commercial']['image'] ?? null, 'card'),
             'landing' => [...$landing->toArray(), 'configuration' => LandingContent::withPresentation($landing->configuration), 'published_configuration' => $landing->published_configuration ? LandingContent::withPresentation($landing->published_configuration) : null], 'defaults' => null, 'webinar_defaults' => LandingContent::webinarDefaults(), 'ai_kit_zip_available' => LandingAiKitController::zipAvailable(), 'home_slug' => config('jakawi.home_landing_slug'), 'registration_open' => LaunchSettings::registrationOpen(), 'whatsapp_group_available' => RegistrationNextStep::whatsappGroup() !== null,
@@ -96,7 +98,11 @@ class LandingAdminController extends Controller
             'configuration.array' => 'configuration debe contener la configuración actual del formulario.',
         ]);
         $base = LandingContent::validate($data['configuration'] ?? $landing?->configuration ?? LandingContent::defaults());
-        return response()->json(['configuration' => LandingContent::import($data['editorial_json'], $base, $landing === null)]);
+        $configuration = LandingContent::import($data['editorial_json'], $base, $landing === null);
+        $asset = $configuration['webinar']['opportunity']['image']['asset_id'] ?? null;
+        return response()->json(['configuration' => $configuration,
+            'opportunity_image_url' => app(\App\Services\MediaUrl::class)->url($asset, 'opportunity'),
+            'opportunity_image_metadata' => app(\App\Services\MediaUploadService::class)->metadata($asset)]);
     }
 
     public function export(MarketingLanding $landing): JsonResponse
@@ -156,6 +162,23 @@ class LandingAdminController extends Controller
 
     private function mediaConfiguration(Request $request, MarketingLanding $landing, array $configuration): array
     {
+        if ($request->filled('opportunity_image_upload') && $request->boolean('opportunity_image_remove')) {
+            throw ValidationException::withMessages(['opportunity_image_upload' => 'Selecciona subir o quitar la imagen.']);
+        }
+        if ($request->filled('opportunity_image_upload')) {
+            if (!isset($configuration['webinar']['opportunity'])) {
+                throw ValidationException::withMessages(['opportunity_image_upload' => 'La sección Oportunidad no está configurada.']);
+            }
+            try {
+                $key = app(\App\Services\MediaUploadService::class)->promote($request->string('opportunity_image_upload')->toString(), $request->user()->id, $landing->id, 'opportunity');
+            } catch (ValidationException) {
+                throw ValidationException::withMessages(['opportunity_image_upload' => 'La subida caducó, no te pertenece o no está disponible. Selecciona la imagen de nuevo.']);
+            }
+            $configuration['webinar']['opportunity']['image'] = ['asset_id' => $key, 'alt' => $request->input('opportunity_image_alt') ?? '', 'position' => 'right', 'fit' => 'contain'];
+        } elseif ($request->boolean('opportunity_image_remove') && isset($configuration['webinar']['opportunity'])) {
+            // Detach only: shared references and publication snapshots remain protected by MediaGc.
+            $configuration['webinar']['opportunity']['image'] = null;
+        }
         $image = $configuration['commercial']['image'] ?? null;
         if ($request->filled('commercial_image_upload') && $request->boolean('commercial_image_remove')) {
             throw ValidationException::withMessages(['commercial_image_upload' => 'Selecciona subir o quitar la imagen.']);
@@ -180,6 +203,9 @@ class LandingAdminController extends Controller
             'slug' => ['required', 'string', 'max:100', 'regex:/^[a-z0-9]+(?:-[a-z0-9]+)*$/D', Rule::unique('marketing_landings', 'slug')->ignore($landing?->id)],
             'campaign' => ['nullable', 'string', 'max:80', 'regex:/^[a-zA-Z0-9_-]+$/D'],
             'configuration' => ['required', 'array'],
+            'opportunity_image_upload' => ['nullable', 'string', 'max:8192'],
+            'opportunity_image_remove' => ['sometimes', 'boolean'],
+            'opportunity_image_alt' => ['sometimes', 'nullable', 'string', 'max:320', 'not_regex:/[<>]/u'],
             'commercial_image_upload' => ['nullable', 'string', 'max:8192'],
             'commercial_image_remove' => ['sometimes', 'boolean'],
         ]);
@@ -189,7 +215,13 @@ class LandingAdminController extends Controller
         if (($landing?->published_at !== null || $landing?->isHome()) && $data['slug'] !== $landing->slug) {
             throw ValidationException::withMessages(['slug' => 'El slug es permanente después de publicar para conservar enlaces y analítica.']);
         }
-        unset($data['commercial_image_upload'], $data['commercial_image_remove']);
+        unset($data['commercial_image_upload'], $data['commercial_image_remove'], $data['opportunity_image_upload'], $data['opportunity_image_remove'], $data['opportunity_image_alt']);
+        // A detach/replacement must also work if the previous object became unavailable.
+        // Only explicit media operations clear it; ordinary text edits retain the reference.
+        if (($request->boolean('opportunity_image_remove') || $request->filled('opportunity_image_upload'))
+            && isset($data['configuration']['webinar']['opportunity']) && is_array($data['configuration']['webinar']['opportunity'])) {
+            $data['configuration']['webinar']['opportunity']['image'] = null;
+        }
         $data['configuration'] = LandingContent::validate($data['configuration']);
         $data['template'] = $data['configuration']['presentation']['template'];
         return $data;

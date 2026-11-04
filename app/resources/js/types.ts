@@ -17,7 +17,7 @@ export type LandingContent = {
     testimonials?: { name: string; quote: string; authorized: boolean }[];
     commercial?: { image: string | null; description: string | null; public_name?: string | null };
     presentation: { template: LandingTemplate; show_video: boolean; show_faq: boolean; show_confirmation_video: boolean; webinar?: { title: string; starts_at: string | null; sections: { id: WebinarSection; visible: boolean }[] } };
-    webinar?: { opportunity: { title: string; description: string }; early: WebinarBlock; steps: Omit<WebinarBlock, 'description'> };
+    webinar?: { opportunity: { title: string; description: string; image?: { asset_id: string; alt: string; position: 'right'; fit: 'contain' } | null }; early: WebinarBlock; steps: Omit<WebinarBlock, 'description'> };
     whatsapp_group: { mode: 'default' | 'custom' | 'none'; url: string | null };
     confirmation_whatsapp_group: { mode: 'inherit' | 'default' | 'custom' | 'none'; url: string | null };
     after_registration: { title: string; message: string; instructions: string; cta_label: string };
@@ -31,7 +31,7 @@ export type LandingContent = {
     video: LandingVideoSettings;
     confirmation_video: LandingVideoSettings;
 };
-export type Landing = { id: number; slug: string; content: LandingContent; preview: boolean; revision: number; social?: { name: string; short_description: string; image_url: string | null; canonical: string; robots: string; site_name: string } };
+export type Landing = { opportunity_image_url?: string | null; id: number; slug: string; content: LandingContent; preview: boolean; revision: number; social?: { name: string; short_description: string; image_url: string | null; canonical: string; robots: string; site_name: string } };
 export type LandingRecord = {
     id: number; title: string; slug: string; status: 'draft' | 'published' | 'archived'; campaign: string | null;
     published_campaign: string | null; configuration: LandingContent; published_configuration: LandingContent | null;

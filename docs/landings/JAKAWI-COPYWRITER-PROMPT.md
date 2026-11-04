@@ -91,3 +91,5 @@ suposición o petición de estructura incompatible.
 Devuelve **únicamente el objeto JSON válido**, sin explicaciones, Markdown,
 delimitadores de código ni texto antes o después. Importar solo aplica al
 formulario; guardar borrador y publicar siguen siendo acciones del administrador.
+
+Imagen opcional de Oportunidad: `content.webinar.opportunity.image` puede omitirse o ser `null`. Para conservar una imagen existente al importar, omite la propiedad; `null` la retira del borrador. Si reutilizas un recurso existente y autorizado de CLUB, usa `{ "asset_id": "CLAVE_REAL_DEL_RECURSO", "alt": "Texto alternativo", "position": "right", "fit": "contain" }`. No inventes asset_id ni incluyas URLs o base64. Las imágenes nuevas se suben desde «Imagen de apoyo» en el administrador. El ejemplo descargable usa `null` para seguir siendo importable sin recursos previos.

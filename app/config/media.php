@@ -9,6 +9,7 @@ return [
     'max_bytes' => 10 * 1024 * 1024,
     'max_pixels' => 24_000_000,
     'presets' => [
+        'opportunity' => ['width' => 1600, 'height' => 0, 'quality' => 82, 'format' => 'webp'],
         'thumbnail' => ['width' => 480, 'height' => 270, 'quality' => 80, 'format' => 'webp'],
         'card' => ['width' => 960, 'height' => 540, 'quality' => 82, 'format' => 'webp'],
         'social' => ['width' => 1200, 'height' => 630, 'quality' => 85, 'format' => 'jpg'],

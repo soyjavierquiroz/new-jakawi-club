@@ -59,6 +59,10 @@ final class MediaUrl
         $encoded = str_starts_with($source, 's3://') ? 'plain/'.$source : rtrim(strtr(base64_encode($source), '+/', '-_'), '=');
         $path = sprintf('/rs:fill:%d:%d%s/q:%d/bg:fffdf9/f:%s/%s',
             $options['width'], $options['height'], $preset === 'social' ? ':1' : '', $options['quality'], $options['format'], $encoded);
+        if ($preset === 'opportunity') {
+            // Fit within width, never upscale or flatten alpha; preserve the original ratio.
+            $path = sprintf('/rs:fit:%d:0:0/q:%d/f:webp/%s', $options['width'], $options['quality'], $encoded);
+        }
         $signature = hash_hmac('sha256', $this->decode((string)config('media.imgproxy_salt')).$path, $this->decode((string)config('media.imgproxy_key')), true);
         return config('media.imgproxy_url').'/'.rtrim(strtr(base64_encode($signature), '+/', '-_'), '=').$path;
     }

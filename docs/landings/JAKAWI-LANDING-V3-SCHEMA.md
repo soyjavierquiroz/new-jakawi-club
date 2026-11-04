@@ -57,7 +57,7 @@ obligatorio solo al crear un WEBINAR completo.
 | `final` | `eyebrow`, `title`, `description`, `cta` | Texto; cierre |
 | `after_registration` | `title`, `message`, `instructions`, `cta_label` | Texto; confirmación, con restricciones adicionales |
 | `webinar` | `opportunity`, `early`, `steps` | Objetos descritos debajo |
-| `webinar.opportunity` | `title`, `description` | Texto; problema/oportunidad |
+| `webinar.opportunity` | `title`, `description`, `image` opcional | Texto e imagen de apoyo; ver RF-LANDING-OPP-IMAGE |
 | `webinar.early` | `title`, `description`, `items` | Textos y lista de exactamente 3 elementos |
 | `webinar.early.items[]` | `title`, `description` | Ambos textos obligatorios |
 | `webinar.steps` | `title`, `items` | Texto y lista de exactamente 3 elementos |
@@ -272,3 +272,18 @@ compatibilidad. Exportar incluye estos campos; importar no guarda ni publica.
 La preview y el público usan el mismo componente. El enlace de acceso conserva
 `/login`; privacidad conserva su consentimiento y `/privacidad`. No se admiten
 nombres técnicos, destinos, endpoints, validaciones ni acciones adicionales.
+
+
+### Imagen opcional de Oportunidad (RF-LANDING-OPP-IMAGE)
+
+`content.webinar.opportunity.image` admite ausencia (compatibilidad y conservación en importaciones parciales), `null` (retirada lógica), o un objeto con exactamente:
+
+```json
+{"asset_id":"club/landings/ID/cover/UUID.webp","alt":"JAKAWI conectando negocios y consumidores","position":"right","fit":"contain"}
+```
+
+`asset_id` reutiliza el identificador de objeto único del sistema media existente; no es una URL. El ejemplo de identificador es conceptual: se requiere una clave real de CLUB, existente en MinIO y referenciada por una landing o snapshot autorizado. No se aceptan URLs, temporales, SVG ni base64. `alt` es texto plano de hasta 320 caracteres; vacío identifica una imagen decorativa. `position` y `fit` admiten exclusivamente `right` y `contain`.
+
+La subida administrativa acepta JPEG/PNG/WebP, MIME real, hasta 5 MiB. Reutiliza tokens cifrados ligados al usuario, staging temporal de 24 horas, promoción al guardar y GC existente. WebP optimizado hasta 1600 px, sin ampliar ni recortar y conservando alfa. La entrega usa imgproxy firmado con fit y WebP, sin fondo ni aplanado. No hay migración, buckets o credenciales nuevos. Quitar/reemplazar desvincula sin borrar recursos compartidos.
+
+Guardar modifica el borrador. Publicar actualiza una sola `published_configuration`, consumida por orgánico y los canales habilitados mediante el renderizador común. La URL resuelta viaja fuera del contrato editorial como `landing.opportunity_image_url`.

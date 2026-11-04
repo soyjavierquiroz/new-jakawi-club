@@ -10,19 +10,23 @@ use Illuminate\Validation\ValidationException;
 
 final class MediaUploadService
 {
-    public function temporary(UploadedFile $file, int $userId): array
+    public function temporary(UploadedFile $file, int $userId, string $purpose = 'card'): array
     {
+        if ($purpose === 'opportunity' && $file->getSize() > 5 * 1024 * 1024) {
+            throw ValidationException::withMessages(['image' => 'La imagen no debe superar 5 MiB.']);
+        }
         $key = 'club/tmp/'.Str::uuid().'/master.webp';
         $this->write($key, $this->normalize($file));
-        return ['token' => Crypt::encryptString(json_encode(['key' => $key, 'user' => $userId, 'expires' => now()->addHours(24)->timestamp], JSON_THROW_ON_ERROR)),
-            'url' => app(MediaUrl::class)->url($key, 'thumbnail')];
+        return ['token' => Crypt::encryptString(json_encode(['key' => $key, 'purpose' => $purpose, 'user' => $userId, 'expires' => now()->addHours(24)->timestamp], JSON_THROW_ON_ERROR)),
+            'url' => app(MediaUrl::class)->url($key, $purpose === 'opportunity' ? 'opportunity' : 'thumbnail'),
+            'metadata' => $this->metadata($key)];
     }
 
-    public function promote(string $encrypted, int $userId, int $landingId): string
+    public function promote(string $encrypted, int $userId, int $landingId, string $purpose = 'card'): string
     {
         try {
             $token = json_decode(Crypt::decryptString($encrypted), true, 16, JSON_THROW_ON_ERROR);
-            if (($token['user'] ?? null) !== $userId || !is_int($token['expires'] ?? null)
+            if (($token['purpose'] ?? 'card') !== $purpose || ($token['user'] ?? null) !== $userId || !is_int($token['expires'] ?? null)
                 || $token['expires'] <= now()->timestamp || !$this->isTemporaryKey($token['key'] ?? null) || $landingId < 1) {
                 throw new \RuntimeException('Invalid upload token');
             }
@@ -35,6 +39,30 @@ final class MediaUploadService
             return $key;
         } catch (\Throwable) {
             throw ValidationException::withMessages(['commercial_image_upload' => 'La subida caducó, no te pertenece o no está disponible. Selecciona la imagen de nuevo; la anterior se conserva.']);
+        }
+    }
+
+    /** Existing object keys are the stable asset identifiers; no second asset registry. */
+    public function usableAsset(mixed $key): bool
+    {
+        try {
+            return is_string($key) && $this->isMediaKey($key)
+                && app(MediaReferences::class)->contains($key)
+                && Storage::disk(config('media.disk'))->exists($key);
+        } catch (\Throwable) {
+            return false;
+        }
+    }
+
+    public function metadata(?string $key): ?array
+    {
+        if (!$this->isMediaKey($key) && !$this->isTemporaryKey($key)) return null;
+        try {
+            $bytes = Storage::disk(config('media.disk'))->get($key);
+            $size = is_string($bytes) ? @getimagesizefromstring($bytes) : false;
+            return $size ? ['format' => $size['mime'], 'bytes' => strlen($bytes), 'width' => $size[0], 'height' => $size[1]] : null;
+        } catch (\Throwable) {
+            return null;
         }
     }
 
@@ -90,6 +118,10 @@ final class MediaUploadService
                 imagedestroy($output);
                 $output = $rotated;
             }
+        }
+        if (!function_exists('imagewebp')) {
+            imagedestroy($output);
+            throw ValidationException::withMessages(['image' => 'No está disponible la optimización WebP con transparencia.']);
         }
         ob_start();
         try {

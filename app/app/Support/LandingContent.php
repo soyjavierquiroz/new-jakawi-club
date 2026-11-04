@@ -284,7 +284,7 @@ class LandingContent
         $rules['content.presentation.webinar.sections.*.visible'] = ['required', 'boolean:strict'];
         $rules['content.webinar'] = ['sometimes', 'required', 'array:opportunity,early,steps'];
         foreach (['opportunity' => ['title', 'description'], 'early' => ['title', 'description', 'items'], 'steps' => ['title', 'items']] as $section => $keys) {
-            $rules['content.webinar.'.$section] = [$partial ? 'sometimes' : 'required_with:content.webinar', 'array:'.implode(',', $keys)];
+            $rules['content.webinar.'.$section] = [$partial ? 'sometimes' : 'required_with:content.webinar', 'array:'.implode(',', $section === 'opportunity' ? [...$keys, 'image'] : $keys)];
             foreach ($keys as $key) {
                 if ($key !== 'items') {
                     $rules['content.webinar.'.$section.'.'.$key] = [...($partial ? ['sometimes', 'required'] : ['required_with:content.webinar']), 'string', 'max:1200', 'not_regex:/[<>]/u'];
@@ -297,6 +297,14 @@ class LandingContent
                     $rules['content.webinar.'.$section.'.items.*.'.$key] = ['required', 'string', 'max:1200', 'not_regex:/[<>]/u'];
                 }
             }
+        }
+        $imagePath = 'content.webinar.opportunity.image';
+        $rules[$imagePath] = ['sometimes', 'nullable', 'array:asset_id,alt,position,fit'];
+        if (is_array($content['webinar']['opportunity']['image'] ?? null)) {
+            $rules[$imagePath.'.asset_id'] = ['required', 'string', 'max:500'];
+            $rules[$imagePath.'.alt'] = ['present', 'nullable', 'string', 'max:320', 'not_regex:/[<>]/u'];
+            $rules[$imagePath.'.position'] = ['required', Rule::in(['right'])];
+            $rules[$imagePath.'.fit'] = ['required', Rule::in(['contain'])];
         }
         foreach (['show_video', 'show_faq', 'show_confirmation_video'] as $key) {
             $rules['content.presentation.'.$key] = [$presence, 'boolean:strict'];
@@ -357,6 +365,10 @@ class LandingContent
             }
         }
         self::validator(['content' => $content], $rules)->after(function ($validator) use ($content, $partial): void {
+            $asset = $content['webinar']['opportunity']['image']['asset_id'] ?? null;
+            if ($asset !== null && !app(\App\Services\MediaUploadService::class)->usableAsset($asset)) {
+                $validator->errors()->add('content.webinar.opportunity.image.asset_id', 'El recurso no existe o no está autorizado para las landings de CLUB.');
+            }
             $image = $content['commercial']['image'] ?? null;
             if ($image !== null && !app(\App\Services\MediaUrl::class)->validReference($image)) {
                 $validator->errors()->add('content.commercial.image', 'Selecciona una imagen válida desde el control de subida.');
@@ -408,6 +420,9 @@ class LandingContent
             foreach (['title', 'description'] as $key) {
                 if (array_key_exists($key, $content['seo']) && $content['seo'][$key] === null) $content['seo'][$key] = '';
             }
+        }
+        if (isset($content['webinar']['opportunity']['image'])) {
+            $content['webinar']['opportunity']['image']['alt'] ??= '';
         }
         return $content;
     }

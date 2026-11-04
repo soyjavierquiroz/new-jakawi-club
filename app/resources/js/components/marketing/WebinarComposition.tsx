@@ -38,7 +38,8 @@ function WebinarEvent({ title, startsAt }: { title: string; startsAt: string | n
 }
 
 export function WebinarComposition({ open, video, registration }: { open: boolean; video: ReactNode; registration: ReactNode }) {
-    const content = useContext(LandingContext)!.content;
+    const landing = useContext(LandingContext)!;
+    const content = landing.content;
     const settings = content.presentation.webinar!;
     const webinar = content.webinar!;
     return <>{settings.sections.filter(section => section.visible || section.id === 'registration').map(({ id }) => {
@@ -50,6 +51,13 @@ export function WebinarComposition({ open, video, registration }: { open: boolea
             case 'registration': block = registration; break;
             case 'faq': block = <MarketingFAQ />; break;
             case 'final': block = <MarketingFinalCTA />; break;
+            case 'opportunity': {
+                const item = webinar.opportunity;
+                const url = item.image && landing.opportunity_image_url;
+                block = url ? <section className="shell section-space webinar-opportunity-with-image" aria-labelledby="webinar-opportunity-title"><div><h2 id="webinar-opportunity-title" className="section-title">{item.title}</h2><p className="mt-5 max-w-2xl leading-7 text-text-secondary">{item.description}</p></div><img src={url} alt={item.image!.alt} loading="lazy" decoding="async" /></section>
+                    : <section className="shell section-space" aria-labelledby="webinar-opportunity-title"><h2 id="webinar-opportunity-title" className="section-title">{item.title}</h2><p className="mt-5 max-w-2xl leading-7 text-text-secondary">{item.description}</p></section>;
+                break;
+            }
             default: {
                 const item = webinar[id];
                 block = <section className="shell section-space" aria-labelledby={`webinar-${id}-title`}><h2 id={`webinar-${id}-title`} className="section-title">{item.title}</h2>{'description' in item && <p className="mt-5 max-w-2xl leading-7 text-text-secondary">{item.description}</p>}{'items' in item && <ol className={id === 'steps' ? 'webinar-steps' : 'mt-8 grid gap-5 md:grid-cols-3'}>{item.items.map((entry, index) => <li className="feature-card" key={index}><span className="benefit-number" aria-hidden="true">0{index + 1}</span>{id === 'steps' && <Arrow />}<h3 className="mt-4 text-lg font-bold">{entry.title}</h3><p className="mt-3 text-sm leading-7 text-text-secondary">{entry.description}</p></li>)}</ol>}</section>;

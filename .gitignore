@@ -292,3 +292,8 @@ credentials.json
 /artifacts/activation-durable/*.png
 /artifacts/activation-durable/LIVE.json
 /artifacts/activation-durable/validation.json
+
+/artifacts/opportunity-image/*fixture*
+/artifacts/opportunity-image/*.png
+/artifacts/opportunity-image/LIVE.json
+/artifacts/opportunity-image/validation.json

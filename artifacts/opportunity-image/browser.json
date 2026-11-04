@@ -1,0 +1,46 @@
+{
+  "checks": [
+    "Opportunity / 1440: visible, contain, ratio, order, no overflow",
+    "Opportunity /principal 1440: visible, contain, ratio, order, no overflow",
+    "Opportunity /ads/meta/webinar 1440: visible, contain, ratio, order, no overflow",
+    "Organic/principal/Meta identical rendered Opportunity 1440",
+    "Historical text-only Opportunity without placeholder 1440",
+    "Editor 1440: restore, alt, selection, preview, upload status, metadata, preserve on text edit, detach",
+    "Editor 1440: controlled error and drag/drop replacement recover successfully",
+    "Opportunity / 390: visible, contain, ratio, order, no overflow",
+    "Opportunity /principal 390: visible, contain, ratio, order, no overflow",
+    "Opportunity /ads/meta/webinar 390: visible, contain, ratio, order, no overflow",
+    "Organic/principal/Meta identical rendered Opportunity 390",
+    "Historical text-only Opportunity without placeholder 390",
+    "Editor 390: restore, alt, selection, preview, upload status, metadata, preserve on text edit, detach",
+    "Editor 390: controlled error and drag/drop replacement recover successfully"
+  ],
+  "no_live_mutations": true,
+  "writes_intercepted": [
+    {
+      "method": "POST",
+      "path": "/media/uploads"
+    },
+    {
+      "method": "POST",
+      "path": "/media/uploads"
+    },
+    {
+      "method": "POST",
+      "path": "/media/uploads"
+    },
+    {
+      "method": "POST",
+      "path": "/media/uploads"
+    },
+    {
+      "method": "POST",
+      "path": "/media/uploads"
+    },
+    {
+      "method": "POST",
+      "path": "/media/uploads"
+    }
+  ],
+  "manifest_sha256": "03d7ac4ee53a03932a80f5662ecc4ca65af50a517a63b81c5ebc08f593ff3f3a"
+}
