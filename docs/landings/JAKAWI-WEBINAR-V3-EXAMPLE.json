@@ -12,7 +12,13 @@
       "emphasis": "estamos preparando",
       "ending": "para tu ciudad.",
       "description": "Participa en el webinar gratuito de JAKAWI. Conoce la propuesta, entiende cómo ser parte y descubre los próximos pasos del prelanzamiento.",
-      "cta": "RESERVAR MI LUGAR GRATIS"
+      "cta": "RESERVAR MI LUGAR GRATIS",
+      "title_segments": [
+        {
+          "text": "Descubre lo que",
+          "style": "coral"
+        }
+      ]
     },
     "benefits": {
       "eyebrow": "QUÉ DESCUBRIRÁS",
@@ -22,7 +28,13 @@
         {
           "title": "Qué es JAKAWI",
           "description": "Conoce la propuesta que estamos preparando para descubrir y disfrutar más de Cochabamba.",
-          "icon": "play"
+          "icon": "play",
+          "metric": {
+            "value": "3",
+            "unit": "temas"
+          },
+          "condition": "Ejemplo de presentación informativa del webinar; no representa una comisión.",
+          "offer_status": "Ejemplo editorial"
         },
         {
           "title": "Cómo participar",
@@ -40,7 +52,13 @@
       "opportunity": {
         "title": "Tu ciudad todavía tiene mucho por descubrir.",
         "description": "La rutina puede hacernos pasar por alto lugares, experiencias y posibilidades cercanas. JAKAWI comienza con una invitación a mirar Cochabamba con otros ojos y descubrir juntos lo que viene.",
-        "image": null
+        "image": null,
+        "title_segments": [
+          {
+            "text": "Tu ciudad todavía tiene mucho por descubrir.",
+            "style": "underline-coral"
+          }
+        ]
       },
       "early": {
         "title": "Sé parte de esta primera etapa.",

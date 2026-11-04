@@ -1,0 +1,5 @@
+{
+  "passed": 584,
+  "database": "isolated PostgreSQL schema",
+  "live_test_users": 0
+}

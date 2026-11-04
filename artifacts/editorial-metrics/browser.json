@@ -1,0 +1,24 @@
+{
+  "checks": [
+    "metric layout conditions no scroll identical channel / 1440",
+    "metric layout conditions no scroll identical channel /principal 1440",
+    "metric layout conditions no scroll identical channel /ads/meta/webinar 1440",
+    "legacy cards and plain headings 1440",
+    "alternative numeric value Bs 1440",
+    "mixed legacy and metric card 1440",
+    "admin select apply remove emphasis 1440",
+    "admin card preview 1440",
+    "metric layout conditions no scroll identical channel / 390",
+    "metric layout conditions no scroll identical channel /principal 390",
+    "metric layout conditions no scroll identical channel /ads/meta/webinar 390",
+    "legacy cards and plain headings 390",
+    "alternative numeric value Bs 390",
+    "mixed legacy and metric card 390",
+    "admin select apply remove emphasis 390",
+    "admin card preview 390"
+  ],
+  "no_live_mutations": true,
+  "runtimeErrors": [],
+  "failedAssets": [],
+  "manifest_sha256": "62931a0b0b1635ee3f4509b2a64513e3dd3450f90fbbc9945bd390091db14eca"
+}

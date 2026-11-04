@@ -16,6 +16,8 @@ class LandingContent
     public const EDITORIAL_V3 = [...self::EDITORIAL, 'presentation', 'video', 'confirmation_video', 'whatsapp_group', 'confirmation_whatsapp_group'];
     public const BENEFIT_ICONS = ['play', 'users', 'gift', 'compass', 'calendar', 'star', 'heart', 'arrow-right', 'lightbulb', 'megaphone'];
 
+    public const TITLE_STYLES = ['normal', 'bold', 'coral', 'underline-coral', 'amarillo-acento'];
+
     public const WEBINAR_SECTIONS = ['hero', 'event', 'benefits', 'opportunity', 'early', 'steps', 'registration', 'faq', 'final'];
 
     /** The local LEAD_VSL defaults shared by the existing administrative and public flows. */
@@ -248,6 +250,11 @@ class LandingContent
 
     private static function merge(array $base, array $patch): array
     {
+        foreach (['title', 'emphasis', 'ending'] as $field) {
+            if (array_key_exists($field, $patch) && ! array_key_exists($field.'_segments', $patch) && ($base[$field] ?? null) !== $patch[$field]) {
+                unset($base[$field.'_segments']);
+            }
+        }
         foreach ($patch as $key => $value) {
             $base[$key] = is_array($value) && ! array_is_list($value) && is_array($base[$key] ?? null)
                 ? self::merge($base[$key], $value) : $value;
@@ -284,7 +291,7 @@ class LandingContent
         $rules['content.presentation.webinar.sections.*.visible'] = ['required', 'boolean:strict'];
         $rules['content.webinar'] = ['sometimes', 'required', 'array:opportunity,early,steps'];
         foreach (['opportunity' => ['title', 'description'], 'early' => ['title', 'description', 'items'], 'steps' => ['title', 'items']] as $section => $keys) {
-            $rules['content.webinar.'.$section] = [$partial ? 'sometimes' : 'required_with:content.webinar', 'array:'.implode(',', $section === 'opportunity' ? [...$keys, 'image'] : $keys)];
+            $rules['content.webinar.'.$section] = [$partial ? 'sometimes' : 'required_with:content.webinar', 'array:'.implode(',', $section === 'opportunity' ? [...$keys, 'image', 'title_segments'] : [...$keys, 'title_segments'])];
             foreach ($keys as $key) {
                 if ($key !== 'items') {
                     $rules['content.webinar.'.$section.'.'.$key] = [...($partial ? ['sometimes', 'required'] : ['required_with:content.webinar']), 'string', 'max:1200', 'not_regex:/[<>]/u'];
@@ -321,7 +328,7 @@ class LandingContent
             'after_registration' => ['title', 'message', 'instructions', 'cta_label'],
         ];
         foreach ($sections as $section => $keys) {
-            $rules['content.'.$section] = [$presence, 'array:'.implode(',', $keys)];
+            $rules['content.'.$section] = [$presence, 'array:'.implode(',', $section === 'hero' ? [...$keys, 'title_segments', 'emphasis_segments', 'ending_segments'] : (in_array($section, ['benefits', 'faq', 'final']) ? [...$keys, 'title_segments'] : $keys))];
             foreach ($keys as $key) {
                 if ($key !== 'items') {
                     $rules['content.'.$section.'.'.$key] = $text;
@@ -344,13 +351,30 @@ class LandingContent
         }
         foreach (['benefits' => ['title', 'description'], 'faq' => ['question', 'answer']] as $section => $keys) {
             $rules['content.'.$section.'.items'] = [$presence, 'array', 'list', 'min:1', 'max:8'];
-            $rules['content.'.$section.'.items.*'] = ['required', 'array:'.implode(',', $section === 'benefits' ? [...$keys, 'icon'] : $keys)];
+            $rules['content.'.$section.'.items.*'] = ['required', 'array:'.implode(',', $section === 'benefits' ? [...$keys, 'icon', 'metric', 'condition', 'offer_status'] : $keys)];
             if ($section === 'benefits') {
                 $rules['content.benefits.items.*.icon'] = ['sometimes', 'required', 'string', Rule::in(self::BENEFIT_ICONS)];
             }
             foreach ($keys as $key) {
                 $rules['content.'.$section.'.items.*.'.$key] = ['required', 'string', 'max:1200', 'not_regex:/[<>]/u'];
             }
+        }
+        // Additive presentation metadata; plain strings remain the source of title text.
+        $titlePaths = ['hero.title', 'hero.emphasis', 'hero.ending', 'benefits.title', 'faq.title', 'final.title', 'webinar.opportunity.title', 'webinar.early.title', 'webinar.steps.title'];
+        foreach ($titlePaths as $path) {
+            $segments = 'content.'.$path.'_segments';
+            $rules[$segments] = ['sometimes', 'nullable', 'array', 'list', 'min:1', 'max:32'];
+            $rules[$segments.'.*'] = ['required', 'array:text,style'];
+            $rules[$segments.'.*.text'] = ['present', 'string', 'min:1', 'max:1200', 'not_regex:/[<>]/u'];
+            $rules[$segments.'.*.style'] = ['required', Rule::in(self::TITLE_STYLES)];
+        }
+        $card = 'content.benefits.items.*';
+        $rules[$card.'.metric'] = ['sometimes', 'nullable', 'array:value,unit'];
+        foreach (['value' => 24, 'unit' => 16] as $key => $limit) {
+            $rules[$card.'.metric.'.$key] = ['required_with:'.$card.'.metric', 'string', 'max:'.$limit, 'not_regex:/[<>]/u'];
+        }
+        foreach (['condition', 'offer_status'] as $key) {
+            $rules[$card.'.'.$key] = ['sometimes', 'nullable', 'string', 'max:320', 'not_regex:/[<>]/u'];
         }
         foreach (['video', 'confirmation_video'] as $section) {
             $rules['content.'.$section] = [$presence, 'array:youtube_url,poster,aspect_ratio,source_type,source_aspect_ratio,focal_x,focal_y'];
@@ -364,7 +388,18 @@ class LandingContent
                 $rules['content.'.$section.'.'.$key] = [$presence, 'numeric:strict', 'between:0,1'];
             }
         }
-        self::validator(['content' => $content], $rules)->after(function ($validator) use ($content, $partial): void {
+        self::validator(['content' => $content], $rules)->after(function ($validator) use ($content, $partial, $titlePaths): void {
+            foreach ($titlePaths as $path) {
+                $segments = data_get($content, $path."_segments");
+                if (is_array($segments) && count(array_filter($segments, fn ($segment) => is_array($segment) && is_string($segment["text"] ?? null))) === count($segments) && (! $partial || data_get($content, $path) !== null) && implode("", array_column($segments, "text")) !== data_get($content, $path)) {
+                    $validator->errors()->add("content.".$path."_segments", "Los fragmentos deben conservar exactamente el texto del titular.");
+                }
+            }
+            foreach (($content["benefits"]["items"] ?? []) as $index => $card) {
+                if (is_array($card) && isset($card["metric"]) && (! is_string($card["condition"] ?? null) || trim($card["condition"]) === "")) {
+                    $validator->errors()->add("content.benefits.items.$index.condition", "Indica la condición comercial visible de esta métrica editorial.");
+                }
+            }
             $asset = $content['webinar']['opportunity']['image']['asset_id'] ?? null;
             if ($asset !== null && !app(\App\Services\MediaUploadService::class)->usableAsset($asset)) {
                 $validator->errors()->add('content.webinar.opportunity.image.asset_id', 'El recurso no existe o no está autorizado para las landings de CLUB.');

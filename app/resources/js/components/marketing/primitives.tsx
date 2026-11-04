@@ -1,10 +1,9 @@
 // Selective local adaptation of official marketing/primitives.tsx and offer/blocks.tsx.
 import { useContext, type ReactNode } from 'react';
-import { Play, RotateCcw } from '../media/jakawi-vsl-player/player-icons';
 import { Arrow } from '../UI';
 import { LandingContext, useLandingTracking } from './LandingContext';
-import { BenefitIcon } from './BenefitIcon';
-import { benefitIconOptions } from '../../lib/benefit-icons';
+import { OpportunityCard } from './OpportunityCard';
+import { EditorialTitle } from './EditorialTitle';
 import { focusRegistration } from './registration-navigation';
 
 export const REGISTRATION_CTA = 'QUIERO SER PARTE DE JAKAWI';
@@ -28,7 +27,7 @@ export function MarketingHero({ children, open, compact = false, startsAt }: { c
     return <section className={`conversion-hero shell ${webinar ? 'webinar-hero' : ''} ${compact ? 'compact-hero' : ''} ${!children ? 'hero-without-media' : ''}`} aria-labelledby="hero-title">
         <div className="hero-heading">
             <p className="eyebrow hero-eyebrow"><span aria-hidden="true" className="size-2 rounded-chip bg-brand" /> {content.eyebrow}</p>
-            <h1 id="hero-title" className="conversion-title">{content.title} <span className="hero-emphasis">{content.emphasis}</span> {content.ending}</h1>
+            <h1 id="hero-title" className="conversion-title">{webinar ? <EditorialTitle text={content.title} segments={content.title_segments} /> : content.title} <span className="hero-emphasis">{webinar ? <EditorialTitle text={content.emphasis} segments={content.emphasis_segments} /> : content.emphasis}</span> {webinar ? <EditorialTitle text={content.ending} segments={content.ending_segments} /> : content.ending}</h1>
         </div>
         {children && <div id="presentacion" className="hero-media">{children}</div>}
         <div className="hero-copy">
@@ -45,17 +44,19 @@ export function MarketingBenefits({ compact = false }: { compact?: boolean }) {
     const content = landing.benefits;
     const webinar = landing.presentation.template === 'WEBINAR';
     return <section id="como-funciona" className="shell section-space" aria-labelledby="benefits-title">
-        <div className="max-w-2xl"><p className="eyebrow">{content.eyebrow}</p><h2 id="benefits-title" className="section-title mt-4">{content.title}</h2><p className="mt-5 leading-7 text-text-secondary">{content.description}</p></div>
-        <div className={`mt-9 grid gap-4 sm:grid-cols-2 ${compact ? 'lg:grid-cols-3' : 'lg:grid-cols-4'}`}>{(compact ? content.items.slice(0, 3) : content.items).map(({title, description, icon}, index) => <article key={title} className="feature-card"><span className={webinar ? 'webinar-benefit-icon' : 'benefit-number'} aria-hidden="true">{webinar ? (icon && benefitIconOptions.some(([name]) => name === icon) ? <BenefitIcon name={icon} /> : index % 3 === 0 ? <Play /> : index % 3 === 1 ? <Arrow /> : <RotateCcw />) : <>0{index + 1}</>}</span><h3 className="mb-3 mt-5 text-lg font-extrabold tracking-tight">{title}</h3><p className="text-sm leading-7 text-text-secondary">{description}</p></article>)}</div>
+        <div className="max-w-2xl"><p className="eyebrow">{content.eyebrow}</p><h2 id="benefits-title" className="section-title mt-4"><EditorialTitle text={content.title} segments={landing.presentation.template === 'WEBINAR' ? content.title_segments : null} /></h2><p className="mt-5 leading-7 text-text-secondary">{content.description}</p></div>
+        <div className={`mt-9 grid gap-4 ${content.items.some(item => item.metric) ? (compact ? 'lg:grid-cols-3' : 'lg:grid-cols-4') : `sm:grid-cols-2 ${compact ? 'lg:grid-cols-3' : 'lg:grid-cols-4'}`} `}>{(compact ? content.items.slice(0, 3) : content.items).map((entry, index) => <OpportunityCard key={index} content={entry} index={index} webinar={webinar} />)}</div>
     </section>;
 }
 
 export function MarketingFAQ() {
-    const content = useContext(LandingContext)!.content.faq;
-    return <section className="shell section-space" aria-labelledby="faq-title"><div className="grid gap-8 lg:grid-cols-[1fr_1.4fr]"><div><p className="eyebrow">{content.eyebrow}</p><h2 id="faq-title" className="section-title mt-4">{content.title}</h2></div><div>{content.items.map(({question, answer}) => <details key={question} className="faq-item"><summary>{question}<span aria-hidden="true">+</span></summary><p className="pb-6 pr-5 text-sm leading-7 text-text-secondary">{answer}</p></details>)}</div></div></section>;
+    const landing = useContext(LandingContext)!.content;
+    const content = landing.faq;
+    return <section className="shell section-space" aria-labelledby="faq-title"><div className="grid gap-8 lg:grid-cols-[1fr_1.4fr]"><div><p className="eyebrow">{content.eyebrow}</p><h2 id="faq-title" className="section-title mt-4"><EditorialTitle text={content.title} segments={landing.presentation.template === 'WEBINAR' ? content.title_segments : null} /></h2></div><div>{content.items.map(({question, answer}) => <details key={question} className="faq-item"><summary>{question}<span aria-hidden="true">+</span></summary><p className="pb-6 pr-5 text-sm leading-7 text-text-secondary">{answer}</p></details>)}</div></div></section>;
 }
 
 export function MarketingFinalCTA() {
-    const content = useContext(LandingContext)!.content.final;
-    return <section className="final-cta" aria-labelledby="final-title"><div className="shell py-14 text-center sm:py-18"><p className="eyebrow">{content.eyebrow}</p><h2 id="final-title" className="section-title mx-auto mt-5 max-w-3xl">{content.title}</h2><p className="mx-auto mt-5 max-w-lg leading-7">{content.description}</p><MarketingCTA location="final" className="mt-7" /><p className="mt-4 text-xs">VIVE MÁS. GASTA MENOS.</p></div></section>;
+    const landing = useContext(LandingContext)!.content;
+    const content = landing.final;
+    return <section className="final-cta" aria-labelledby="final-title"><div className="shell py-14 text-center sm:py-18"><p className="eyebrow">{content.eyebrow}</p><h2 id="final-title" className="section-title mx-auto mt-5 max-w-3xl"><EditorialTitle text={content.title} segments={landing.presentation.template === 'WEBINAR' ? content.title_segments : null} /></h2><p className="mx-auto mt-5 max-w-lg leading-7">{content.description}</p><MarketingCTA location="final" className="mt-7" /><p className="mt-4 text-xs">VIVE MÁS. GASTA MENOS.</p></div></section>;
 }

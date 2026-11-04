@@ -287,3 +287,50 @@ nombres técnicos, destinos, endpoints, validaciones ni acciones adicionales.
 La subida administrativa acepta JPEG/PNG/WebP, MIME real, hasta 5 MiB. Reutiliza tokens cifrados ligados al usuario, staging temporal de 24 horas, promoción al guardar y GC existente. WebP optimizado hasta 1600 px, sin ampliar ni recortar y conservando alfa. La entrega usa imgproxy firmado con fit y WebP, sin fondo ni aplanado. No hay migración, buckets o credenciales nuevos. Quitar/reemplazar desvincula sin borrar recursos compartidos.
 
 Guardar modifica el borrador. Publicar actualiza una sola `published_configuration`, consumida por orgánico y los canales habilitados mediante el renderizador común. La URL resuelta viaja fuera del contrato editorial como `landing.opportunity_image_url`.
+
+## Métricas y énfasis opcionales (V3, sin migración)
+
+`benefits.items[]` conserva `title`, `description` e `icon` opcional y admite:
+
+| Campo | Contrato |
+| --- | --- |
+| `metric` | Opcional, null o `{ "value": "30", "unit": "%" }`. Strings no vacíos: value hasta 24 caracteres, unit hasta 16. No calcula ni interpreta importes. |
+| `condition` | Texto comercial visible de hasta 320 caracteres; obligatorio y no vacío si existe metric. Sin métrica también se puede mostrar. |
+| `offer_status` | Texto editorial visible opcional hasta 320 caracteres; null lo quita. Por ejemplo «Propuesta futura · pendiente de aprobación». No activa ofertas ni reglas. |
+
+Sin `metric` se conserva la tarjeta histórica. La métrica usa tamaño adaptativo
+hasta 96 px, icono secundario y grilla de tres columnas en WEBINAR escritorio,
+una en móvil; sin altura fija ni scroll interior. No extraer números del título
+ni convertir Bs en %. Los porcentajes del webinar son contenido editorial de
+modelos previstos, no evidencia de comisiones vigentes. La documentación económica
+PRELAUNCH-10E-v1 usa Bs 15 / Bs 25 / Bs 30. Una unidad «%» no modifica esas reglas.
+
+Los objetos `hero`, `benefits`, `faq`, `final`, `webinar.opportunity`,
+`webinar.early` y `webinar.steps` admiten `title_segments` opcional (null lo quita).
+Hero admite además `emphasis_segments` y `ending_segments`, para sus respectivos
+strings existentes. Solo WEBINAR aplica estos estilos a los títulos públicos.
+Los strings permanecen obligatorios y su representación sin fragmentos no cambia.
+
+```json
+{
+  "title": "Los negocios necesitan clientes. JAKAWI los conecta.",
+  "title_segments": [
+    { "text": "Los negocios necesitan clientes. ", "style": "normal" },
+    { "text": "JAKAWI los conecta.", "style": "coral" }
+  ]
+}
+```
+
+Lista de 1 a 32 fragmentos `{text, style}`. `text` es string de 1–1200 caracteres,
+sin `<` ni `>`; se conservan espacios y la concatenación debe coincidir exactamente
+con el string correspondiente (máximo total 1200). `style` pertenece exclusivamente
+a `normal`, `bold`, `coral`, `underline-coral`, `amarillo-acento`. No se admiten
+HTML, scripts, clases, atributos ni estilos CSS. React renderiza nodos de texto.
+En un parche que cambia un string sin enviar sus fragmentos, se elimina el énfasis
+anterior de ese string para mantener compatibilidad. Omitir ambos conserva ambos.
+
+En el editor: seleccionar texto en el campo y pulsar el estilo, «Normal / quitar
+énfasis» para la selección o «Quitar todo el énfasis». Cambiar texto restablece su
+énfasis. Las previsualizaciones inmediatas son locales; la preview completa utiliza
+el borrador guardado. Importar, guardar y publicar conservan el flujo editorial
+actual y `published_configuration` sigue siendo la única fuente pública compartida.

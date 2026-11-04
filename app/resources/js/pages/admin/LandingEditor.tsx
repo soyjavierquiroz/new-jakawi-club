@@ -8,6 +8,9 @@ import { benefitIconOptions } from '../../lib/benefit-icons';
 import { LandingAiKit } from '../../components/admin/LandingAiKit';
 import { ImageUpload, type ImageMetadata } from '../../components/media/ImageUpload';
 import { ClubCardImage } from '../../components/ClubCardPresentation';
+import { TitleEmphasisEditor } from '../../components/admin/TitleEmphasisEditor';
+import { OpportunityCard } from '../../components/marketing/OpportunityCard';
+import type { TitleSegment, OpportunityCard as OpportunityCardContent } from '../../types';
 import { statusLabel } from './Landings';
 
 type Value = string | null | { [key: string]: Value } | Value[];
@@ -15,24 +18,32 @@ const labels: Record<string, string> = {
     webinar: 'Contenido del webinar', opportunity: 'Problema / oportunidad', early: 'Beneficios de participar desde el comienzo', steps: 'Cómo funciona', seo: 'SEO y redes sociales', hero: 'Mensaje', benefits: 'Beneficios', registration: 'Introducción al registro', faq: 'Preguntas frecuentes', final: 'Cierre', video: 'Video VSL',
     message: 'Mensaje de confirmación', instructions: 'Instrucción de revisar correo', cta_label: 'Texto del botón siguiente', title: 'Título', description: 'Descripción', eyebrow: 'Antetítulo', emphasis: 'Texto destacado', ending: 'Final del titular', cta: 'Texto del botón',
     form_title: 'Título del formulario', form_subtitle: 'Subtítulo del formulario (opcional)', name_placeholder: 'Placeholder del nombre', phone_placeholder: 'Placeholder del teléfono', email_placeholder: 'Placeholder del email', submit_label: 'CTA del formulario (vacío: automático)', submit_microcopy: 'Microcopy debajo del botón (opcional)', existing_account_label: 'Texto de cuenta existente', existing_account_link_label: 'Texto del enlace de acceso',
-    icon: 'Icono', items: 'Elementos', question: 'Pregunta', answer: 'Respuesta', youtube_url: 'URL de YouTube', poster: 'Poster local (opcional)', aspect_ratio: 'Marco del reproductor', source_aspect_ratio: 'Proporción del video original',
+    value: 'Valor destacado', unit: 'Unidad (%, Bs u otra)', condition: 'Condición comercial visible', offer_status: 'Estado de oferta (editorial)', metric: 'Métrica editorial', icon: 'Icono', items: 'Elementos', question: 'Pregunta', answer: 'Respuesta', youtube_url: 'URL de YouTube', poster: 'Poster local (opcional)', aspect_ratio: 'Marco del reproductor', source_aspect_ratio: 'Proporción del video original',
 };
 
-function Fields({ value, path, onChange }: { value: Value; path: string; onChange: (value: Value) => void }) {
+function Fields({ value, path, onChange, emphasis = false }: { value: Value; path: string; onChange: (value: Value) => void; emphasis?: boolean }) {
     const fixedItems = path.startsWith('content.webinar.') && path.endsWith('.items');
     const key = path.split('.').at(-1) || path;
     if (Array.isArray(value)) return <div className="space-y-4">{value.map((item, index) => <fieldset className="rounded-card border border-border p-4" key={index}>
-        <legend className="px-2 text-sm font-bold">Elemento {index + 1}</legend><Fields value={item} path={`${path}.${index}`} onChange={next => onChange(value.map((entry, i) => i === index ? next : entry))} />
+        <legend className="px-2 text-sm font-bold">Elemento {index + 1}</legend><Fields emphasis={emphasis} value={item} path={`${path}.${index}`} onChange={next => onChange(value.map((entry, i) => i === index ? next : entry))} />
         {!fixedItems && <button type="button" className="btn btn-secondary mt-4" disabled={value.length <= 1} onClick={() => onChange(value.filter((_, i) => i !== index))}>Quitar elemento</button>}
-    </fieldset>)}{!fixedItems && <button type="button" className="btn btn-secondary" disabled={value.length >= 8} onClick={() => onChange([...value, Object.fromEntries(Object.keys(value[0] || {}).filter(name => name !== 'icon' || path !== 'content.benefits.items').map(name => [name, '']))])}>Añadir elemento</button>}</div>;
+    </fieldset>)}{!fixedItems && <button type="button" className="btn btn-secondary" disabled={value.length >= 8} onClick={() => onChange([...value, Object.fromEntries(Object.keys(value[0] || {}).filter(name => !['icon', 'metric', 'condition', 'offer_status'].includes(name)).map(name => [name, '']))])}>Añadir elemento</button>}</div>;
     if (value !== null && typeof value === 'object') {
         const benefitItem = /^content\.benefits\.items\.\d+$/.test(path);
         const fields = benefitItem ? { ...value, icon: value.icon ?? '' } : value;
-        return <div className="space-y-5">{Object.entries(fields).filter(([name]) => !(path === 'content.webinar.opportunity' && name === 'image') && !(path === 'content.after_registration' && name === 'cta_label') && !(['content.hero', 'content.final'].includes(path) && name === 'cta')).map(([name, entry]) => <Fields key={name} value={entry} path={`${path}.${name}`} onChange={next => {
+        const titleBlock = emphasis && /^(content\.(hero|benefits|faq|final)|content\.webinar\.(opportunity|early|steps))$/.test(path);
+        const card = value as unknown as OpportunityCardContent;
+        return <div className="space-y-5">{Object.entries(fields).filter(([name]) => !name.endsWith('_segments') && !['metric', 'condition', 'offer_status'].includes(name) && !(path === 'content.webinar.opportunity' && name === 'image') && !(path === 'content.after_registration' && name === 'cta_label') && !(['content.hero', 'content.final'].includes(path) && name === 'cta')).map(([name, entry]) => titleBlock && (name === 'title' || (path === 'content.hero' && ['emphasis', 'ending'].includes(name))) ? <TitleEmphasisEditor key={name} id={`${path}.${name}`} label={labels[name] || name} text={entry as string} segments={value[`${name}_segments`] as TitleSegment[] | null} onChange={(text, segments) => onChange({ ...value, [name]: text, [`${name}_segments`]: segments } as Value)} /> : <Fields emphasis={emphasis} key={name} value={entry} path={`${path}.${name}`} onChange={next => {
             const updated = { ...value, [name]: next };
             if (benefitItem && name === 'icon' && next === '') delete updated.icon;
             onChange(updated);
-        }} />)}</div>;
+        }} />)}{benefitItem && <>
+            <label className="flex items-center gap-3"><input type="checkbox" checked={!!card.metric} onChange={event => onChange({ ...value, metric: event.target.checked ? { value: '', unit: '%' } : null })} /> Destacar métrica editorial</label>
+            {card.metric && <div className="grid grid-cols-2 gap-4">{(['value', 'unit'] as const).map(name => <div key={name}><label className="label" htmlFor={`${path}.metric.${name}`}>{labels[name]}</label><input className="input" id={`${path}.metric.${name}`} required maxLength={name === 'value' ? 24 : 16} value={card.metric![name]} onChange={event => onChange({ ...value, metric: { ...card.metric!, [name]: event.target.value } })} /></div>)}</div>}
+            {(['condition', 'offer_status'] as const).map(name => <div key={name}><label className="label" htmlFor={`${path}.${name}`}>{labels[name]}</label><textarea className="input" id={`${path}.${name}`} required={name === 'condition' && !!card.metric} maxLength={320} value={card[name] || ''} onChange={event => onChange({ ...value, [name]: event.target.value || null })} /></div>)}
+            <p className="text-xs text-text-secondary">Presentación editorial. Usar % no convierte las tarifas fijas del motor en porcentajes. Indica si la oferta está prevista o vigente y sus condiciones aprobadas.</p>
+            <OpportunityCard content={card} preview />
+        </>}</div>;
     }
     const options = key === 'icon' ? [['', 'Automático (icono actual)'], ...benefitIconOptions] : key === 'source_aspect_ratio' ? ['9:16', '3:4', '16:9'].map(option => [option, option]) : null;
     const optional = ['poster', 'youtube_url', 'submit_label', 'form_subtitle', 'submit_microcopy'].includes(key);
@@ -171,7 +182,7 @@ export default function LandingEditor({ opportunity_image_url = null, opportunit
     const confirmationURL = `${landingURL}/gracias`;
     const publishedVideo = landing?.published_configuration?.presentation.show_video ? landing.published_configuration.video.youtube_url : null;
     function section(name: 'hero' | 'seo' | 'benefits' | 'registration' | 'faq' | 'final' | 'after_registration') {
-        return <Fields value={content[name] as Value} path={`content.${name}`} onChange={next => form.setData('configuration', { ...content, [name]: next } as LandingContent)} />;
+        return <Fields emphasis={content.presentation.template === 'WEBINAR'} value={content[name] as Value} path={`content.${name}`} onChange={next => form.setData('configuration', { ...content, [name]: next } as LandingContent)} />;
     }
     function presentation(patch: Partial<LandingContent['presentation']>) {
         form.setData('configuration', { ...content, presentation: { ...content.presentation, ...patch } });
@@ -243,7 +254,7 @@ export default function LandingEditor({ opportunity_image_url = null, opportunit
                             <p className="text-xs text-text-secondary">Preview del borrador actual. Guardar borrador no cambia el catálogo; Publicar cambios actualiza su versión pública.</p>
                         </Group>
                         <Group title="Video y medios"><label className="checkbox-label"><input id="show-main-video" type="checkbox" className="checkbox" checked={content.presentation.show_video} onChange={event => presentation({ show_video: event.target.checked })} />Mostrar video principal</label><VideoFields video={content.video} path="content.video" onChange={video => form.setData('configuration', { ...content, video })} /></Group>
-                        {content.presentation.template === 'WEBINAR' && content.webinar && <Group title="Contenido del webinar">{(['opportunity', 'early', 'steps'] as const).map(name => <fieldset key={name} className="space-y-4 rounded-card border border-border p-4"><legend className="px-2 font-bold">{sectionNames[name]}</legend><Fields value={content.webinar![name] as Value} path={`content.webinar.${name}`} onChange={next => form.setData('configuration', { ...content, webinar: { ...content.webinar!, [name]: next } as LandingContent['webinar'] })} />{name === 'opportunity' && <>
+                        {content.presentation.template === 'WEBINAR' && content.webinar && <Group title="Contenido del webinar">{(['opportunity', 'early', 'steps'] as const).map(name => <fieldset key={name} className="space-y-4 rounded-card border border-border p-4"><legend className="px-2 font-bold">{sectionNames[name]}</legend><Fields emphasis value={content.webinar![name] as Value} path={`content.webinar.${name}`} onChange={next => form.setData('configuration', { ...content, webinar: { ...content.webinar!, [name]: next } as LandingContent['webinar'] })} />{name === 'opportunity' && <>
                             <ImageUpload key={`opportunity-${opportunityUploadRevision}-${landing?.id || 'new'}-${landing?.revision || 1}-${content.webinar!.opportunity.image?.asset_id || ''}`} purpose="opportunity" metadata={opportunityMetadata} currentUrl={form.data.opportunity_image_remove ? null : opportunityPreview || (content.webinar!.opportunity.image?.asset_id === landing?.configuration.webinar?.opportunity.image?.asset_id ? opportunity_image_url : null)} disabled={form.processing || operation.processing || uploadBusy || importing} error={(errors as Record<string, string>).opportunity_image_upload || (errors as Record<string, string>)['content.webinar.opportunity.image.asset_id']} onBusy={setOpportunityBusy} onChange={(token, remove, preview) => { setOpportunityPreview(preview); form.setData(data => ({ ...data, opportunity_image_upload: token, opportunity_image_remove: remove })); }} />
                             <div><label className="label" htmlFor="opportunity-image-alt">Texto alternativo de la imagen de apoyo</label><input id="opportunity-image-alt" className="input" maxLength={320} value={content.webinar!.opportunity.image?.alt ?? form.data.opportunity_image_alt} onChange={event => {
                                 const alt = event.target.value;

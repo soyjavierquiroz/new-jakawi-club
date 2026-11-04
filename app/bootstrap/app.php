@@ -29,6 +29,15 @@ return Application::configure(basePath: dirname(__DIR__))
                 | Request::HEADER_X_FORWARDED_PORT,
         );
 
+        // Preserve exact spaces in selected editorial fragments when saving a draft.
+        $middleware->trimStrings(except: [
+            'configuration.hero.title_segments.*.text', 'configuration.hero.emphasis_segments.*.text',
+            'configuration.hero.ending_segments.*.text', 'configuration.benefits.title_segments.*.text',
+            'configuration.faq.title_segments.*.text', 'configuration.final.title_segments.*.text',
+            'configuration.webinar.opportunity.title_segments.*.text',
+            'configuration.webinar.early.title_segments.*.text', 'configuration.webinar.steps.title_segments.*.text',
+        ]);
+
         $middleware->encryptCookies(except: ['_fbp', '_fbc', '_ttp']);
         $middleware->web(append: [\App\Http\Middleware\SupportReadOnly::class, \App\Http\Middleware\CaptureComOrigin::class, HandleInertiaRequests::class]);
         $middleware->redirectUsersTo('/dashboard');

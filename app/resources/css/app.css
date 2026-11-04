@@ -342,3 +342,19 @@ main[data-landing-template=WEBINAR] .webinar-event-card .eyebrow { font-size: .7
 @media (min-width: 1024px) {
     [data-webinar-section=opportunity] .webinar-opportunity-with-image { grid-template-columns: minmax(0, 55fr) minmax(0, 45fr); }
 }
+
+/* Closed editorial vocabulary. User input never supplies CSS or markup. */
+.editorial-normal { font-weight: inherit; }
+.editorial-bold { font-weight: 900; }
+.editorial-coral { color: var(--brand); }
+.editorial-underline { text-decoration: underline; text-decoration-color: var(--brand); text-decoration-thickness: .09em; text-underline-offset: .12em; }
+.editorial-yellow { background: var(--reward); color: var(--ink); box-decoration-break: clone; -webkit-box-decoration-break: clone; }
+.opportunity-metric-card { background: var(--surface-raised); position: relative; display: flex; flex-direction: column; min-width: 0; overflow: visible; overflow-wrap: anywhere; }
+.opportunity-metric { display: flex; flex-wrap: wrap; align-items: baseline; gap: .08em; padding-right: 2rem; font-size: clamp(3.5rem, 6vw, 6rem); font-weight: 800; line-height: 1.1; letter-spacing: -.05em; color: var(--brand); }
+.opportunity-unit { font-size: .5em; letter-spacing: -.02em; }
+.opportunity-metric-card .webinar-benefit-icon, .opportunity-metric-card .benefit-number { position: absolute; top: 1.25rem; right: 1.25rem; width: 1.75rem; height: 1.75rem; }
+.opportunity-metric-card .webinar-benefit-icon svg { width: 1.25rem; height: 1.25rem; }
+.opportunity-condition { margin-top: auto; padding-top: 1rem; font-size: .875rem; font-weight: 700; line-height: 1.6; color: var(--ink); }
+.opportunity-status { margin-top: 1rem; font-size: .75rem; font-weight: 700; color: var(--text-secondary); }
+
+@media (min-width: 1024px) { .opportunity-metric { font-size: clamp(4.5rem, 6vw, 6rem); } }
