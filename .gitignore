@@ -277,3 +277,8 @@ credentials.json
 /artifacts/automatic-commissions/*.png
 /artifacts/automatic-commissions/browser-live.json
 /artifacts/automatic-commissions/validation.json
+
+/artifacts/webinar-meta-route/*
+!/artifacts/webinar-meta-route/REPORT.md
+!/artifacts/webinar-meta-route/tests.json
+!/artifacts/webinar-meta-route/browser-preview.json

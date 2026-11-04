@@ -17,14 +17,17 @@ final class Advertising {
         $visitKey = $webinar ? 'ad_webinar_visit_id' : 'ad_visit_id';
         if (!$webinar && $request->session()->get('ads_provider') !== $provider) $request->session()->put('ads_entered_at', now()->toIso8601String());
         if (!$webinar) $request->session()->put('ads_provider', $provider);
-        if ($request->cookie('jakawi_ads_consent') !== 'yes') return;
+        if (!$webinar && $request->cookie('jakawi_ads_consent') !== 'yes') return;
+        if ($webinar && !$this->ready('meta', true)) return;
         $visit = AdVisit::find($request->session()->get($visitKey));
         $existing = $visit && !$visit->revoked_at && $visit->expires_at->isFuture() && $visit->provider === $provider && (($visit->context['funnel'] ?? null) === ($webinar ? 'webinar' : null));
         $context = $existing ? $visit->context : [];
         if (!$existing) $context =
         ['url' => rtrim(config('app.url'), '/').'/ads/'.$provider.'/'.$request->route('page'),
             'funnel' => $webinar ? 'webinar' : null,
-            'entered_at' => $request->session()->get('ads_entered_at', now()->toIso8601String()), 'consent_version' => 'ads-v1'];
+            'entered_at' => $webinar ? now()->toIso8601String() : $request->session()->get('ads_entered_at', now()->toIso8601String())];
+        if ($webinar) $context['activation'] = 'webinar_route';
+        else $context['consent_version'] = 'ads-v1';
         foreach (['utm_source','utm_medium','utm_campaign','utm_content','utm_term','utm_id','campaign_id','adset_id','ad_id', $provider === 'meta' ? 'fbclid' : 'ttclid'] as $key) {
             $value = $request->query($key);
             if (!isset($context[$key]) && is_string($value) && preg_match('/^[\pL\pN _.:+\/-]{1,200}$/uD', $value)) $context[$key] = $value;
@@ -35,11 +38,12 @@ final class Advertising {
         }
         if ($provider === 'meta' && isset($context['fbclid']) && !isset($context['fbc'])) $context['fbc'] = 'fb.1.'.now()->getTimestampMs().'.'.$context['fbclid'];
         if ($existing) { $visit->update(['context' => $context]); return; }
-        $scope = $request->cookie('jakawi_ads_scope', $request->session()->get('ad_consent_scope'));
-        if (!is_string($scope)) { $scope = (string) Str::uuid(); $request->session()->put('ad_consent_scope', $scope); }
-        if (!$request->cookie('jakawi_ads_scope')) \Illuminate\Support\Facades\Cookie::queue(cookie('jakawi_ads_scope', $scope, 60 * 24 * config('ads.retention_days'), '/', null, true, true, false, 'lax'));
+        $scopeKey = $webinar ? 'ad_webinar_scope' : 'ad_consent_scope';
+        $scope = $webinar ? $request->session()->get($scopeKey) : $request->cookie('jakawi_ads_scope', $request->session()->get($scopeKey));
+        if (!is_string($scope)) { $scope = (string) Str::uuid(); $request->session()->put($scopeKey, $scope); }
+        if (!$webinar && !$request->cookie('jakawi_ads_scope')) \Illuminate\Support\Facades\Cookie::queue(cookie('jakawi_ads_scope', $scope, 60 * 24 * config('ads.retention_days'), '/', null, true, true, false, 'lax'));
         $visit = AdVisit::create(['consent_scope' => $scope, 'id' => (string) Str::uuid(), 'provider' => $provider, 'context' => $context,
-            'consented_at' => now(), 'expires_at' => now()->addDays(config('ads.retention_days'))]);
+            'consented_at' => $webinar ? null : now(), 'expires_at' => now()->addDays(config('ads.retention_days'))]);
         $request->session()->put($visitKey, $visit->id);
     }
     public function visit(Request $request): ?AdVisit {
@@ -65,7 +69,6 @@ final class Advertising {
         $event->update(['status' => 'pending']);
     }
     public function webinarVisit(Request $request): ?AdVisit {
-        if ($request->cookie('jakawi_ads_consent') !== 'yes') return null;
         $visit = AdVisit::whereKey($request->session()->get('ad_webinar_visit_id'))->where('provider', 'meta')->whereNull('revoked_at')->where('expires_at', '>', now())->first();
         return $visit && ($visit->context['funnel'] ?? null) === 'webinar' ? $visit : null;
     }
@@ -84,9 +87,10 @@ final class Advertising {
         $provider = $request->route('provider');
         $webinar = $request->route('page') === 'webinar';
         $visit = $webinar ? $this->webinarVisit($request) : $this->visit($request);
-        $allowed = $visit && $provider === $visit->provider && $this->ready($provider, $webinar);
+        $allowed = $webinar ? $provider === 'meta' && $this->ready('meta', true)
+            : $visit && $provider === $visit->provider && $this->ready($provider);
         $events = [];
-        if ($allowed && $webinar && ($id = $request->session()->get('webinar_ad_event_id'))) {
+        if ($allowed && $webinar && $visit && ($id = $request->session()->get('webinar_ad_event_id'))) {
             $event = AdEvent::whereKey($id)->where('visit_id', $visit->id)->where('provider', 'meta')->where('event_name', 'CompleteRegistration')->first();
             if ($event && $request->routeIs('webinar.meta.thanks') && $request->session()->get('welcome_expires_at', 0) > now()->timestamp) $events[] = ['id' => $event->id, 'name' => $event->event_name];
         }

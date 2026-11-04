@@ -25,7 +25,10 @@ class ReferralController extends Controller
                 app(\App\Services\Advertising::class)->safely(fn () => \App\Models\AdVisit::whereKey($request->session()->get('ad_visit_id'))->update(['revoked_at' => now()]));
                 $scope = $request->cookie('jakawi_ads_scope', $request->session()->get('ad_consent_scope'));
                 if (is_string($scope)) app(\App\Services\Advertising::class)->safely(fn () => \App\Models\AdVisit::where('consent_scope', $scope)->update(['revoked_at' => now()]));
-                $request->session()->forget(['ad_visit_id', 'ad_webinar_visit_id', 'webinar_ad_event_id', 'ad_consent_scope']);
+                // Webinar route visits have their own scope and no shared consent cookie.
+                $webinarScope = $request->session()->get('ad_webinar_scope');
+                if (is_string($webinarScope)) app(\App\Services\Advertising::class)->safely(fn () => \App\Models\AdVisit::where('consent_scope', $webinarScope)->where('provider', 'meta')->update(['revoked_at' => now()]));
+                $request->session()->forget(['ad_visit_id', 'ad_webinar_visit_id', 'webinar_ad_event_id', 'ad_consent_scope', 'ad_webinar_scope']);
                 Cookie::queue(Cookie::forget('jakawi_ads_scope'));
                 foreach (['_fbp','_fbc','_ttp'] as $name) Cookie::queue(Cookie::forget($name));
             }

@@ -119,7 +119,7 @@ try {
             await call('Page.navigate',{url:'https://jakawi.club'+path});
             await until('document.querySelector("[data-landing-template], .confirmation-page")','page mounts');await pause(400);
             assert(await evaluate('document.documentElement.scrollWidth<=innerWidth+1'),'responsive width');
-            if(key==='organic'||key==='no_consent') {
+            if(key==='organic') {
                 assert(!external.some(h=>h.includes('facebook')||h.includes('tiktok')),'no provider without permission');
                 assert(await evaluate('!window.fbq && !window.ttq'),'no unauthorized SDK');
             } else {
@@ -127,7 +127,9 @@ try {
                 assert(await evaluate('window.fbq === window._fbq'), 'canonical Meta runtime alias');
                 assert(!external.some(h=>h.includes('tiktok')),'TikTok absent');
                 assert(await evaluate('document.querySelector("meta[name=robots]").content.includes("noindex")'),'noindex');
-                if(key==='landing') assert(await evaluate('window.pixelCalls.some(x=>x[0]==="track"&&x[1]==="PageView")&&!window.pixelCalls.some(x=>x[1]==="CompleteRegistration")'),'only PageView on landing');
+                assert(await evaluate(`!document.querySelector('[aria-label="Preferencias publicitarias"]')`), 'no webinar preference step');
+                assert(await evaluate('window.pixelCalls.filter(x=>x[0]==="init").length===1 && window.pixelCalls.filter(x=>x[0]==="track"&&x[1]==="PageView").length===1 && !window.pixelCalls.some(x=>x[0]==="consent"&&x[1]==="grant")'), 'one init and PageView, no fictional grant');
+                if(key==='landing'||key==='no_consent') assert(await evaluate('window.pixelCalls.some(x=>x[0]==="track"&&x[1]==="PageView")&&!window.pixelCalls.some(x=>x[1]==="CompleteRegistration")'),'only PageView on landing');
                 if(key==='thanks') {
                     const expected=fixtures.thanks.props.ads.events[0].id;
                     assert(await evaluate(`window.pixelCalls.filter(x=>x[1]==="CompleteRegistration").length===1 && window.pixelCalls.find(x=>x[1]==="CompleteRegistration")[3].eventID===${JSON.stringify(expected)}`),'Pixel shares server ID exactly once');
