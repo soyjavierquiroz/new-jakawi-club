@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 type Ads = { funnel?: string; canonical?: string; provider?: 'meta' | 'tiktok'; allowed: boolean; pixel_id?: string; preference?: string; retention_days: number; events: { id: string; name: string }[] };
 type Pixel = ((...args: unknown[]) => void) & { callMethod?: (...args: unknown[]) => void; queue: unknown[][]; loaded: boolean; version: string; push: Pixel };
 type TikTok = { track: (...args: unknown[]) => void; page: () => void; load: (id: string) => void; [key: string]: unknown };
-declare global { interface Window { fbq?: Pixel; ttq?: TikTok; adProvider?: string } }
+declare global { interface Window { fbq?: Pixel; _fbq?: Pixel; ttq?: TikTok; adProvider?: string } }
 const sent = new Set<string>();
 let lastPage = '';
 function once(key: string, action: () => void) {
@@ -18,6 +18,8 @@ function loadMeta(id: string) {
     const fbq = function (...args: unknown[]) { if (fbq.callMethod) fbq.callMethod(...args); else fbq.queue.push(args); } as Pixel;
     fbq.queue = []; fbq.loaded = true; fbq.version = '2.0'; fbq.push = fbq;
     window.fbq = fbq;
+    // Canonical Meta alias: used by the real SDK and Pixel Helper to identify one runtime.
+    if (!window._fbq) window._fbq = fbq;
     fbq('set', 'autoConfig', false, id); fbq('init', id); fbq('consent', 'grant');
     const script = document.createElement('script'); script.async = true; script.src = 'https://connect.facebook.net/en_US/fbevents.js'; document.head.append(script);
 }

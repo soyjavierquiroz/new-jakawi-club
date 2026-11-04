@@ -124,6 +124,7 @@ try {
                 assert(await evaluate('!window.fbq && !window.ttq'),'no unauthorized SDK');
             } else {
                 await until('window.pixelCalls?.length','Meta stub loaded');
+                assert(await evaluate('window.fbq === window._fbq'), 'canonical Meta runtime alias');
                 assert(!external.some(h=>h.includes('tiktok')),'TikTok absent');
                 assert(await evaluate('document.querySelector("meta[name=robots]").content.includes("noindex")'),'noindex');
                 if(key==='landing') assert(await evaluate('window.pixelCalls.some(x=>x[0]==="track"&&x[1]==="PageView")&&!window.pixelCalls.some(x=>x[1]==="CompleteRegistration")'),'only PageView on landing');

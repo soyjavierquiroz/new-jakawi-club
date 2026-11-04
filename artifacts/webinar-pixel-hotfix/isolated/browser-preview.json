@@ -1,0 +1,17 @@
+{
+  "checks": [
+    "organic 390",
+    "no_consent 390",
+    "landing 390",
+    "thanks 390",
+    "organic 1440",
+    "no_consent 1440",
+    "landing 1440",
+    "thanks 1440"
+  ],
+  "no_live_mutations": true,
+  "provider_requests_stubbed": true,
+  "runtimeErrors": [],
+  "failedAssets": [],
+  "intercepted_writes": 0
+}

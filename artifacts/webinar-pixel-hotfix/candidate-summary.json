@@ -1,0 +1,15 @@
+{
+  "candidate_pixel_id": "1429220108808185",
+  "sdk_http_200": true,
+  "pageview_tr_http_200": true,
+  "canonical_alias": true,
+  "no_consent_absent": true,
+  "organic_absent": true,
+  "consent_persisted": true,
+  "consent_revoked": true,
+  "javascript_errors": [],
+  "csp_errors": [],
+  "headful_chromium": true,
+  "live_registration_tests": 0,
+  "live_conversion_tests": 0
+}
