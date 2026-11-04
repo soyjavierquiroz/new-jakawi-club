@@ -101,8 +101,8 @@ try {
         let signature;
         for(const path of ['/','/principal','/ads/meta/webinar']) {
             await navigate(fixtures.public,path,width);
-            const m=await evaluate(`(()=>{const cards=[...document.querySelectorAll('[data-opportunity-card]')];return {overflow:document.documentElement.scrollWidth>innerWidth+1,cards:cards.map(e=>{const r=e.getBoundingClientRect(),n=e.querySelector('.opportunity-metric');return {metric:n.textContent,condition:e.querySelector('.opportunity-condition').textContent,status:e.querySelector('.opportunity-status').textContent,font:parseFloat(getComputedStyle(n).fontSize),height:r.height,x:r.x,y:r.y,scroll:e.scrollHeight>e.clientHeight+1 && ['auto','scroll'].includes(getComputedStyle(e).overflowY)}}),titles:[...document.querySelectorAll('h1,h2')].map(e=>e.innerHTML)};})()`);
-            assert(!m.overflow);assert.deepEqual(m.cards.map(c=>c.metric),['15%','30%','50%']);assert(m.cards.every(c=>c.condition.includes('prueba') && c.status.includes('Propuesta') && !c.scroll));
+            const m=await evaluate(`(()=>{const cards=[...document.querySelectorAll('[data-opportunity-card]')];return {overflow:document.documentElement.scrollWidth>innerWidth+1,cards:cards.map(e=>{const r=e.getBoundingClientRect(),n=e.querySelector('.opportunity-metric');return {metric:n.textContent,condition:e.querySelector('.opportunity-condition')?.textContent || '',status:e.querySelector('.opportunity-status')?.textContent || '',conditionSize:e.querySelector('.opportunity-condition') ? getComputedStyle(e.querySelector('.opportunity-condition')).fontSize : null,conditionWeight:e.querySelector('.opportunity-condition') ? getComputedStyle(e.querySelector('.opportunity-condition')).fontWeight : null,font:parseFloat(getComputedStyle(n).fontSize),height:r.height,x:r.x,y:r.y,scroll:e.scrollHeight>e.clientHeight+1 && ['auto','scroll'].includes(getComputedStyle(e).overflowY)}}),titles:[...document.querySelectorAll('h1,h2')].map(e=>e.innerHTML)};})()`);
+            assert(!m.overflow);assert.deepEqual(m.cards.map(c=>c.metric),['15%','30%','50%']);assert(m.cards.every(c=>!c.scroll));assert.deepEqual(m.cards.map(c=>c.condition),['','','Ejemplo editorial de prueba. No es una comisión vigente.']);assert.equal(m.cards[2].conditionSize,'13px');assert.equal(m.cards[2].conditionWeight,'400');
             if(width===1440){assert(m.cards.every(c=>c.font>=72 && c.font<=96));assert.equal(new Set(m.cards.map(c=>c.y)).size,1);assert.equal(new Set(m.cards.map(c=>c.height)).size,1);}else assert.equal(new Set(m.cards.map(c=>c.x)).size,1);
             if(signature)assert.deepEqual(m,signature);else signature=m;
             checks.push(`metric layout conditions no scroll identical channel ${path} ${width}`);
@@ -129,10 +129,16 @@ try {
         await evaluate(`(()=>{for(const d of document.querySelectorAll('details'))d.open=true;})()`);
         await ready('[data-card-preview]');
         assert.equal(await evaluate('document.querySelectorAll("[data-card-preview] .opportunity-metric").length'),3);
-        await screenshot('admin-card-'+width,'[data-card-preview]');checks.push(`admin card preview ${width}`);
+        assert.equal(await evaluate(`document.getElementById('content.benefits.items.0.condition').required`),false);
+        assert.equal(await evaluate(`document.getElementById('content.benefits.items.0.offer_status').required`),false);
+        assert.equal(await evaluate(`document.querySelector('label[for="content.benefits.items.0.condition"]').textContent`),'Aclaración (opcional)');
+        assert.equal(await evaluate(`!!document.querySelector('[data-card-preview]').querySelector('.opportunity-condition')`),false);
+        assert.equal(await evaluate(`document.querySelector('[data-card-preview] .opportunity-metric').textContent`),'15%');
+        await screenshot('admin-card-'+width,'[data-card-preview]');checks.push(`admin optional clarification/status and preview ${width}`);
     }
     assert.deepEqual(runtimeErrors,[]);assert.deepEqual(failedAssets,[]);assert.deepEqual(writes,[]);
     const {createHash}=await import('node:crypto');
     await writeFile(output+'/browser.json',JSON.stringify({checks,no_live_mutations:true,runtimeErrors,failedAssets,manifest_sha256:createHash('sha256').update(await readFile('/workspace/public/build-next/manifest.json')).digest('hex')},null,2)+'\n');
+    closing=true; await call('Fetch.disable');
     console.log(JSON.stringify({passed:true,checks:checks.length,no_live_mutations:true}));
 } finally { closing=true;socket?.close();chrome.kill('SIGTERM'); }

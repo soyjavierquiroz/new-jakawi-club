@@ -34,7 +34,7 @@ check($metricPlain['hero']['title']=='String antiguo nuevo' && !isset($metricPla
 $invalidMetrics = [
  ['benefits.items.0.metric.value', '<script>'], ['benefits.items.0.metric.value', 30],
  ['benefits.items.0.metric.unit', ''], ['benefits.items.0.metric.unit', str_repeat('u',17)],
- ['benefits.items.0.metric.css', 'red'], ['benefits.items.0.condition', []], ['benefits.items.0.condition', null], ['benefits.items.0.condition','<b>Vigente</b>'],
+ ['benefits.items.0.metric.css', 'red'], ['benefits.items.0.condition', []], ['benefits.items.0.condition','<b>Vigente</b>'],
  ['hero.title_segments.0.style', 'red'], ['hero.title_segments.0.style', 'font-bold'],
  ['hero.title_segments.0.text', '<script>'], ['hero.title_segments.0.text', 'Texto diferente'],
  ['hero.title_segments.0.className', 'evil'], ['hero.title_segments.0.style', ['color'=>'red']],
@@ -45,6 +45,19 @@ foreach ($invalidMetrics as [$path,$bad]) {
     try { MetricContent::validate($variant); check(false,'metrics reject '.$path); }
     catch (\Illuminate\Validation\ValidationException $e) { check(count($e->errors())>0,'metrics reject '.$path); }
 }
+foreach (['', null, 'Una aclaración breve'] as $condition) {
+    $variant=$metricContent; $variant['benefits']['items'][0]['condition']=$condition;
+    $variant['benefits']['items'][0]['offer_status']=null;
+    check(MetricContent::validate($variant)['benefits']['items'][0]['condition']===$condition, 'clarification optional with metric '.json_encode($condition));
+    check(MetricContent::import(json_encode(MetricContent::envelope($variant)),$metricLegacy,true)['benefits']['items'][0]['condition']===$condition,'clarification optional V3 roundtrip '.json_encode($condition));
+}
+// Save/publish fixtures include no clarification or offer status as well as a percent inside value.
+$metricContent['benefits']['items'][0]['condition']=null;
+$metricContent['benefits']['items'][0]['offer_status']=null;
+$metricContent['benefits']['items'][0]['metric']['value']='15%';
+$metricContent['benefits']['items'][1]['condition']='';
+$metricContent['benefits']['items'][1]['offer_status']='';
+$metricContent['benefits']['items'][2]['metric']['value']='50%';
 $metricData=['title'=>'Métricas aisladas','slug'=>'editorial-metrics-test','configuration'=>$metricContent];
 check(http('POST','/admin/landings',$metricData)->isRedirect(),'metrics editor saves draft in isolated schema');
 $metricLanding=MetricLanding::where('slug',$metricData['slug'])->firstOrFail(); $metricBase='/admin/landings/'.$metricLanding->id;
@@ -61,7 +74,7 @@ check($metricPublished['props']['landing']['content']['benefits']==$metricPrevie
 $snapshot=$metricLanding->fresh()->published_configuration;
 $variant=$metricContent; $variant['benefits']['items'][0]['metric']['value']='99';
 check(http('PUT',$metricBase,[...$metricData,'configuration'=>$variant,'revision'=>2])->isRedirect() && $metricLanding->fresh()->published_configuration==$snapshot,'metrics save draft preserves published snapshot');
-check(payload(http('GET','/'.$metricLanding->slug,[],true))['props']['landing']['content']['benefits']['items'][0]['metric']['value']=='15','metrics public value unchanged until publication');
+check(payload(http('GET','/'.$metricLanding->slug,[],true))['props']['landing']['content']['benefits']['items'][0]['metric']['value']=='15%','metrics public value unchanged until publication');
 check(http('POST',$metricBase.'/publicar',['revision'=>3])->isRedirect() && payload(http('GET','/'.$metricLanding->slug,[],true))['props']['landing']['content']['benefits']['items'][0]['metric']['value']=='99','metrics explicit republication updates public value');
 // All acquisition channels resolve the same published snapshot of the home landing.
 $home->configuration=$metricContent; $home->save();

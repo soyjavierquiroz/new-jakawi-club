@@ -395,11 +395,6 @@ class LandingContent
                     $validator->errors()->add("content.".$path."_segments", "Los fragmentos deben conservar exactamente el texto del titular.");
                 }
             }
-            foreach (($content["benefits"]["items"] ?? []) as $index => $card) {
-                if (is_array($card) && isset($card["metric"]) && (! is_string($card["condition"] ?? null) || trim($card["condition"]) === "")) {
-                    $validator->errors()->add("content.benefits.items.$index.condition", "Indica la condición comercial visible de esta métrica editorial.");
-                }
-            }
             $asset = $content['webinar']['opportunity']['image']['asset_id'] ?? null;
             if ($asset !== null && !app(\App\Services\MediaUploadService::class)->usableAsset($asset)) {
                 $validator->errors()->add('content.webinar.opportunity.image.asset_id', 'El recurso no existe o no está autorizado para las landings de CLUB.');

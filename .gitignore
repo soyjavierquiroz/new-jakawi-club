@@ -301,3 +301,7 @@ credentials.json
 /artifacts/editorial-metrics/*fixtures.json
 /artifacts/editorial-metrics/LIVE.json
 /artifacts/editorial-metrics/validation.json
+
+/artifacts/card-clarification/*fixture*.json
+/artifacts/card-clarification/*.png
+/artifacts/card-clarification/LIVE.json
