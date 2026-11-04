@@ -19,7 +19,7 @@ final class WebinarMetaController extends Controller
     }
     private function landing(): MarketingLanding
     {
-        $landing = MarketingLanding::where('slug', config('ads.webinar_landing_slug'))->firstOrFail();
+        $landing = MarketingLanding::where('slug', config('jakawi.home_landing_slug'))->firstOrFail();
         abort_unless($landing->isPublic() && ($landing->published_configuration['presentation']['template'] ?? null) === 'WEBINAR', 404);
         return $landing;
     }

@@ -1,7 +1,6 @@
 <?php
 return [
     'webinar_enabled' => (bool) env('META_WEBINAR_ENABLED', false),
-    'webinar_landing_slug' => 'principal',
     'privacy_ready' => (bool) env('ADS_PRIVACY_READY', false),
     'retention_days' => max(1, min(90, (int) env('ADS_RETENTION_DAYS', 30))),
     'meta' => ['enabled' => (bool) env('META_ADS_ENABLED', false), 'pixel_id' => env('META_PIXEL_ID'),

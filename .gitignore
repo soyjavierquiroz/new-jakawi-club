@@ -282,3 +282,8 @@ credentials.json
 !/artifacts/webinar-meta-route/REPORT.md
 !/artifacts/webinar-meta-route/tests.json
 !/artifacts/webinar-meta-route/browser-preview.json
+
+/artifacts/webinar-shared/*
+!/artifacts/webinar-shared/REPORT.md
+!/artifacts/webinar-shared/tests.json
+!/artifacts/webinar-shared/browser-preview.json

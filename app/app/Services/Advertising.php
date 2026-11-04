@@ -73,7 +73,7 @@ final class Advertising {
         return $visit && ($visit->context['funnel'] ?? null) === 'webinar' ? $visit : null;
     }
     public function registration(Request $request, \App\Models\User $user, \App\Models\MarketingLanding $landing): ?AdEvent {
-        if (!$request->routeIs('webinar.meta.register') || $landing->slug !== config('ads.webinar_landing_slug')) return null;
+        if (!$request->routeIs('webinar.meta.register') || $landing->slug !== config('jakawi.home_landing_slug')) return null;
         $visit = $this->webinarVisit($request);
         if (!$visit) return null;
         $event = AdEvent::firstOrCreate(['provider' => 'meta', 'club_reference' => $user->uuid, 'event_name' => 'CompleteRegistration'],

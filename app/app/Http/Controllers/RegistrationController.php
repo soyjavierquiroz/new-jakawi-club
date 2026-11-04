@@ -34,14 +34,16 @@ class RegistrationController extends Controller
                 // Capture the same published landing/campaign used for the conversion.
                 $landing = isset($data['landing_id']) ? MarketingLanding::query()->sharedLock()->find($data['landing_id']) : null;
                 if ($request->routeIs('webinar.meta.register')) {
-                    abort_unless($landing?->isPublic() && $landing->slug === config('ads.webinar_landing_slug') && ($landing->published_configuration['presentation']['template'] ?? null) === 'WEBINAR', 422);
+                    abort_unless($landing?->isPublic() && $landing->slug === config('jakawi.home_landing_slug') && ($landing->published_configuration['presentation']['template'] ?? null) === 'WEBINAR', 422);
                 }
                 if (isset($data['landing_id'])) {
                     abort_unless($landing?->isPublic() && LandingSlug::allowed($landing->slug), 422);
                     $content = LandingContent::withPresentation($landing->published_configuration);
-                    $receipt = ['id' => $landing->id, 'slug' => $landing->slug, 'campaign' => $landing->published_campaign,
-                        'content' => $content['after_registration'], 'next_step' => $content['next_step'],
-                        ...$this->confirmationSnapshot($content)];
+                    $receipt = ['id' => $landing->id, 'slug' => $landing->slug, 'campaign' => $landing->published_campaign];
+                    // The shared webinar receipt is access evidence, never a second content source.
+                    if (!$landing->isHome() || ($content['presentation']['template'] ?? null) !== 'WEBINAR') {
+                        $receipt = [...$receipt, ...$this->confirmationContent($content)];
+                    }
                 }
                 if (User::where('email', $data['email'])->exists()) {
                     return;
@@ -116,6 +118,12 @@ class RegistrationController extends Controller
             return redirect()->route('landing.show', ['slug' => $slug]);
         }
 
+        // The receipt authorizes access; current published webinar content owns presentation.
+        // Keep its original identity, campaign and expiry; never turn a GET into a registration.
+        if ($landing->isHome() && ($landing->published_configuration['presentation']['template'] ?? null) === 'WEBINAR') {
+            $receipt = [...$receipt, ...$this->confirmationContent(LandingContent::withPresentation($landing->published_configuration))];
+        }
+
         return $this->renderReceipt($request, $receipt);
     }
 
@@ -123,7 +131,12 @@ class RegistrationController extends Controller
     {
         $content = LandingContent::withPresentation($landing->configuration);
 
-        return $this->renderReceipt($request, ['slug' => $landing->slug, 'content' => $content['after_registration'], 'next_step' => $content['next_step'], ...$this->confirmationSnapshot($content)], true);
+        return $this->renderReceipt($request, ['slug' => $landing->slug, ...$this->confirmationContent($content)], true);
+    }
+
+    private function confirmationContent(array $content): array
+    {
+        return ['content' => $content['after_registration'], 'next_step' => $content['next_step'], ...$this->confirmationSnapshot($content)];
     }
 
     private function confirmationSnapshot(array $content): array

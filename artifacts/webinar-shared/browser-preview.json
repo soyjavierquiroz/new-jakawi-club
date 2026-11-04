@@ -1,0 +1,96 @@
+{
+  "checks": [
+    "organic 390",
+    "landing 390",
+    "organic_thanks 390",
+    "thanks 390",
+    "updated_organic 390",
+    "updated_landing 390",
+    "updated_organic_thanks 390",
+    "updated_thanks 390",
+    "hidden_organic_thanks 390",
+    "hidden_thanks 390",
+    "organic 1440",
+    "landing 1440",
+    "organic_thanks 1440",
+    "thanks 1440",
+    "updated_organic 1440",
+    "updated_landing 1440",
+    "updated_organic_thanks 1440",
+    "updated_thanks 1440",
+    "hidden_organic_thanks 1440",
+    "hidden_thanks 1440"
+  ],
+  "confirmation_fixtures_from_isolated_kernel": true,
+  "no_live_mutations": true,
+  "provider_requests_stubbed": true,
+  "runtimeErrors": [],
+  "failedAssets": [],
+  "intercepted_writes": 0,
+  "comparisons": [
+    {
+      "organic": "organic",
+      "meta": "landing",
+      "width": 390,
+      "result": "PASS"
+    },
+    {
+      "organic": "organic_thanks",
+      "meta": "thanks",
+      "width": 390,
+      "result": "PASS"
+    },
+    {
+      "organic": "updated_organic",
+      "meta": "updated_landing",
+      "width": 390,
+      "result": "PASS"
+    },
+    {
+      "organic": "updated_organic_thanks",
+      "meta": "updated_thanks",
+      "width": 390,
+      "result": "PASS"
+    },
+    {
+      "organic": "hidden_organic_thanks",
+      "meta": "hidden_thanks",
+      "width": 390,
+      "result": "PASS"
+    },
+    {
+      "organic": "organic",
+      "meta": "landing",
+      "width": 1440,
+      "result": "PASS"
+    },
+    {
+      "organic": "organic_thanks",
+      "meta": "thanks",
+      "width": 1440,
+      "result": "PASS"
+    },
+    {
+      "organic": "updated_organic",
+      "meta": "updated_landing",
+      "width": 1440,
+      "result": "PASS"
+    },
+    {
+      "organic": "updated_organic_thanks",
+      "meta": "updated_thanks",
+      "width": 1440,
+      "result": "PASS"
+    },
+    {
+      "organic": "hidden_organic_thanks",
+      "meta": "hidden_thanks",
+      "width": 1440,
+      "result": "PASS"
+    }
+  ],
+  "identical_confirmation_screenshots": {
+    "390": true,
+    "1440": true
+  }
+}
