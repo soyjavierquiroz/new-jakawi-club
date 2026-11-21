@@ -1,0 +1,6 @@
+{
+  "mime": "video/webm;codecs=vp8,opus",
+  "bytes": 106050,
+  "source": "Canvas + oscillator recorded by native Chromium MediaRecorder",
+  "simulated_clock": false
+}

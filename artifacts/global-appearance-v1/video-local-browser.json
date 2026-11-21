@@ -1,0 +1,9 @@
+{
+  "checks": [
+    "real WebM playback through QA transport: autoplay, audio, pause, replay and appearance at 390/1440"
+  ],
+  "contrast": [],
+  "no_live_mutations": true,
+  "saved_intercepted": 0,
+  "manifest_sha256": "6c4e74de0b3eb78307c639bc838232e9236842b8c17236aa66eda5c588799ca3"
+}

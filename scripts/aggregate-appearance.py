@@ -9,8 +9,9 @@ for part in parts:
  data=json.loads(part.read_text())
  assert data['manifest_sha256']==manifest and data['no_live_mutations']
  checks.extend(data['checks']);contrast.extend(data['contrast'])
-video=json.loads((p/'video.json').read_text())
-video_pass=len(video['videoReport'])==2 and all(row['verified'] for row in video['videoReport'])
-if video_pass: assert json.loads((p/'video-browser.json').read_text())['manifest_sha256']==manifest
-(p/'browser.json').write_text(json.dumps({'checks':checks,'contrast':contrast,'no_live_mutations':True,'manifest_sha256':manifest,'video_verified':video_pass},indent=2)+'\n')
-print(json.dumps({'passed':len(checks),'real_video':video_pass,'manifest_sha256':manifest}))
+video=json.loads((p/'video-local.json').read_text())
+video_pass=video['real_media'] and video['native_clock'] and len(video['videoReport'])==2 and all(row['verified'] for row in video['videoReport'])
+assert video_pass and json.loads((p/'video-local-browser.json').read_text())['manifest_sha256']==manifest
+checks.extend(json.loads((p/'video-local-browser.json').read_text())['checks'])
+(p/'browser.json').write_text(json.dumps({'checks':checks,'contrast':contrast,'no_live_mutations':True,'manifest_sha256':manifest,'video_verified':video_pass,'video_verification_scope':'Real local WebM with native playback clocks and audio; QA transport adapter only','external_youtube_verified':False},indent=2)+'\n')
+print(json.dumps({'passed':len(checks),'isolated_real_media_video':video_pass,'external_youtube_verified':False,'manifest_sha256':manifest}))

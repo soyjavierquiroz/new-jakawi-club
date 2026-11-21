@@ -91,6 +91,7 @@ try {
     on('Fetch.requestPaused',async e=>{
         try {
             const url=new URL(e.request.url);
+            if(url.pathname==='/__appearance-media.webm'){await fulfill(e,'video/webm',await readFile('/checks/fixtures/appearance-video.webm'));return;}
             if(realVideo && url.hostname!=='jakawi.club'){await call('Fetch.continueRequest',{requestId:e.requestId});return;}
             if(url.pathname==='/settings/appearance') {
                 saved.push(JSON.parse(e.request.postData).theme_preference);
@@ -115,7 +116,8 @@ try {
     const resolved=()=>evaluate('document.documentElement.dataset.accountTheme');
     const shot=async name=>{const png=await call('Page.captureScreenshot',{format:'png'});await writeFile(output+'/'+name+'.png',Buffer.from(png.data,'base64'));};
     await call('Page.addScriptToEvaluateOnNewDocument',{source:`window.__qaDocument=crypto.randomUUID();new MutationObserver((_,observer)=>{if(document.body){window.__atBody={mode:document.documentElement.dataset.accountTheme,appearance:document.documentElement.dataset.appearance};observer.disconnect();}}).observe(document,{subtree:true,childList:true});`});
-    const videoOnly=process.argv.includes('--video-only');
+    const localVideo=process.argv.includes('--video-local');
+    const videoOnly=process.argv.includes('--video-only') || localVideo;
     let contrast=[];
     if(!videoOnly){
     if(!process.argv.includes('--behavior-only'))
@@ -191,25 +193,44 @@ try {
         fixtures.video.page.props.launch.video_url='https://www.youtube.com/watch?v=M7lc1UVf-VE';
         fixtures.video.page.props.landing.content.presentation.show_video=true;
         fixtures.video.page.props.landing.preview=true;
-        realVideo=true;
+        realVideo=!localVideo;
+        if(localVideo) await call('Page.addScriptToEvaluateOnNewDocument',{source:await readFile('/checks/fixtures/appearance-youtube-api.js','utf8')});
         await call('Emulation.setEmulatedMedia',{features:[{name:'prefers-reduced-motion',value:'no-preference'}]});
-        await call('Page.addScriptToEvaluateOnNewDocument',{source:`window.__players=[];window.__videoEvents=[];window.onYouTubeIframeAPIReady=()=>{const Native=window.YT.Player;window.YT.Player=function(element,options){for(const [name,callback] of Object.entries(options.events))options.events[name]=event=>{window.__videoEvents.push({name,data:event?.data??null});callback(event);};const player=new Native(element,options);window.__players.push(player);return player;};};`});
+        if(!localVideo) await call('Page.addScriptToEvaluateOnNewDocument',{source:`window.__players=[];window.__videoEvents=[];window.onYouTubeIframeAPIReady=()=>{const Native=window.YT.Player;window.YT.Player=function(element,options){for(const [name,callback] of Object.entries(options.events))options.events[name]=event=>{window.__videoEvents.push({name,data:event?.data??null});callback(event);};const player=new Native(element,options);window.__players.push(player);return player;};};`});
         for(const width of [390,1440]){
             await navigate('video',width);
             for(let i=0;i<120;i++){if(await evaluate('window.__players?.[0]?.getCurrentTime && window.__players[0].getCurrentTime()>0'))break;await pause(250);}
-            const read=()=>evaluate(`(()=>{const p=window.__players?.[0];const f=document.querySelector('.vsl-frame');const r=f?.getBoundingClientRect();return{players:window.__players?.length,time:p?.getCurrentTime?.(),state:p?.getPlayerState?.(),muted:p?.isMuted?.(),volume:p?.getVolume?.(),videoId:p?.getVideoData?.()?.video_id,frame:r?{x:r.x,y:r.y,width:r.width,height:r.height}:null,events:window.__videoEvents,status:document.querySelector('[data-vsl-state]')?.dataset.vslState};})()`);
+            const read=()=>evaluate(`(()=>{const p=window.__players?.[0];const f=document.querySelector('.vsl-frame');const r=f?.getBoundingClientRect();return{players:window.__players?.length,time:p?.getCurrentTime?.(),state:p?.getPlayerState?.(),muted:p?.isMuted?.(),volume:p?.getVolume?.(),videoId:p?.getVideoData?.()?.video_id,frame:r?{x:r.x,y:r.y,width:r.width,height:r.height}:null,native:p?.media?{src:p.media.currentSrc,time:p.media.currentTime,duration:p.media.duration,paused:p.media.paused,muted:p.media.muted,decodedFrames:p.media.getVideoPlaybackQuality().totalVideoFrames,audioTracks:p.media.captureStream().getAudioTracks().length}:null,events:window.__videoEvents,status:document.querySelector('[data-vsl-state]')?.dataset.vslState};})()`);
             const before=await read();await pause(1200);const playing=await read();
             await set('dark');await pause(200);const after=await read();await set('light');await pause(300);const light=await read();
             videoReport.push({width,before,playing,after,light,verified:before.state===1&&playing.time>before.time&&after.time>=playing.time&&light.time>=after.time&&before.players===after.players&&JSON.stringify(before.frame)===JSON.stringify(after.frame)&&after.muted===before.muted&&after.videoId===before.videoId});
-            await shot('video-'+width);
+            if(localVideo){
+                const row=videoReport.at(-1);
+                const click=async selector=>{await evaluate('document.querySelector('+JSON.stringify(selector)+').scrollIntoView({block:"center",behavior:"instant"})');const point=await evaluate('(()=>{const r=document.querySelector('+JSON.stringify(selector)+').getBoundingClientRect();return{x:r.x+r.width/2,y:r.y+r.height/2}})()');for(const type of ['mousePressed','mouseReleased'])await call('Input.dispatchMouseEvent',{type,button:'left',clickCount:1,...point});};
+                await click('[data-vsl-sound]');await until('window.__players[0].media.muted===false && document.querySelector("[data-vsl-state]").dataset.vslState==="playing"');await pause(600);
+                const audibleBefore=await read();await set('dark');await pause(400);const audibleAfter=await read();
+                row.audio={before:audibleBefore,after:audibleAfter,verified:!audibleAfter.muted&&audibleAfter.native.audioTracks===1&&audibleAfter.time>audibleBefore.time};
+                await shot('video-local-'+width+'-dark');
+                await click('button[aria-label="Pausar video"]');await until('document.querySelector("[data-vsl-state]").dataset.vslState==="paused"');await pause(150);
+                const pausedBefore=await read();await set('light');await pause(400);const pausedAfter=await read();
+                row.pause={before:pausedBefore,after:pausedAfter,verified:pausedAfter.state===2&&Math.abs(pausedAfter.time-pausedBefore.time)<.05&&pausedAfter.players===1};
+                await click('.vsl-play');await until('document.querySelector("[data-vsl-state]").dataset.vslState==="playing"');
+                await evaluate('window.__players[0].seekTo(window.__players[0].getDuration()-.5);window.__players[0].playVideo()');
+                for(let i=0;i<60;i++){if(await evaluate('document.querySelector("[data-vsl-state]").dataset.vslState==="ended"'))break;if(i%10===0)console.log('Waiting native end',JSON.stringify(await read()));await pause(250);}
+                assert.equal((await read()).status,'ended',JSON.stringify(await read()));
+                await set('dark');const ended=await read();await click('.vsl-play');await until('document.querySelector("[data-vsl-state]").dataset.vslState==="playing"');await pause(300);const replay=await read();
+                row.replay={ended,after:replay,verified:ended.state===0&&replay.state===1&&replay.time>0&&replay.time<3&&replay.players===1};
+                row.verified=row.verified&&row.audio.verified&&row.pause.verified&&row.replay.verified&&before.native.decodedFrames>0&&playing.native.decodedFrames>before.native.decodedFrames;
+            }
+            await shot((localVideo?'video-local-':'video-')+width);
         }
-        await writeFile(output+'/video.json',JSON.stringify({source:fixtures.video.page.props.launch.video_url,isolated_fixture:true,provider_mock:false,videoReport},null,2));
+        await writeFile(output+(localVideo?'/video-local.json':'/video.json'),JSON.stringify({source:localVideo?'scripts/fixtures/appearance-video.webm':fixtures.video.page.props.launch.video_url,isolated_fixture:true,provider_mock:localVideo,real_media:localVideo,native_clock:true,clip_sha256:localVideo?(await import('node:crypto')).createHash('sha256').update(await readFile('/checks/fixtures/appearance-video.webm')).digest('hex'):null,videoReport},null,2));
         assert(videoReport.every(r=>r.verified),'Real reproducible playback survives appearance changes');
-        checks.push('real YouTube playback retains instance, time, mute, source and geometry at 390/1440');
+        checks.push(localVideo?'real WebM playback through QA transport: autoplay, audio, pause, replay and appearance at 390/1440':'real YouTube playback retains instance, time, mute, source and geometry at 390/1440');
     }
     assert.deepEqual(runtimeErrors,[]);assert.deepEqual(failedAssets,[]);assert.deepEqual(writes,[]);
     const {createHash}=await import('node:crypto');
-    await writeFile(output+(videoOnly?'/video-browser.json':process.argv.includes('--matrix-only')?'/browser-'+(process.argv.includes('--390')?'390':'1440')+'-'+(process.argv.includes('--light')?'light':'dark')+'.json':'/behavior-browser.json'),JSON.stringify({checks,contrast:videoOnly?[]:contrast,no_live_mutations:true,saved_intercepted:saved.length,manifest_sha256:createHash('sha256').update(await readFile('/workspace/public/build-next/manifest.json')).digest('hex')},null,2)+'\n');
+    await writeFile(output+(videoOnly?(localVideo?'/video-local-browser.json':'/video-browser.json'):process.argv.includes('--matrix-only')?'/browser-'+(process.argv.includes('--390')?'390':'1440')+'-'+(process.argv.includes('--light')?'light':'dark')+'.json':'/behavior-browser.json'),JSON.stringify({checks,contrast:videoOnly?[]:contrast,no_live_mutations:true,saved_intercepted:saved.length,manifest_sha256:createHash('sha256').update(await readFile('/workspace/public/build-next/manifest.json')).digest('hex')},null,2)+'\n');
     console.log(JSON.stringify({passed:checks.length,no_live_mutations:true}));
     closing=true;await call('Fetch.disable');
 }catch(e){console.error('QA failed',e);throw e;}finally{closing=true;socket?.close();chrome.kill('SIGTERM');}

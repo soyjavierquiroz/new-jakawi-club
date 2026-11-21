@@ -5,6 +5,8 @@ source_dir="$(pwd)"
 evidence_dir="${JAKAWI_EVIDENCE_DIR:-$source_dir/artifacts/global-appearance-v1}"
 check_script=check-appearance.mjs
 if [ "${1:-}" = --matrix-all ]; then check_script=check-appearance-matrix.mjs; shift; fi
+if [ "${1:-}" = --generate-video ]; then check_script=generate-appearance-video.mjs; shift; fi
+if [ "${1:-}" = --live ]; then check_script=check-appearance-live.mjs; shift; fi
 docker_mode=(--rm)
 if [ "${JAKAWI_BROWSER_DETACH:-0}" = 1 ]; then docker_mode=(--detach); fi
 docker run "${docker_mode[@]}" --name jakawi-club-appearance-visual --network jakawi-club-egress \

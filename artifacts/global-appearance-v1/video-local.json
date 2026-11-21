@@ -1,0 +1,1076 @@
+{
+  "source": "scripts/fixtures/appearance-video.webm",
+  "isolated_fixture": true,
+  "provider_mock": true,
+  "real_media": true,
+  "native_clock": true,
+  "clip_sha256": "d3f4d94e7798629f9f03690c050f335221e9066f387937de6ddde00b3dbcb597",
+  "videoReport": [
+    {
+      "width": 390,
+      "before": {
+        "players": 1,
+        "time": 0.029739,
+        "state": 1,
+        "muted": true,
+        "volume": 100,
+        "videoId": "M7lc1UVf-VE",
+        "frame": {
+          "x": 16,
+          "y": 376.75,
+          "width": 358,
+          "height": 477.328125
+        },
+        "native": {
+          "src": "https://jakawi.club/__appearance-media.webm",
+          "time": 0.029739,
+          "duration": 11.914,
+          "paused": false,
+          "muted": true,
+          "decodedFrames": 4,
+          "audioTracks": 1
+        },
+        "events": [
+          {
+            "name": "onReady",
+            "nativeTime": 0
+          },
+          {
+            "name": "onStateChange",
+            "data": 1,
+            "nativeTime": 0.014748
+          }
+        ],
+        "status": "playing"
+      },
+      "playing": {
+        "players": 1,
+        "time": 1.268496,
+        "state": 1,
+        "muted": true,
+        "volume": 100,
+        "videoId": "M7lc1UVf-VE",
+        "frame": {
+          "x": 16,
+          "y": 376.75,
+          "width": 358,
+          "height": 477.328125
+        },
+        "native": {
+          "src": "https://jakawi.club/__appearance-media.webm",
+          "time": 1.268496,
+          "duration": 11.914,
+          "paused": false,
+          "muted": true,
+          "decodedFrames": 8,
+          "audioTracks": 1
+        },
+        "events": [
+          {
+            "name": "onReady",
+            "nativeTime": 0
+          },
+          {
+            "name": "onStateChange",
+            "data": 1,
+            "nativeTime": 0.014748
+          }
+        ],
+        "status": "playing"
+      },
+      "after": {
+        "players": 1,
+        "time": 1.621501,
+        "state": 1,
+        "muted": true,
+        "volume": 100,
+        "videoId": "M7lc1UVf-VE",
+        "frame": {
+          "x": 16,
+          "y": 376.75,
+          "width": 358,
+          "height": 477.328125
+        },
+        "native": {
+          "src": "https://jakawi.club/__appearance-media.webm",
+          "time": 1.621501,
+          "duration": 11.914,
+          "paused": false,
+          "muted": true,
+          "decodedFrames": 10,
+          "audioTracks": 1
+        },
+        "events": [
+          {
+            "name": "onReady",
+            "nativeTime": 0
+          },
+          {
+            "name": "onStateChange",
+            "data": 1,
+            "nativeTime": 0.014748
+          }
+        ],
+        "status": "playing"
+      },
+      "light": {
+        "players": 1,
+        "time": 2.011747,
+        "state": 1,
+        "muted": true,
+        "volume": 100,
+        "videoId": "M7lc1UVf-VE",
+        "frame": {
+          "x": 16,
+          "y": 376.75,
+          "width": 358,
+          "height": 477.328125
+        },
+        "native": {
+          "src": "https://jakawi.club/__appearance-media.webm",
+          "time": 2.011747,
+          "duration": 11.914,
+          "paused": false,
+          "muted": true,
+          "decodedFrames": 13,
+          "audioTracks": 1
+        },
+        "events": [
+          {
+            "name": "onReady",
+            "nativeTime": 0
+          },
+          {
+            "name": "onStateChange",
+            "data": 1,
+            "nativeTime": 0.014748
+          }
+        ],
+        "status": "playing"
+      },
+      "verified": true,
+      "audio": {
+        "before": {
+          "players": 1,
+          "time": 0.933612,
+          "state": 1,
+          "muted": false,
+          "volume": 100,
+          "videoId": "M7lc1UVf-VE",
+          "frame": {
+            "x": 16,
+            "y": 273.75,
+            "width": 358,
+            "height": 477.328125
+          },
+          "native": {
+            "src": "https://jakawi.club/__appearance-media.webm",
+            "time": 0.933612,
+            "duration": 11.914,
+            "paused": false,
+            "muted": false,
+            "decodedFrames": 22,
+            "audioTracks": 1
+          },
+          "events": [
+            {
+              "name": "onReady",
+              "nativeTime": 0
+            },
+            {
+              "name": "onStateChange",
+              "data": 1,
+              "nativeTime": 0.014748
+            },
+            {
+              "name": "onStateChange",
+              "data": 2,
+              "nativeTime": 0
+            },
+            {
+              "name": "onStateChange",
+              "data": 3,
+              "nativeTime": 0
+            },
+            {
+              "name": "onStateChange",
+              "data": 1,
+              "nativeTime": 0.015234
+            }
+          ],
+          "status": "playing"
+        },
+        "after": {
+          "players": 1,
+          "time": 1.644029,
+          "state": 1,
+          "muted": false,
+          "volume": 100,
+          "videoId": "M7lc1UVf-VE",
+          "frame": {
+            "x": 16,
+            "y": 273.75,
+            "width": 358,
+            "height": 477.328125
+          },
+          "native": {
+            "src": "https://jakawi.club/__appearance-media.webm",
+            "time": 1.644029,
+            "duration": 11.914,
+            "paused": false,
+            "muted": false,
+            "decodedFrames": 24,
+            "audioTracks": 1
+          },
+          "events": [
+            {
+              "name": "onReady",
+              "nativeTime": 0
+            },
+            {
+              "name": "onStateChange",
+              "data": 1,
+              "nativeTime": 0.014748
+            },
+            {
+              "name": "onStateChange",
+              "data": 2,
+              "nativeTime": 0
+            },
+            {
+              "name": "onStateChange",
+              "data": 3,
+              "nativeTime": 0
+            },
+            {
+              "name": "onStateChange",
+              "data": 1,
+              "nativeTime": 0.015234
+            }
+          ],
+          "status": "playing"
+        },
+        "verified": true
+      },
+      "pause": {
+        "before": {
+          "players": 1,
+          "time": 2.815969,
+          "state": 2,
+          "muted": false,
+          "volume": 100,
+          "videoId": "M7lc1UVf-VE",
+          "frame": {
+            "x": 16,
+            "y": 72.75,
+            "width": 358,
+            "height": 477.328125
+          },
+          "native": {
+            "src": "https://jakawi.club/__appearance-media.webm",
+            "time": 2.815969,
+            "duration": 11.914,
+            "paused": true,
+            "muted": false,
+            "decodedFrames": 33,
+            "audioTracks": 1
+          },
+          "events": [
+            {
+              "name": "onReady",
+              "nativeTime": 0
+            },
+            {
+              "name": "onStateChange",
+              "data": 1,
+              "nativeTime": 0.014748
+            },
+            {
+              "name": "onStateChange",
+              "data": 2,
+              "nativeTime": 0
+            },
+            {
+              "name": "onStateChange",
+              "data": 3,
+              "nativeTime": 0
+            },
+            {
+              "name": "onStateChange",
+              "data": 1,
+              "nativeTime": 0.015234
+            },
+            {
+              "name": "onStateChange",
+              "data": 2,
+              "nativeTime": 2.815969
+            }
+          ],
+          "status": "paused"
+        },
+        "after": {
+          "players": 1,
+          "time": 2.815969,
+          "state": 2,
+          "muted": false,
+          "volume": 100,
+          "videoId": "M7lc1UVf-VE",
+          "frame": {
+            "x": 16,
+            "y": 72.75,
+            "width": 358,
+            "height": 477.328125
+          },
+          "native": {
+            "src": "https://jakawi.club/__appearance-media.webm",
+            "time": 2.815969,
+            "duration": 11.914,
+            "paused": true,
+            "muted": false,
+            "decodedFrames": 33,
+            "audioTracks": 1
+          },
+          "events": [
+            {
+              "name": "onReady",
+              "nativeTime": 0
+            },
+            {
+              "name": "onStateChange",
+              "data": 1,
+              "nativeTime": 0.014748
+            },
+            {
+              "name": "onStateChange",
+              "data": 2,
+              "nativeTime": 0
+            },
+            {
+              "name": "onStateChange",
+              "data": 3,
+              "nativeTime": 0
+            },
+            {
+              "name": "onStateChange",
+              "data": 1,
+              "nativeTime": 0.015234
+            },
+            {
+              "name": "onStateChange",
+              "data": 2,
+              "nativeTime": 2.815969
+            }
+          ],
+          "status": "paused"
+        },
+        "verified": true
+      },
+      "replay": {
+        "ended": {
+          "players": 1,
+          "time": 11.914,
+          "state": 0,
+          "muted": false,
+          "volume": 100,
+          "videoId": "M7lc1UVf-VE",
+          "frame": {
+            "x": 16,
+            "y": 273.75,
+            "width": 358,
+            "height": 477.328125
+          },
+          "native": {
+            "src": "https://jakawi.club/__appearance-media.webm",
+            "time": 11.914,
+            "duration": 11.914,
+            "paused": true,
+            "muted": false,
+            "decodedFrames": 140,
+            "audioTracks": 1
+          },
+          "events": [
+            {
+              "name": "onReady",
+              "nativeTime": 0
+            },
+            {
+              "name": "onStateChange",
+              "data": 1,
+              "nativeTime": 0.014748
+            },
+            {
+              "name": "onStateChange",
+              "data": 2,
+              "nativeTime": 0
+            },
+            {
+              "name": "onStateChange",
+              "data": 3,
+              "nativeTime": 0
+            },
+            {
+              "name": "onStateChange",
+              "data": 1,
+              "nativeTime": 0.015234
+            },
+            {
+              "name": "onStateChange",
+              "data": 2,
+              "nativeTime": 2.815969
+            },
+            {
+              "name": "onStateChange",
+              "data": 1,
+              "nativeTime": 2.899761
+            },
+            {
+              "name": "onStateChange",
+              "data": 3,
+              "nativeTime": 0
+            },
+            {
+              "name": "onStateChange",
+              "data": 1,
+              "nativeTime": 0.01514
+            },
+            {
+              "name": "onStateChange",
+              "data": 2,
+              "nativeTime": 11.914
+            },
+            {
+              "name": "onStateChange",
+              "data": 0,
+              "nativeTime": 11.914
+            }
+          ],
+          "status": "ended"
+        },
+        "after": {
+          "players": 1,
+          "time": 0.385389,
+          "state": 1,
+          "muted": false,
+          "volume": 100,
+          "videoId": "M7lc1UVf-VE",
+          "frame": {
+            "x": 16,
+            "y": 273.75,
+            "width": 358,
+            "height": 477.328125
+          },
+          "native": {
+            "src": "https://jakawi.club/__appearance-media.webm",
+            "time": 0.385389,
+            "duration": 11.914,
+            "paused": false,
+            "muted": false,
+            "decodedFrames": 144,
+            "audioTracks": 1
+          },
+          "events": [
+            {
+              "name": "onReady",
+              "nativeTime": 0
+            },
+            {
+              "name": "onStateChange",
+              "data": 1,
+              "nativeTime": 0.014748
+            },
+            {
+              "name": "onStateChange",
+              "data": 2,
+              "nativeTime": 0
+            },
+            {
+              "name": "onStateChange",
+              "data": 3,
+              "nativeTime": 0
+            },
+            {
+              "name": "onStateChange",
+              "data": 1,
+              "nativeTime": 0.015234
+            },
+            {
+              "name": "onStateChange",
+              "data": 2,
+              "nativeTime": 2.815969
+            },
+            {
+              "name": "onStateChange",
+              "data": 1,
+              "nativeTime": 2.899761
+            },
+            {
+              "name": "onStateChange",
+              "data": 3,
+              "nativeTime": 0
+            },
+            {
+              "name": "onStateChange",
+              "data": 1,
+              "nativeTime": 0.01514
+            },
+            {
+              "name": "onStateChange",
+              "data": 2,
+              "nativeTime": 11.914
+            },
+            {
+              "name": "onStateChange",
+              "data": 0,
+              "nativeTime": 11.914
+            },
+            {
+              "name": "onStateChange",
+              "data": 3,
+              "nativeTime": 0
+            },
+            {
+              "name": "onStateChange",
+              "data": 1,
+              "nativeTime": 0.017459
+            }
+          ],
+          "status": "playing"
+        },
+        "verified": true
+      }
+    },
+    {
+      "width": 1440,
+      "before": {
+        "players": 1,
+        "time": 0.134602,
+        "state": 1,
+        "muted": true,
+        "volume": 100,
+        "videoId": "M7lc1UVf-VE",
+        "frame": {
+          "x": 847.984375,
+          "y": 187.5,
+          "width": 416,
+          "height": 554.65625
+        },
+        "native": {
+          "src": "https://jakawi.club/__appearance-media.webm",
+          "time": 0.134602,
+          "duration": 11.914,
+          "paused": false,
+          "muted": true,
+          "decodedFrames": 4,
+          "audioTracks": 1
+        },
+        "events": [
+          {
+            "name": "onReady",
+            "nativeTime": 0
+          },
+          {
+            "name": "onStateChange",
+            "data": 1,
+            "nativeTime": 0.001804
+          }
+        ],
+        "status": "playing"
+      },
+      "playing": {
+        "players": 1,
+        "time": 1.304604,
+        "state": 1,
+        "muted": true,
+        "volume": 100,
+        "videoId": "M7lc1UVf-VE",
+        "frame": {
+          "x": 847.984375,
+          "y": 187.5,
+          "width": 416,
+          "height": 554.65625
+        },
+        "native": {
+          "src": "https://jakawi.club/__appearance-media.webm",
+          "time": 1.304604,
+          "duration": 11.914,
+          "paused": false,
+          "muted": true,
+          "decodedFrames": 8,
+          "audioTracks": 1
+        },
+        "events": [
+          {
+            "name": "onReady",
+            "nativeTime": 0
+          },
+          {
+            "name": "onStateChange",
+            "data": 1,
+            "nativeTime": 0.001804
+          }
+        ],
+        "status": "playing"
+      },
+      "after": {
+        "players": 1,
+        "time": 1.512138,
+        "state": 1,
+        "muted": true,
+        "volume": 100,
+        "videoId": "M7lc1UVf-VE",
+        "frame": {
+          "x": 847.984375,
+          "y": 187.5,
+          "width": 416,
+          "height": 554.65625
+        },
+        "native": {
+          "src": "https://jakawi.club/__appearance-media.webm",
+          "time": 1.512138,
+          "duration": 11.914,
+          "paused": false,
+          "muted": true,
+          "decodedFrames": 10,
+          "audioTracks": 1
+        },
+        "events": [
+          {
+            "name": "onReady",
+            "nativeTime": 0
+          },
+          {
+            "name": "onStateChange",
+            "data": 1,
+            "nativeTime": 0.001804
+          }
+        ],
+        "status": "playing"
+      },
+      "light": {
+        "players": 1,
+        "time": 1.844921,
+        "state": 1,
+        "muted": true,
+        "volume": 100,
+        "videoId": "M7lc1UVf-VE",
+        "frame": {
+          "x": 847.984375,
+          "y": 187.5,
+          "width": 416,
+          "height": 554.65625
+        },
+        "native": {
+          "src": "https://jakawi.club/__appearance-media.webm",
+          "time": 1.844921,
+          "duration": 11.914,
+          "paused": false,
+          "muted": true,
+          "decodedFrames": 13,
+          "audioTracks": 1
+        },
+        "events": [
+          {
+            "name": "onReady",
+            "nativeTime": 0
+          },
+          {
+            "name": "onStateChange",
+            "data": 1,
+            "nativeTime": 0.001804
+          }
+        ],
+        "status": "playing"
+      },
+      "verified": true,
+      "audio": {
+        "before": {
+          "players": 1,
+          "time": 0.502807,
+          "state": 1,
+          "muted": false,
+          "volume": 100,
+          "videoId": "M7lc1UVf-VE",
+          "frame": {
+            "x": 847.984375,
+            "y": 187.5,
+            "width": 416,
+            "height": 554.65625
+          },
+          "native": {
+            "src": "https://jakawi.club/__appearance-media.webm",
+            "time": 0.502807,
+            "duration": 11.914,
+            "paused": false,
+            "muted": false,
+            "decodedFrames": 17,
+            "audioTracks": 1
+          },
+          "events": [
+            {
+              "name": "onReady",
+              "nativeTime": 0
+            },
+            {
+              "name": "onStateChange",
+              "data": 1,
+              "nativeTime": 0.001804
+            },
+            {
+              "name": "onStateChange",
+              "data": 2,
+              "nativeTime": 0
+            },
+            {
+              "name": "onStateChange",
+              "data": 3,
+              "nativeTime": 0
+            },
+            {
+              "name": "onStateChange",
+              "data": 1,
+              "nativeTime": 0
+            }
+          ],
+          "status": "playing"
+        },
+        "after": {
+          "players": 1,
+          "time": 0.917563,
+          "state": 1,
+          "muted": false,
+          "volume": 100,
+          "videoId": "M7lc1UVf-VE",
+          "frame": {
+            "x": 847.984375,
+            "y": 187.5,
+            "width": 416,
+            "height": 554.65625
+          },
+          "native": {
+            "src": "https://jakawi.club/__appearance-media.webm",
+            "time": 0.917563,
+            "duration": 11.914,
+            "paused": false,
+            "muted": false,
+            "decodedFrames": 21,
+            "audioTracks": 1
+          },
+          "events": [
+            {
+              "name": "onReady",
+              "nativeTime": 0
+            },
+            {
+              "name": "onStateChange",
+              "data": 1,
+              "nativeTime": 0.001804
+            },
+            {
+              "name": "onStateChange",
+              "data": 2,
+              "nativeTime": 0
+            },
+            {
+              "name": "onStateChange",
+              "data": 3,
+              "nativeTime": 0
+            },
+            {
+              "name": "onStateChange",
+              "data": 1,
+              "nativeTime": 0
+            }
+          ],
+          "status": "playing"
+        },
+        "verified": true
+      },
+      "pause": {
+        "before": {
+          "players": 1,
+          "time": 1.140849,
+          "state": 2,
+          "muted": false,
+          "volume": 100,
+          "videoId": "M7lc1UVf-VE",
+          "frame": {
+            "x": 847.984375,
+            "y": -4.5,
+            "width": 416,
+            "height": 554.65625
+          },
+          "native": {
+            "src": "https://jakawi.club/__appearance-media.webm",
+            "time": 1.140849,
+            "duration": 11.914,
+            "paused": true,
+            "muted": false,
+            "decodedFrames": 21,
+            "audioTracks": 1
+          },
+          "events": [
+            {
+              "name": "onReady",
+              "nativeTime": 0
+            },
+            {
+              "name": "onStateChange",
+              "data": 1,
+              "nativeTime": 0.001804
+            },
+            {
+              "name": "onStateChange",
+              "data": 2,
+              "nativeTime": 0
+            },
+            {
+              "name": "onStateChange",
+              "data": 3,
+              "nativeTime": 0
+            },
+            {
+              "name": "onStateChange",
+              "data": 1,
+              "nativeTime": 0
+            },
+            {
+              "name": "onStateChange",
+              "data": 2,
+              "nativeTime": 1.140849
+            }
+          ],
+          "status": "paused"
+        },
+        "after": {
+          "players": 1,
+          "time": 1.140849,
+          "state": 2,
+          "muted": false,
+          "volume": 100,
+          "videoId": "M7lc1UVf-VE",
+          "frame": {
+            "x": 847.984375,
+            "y": -4.5,
+            "width": 416,
+            "height": 554.65625
+          },
+          "native": {
+            "src": "https://jakawi.club/__appearance-media.webm",
+            "time": 1.140849,
+            "duration": 11.914,
+            "paused": true,
+            "muted": false,
+            "decodedFrames": 21,
+            "audioTracks": 1
+          },
+          "events": [
+            {
+              "name": "onReady",
+              "nativeTime": 0
+            },
+            {
+              "name": "onStateChange",
+              "data": 1,
+              "nativeTime": 0.001804
+            },
+            {
+              "name": "onStateChange",
+              "data": 2,
+              "nativeTime": 0
+            },
+            {
+              "name": "onStateChange",
+              "data": 3,
+              "nativeTime": 0
+            },
+            {
+              "name": "onStateChange",
+              "data": 1,
+              "nativeTime": 0
+            },
+            {
+              "name": "onStateChange",
+              "data": 2,
+              "nativeTime": 1.140849
+            }
+          ],
+          "status": "paused"
+        },
+        "verified": true
+      },
+      "replay": {
+        "ended": {
+          "players": 1,
+          "time": 11.914,
+          "state": 0,
+          "muted": false,
+          "volume": 100,
+          "videoId": "M7lc1UVf-VE",
+          "frame": {
+            "x": 847.984375,
+            "y": 187.5,
+            "width": 416,
+            "height": 554.65625
+          },
+          "native": {
+            "src": "https://jakawi.club/__appearance-media.webm",
+            "time": 11.914,
+            "duration": 11.914,
+            "paused": true,
+            "muted": false,
+            "decodedFrames": 128,
+            "audioTracks": 1
+          },
+          "events": [
+            {
+              "name": "onReady",
+              "nativeTime": 0
+            },
+            {
+              "name": "onStateChange",
+              "data": 1,
+              "nativeTime": 0.001804
+            },
+            {
+              "name": "onStateChange",
+              "data": 2,
+              "nativeTime": 0
+            },
+            {
+              "name": "onStateChange",
+              "data": 3,
+              "nativeTime": 0
+            },
+            {
+              "name": "onStateChange",
+              "data": 1,
+              "nativeTime": 0
+            },
+            {
+              "name": "onStateChange",
+              "data": 2,
+              "nativeTime": 1.140849
+            },
+            {
+              "name": "onStateChange",
+              "data": 1,
+              "nativeTime": 1.220359
+            },
+            {
+              "name": "onStateChange",
+              "data": 3,
+              "nativeTime": 0
+            },
+            {
+              "name": "onStateChange",
+              "data": 1,
+              "nativeTime": 0
+            },
+            {
+              "name": "onStateChange",
+              "data": 2,
+              "nativeTime": 11.914
+            },
+            {
+              "name": "onStateChange",
+              "data": 0,
+              "nativeTime": 11.914
+            }
+          ],
+          "status": "ended"
+        },
+        "after": {
+          "players": 1,
+          "time": 0.305091,
+          "state": 1,
+          "muted": false,
+          "volume": 100,
+          "videoId": "M7lc1UVf-VE",
+          "frame": {
+            "x": 847.984375,
+            "y": 187.5,
+            "width": 416,
+            "height": 554.65625
+          },
+          "native": {
+            "src": "https://jakawi.club/__appearance-media.webm",
+            "time": 0.305091,
+            "duration": 11.914,
+            "paused": false,
+            "muted": false,
+            "decodedFrames": 132,
+            "audioTracks": 1
+          },
+          "events": [
+            {
+              "name": "onReady",
+              "nativeTime": 0
+            },
+            {
+              "name": "onStateChange",
+              "data": 1,
+              "nativeTime": 0.001804
+            },
+            {
+              "name": "onStateChange",
+              "data": 2,
+              "nativeTime": 0
+            },
+            {
+              "name": "onStateChange",
+              "data": 3,
+              "nativeTime": 0
+            },
+            {
+              "name": "onStateChange",
+              "data": 1,
+              "nativeTime": 0
+            },
+            {
+              "name": "onStateChange",
+              "data": 2,
+              "nativeTime": 1.140849
+            },
+            {
+              "name": "onStateChange",
+              "data": 1,
+              "nativeTime": 1.220359
+            },
+            {
+              "name": "onStateChange",
+              "data": 3,
+              "nativeTime": 0
+            },
+            {
+              "name": "onStateChange",
+              "data": 1,
+              "nativeTime": 0
+            },
+            {
+              "name": "onStateChange",
+              "data": 2,
+              "nativeTime": 11.914
+            },
+            {
+              "name": "onStateChange",
+              "data": 0,
+              "nativeTime": 11.914
+            },
+            {
+              "name": "onStateChange",
+              "data": 3,
+              "nativeTime": 0
+            },
+            {
+              "name": "onStateChange",
+              "data": 1,
+              "nativeTime": 0
+            }
+          ],
+          "status": "playing"
+        },
+        "verified": true
+      }
+    }
+  ]
+}

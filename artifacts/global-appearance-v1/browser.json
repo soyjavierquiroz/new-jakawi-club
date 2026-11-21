@@ -942,7 +942,8 @@
     "editor modal and real iframe preview follow appearance without reload",
     "account save error remains readable on a public mobile landing",
     "native two-tab guest and scoped account synchronization",
-    "cookie fallback when localStorage is denied"
+    "cookie fallback when localStorage is denied",
+    "real WebM playback through QA transport: autoplay, audio, pause, replay and appearance at 390/1440"
   ],
   "contrast": [
     {
@@ -1598,5 +1599,7 @@
   ],
   "no_live_mutations": true,
   "manifest_sha256": "6c4e74de0b3eb78307c639bc838232e9236842b8c17236aa66eda5c588799ca3",
-  "video_verified": false
+  "video_verified": true,
+  "video_verification_scope": "Real local WebM with native playback clocks and audio; QA transport adapter only",
+  "external_youtube_verified": false
 }

@@ -315,3 +315,6 @@ credentials.json
 /artifacts/global-appearance-v1/LIVE.json
 /artifacts/global-appearance-v1/private-*
 /artifacts/global-appearance-v1/CANDIDATE.json
+/artifacts/global-appearance-v1/qa-video.webm
+/artifacts/global-appearance-v1/live-*.png
+/artifacts/global-appearance-v1/live-browser.json
