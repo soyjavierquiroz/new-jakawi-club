@@ -12,13 +12,10 @@
             <link rel="canonical" data-inertia="canonical" href="{{ rtrim(config('app.url'), '/') }}/activar">
         @endif
         <link rel="icon" href="/jakawi-mark.svg" type="image/svg+xml">
+        <meta name="csrf-token" content="{{ csrf_token() }}">
         <script>
-            // Resolve CLUB's own preference before styles or content can paint.
-            (() => {
-                let mode = 'system';
-                try { mode = localStorage.getItem('jakawi.club.appearance') || 'system'; } catch {}
-                document.documentElement.dataset.accountTheme = mode === 'dark' || (mode !== 'light' && matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
-            })();
+            window.__appearance = @json(['identity' => request()->user()?->uuid, 'preference' => request()->user()?->theme_preference ?? 'system']);
+            {!! file_get_contents(resource_path('js/appearance-bootstrap.js')) !!}
         </script>
         @viteReactRefresh
         @vite('resources/js/app.tsx')

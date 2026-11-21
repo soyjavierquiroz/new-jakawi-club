@@ -1,3 +1,4 @@
+import AccountTheme from '../components/AccountTheme';
 import { Head, usePage } from '@inertiajs/react';
 import { useRef } from 'react';
 import { CommunityWhatsAppIcon } from '../components/CommunityWhatsAppIcon';
@@ -32,7 +33,7 @@ export default function Registered({ confirmation }: { confirmation: Confirmatio
     }
 
     return <><Head title="Felicidades por tu registro"><meta name="robots" content="noindex, nofollow" /></Head>
-        <main className="shell confirmation-page">
+        <main className="shell confirmation-page"><AccountTheme />
             {preview && <p className="message confirmation-preview" role="status">Vista previa del borrador · después del registro. Sin altas ni navegación automática.</p>}
             <div className="confirmation-intro">
                 <p className="eyebrow">REGISTRO RECIBIDO</p>

@@ -1,0 +1,9 @@
+{
+  "custom_archive_readable": true,
+  "toc_entries": 298,
+  "bytes": 361725,
+  "isolated_restore_pass": true,
+  "additive_migration_on_live_backup_pass": true,
+  "users_id_bigint": true,
+  "new_preferences_system": true
+}

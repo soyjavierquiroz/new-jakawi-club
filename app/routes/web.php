@@ -146,3 +146,5 @@ Route::get('/a/{code}/{target}', [\App\Http\Controllers\PartnerAffiliateControll
 foreach (Route::getRoutes() as $browserRoute) {
     $browserRoute->block(30, 10);
 }
+
+Route::patch('/settings/appearance', [\App\Http\Controllers\AppearanceController::class, 'update'])->middleware('auth')->name('appearance.update');

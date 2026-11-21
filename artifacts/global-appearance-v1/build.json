@@ -1,0 +1,9 @@
+{
+  "typecheck_and_build_pass": true,
+  "commands": [
+    "npm run typecheck",
+    "npm run build -- --outDir public/build-next"
+  ],
+  "exit_code": 0,
+  "manifest_sha256": "6c4e74de0b3eb78307c639bc838232e9236842b8c17236aa66eda5c588799ca3"
+}

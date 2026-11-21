@@ -59,19 +59,83 @@
     --space-content-cta: 1rem;
 }
 
-/* The official light marketing context. No product or dark-mode selectors. */
-[data-marketing-theme="light-conversion"] {
-    --marketing-background: var(--cream);
-    --marketing-text: var(--ink);
-    --marketing-action: var(--brand);
-    --marketing-action-text: var(--palette-light-surface-raised);
-    --background: var(--marketing-background);
-    --foreground: var(--marketing-text);
-    --brand-foreground: var(--marketing-action-text);
-    --primary: var(--marketing-action);
-    --primary-foreground: var(--marketing-action-text);
-    --input: var(--foreground);
+/* Historical composition attributes never select a palette. */
+:root {
+    --primary: #bf392f;
+    --primary-foreground: #ffffff;
+    --primary-hover: #a52e25;
+    --brand-foreground: #ffffff;
+    --action-text: #b73229;
+    --success-text: #176b47;
+    --warning-text: #775300;
+    --danger-text: #b42318;
+    --info: #205e9c;
+    --input: #81756c;
+    --ring: #b73229;
+    --account-whatsapp-text: #377a1a;
+    --marketing-background: var(--background);
+    --marketing-text: var(--foreground);
+    --marketing-action: var(--primary);
+    --marketing-action-text: var(--primary-foreground);
+    --card: var(--surface);
+    --card-foreground: var(--foreground);
+    --surface-muted: var(--surface-subtle);
+    --muted-foreground: var(--text-secondary);
+    --popover: var(--surface-raised);
+    --popover-foreground: var(--foreground);
+    --secondary: var(--surface-subtle);
+    --secondary-foreground: var(--foreground);
+    --sidebar: var(--surface-raised);
+    --sidebar-foreground: var(--foreground);
+    --sidebar-border: var(--border);
+    --sidebar-accent: var(--brand-subtle);
+    --sidebar-accent-foreground: var(--foreground);
+    --admin-background: var(--background);
+    --admin-foreground: var(--foreground);
+    --admin-surface: var(--surface);
+    --admin-border: var(--border);
+    --table: var(--surface);
+    --table-header: var(--surface-subtle);
+    --alert: var(--surface-subtle);
+    --warning-surface: #fff0be;
+    --danger-surface: #ffebe7;
+    --destructive: var(--danger-text);
+    --chart-1: var(--action-text);
+    --chart-2: #866000;
+    --chart-3: var(--success-text);
+    --chart-4: #965113;
+    --chart-5: var(--info);
     color-scheme: light;
+}
+html.dark {
+    --background: #111111;
+    --foreground: #f8f5f2;
+    --surface: #1c1c1c;
+    --surface-raised: #202020;
+    --surface-subtle: #272727;
+    --text-primary: #f8f5f2;
+    --text-secondary: #c8c2bd;
+    --text-muted: #aea59f;
+    --border: #49433f;
+    --border-strong: #81766e;
+    --input: #81766e;
+    --ring: #ff9388;
+    --brand-subtle: #39211f;
+    --action-text: #ff9388;
+    --success-text: #a9efcf;
+    --success-surface: #18382c;
+    --success-foreground: #a9efcf;
+    --warning-text: #ffe08a;
+    --warning-surface: #3d3015;
+    --danger: #ff9388;
+    --danger-text: #ff9388;
+    --danger-surface: #432421;
+    --info: #9acbff;
+    --chart-2: #ffe08a;
+    --chart-4: #ffc185;
+    --account-whatsapp-text: #9ed58a;
+    --shadow: 0 8px 24px rgb(0 0 0 / 16%);
+    color-scheme: dark;
 }
 
 @theme {
@@ -103,6 +167,8 @@
     --color-success-foreground: var(--success-foreground);
     --color-reward: var(--reward);
     --color-danger: var(--danger);
+    --color-warning-text: var(--warning-text);
+    --color-warning-surface: var(--warning-surface);
     --color-input: var(--input);
     --color-ring: var(--ring);
     --shadow-editorial: var(--shadow);
@@ -114,10 +180,6 @@
 
 /* Administrative controls keep the official palette and readable white labels. */
 .admin-shell {
-    --surface: var(--surface-raised);
-    --primary: #d34035;
-    --primary-foreground: var(--surface-raised);
-    --primary-hover: color-mix(in srgb, var(--primary) 90%, var(--ink));
     font-family: var(--font-discovery);
 }
 .admin-shell .btn-primary { font-size: .875rem; }
@@ -129,35 +191,8 @@
     .admin-shell .btn[aria-controls='admin-menu'] { display: none; }
 }
 
-/* Account only: marketing and administration retain their existing contexts. */
-html[data-account-context] {
-    --background: #fff8f2;
-    --foreground: #111111;
-    --surface: #ffffff;
-    --primary: #d34035;
-    --primary-foreground: #ffffff;
-    --primary-hover: #b83229;
-    --input: var(--border-strong);
-    --brand-foreground: #ffffff;
-    --account-whatsapp-text: #377a1a;
-    color-scheme: light;
-}
-html[data-account-context][data-account-theme='dark'] {
-    --background: #111111;
-    --foreground: #f8f5f2;
-    --surface: #1c1c1c;
-    --surface-raised: #202020;
-    --surface-subtle: #272727;
-    --text-primary: #f8f5f2;
-    --text-secondary: #c8c2bd;
-    --text-muted: #aea59f;
-    --border: #363330;
-    --border-strong: #655e58;
-    --brand-subtle: #39211f;
-    --success-surface: #18382c;
-    --success-foreground: #a9efcf;
-    --danger: #ff9388;
-    --account-whatsapp-text: #9ed58a;
-    --shadow: 0 8px 24px rgb(0 0 0 / 16%);
-    color-scheme: dark;
-}
+
+/* Text uses contrast variants; decoration keeps the JAKAWI palette. */
+@utility text-brand { color: var(--action-text); }
+@utility text-success { color: var(--success-text); }
+@utility text-reward { color: var(--warning-text); }

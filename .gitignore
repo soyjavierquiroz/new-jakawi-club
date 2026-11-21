@@ -310,3 +310,8 @@ credentials.json
 /artifacts/webinar-cta/meta/*fixture*.json
 /artifacts/webinar-cta/*.png
 /artifacts/webinar-cta/LIVE.json
+
+/artifacts/global-appearance-v1/*fixtures.json
+/artifacts/global-appearance-v1/LIVE.json
+/artifacts/global-appearance-v1/private-*
+/artifacts/global-appearance-v1/CANDIDATE.json

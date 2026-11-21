@@ -1,0 +1,372 @@
+{
+  "checks": [
+    {
+      "name": "LEAD_VSL",
+      "width": 1440,
+      "mode": "dark",
+      "overflow": false,
+      "inputs": [
+        {
+          "bg": "rgb(39, 39, 39)",
+          "fg": "rgb(200, 194, 189)"
+        },
+        {
+          "bg": "rgb(39, 39, 39)",
+          "fg": "rgb(200, 194, 189)"
+        },
+        {
+          "bg": "rgb(39, 39, 39)",
+          "fg": "rgb(200, 194, 189)"
+        }
+      ]
+    },
+    {
+      "name": "WEBINAR",
+      "width": 1440,
+      "mode": "dark",
+      "overflow": false,
+      "inputs": [
+        {
+          "bg": "rgb(32, 32, 32)",
+          "fg": "rgb(200, 194, 189)"
+        },
+        {
+          "bg": "rgb(32, 32, 32)",
+          "fg": "rgb(200, 194, 189)"
+        },
+        {
+          "bg": "rgb(32, 32, 32)",
+          "fg": "rgb(200, 194, 189)"
+        }
+      ]
+    },
+    {
+      "name": "WAITLIST",
+      "width": 1440,
+      "mode": "dark",
+      "overflow": false,
+      "inputs": [
+        {
+          "bg": "rgb(39, 39, 39)",
+          "fg": "rgb(200, 194, 189)"
+        },
+        {
+          "bg": "rgb(39, 39, 39)",
+          "fg": "rgb(200, 194, 189)"
+        },
+        {
+          "bg": "rgb(39, 39, 39)",
+          "fg": "rgb(200, 194, 189)"
+        }
+      ]
+    },
+    {
+      "name": "login",
+      "width": 1440,
+      "mode": "dark",
+      "overflow": false,
+      "inputs": [
+        {
+          "bg": "rgb(28, 28, 28)",
+          "fg": "rgb(248, 245, 242)"
+        },
+        {
+          "bg": "rgb(28, 28, 28)",
+          "fg": "rgb(248, 245, 242)"
+        }
+      ]
+    },
+    {
+      "name": "recovery",
+      "width": 1440,
+      "mode": "dark",
+      "overflow": false,
+      "inputs": [
+        {
+          "bg": "rgb(28, 28, 28)",
+          "fg": "rgb(248, 245, 242)"
+        }
+      ]
+    },
+    {
+      "name": "activation",
+      "width": 1440,
+      "mode": "dark",
+      "overflow": false,
+      "inputs": [
+        {
+          "bg": "rgb(28, 28, 28)",
+          "fg": "rgb(248, 245, 242)"
+        }
+      ]
+    },
+    {
+      "name": "reset",
+      "width": 1440,
+      "mode": "dark",
+      "overflow": false,
+      "inputs": [
+        {
+          "bg": "rgb(28, 28, 28)",
+          "fg": "rgb(248, 245, 242)"
+        },
+        {
+          "bg": "rgb(28, 28, 28)",
+          "fg": "rgb(248, 245, 242)"
+        },
+        {
+          "bg": "rgb(28, 28, 28)",
+          "fg": "rgb(248, 245, 242)"
+        }
+      ]
+    },
+    {
+      "name": "confirmation",
+      "width": 1440,
+      "mode": "dark",
+      "overflow": false,
+      "inputs": []
+    },
+    {
+      "name": "membership",
+      "width": 1440,
+      "mode": "dark",
+      "overflow": false,
+      "inputs": [
+        {
+          "bg": "rgb(28, 28, 28)",
+          "fg": "rgb(248, 245, 242)"
+        },
+        {
+          "bg": "rgb(28, 28, 28)",
+          "fg": "rgb(248, 245, 242)"
+        },
+        {
+          "bg": "rgb(28, 28, 28)",
+          "fg": "rgb(248, 245, 242)"
+        }
+      ]
+    },
+    {
+      "name": "account",
+      "width": 1440,
+      "mode": "dark",
+      "overflow": false,
+      "inputs": [
+        {
+          "bg": "rgb(28, 28, 28)",
+          "fg": "rgb(248, 245, 242)"
+        }
+      ]
+    },
+    {
+      "name": "affiliates",
+      "width": 1440,
+      "mode": "dark",
+      "overflow": false,
+      "inputs": [
+        {
+          "bg": "rgb(28, 28, 28)",
+          "fg": "rgb(248, 245, 242)"
+        },
+        {
+          "bg": "rgb(28, 28, 28)",
+          "fg": "rgb(248, 245, 242)"
+        },
+        {
+          "bg": "rgb(28, 28, 28)",
+          "fg": "rgb(248, 245, 242)"
+        }
+      ]
+    },
+    {
+      "name": "admin",
+      "width": 1440,
+      "mode": "dark",
+      "overflow": false,
+      "inputs": []
+    },
+    {
+      "name": "support",
+      "width": 1440,
+      "mode": "dark",
+      "overflow": false,
+      "inputs": []
+    },
+    {
+      "name": "editor",
+      "width": 1440,
+      "mode": "dark",
+      "overflow": false,
+      "inputs": [
+        {
+          "bg": "rgb(28, 28, 28)",
+          "fg": "rgb(248, 245, 242)"
+        },
+        {
+          "bg": "rgb(28, 28, 28)",
+          "fg": "rgb(248, 245, 242)"
+        },
+        {
+          "bg": "rgb(28, 28, 28)",
+          "fg": "rgb(248, 245, 242)"
+        }
+      ]
+    },
+    {
+      "name": "preview",
+      "width": 1440,
+      "mode": "dark",
+      "overflow": false,
+      "inputs": [
+        {
+          "bg": "rgb(39, 39, 39)",
+          "fg": "rgb(200, 194, 189)"
+        },
+        {
+          "bg": "rgb(39, 39, 39)",
+          "fg": "rgb(200, 194, 189)"
+        },
+        {
+          "bg": "rgb(39, 39, 39)",
+          "fg": "rgb(200, 194, 189)"
+        }
+      ]
+    }
+  ],
+  "contrast": [
+    {
+      "mode": "light",
+      "rows": [
+        {
+          "a": "--foreground",
+          "b": "--background",
+          "ratio": 17.94890842329302,
+          "minimum": 4.5
+        },
+        {
+          "a": "--text-secondary",
+          "b": "--surface",
+          "ratio": 8.557909772330454,
+          "minimum": 4.5
+        },
+        {
+          "a": "--text-muted",
+          "b": "--surface",
+          "ratio": 5.4371022457613245,
+          "minimum": 4.5
+        },
+        {
+          "a": "--primary-foreground",
+          "b": "--primary",
+          "ratio": 5.4665130646098286,
+          "minimum": 4.5
+        },
+        {
+          "a": "--action-text",
+          "b": "--surface",
+          "ratio": 5.902826867792163,
+          "minimum": 4.5
+        },
+        {
+          "a": "--success-text",
+          "b": "--success-surface",
+          "ratio": 5.331176781646843,
+          "minimum": 4.5
+        },
+        {
+          "a": "--danger-text",
+          "b": "--danger-surface",
+          "ratio": 5.725653354012345,
+          "minimum": 4.5
+        },
+        {
+          "a": "--warning-text",
+          "b": "--warning-surface",
+          "ratio": 6.109023307211391,
+          "minimum": 4.5
+        },
+        {
+          "a": "--input",
+          "b": "--surface",
+          "ratio": 4.403045330961893,
+          "minimum": 3
+        },
+        {
+          "a": "--ring",
+          "b": "--background",
+          "ratio": 5.700383010101148,
+          "minimum": 3
+        }
+      ]
+    },
+    {
+      "mode": "dark",
+      "rows": [
+        {
+          "a": "--foreground",
+          "b": "--background",
+          "ratio": 17.385378692722036,
+          "minimum": 4.5
+        },
+        {
+          "a": "--text-secondary",
+          "b": "--surface",
+          "ratio": 9.66318565093076,
+          "minimum": 4.5
+        },
+        {
+          "a": "--text-muted",
+          "b": "--surface",
+          "ratio": 7.046024838154954,
+          "minimum": 4.5
+        },
+        {
+          "a": "--primary-foreground",
+          "b": "--primary",
+          "ratio": 5.4665130646098286,
+          "minimum": 4.5
+        },
+        {
+          "a": "--action-text",
+          "b": "--surface",
+          "ratio": 7.937547205284951,
+          "minimum": 4.5
+        },
+        {
+          "a": "--success-text",
+          "b": "--success-surface",
+          "ratio": 9.711027066879709,
+          "minimum": 4.5
+        },
+        {
+          "a": "--danger-text",
+          "b": "--danger-surface",
+          "ratio": 6.464769561968744,
+          "minimum": 4.5
+        },
+        {
+          "a": "--warning-text",
+          "b": "--warning-surface",
+          "ratio": 9.976080301223929,
+          "minimum": 4.5
+        },
+        {
+          "a": "--input",
+          "b": "--surface",
+          "ratio": 3.854717962911201,
+          "minimum": 3
+        },
+        {
+          "a": "--ring",
+          "b": "--background",
+          "ratio": 8.79501232259902,
+          "minimum": 3
+        }
+      ]
+    }
+  ],
+  "no_live_mutations": true,
+  "saved_intercepted": 9,
+  "manifest_sha256": "6c4e74de0b3eb78307c639bc838232e9236842b8c17236aa66eda5c588799ca3"
+}

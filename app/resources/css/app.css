@@ -9,11 +9,11 @@
 .landing-preview-frame { display: block; height: 820px; min-width: 390px; border: 0; margin-inline: auto; background: var(--background); }
 
 @layer base {
-    html { color-scheme: light; background: var(--background); scroll-behavior: smooth; scroll-padding-top: 1.5rem; }
+    html { background: var(--background); scroll-behavior: smooth; scroll-padding-top: 1.5rem; }
     body { margin: 0; font-family: var(--font-discovery); color: var(--foreground); -webkit-font-smoothing: antialiased; }
     button, summary, a { -webkit-tap-highlight-color: transparent; }
     button:not(:disabled), summary { cursor: pointer; }
-    button:disabled { cursor: not-allowed; opacity: .5; }
+    button:disabled { cursor: not-allowed; opacity: 1; background: var(--surface-subtle); color: var(--text-secondary); border-color: var(--border-strong); }
     :focus-visible { outline: 2px solid var(--foreground); outline-offset: 4px; }
     ::selection { background: var(--reward); color: var(--ink); }
     h1, h2, h3, p { overflow-wrap: break-word; }
@@ -75,7 +75,7 @@
 .confirmation-whatsapp-cta { width: 100%; min-height: 64px; padding: 1rem 1.25rem; font-size: .875rem; box-shadow: 0 8px 24px rgb(37 211 102 / 16%); animation: confirmation-whatsapp-bounce 5s ease-in-out infinite; }
 .confirmation-whatsapp-cta:hover, .confirmation-whatsapp-cta:focus-visible { animation-play-state: paused; }
 .confirmation-email { display: grid; width: 100%; max-width: 35rem; justify-items: center; gap: .875rem; padding: clamp(1.5rem, 4vw, 2rem); border: 1px solid var(--border); border-radius: var(--radius-card); background: var(--surface); }
-.confirmation-email-icon { color: var(--ink); }
+.confirmation-email-icon { color: var(--foreground); }
 .confirmation-email h2 { font-size: 1.375rem; font-weight: 800; letter-spacing: -.025em; }
 .confirmation-email p { max-width: 28rem; color: var(--text-secondary); font-size: .875rem; line-height: 1.8; }
 .confirmation-note { color: var(--text-muted); font-size: .75rem; }
@@ -106,7 +106,7 @@
 .hero-eyebrow { display: flex; align-items: center; justify-content: center; gap: .6rem; font-size: .625rem; letter-spacing: .13em; }
 .conversion-title { margin-top: 1rem; font-size: clamp(2.6rem, 5vw, 4.25rem); font-weight: 800; letter-spacing: -.055em; line-height: 1.04; }
 .hero-emphasis { text-decoration: underline; text-decoration-color: var(--brand); text-decoration-thickness: .07em; text-underline-offset: .14em; }
-.benefit-number { display: inline-grid; width: 2.5rem; height: 2.5rem; place-items: center; border-radius: var(--radius-control); background: var(--brand-subtle); color: var(--ink); font-size: .75rem; font-weight: 800; }
+.benefit-number { display: inline-grid; width: 2.5rem; height: 2.5rem; place-items: center; border-radius: var(--radius-control); background: var(--brand-subtle); color: var(--foreground); font-size: .75rem; font-weight: 800; }
 .final-cta { background: var(--ink); color: var(--cream); }
 .final-cta .btn-primary { background: var(--marketing-action); color: var(--marketing-action-text); }
 .final-cta .btn-primary:focus-visible { outline-color: var(--cream); }
@@ -130,7 +130,7 @@
 .country-close { width: 44px; min-height: 44px; border-radius: var(--radius-control); background: var(--surface-subtle); }
 .country-list { margin-top: .75rem; max-height: min(19rem, 38dvh); overflow-y: auto; overscroll-behavior: contain; }
 .country-list [role="option"] { display: flex; min-height: 48px; align-items: center; gap: .65rem; border-radius: .5rem; padding: .75rem .6rem; font-family: var(--font-sans); font-size: 1rem; cursor: pointer; }
-.country-list [data-active="true"] { background: var(--brand-subtle); box-shadow: inset 0 0 0 1px var(--ink); }
+.country-list [data-active="true"] { background: var(--brand-subtle); box-shadow: inset 0 0 0 1px var(--foreground); }
 @media (min-width: 640px) {
     .conversion-hero { padding-top: 2.5rem; padding-bottom: 2rem; }
     .hero-eyebrow { font-size: .75rem; }
@@ -151,7 +151,7 @@
 .editor-save-bar { position: sticky; top: 0; z-index: 5; padding: 1rem; border: 1px solid var(--border); border-radius: var(--radius-control); background: var(--background); box-shadow: var(--shadow); }
 .editor-stage-tabs, .editor-page-urls { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .75rem; }
 .editor-stage-tabs .btn { padding-inline: .75rem; font-size: .75rem; }
-.editor-stage-tabs [aria-selected="true"] { background: var(--brand-subtle); border-color: var(--ink); }
+.editor-stage-tabs [aria-selected="true"] { background: var(--brand-subtle); border-color: var(--foreground); }
 .editor-save-bar .btn { font-size: .875rem; }
 .editor-save-actions { display: flex; flex-wrap: wrap; align-items: center; gap: .75rem; }
 .editor-preview-action { min-height: 32px; padding: .25rem; font-size: .75rem; font-weight: 700; text-decoration: underline; }
@@ -163,7 +163,7 @@
 .landing-preview-stage { position: relative; overflow: hidden; }
 .landing-preview-frame { position: absolute; inset: 0 auto auto 0; margin: 0; transform-origin: top left; }
 .editor-mobile-tabs { display: flex; gap: .75rem; }
-.editor-mobile-tabs [aria-pressed="true"], [aria-label="Ancho de la vista previa"] [aria-pressed="true"] { background: var(--brand-subtle); border-color: var(--ink); }
+.editor-mobile-tabs [aria-pressed="true"], [aria-label="Ancho de la vista previa"] [aria-pressed="true"] { background: var(--brand-subtle); border-color: var(--foreground); }
 .editor-tool-dialog { width: min(52rem, calc(100vw - 2rem)); max-height: calc(100dvh - 2rem); margin: auto; padding: 1.5rem; overflow: auto; border: 1px solid var(--border); border-radius: var(--radius-card); background: var(--surface); color: var(--foreground); box-shadow: var(--shadow); }
 .editor-tool-dialog::backdrop { background: color-mix(in srgb, var(--ink) 50%, transparent); }
 .compact-hero { grid-template-columns: minmax(0, 1fr); grid-template-areas: 'heading' 'copy' 'media'; grid-template-rows: auto; text-align: center; gap: 1.5rem; }
@@ -232,7 +232,7 @@ main[data-landing-template=WEBINAR] [data-vsl-progress=decorative] > div { backg
 }
 
 /* WEBINAR editorial defaults; other templates and confirmation keep their theme. */
-main[data-landing-template=WEBINAR] { --text-secondary: var(--palette-light-text-secondary); }
+
 main[data-landing-template=WEBINAR] .section-space { padding-block: 2.5rem; }
 main[data-landing-template=WEBINAR] .section-title { font-size: clamp(2rem, 3.5vw, 3rem); line-height: 1.12; }
 main[data-landing-template=WEBINAR] .feature-card { padding: 1.5rem; }
@@ -247,13 +247,13 @@ main[data-landing-template=WEBINAR] .benefit-number { background: var(--reward);
 .webinar-date-pending { margin-top: 1.25rem; }
 .webinar-date-pending > p + p { margin-top: .5rem; color: var(--text-secondary); }
 .webinar-countdown { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .75rem; max-width: 34rem; margin-top: 1.5rem; }
-.webinar-countdown > div { padding: .875rem .5rem; border: 1px solid var(--border); border-radius: var(--radius-control); background: color-mix(in srgb, var(--reward) 28%, var(--cream)); text-align: center; }
+.webinar-countdown > div { padding: .875rem .5rem; border: 1px solid var(--border); border-radius: var(--radius-control); background: color-mix(in srgb, var(--reward) 12%, var(--surface)); text-align: center; }
 .webinar-countdown > div > span:first-child { font-size: clamp(1.25rem, 3vw, 2rem); line-height: 1.1; letter-spacing: -.04em; }
 .webinar-countdown > div > span:last-child { display: block; margin-top: .375rem; font-size: .8125rem; color: var(--text-secondary); }
-[data-webinar-section=opportunity] { margin-block: 1.5rem; background: var(--ink); color: var(--surface-raised); }
+[data-webinar-section=opportunity] { margin-block: 1.5rem; background: var(--surface-subtle); color: var(--foreground); }
 [data-webinar-section=opportunity] section::before { content: ''; display: block; width: 3rem; height: 5px; margin-bottom: 1.25rem; background: var(--brand); }
 [data-webinar-section=opportunity] .section-title { max-width: 48rem; font-size: clamp(2.25rem, 4.5vw, 3.75rem); }
-[data-webinar-section=opportunity] p { color: var(--cream); font-size: 1.125rem; line-height: 1.75; }
+[data-webinar-section=opportunity] p { color: var(--text-secondary); font-size: 1.125rem; line-height: 1.75; }
 .webinar-steps { display: grid; position: relative; gap: 1.5rem; margin-top: 2rem; }
 main[data-landing-template=WEBINAR] .webinar-steps > li { position: relative; display: grid; grid-template-columns: 44px minmax(0, 1fr); column-gap: 1rem; padding: 0; border: 0; background: transparent; box-shadow: none; }
 .webinar-steps > li::before { content: ''; position: absolute; top: 44px; bottom: -1.5rem; left: 21px; border-left: 2px solid var(--border-strong); }
@@ -262,18 +262,18 @@ main[data-landing-template=WEBINAR] .webinar-steps > li { position: relative; di
 .webinar-steps > li > svg { position: absolute; top: 12px; right: 0; width: 18px; color: var(--text-muted); }
 .webinar-steps h3, .webinar-steps p { grid-column: 2; }
 .webinar-steps h3 { margin-top: .5rem; padding-right: 1.5rem; }
-main[data-landing-template=WEBINAR] .registration-section { background: var(--cream); }
+main[data-landing-template=WEBINAR] .registration-section { background: var(--background); }
 main[data-landing-template=WEBINAR] #registro { padding: clamp(1.5rem, 4vw, 2.25rem); background: var(--surface-raised); border-color: var(--border-strong); }
 main[data-landing-template=WEBINAR] #registration-form-title { font-size: 1.5rem; line-height: 1.2; }
 main[data-landing-template=WEBINAR] #registro .input { min-height: 52px; background: var(--surface-raised); font-size: 1rem; }
-main[data-landing-template=WEBINAR] #registro button[type=submit] { min-height: 56px; font-size: 1rem; background: var(--brand); }
+main[data-landing-template=WEBINAR] #registro button[type=submit] { min-height: 56px; font-size: 1rem; background: var(--primary); }
 main[data-landing-template=WEBINAR] #registro .text-xs { font-size: .8125rem; }
 main[data-landing-template=WEBINAR] .faq-item p { font-size: 1rem; line-height: 1.75; }
 @media (min-width: 768px) {
     .webinar-steps { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2rem; }
     main[data-landing-template=WEBINAR] .webinar-steps > li { display: block; }
     .webinar-steps > li::before { top: 21px; bottom: auto; left: 44px; width: calc(100% + 2rem - 44px); border-left: 0; border-top: 2px solid var(--border-strong); }
-    .webinar-steps > li > svg { right: 0; background: var(--cream); }
+    .webinar-steps > li > svg { right: 0; background: var(--background); }
     .webinar-steps h3 { margin-top: 1rem; }
     main[data-landing-template=WEBINAR] .section-space { padding-block: 3.5rem; }
 }
@@ -312,7 +312,7 @@ main[data-landing-template=WEBINAR] .webinar-event-card .eyebrow { font-size: .7
 .account-nav-link { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; color: var(--text-secondary); font-size: 14px; font-weight: 600; white-space: nowrap; }
 .account-nav-link:hover, .account-nav-link[aria-current] { color: var(--foreground); }
 .account-nav-link[aria-current] { text-decoration: underline; text-decoration-color: var(--brand); text-underline-offset: 8px; text-decoration-thickness: 2px; }
-.account-header :focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+.account-header :focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
 .account-icon-button { display: inline-flex; flex-shrink: 0; width: 44px; height: 44px; align-items: center; justify-content: center; border-radius: 50%; color: var(--foreground); transition: background-color 150ms ease; }
 .account-icon-button:hover { background: var(--surface-subtle); }
 .account-icon-button:active { background: var(--surface-raised); }
@@ -346,11 +346,11 @@ main[data-landing-template=WEBINAR] .webinar-event-card .eyebrow { font-size: .7
 /* Closed editorial vocabulary. User input never supplies CSS or markup. */
 .editorial-normal { font-weight: inherit; }
 .editorial-bold { font-weight: 900; }
-.editorial-coral { color: var(--brand); }
+.editorial-coral { color: var(--action-text); }
 .editorial-underline { text-decoration: underline; text-decoration-color: var(--brand); text-decoration-thickness: .09em; text-underline-offset: .12em; }
 .editorial-yellow { background: var(--reward); color: var(--ink); box-decoration-break: clone; -webkit-box-decoration-break: clone; }
 .opportunity-metric-card { background: var(--surface-raised); position: relative; display: flex; flex-direction: column; min-width: 0; overflow: visible; overflow-wrap: anywhere; }
-.opportunity-metric { display: flex; flex-wrap: wrap; align-items: baseline; gap: .08em; padding-right: 2rem; font-size: clamp(3.5rem, 6vw, 6rem); font-weight: 800; line-height: 1.1; letter-spacing: -.05em; color: var(--brand); }
+.opportunity-metric { display: flex; flex-wrap: wrap; align-items: baseline; gap: .08em; padding-right: 2rem; font-size: clamp(3.5rem, 6vw, 6rem); font-weight: 800; line-height: 1.1; letter-spacing: -.05em; color: var(--action-text); }
 .opportunity-unit { font-size: .5em; letter-spacing: -.02em; }
 .opportunity-metric-card .webinar-benefit-icon, .opportunity-metric-card .benefit-number { position: absolute; top: 1.25rem; right: 1.25rem; width: 1.75rem; height: 1.75rem; }
 .opportunity-metric-card .webinar-benefit-icon svg { width: 1.25rem; height: 1.25rem; }
@@ -361,3 +361,18 @@ main[data-landing-template=WEBINAR] .webinar-event-card .eyebrow { font-size: .7
 
 /* Explicit split CTA configuration preserves legacy funnels and theme-independent ink. */
 .registration-submit-separated, .registration-submit-separated:hover:not(:disabled), main[data-landing-template=WEBINAR] #registro button.registration-submit-separated[type=submit] { background: var(--ink); color: var(--palette-light-surface-raised); }
+
+/* Native controls and portalled dialogs inherit the same global palette. */
+.appearance-control { position: relative; flex-shrink: 0; font-family: var(--font-sans); }
+.appearance-control select { min-height: 44px; max-width: 7rem; padding: .5rem .25rem; border: 1px solid var(--input); border-radius: .6rem; background: var(--surface); color: var(--foreground); font-size: .875rem; }
+.appearance-error { position: fixed; z-index: 70; top: 5rem; right: 1rem; width: min(20rem, calc(100vw - 2rem)); padding: 1rem; border: 1px solid var(--danger); border-radius: .75rem; background: var(--danger-surface); color: var(--danger-text); font-size: .875rem; box-shadow: var(--shadow); }
+.site-header > .shell { gap: .75rem; }
+.site-header > .shell > nav { gap: .75rem; }
+html.dark .brand-logo { background: var(--cream); border-radius: .25rem; }
+dialog { background: var(--popover); color: var(--popover-foreground); }
+input:disabled, select:disabled, textarea:disabled { opacity: 1; color: var(--text-secondary); background: var(--surface-subtle); }
+table { background: var(--table); color: var(--foreground); }
+thead { background: var(--table-header); }
+.checkbox { accent-color: var(--primary); }
+
+.btn:disabled { background: var(--surface-subtle); color: var(--text-secondary); border-color: var(--border-strong); }

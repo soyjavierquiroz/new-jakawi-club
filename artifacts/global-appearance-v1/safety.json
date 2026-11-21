@@ -1,0 +1,12 @@
+{
+  "live_business_data_and_flags_unchanged": true,
+  "observed_flags": {
+    "registration_open": true,
+    "mail": "smtp",
+    "transactional_mail_ready": true,
+    "debug": false
+  },
+  "production_migration_applied": false,
+  "source_changes_deployed": false,
+  "github_main": "c755ffa438997e2a5c660f4b43915f3ffc6dd729"
+}

@@ -9,8 +9,9 @@ import type { Landing } from './types';
 function MetadataLayout({ children }: { children: ReactNode }) {
     const page = usePage();
     useLayoutEffect(() => {
+        window.appearanceStore.sync((page.props.appearance_identity as string | null) ?? null, (page.props.theme_preference as string) ?? 'system');
         document.documentElement.toggleAttribute('data-account-context', ['Dashboard', 'Affiliates'].includes(page.component));
-    }, [page.component]);
+    }, [page.component, page.props.appearance_identity, page.props.theme_preference]);
     const landing = ['Welcome', 'MembershipSales'].includes(page.component) ? page.props.landing as Landing | undefined : undefined;
     return <><Head><meta head-key="robots" name="robots" content={landing?.social?.robots || 'noindex, nofollow'} /></Head>{children}<Advertising /></>;
 }

@@ -38,7 +38,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'configuration.webinar.early.title_segments.*.text', 'configuration.webinar.steps.title_segments.*.text',
         ]);
 
-        $middleware->encryptCookies(except: ['_fbp', '_fbc', '_ttp']);
+        $middleware->encryptCookies(except: ['_fbp', '_fbc', '_ttp', 'appearance']);
         $middleware->web(append: [\App\Http\Middleware\SupportReadOnly::class, \App\Http\Middleware\CaptureComOrigin::class, HandleInertiaRequests::class]);
         $middleware->redirectUsersTo('/dashboard');
     })

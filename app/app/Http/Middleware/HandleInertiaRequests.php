@@ -53,6 +53,8 @@ class HandleInertiaRequests extends Middleware
                 }
                 return $links;
             },
+            'appearance_identity' => \Inertia\Inertia::always($request->user()?->uuid),
+            'theme_preference' => \Inertia\Inertia::always($request->user()?->theme_preference ?? 'system'),
             'signed_in' => (bool) $request->user(),
             'can_manage_landings' => $request->user()?->is_marketing_admin === true && $request->user()?->hasVerifiedEmail() && $request->user()?->activated_at !== null,
             'status' => fn () => $request->session()->get('status'),

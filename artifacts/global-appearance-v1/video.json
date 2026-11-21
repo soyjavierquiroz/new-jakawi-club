@@ -1,0 +1,135 @@
+{
+  "source": "https://www.youtube.com/watch?v=M7lc1UVf-VE",
+  "isolated_fixture": true,
+  "provider_mock": false,
+  "videoReport": [
+    {
+      "width": 390,
+      "before": {
+        "players": 1,
+        "time": 0,
+        "state": -1,
+        "muted": true,
+        "volume": 100,
+        "videoId": "M7lc1UVf-VE",
+        "frame": {
+          "x": 16,
+          "y": 376.75,
+          "width": 358,
+          "height": 477.328125
+        },
+        "status": "error"
+      },
+      "playing": {
+        "players": 1,
+        "time": 0,
+        "state": -1,
+        "muted": true,
+        "volume": 100,
+        "videoId": "M7lc1UVf-VE",
+        "frame": {
+          "x": 16,
+          "y": 376.75,
+          "width": 358,
+          "height": 477.328125
+        },
+        "status": "error"
+      },
+      "after": {
+        "players": 1,
+        "time": 0,
+        "state": -1,
+        "muted": true,
+        "volume": 100,
+        "videoId": "M7lc1UVf-VE",
+        "frame": {
+          "x": 16,
+          "y": 376.75,
+          "width": 358,
+          "height": 477.328125
+        },
+        "status": "error"
+      },
+      "light": {
+        "players": 1,
+        "time": 0,
+        "state": -1,
+        "muted": true,
+        "volume": 100,
+        "videoId": "M7lc1UVf-VE",
+        "frame": {
+          "x": 16,
+          "y": 376.75,
+          "width": 358,
+          "height": 477.328125
+        },
+        "status": "error"
+      },
+      "verified": false
+    },
+    {
+      "width": 1440,
+      "before": {
+        "players": 1,
+        "time": 0,
+        "state": -1,
+        "muted": true,
+        "volume": 100,
+        "videoId": "M7lc1UVf-VE",
+        "frame": {
+          "x": 847.984375,
+          "y": 187.5,
+          "width": 416,
+          "height": 554.65625
+        },
+        "status": "error"
+      },
+      "playing": {
+        "players": 1,
+        "time": 0,
+        "state": -1,
+        "muted": true,
+        "volume": 100,
+        "videoId": "M7lc1UVf-VE",
+        "frame": {
+          "x": 847.984375,
+          "y": 187.5,
+          "width": 416,
+          "height": 554.65625
+        },
+        "status": "error"
+      },
+      "after": {
+        "players": 1,
+        "time": 0,
+        "state": -1,
+        "muted": true,
+        "volume": 100,
+        "videoId": "M7lc1UVf-VE",
+        "frame": {
+          "x": 847.984375,
+          "y": 187.5,
+          "width": 416,
+          "height": 554.65625
+        },
+        "status": "error"
+      },
+      "light": {
+        "players": 1,
+        "time": 0,
+        "state": -1,
+        "muted": true,
+        "volume": 100,
+        "videoId": "M7lc1UVf-VE",
+        "frame": {
+          "x": 847.984375,
+          "y": 187.5,
+          "width": 416,
+          "height": 554.65625
+        },
+        "status": "error"
+      },
+      "verified": false
+    }
+  ]
+}

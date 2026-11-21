@@ -1,0 +1,22 @@
+{
+  "runtime_sha": "35bf6d9b2f7a8aa1a55ec4d61451b2d1edacee68",
+  "http": [
+    {
+      "path": "/up",
+      "status": 200,
+      "sha256": "93c7ed9cc18f9e878b49dee0605adb82a03aff31b308af96f80f67c65c7b1764"
+    },
+    {
+      "path": "/",
+      "status": 200,
+      "sha256": "b4660657889f4e0208cb74241abd53b63d04da64afabf307f8f41a6d433d8b95"
+    },
+    {
+      "path": "/login",
+      "status": 200,
+      "sha256": "450baa8bcaf8e6f7eb197eccd602c996578eda8434b76e666917c02fcad63c84"
+    }
+  ],
+  "served_entrypoint_matches_live_file": true,
+  "source_changes_deployed": false
+}
