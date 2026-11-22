@@ -11,7 +11,15 @@ evidence=Path(os.environ['JAKAWI_EVIDENCE_DIR']);baseline='beab670d299c86856c492
 assert all(p.is_relative_to('/srv/workspaces/jakawi/club') for p in [source,package,evidence])
 read=lambda args,cwd=live:subprocess.check_output(args,cwd=cwd,text=True).strip()
 run=lambda args,**kw:subprocess.run(args,cwd=live,check=True,**kw)
-assert not read(['git','status','--porcelain'],source) and not read(['git','status','--porcelain'])
+assert not read(['git','status','--porcelain'],source)
+# Preserve the existing reviewed LIVE-only Nginx security pin; never reset Compose.
+live_dirty=read(['git','status','--porcelain'])
+assert live_dirty in ['', 'M compose.yaml'], 'Unexpected LIVE edits'
+compose_path=live/'compose.yaml';compose_digest=hashlib.sha256(compose_path.read_bytes()).hexdigest()
+if live_dirty:
+ diff=read(['git','diff','--unified=0','--','compose.yaml'])
+ edits=[line for line in diff.splitlines()if line.startswith(('+','-'))and not line.startswith(('+++','---'))]
+ assert edits==['-    image: nginx:stable-alpine@sha256:47928bf67eb62a1863cb08d9ecb52d3e704304ba614eaee17884204677702951','+    image: nginx@sha256:caf4e1e032a20f9c3c5e28fc7f25ffd768ad8677b4975c54193075997b3a97e3'], 'Unreviewed Compose change'
 release=json.loads((package/'release.json').read_text());sha=release['sha']
 assert read(['git','rev-parse','HEAD'],source)==sha and read(['git','rev-parse','HEAD'])==baseline
 assert read(['git','ls-remote','origin','refs/heads/main'],source).split()[0]==baseline
@@ -36,6 +44,7 @@ schema=lambda:read(['docker','exec','jakawi-club-db','pg_dump','-U','jakawi_club
 stable=lambda text:'\n'.join(l for l in text.splitlines()if not l.startswith(('\\restrict ','\\unrestrict ')))
 schema_before=stable(schema())
 shutil.copy2(live/'app/public/build/manifest.json',rollback/'manifest.json')
+shutil.copy2(compose_path,rollback/'compose.yaml')
 (rollback/'release.json').write_text(json.dumps({'previous_sha':baseline,'target_sha':sha,'migrations':False},indent=2))
 (rollback/'before.json').write_text(json.dumps(before,indent=2))
 # Validate rollback code is still available; retain every immutable old asset.
@@ -53,11 +62,12 @@ try:
  caches();run(['docker','compose','restart','app'])
  after=snapshot();assert before==after,'Business data or flags changed'
  assert state()==initial and hashlib.sha256(env_file.read_bytes()).hexdigest()==env_digest
+ assert hashlib.sha256(compose_path.read_bytes()).hexdigest()==compose_digest
  assert stable(schema())==schema_before,'Schema changed'
  for url in ['https://jakawi.club/up','https://jakawi.club/','https://jakawi.club/login']:
   run(['curl','--fail','--silent','--show-error','--output','/dev/null',url])
 except Exception:
  run(['git','switch','--detach',baseline]);shutil.copy2(rollback/'manifest.json',live/'app/public/build/manifest.json');caches();run(['docker','compose','restart','app']);raise
-(evidence/'LIVE.json').write_text(json.dumps({'result':'PASS','sha':sha,'previous_sha':baseline,'manifest_sha256':release['manifest_sha256'],'business_users_flags_mail_unchanged':True,'schema_unchanged':True,'credentials_unchanged':True,'protected_containers_unchanged':True,'migrations':False,'rollback':str(rollback)},indent=2))
+(evidence/'LIVE.json').write_text(json.dumps({'result':'PASS','sha':sha,'previous_sha':baseline,'manifest_sha256':release['manifest_sha256'],'business_users_flags_mail_unchanged':True,'schema_unchanged':True,'credentials_unchanged':True,'protected_containers_unchanged':True,'compose_unchanged':True,'migrations':False,'rollback':str(rollback)},indent=2))
 print('CLUB deployed '+sha+'; rollback '+str(rollback))
 PY

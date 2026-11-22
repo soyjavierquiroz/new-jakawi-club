@@ -31,3 +31,7 @@ al SHA anterior en /opt/sites/jakawi.club, restaurar manifest.json del respaldo,
 regenerar route:cache/view:cache y docker compose restart app. No restaurar DB,
 no down, no borrar assets. Evidencia fuera de Git:
 /srv/workspaces/jakawi/club/appearance-menu-v2-evidence.
+
+El baseline operativo contiene un pin Nginx local en compose.yaml. El release
+acepta exclusivamente ese diff verificado, respalda el archivo y exige hash
+idéntico después; no lo incorpora al cambio UX ni recrea el contenedor web.

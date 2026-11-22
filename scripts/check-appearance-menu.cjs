@@ -74,7 +74,7 @@ async function shot(p,label,width,mode){
   }
   active='login';await p.goto(origin+fixtures.login.url);await ready(p);const input=p.locator('input[name=email]');await input.fill('local-unsaved@qa.invalid');await choose(p,'dark');assert.equal(await input.inputValue(),'local-unsaved@qa.invalid');
   // Real native media probe tests menu changes without modifying any VSL implementation.
-  await p.evaluate(()=>{const v=document.createElement('video');v.src='/__qa-video.webm';v.muted=true;v.loop=true;v.dataset.qa='same';document.body.append(v);});await p.waitForFunction(()=>document.querySelector('video[data-qa]')?.readyState>=2);await p.locator('video[data-qa]').evaluate(v=>v.play());
+  await p.bringToFront();await p.evaluate(async()=>{const canvas=document.createElement('canvas');canvas.width=320;canvas.height=180;const ctx=canvas.getContext('2d');setInterval(()=>{ctx.fillStyle='teal';ctx.fillRect(0,0,320,180);ctx.fillStyle='white';ctx.fillText(String(Date.now()),20,50);},50);const v=document.createElement('video');v.muted=true;v.dataset.qa='same';v.srcObject=canvas.captureStream(20);document.body.append(v);await v.play();});await p.waitForFunction(()=>document.querySelector('video[data-qa]')?.readyState>=2);
   for(const mode of ['light','dark','system']){await choose(p,mode);assert(await p.locator('video[data-qa]').evaluate(v=>!v.paused&&v.dataset.qa==='same'));}
   await p.locator('video[data-qa]').evaluate(v=>v.pause());const time=await p.locator('video[data-qa]').evaluate(v=>v.currentTime);await choose(p,'dark');assert.equal(await p.locator('video[data-qa]').evaluate(v=>v.currentTime),time);
   checks.push({width,formPreserved:true,nativeVideoNodePlaybackAndPausePreserved:true});await c.close();
