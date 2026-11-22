@@ -31,7 +31,7 @@ async function shot(p,label,width,mode){
 }
 (async()=>{
  const browser=await chromium.launch({executablePath:'/browser/chrome',args:['--no-sandbox','--disable-dev-shm-usage','--renderer-process-limit=1']});
- try{for(const width of [390,1440]){
+ try{for(const width of [Number(process.argv.find(a=>/^--width=/.test(a))?.split('=')[1]||390)]){
   const c=await browser.newContext({viewport:{width,height:900},colorScheme:'light',serviceWorkers:'block'});
   c.on('page',p=>p.on('pageerror',e=>errors.push(e.message)));
   await c.route('**/*',async route=>{
@@ -80,6 +80,6 @@ async function shot(p,label,width,mode){
   checks.push({width,formPreserved:true,nativeVideoNodePlaybackAndPausePreserved:true});await c.close();
  }
  assert.deepEqual(errors,[]);assert(saves.length>0);
- fs.writeFileSync(out+'/'+(live?'live-browser':'browser')+'.json',JSON.stringify({result:'PASS',checks,contrasts,errors,no_live_mutations:true,accountSavesIntercepted:saves.length,manifest_sha256:crypto.createHash('sha256').update(fs.readFileSync(build+'/manifest.json')).digest('hex')},null,2));console.log('PASS',checks.length,'cases');
+ fs.writeFileSync(out+'/'+(live?'live-browser':'browser')+'-'+process.argv.find(a=>/^--width=/.test(a)).split('=')[1]+'.json',JSON.stringify({result:'PASS',checks,contrasts,errors,no_live_mutations:true,accountSavesIntercepted:saves.length,manifest_sha256:crypto.createHash('sha256').update(fs.readFileSync(build+'/manifest.json')).digest('hex')},null,2));console.log('PASS',checks.length,'cases');
  }finally{await browser.close();}
 })().catch(e=>{console.error(e);process.exit(1)});
