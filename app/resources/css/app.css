@@ -364,7 +364,18 @@ main[data-landing-template=WEBINAR] .webinar-event-card .eyebrow { font-size: .7
 
 /* Native controls and portalled dialogs inherit the same global palette. */
 .appearance-control { position: relative; flex-shrink: 0; font-family: var(--font-sans); }
-.appearance-control select { min-height: 44px; max-width: 7rem; padding: .5rem .25rem; border: 1px solid var(--input); border-radius: .6rem; background: var(--surface); color: var(--foreground); font-size: .875rem; }
+/* Same compact sun/moon/monitor menu as COM; the existing CLUB store owns state. */
+.appearance-control .appearance-trigger { padding: 0; border: 0; background: transparent; color: var(--muted-foreground); }
+.appearance-control .appearance-trigger:hover { background: var(--surface-subtle); color: var(--foreground); }
+.appearance-trigger svg { flex-shrink: 0; }
+.appearance-control .appearance-menu { position: absolute; z-index: 100; right: 0; top: calc(100% + 6px); min-width: 160px; padding: 6px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); color: var(--foreground); box-shadow: 0 8px 24px color-mix(in srgb, var(--foreground) 12%, transparent); }
+.appearance-control .appearance-menu button { display: flex; width: 100%; min-height: 44px; align-items: center; gap: 10px; padding: 8px; margin: 0; border: 0; border-radius: 8px; background: transparent; color: var(--foreground); font: inherit; font-size: 14px; text-align: left; cursor: pointer; }
+.appearance-menu button svg { width: 16px; height: 16px; flex-shrink: 0; }
+.appearance-control .appearance-menu button[aria-checked="true"] { background: var(--brand-subtle); font-weight: 650; }
+.appearance-control .appearance-menu button:hover, .appearance-control .appearance-menu button:focus-visible { background: var(--surface-subtle); }
+.appearance-check { width: 10px; text-align: center; }
+.appearance-trigger:focus-visible, .appearance-menu button:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+
 .appearance-error { position: fixed; z-index: 70; top: 5rem; right: 1rem; width: min(20rem, calc(100vw - 2rem)); padding: 1rem; border: 1px solid var(--danger); border-radius: .75rem; background: var(--danger-surface); color: var(--danger-text); font-size: .875rem; box-shadow: var(--shadow); }
 .site-header > .shell { gap: .75rem; }
 .site-header > .shell > nav { gap: .75rem; }
