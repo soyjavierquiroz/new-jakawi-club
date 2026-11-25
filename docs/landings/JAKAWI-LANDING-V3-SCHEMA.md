@@ -104,6 +104,7 @@ se conserva pero no se muestra como párrafo adicional en la confirmación.
 | `webinar.sections` | Lista de exactamente 9 objetos completos `{ "id": ..., "visible": ... }` |
 | `webinar.sections[].id` | Uno de los nueve IDs siguientes, sin repeticiones |
 | `webinar.sections[].visible` | Booleano; para `registration` debe ser `true` |
+| `webinar.sections[].layout` | Opcional: `flow`, `split`, `spotlight`, `proof`. Sin valor conserva la composición original. FLOW elimina cajas; SPLIT usa la imagen existente; SPOTLIGHT enfatiza título y CTA; PROOF conserva agrupaciones |
 | `webinar.sections[].background` | Opcional: `light`, `soft` o `dark`. Omitir conserva la composición original |
 
 Los nueve IDs son `hero`, `event`, `benefits`, `opportunity`, `early`, `steps`,

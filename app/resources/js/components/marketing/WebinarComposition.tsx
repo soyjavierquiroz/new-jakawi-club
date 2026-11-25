@@ -43,7 +43,7 @@ export function WebinarComposition({ open, video, registration }: { open: boolea
     const content = landing.content;
     const settings = content.presentation.webinar!;
     const webinar = content.webinar!;
-    return <>{settings.sections.filter(section => section.visible || section.id === 'registration').map(({ id, background }) => {
+    return <>{settings.sections.filter(section => section.visible || section.id === 'registration').map(({ id, background, layout }) => {
         let block: ReactNode;
         switch (id) {
             case 'hero': block = <MarketingHero open={open} compact startsAt={settings.starts_at}>{video}</MarketingHero>; break;
@@ -64,6 +64,6 @@ export function WebinarComposition({ open, video, registration }: { open: boolea
                 block = <section className="shell section-space" aria-labelledby={`webinar-${id}-title`}><h2 id={`webinar-${id}-title`} className="section-title"><EditorialTitle text={item.title} segments={item.title_segments} /></h2>{'description' in item && <p className="mt-5 max-w-2xl leading-7 text-text-secondary">{item.description}</p>}{'items' in item && <ol className={id === 'steps' ? 'webinar-steps' : 'mt-8 grid gap-5 md:grid-cols-3'}>{item.items.map((entry, index) => <li className="feature-card" key={index}><span className="benefit-number" aria-hidden="true">0{index + 1}</span>{id === 'steps' && <Arrow />}<h3 className="mt-4 text-lg font-bold">{entry.title}</h3><p className="mt-3 text-sm leading-7 text-text-secondary">{entry.description}</p></li>)}</ol>}</section>;
             }
         }
-        return <div key={id} data-webinar-section={id} data-section-preset={background}>{block}</div>;
+        return <div key={id} data-editorial-layout={layout} data-webinar-section={id} data-section-preset={background}>{block}</div>;
     })}</>;
 }

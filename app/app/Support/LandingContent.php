@@ -287,7 +287,8 @@ class LandingContent
         $rules['content.presentation.webinar.title'] = [...($partial ? ['sometimes', 'required'] : ['required_with:content.presentation.webinar']), 'string', 'max:1200', 'not_regex:/[<>]/u'];
         $rules['content.presentation.webinar.starts_at'] = [$partial ? 'sometimes' : 'present_with:content.presentation.webinar', 'nullable', 'date_format:Y-m-d\\TH:i:sP', 'regex:/-04:00$/D'];
         $rules['content.presentation.webinar.sections'] = [$partial ? 'sometimes' : 'required_with:content.presentation.webinar', 'array', 'list', 'size:9'];
-        $rules['content.presentation.webinar.sections.*'] = ['required', 'array:id,visible,background'];
+        $rules['content.presentation.webinar.sections.*'] = ['required', 'array:id,visible,background,layout'];
+        $rules['content.presentation.webinar.sections.*.layout'] = ['sometimes', Rule::in(['flow', 'split', 'spotlight', 'proof'])];
         $rules['content.presentation.webinar.sections.*.background'] = ['sometimes', Rule::in(['light', 'soft', 'dark'])];
         $rules['content.presentation.webinar.sections.*.id'] = ['required', 'distinct:strict', Rule::in(self::WEBINAR_SECTIONS)];
         $rules['content.presentation.webinar.sections.*.visible'] = ['required', 'boolean:strict'];

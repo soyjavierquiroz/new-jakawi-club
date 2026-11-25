@@ -7,7 +7,7 @@ import datetime,hashlib,json,os,shutil,subprocess,sys
 from pathlib import Path
 assert len(sys.argv)==3,'Usage: deploy-landing-visual.sh <reviewed-package>'
 source=Path(sys.argv[1]).resolve();package=Path(sys.argv[2]).resolve();live=Path('/opt/sites/jakawi.club')
-evidence=Path(os.environ['JAKAWI_EVIDENCE_DIR']);baseline='838214ffc15465e695a7bdea5b66cf2456b9e42e'
+evidence=Path(os.environ['JAKAWI_EVIDENCE_DIR']);baseline='da0e6fd52b1c78cb56eed361c4de8139732c58aa'
 assert all(p.is_relative_to('/srv/workspaces/jakawi/club') for p in [source,package,evidence])
 read=lambda args,cwd=live:subprocess.check_output(args,cwd=cwd,text=True).strip()
 run=lambda args,**kw:subprocess.run(args,cwd=live,check=True,**kw)
@@ -22,27 +22,37 @@ for name,value in release['archives_sha256'].items():assert digest(package/name)
 for name in ['tests','browser','build']:
  assert json.loads((evidence/(name+'.json')).read_text())['result']=='PASS'
 browser=json.loads((evidence/'browser.json').read_text());assert browser['no_live_mutations'] and browser['manifest_sha256']==release['manifest_sha256']
-allowed={'docs/landings/JAKAWI-LANDING-V3-SCHEMA.md', 'app/resources/js/lib/landing-editorial.ts', 'app/resources/css/jakawi-theme.css', 'app/app/Support/LandingContent.php', 'scripts/deploy-landing-visual.sh', 'app/resources/js/components/marketing/WebinarComposition.tsx', 'app/resources/js/pages/admin/LandingEditor.tsx', 'scripts/check-landing-visual.cjs', 'app/resources/css/app.css', 'scripts/test-landing-visual.sh', 'scripts/landing-visual-tests.php', 'app/resources/js/types.ts', 'app/app/Http/Controllers/LandingAdminController.php'}
+allowed={'scripts/check-editorial-flow.cjs', 'scripts/editorial-flow-operation.php', 'docs/landings/JAKAWI-LANDING-V3-SCHEMA.md', 'app/resources/js/lib/landing-editorial.ts', 'app/resources/css/jakawi-theme.css', 'app/app/Support/LandingContent.php', 'scripts/deploy-landing-visual.sh', 'app/resources/js/components/marketing/WebinarComposition.tsx', 'app/resources/js/pages/admin/LandingEditor.tsx', 'scripts/check-landing-visual.cjs', 'app/resources/css/app.css', 'scripts/test-landing-visual.sh', 'scripts/landing-visual-tests.php', 'app/resources/js/types.ts', 'app/app/Http/Controllers/LandingAdminController.php'}
 assert set(read(['git','diff','--name-only',baseline,sha],source).splitlines())<=allowed,'Landing visual scope required'
 assert not read(['git','diff','--name-only',baseline,sha,'--','compose.yaml'],source)
 run(['git','fetch',str(source),sha]);run(['git','merge-base','--is-ancestor',baseline,sha]);run(['docker','compose','config','--quiet'])
-rollback=Path('/srv/sites/jakawi.club')/('rollback-landing-visual-'+datetime.datetime.now(datetime.timezone.utc).strftime('%Y%m%dT%H%M%SZ'));rollback.mkdir(mode=0o700)
+rollback=Path('/srv/sites/jakawi.club')/('rollback-editorial-flow-'+datetime.datetime.now(datetime.timezone.utc).strftime('%Y%m%dT%H%M%SZ'));rollback.mkdir(mode=0o700)
 env=Path('/srv/sites/jakawi.club/secrets/app.env');env_digest=digest(env)
 protected=['jakawi-club-web','jakawi-club-db']
 state=lambda:{c['Name']:(c['Id'],c['Image'],c['State']['StartedAt']) for c in json.loads(read(['docker','inspect',*protected]))}
 initial=state()
-# Configuration is read only. No registrations, editorial publication or commercial actions.
-php=b"<?php require 'vendor/autoload.php';$app=require 'bootstrap/app.php';$app->make(Illuminate\\Contracts\\Console\\Kernel::class)->bootstrap();echo hash('sha256',Illuminate\\Support\\Facades\\DB::table('marketing_landings')->orderBy('id')->get()->toJson());"
-snapshot=lambda:subprocess.check_output(['docker','compose','exec','-T','--user','www-data','app','php'],cwd=live,input=php).decode().strip()
+# Snapshot includes every landing and the operating registration/mail flags.
+php=(source/'scripts/editorial-flow-operation.php').read_bytes()
+def operation(mode='snapshot',restore=None):
+ args=['docker','compose','exec','-T','--user','www-data','-e','JAKAWI_FLOW_OPERATION='+mode]
+ if restore is not None:args+=['-e','JAKAWI_FLOW_RESTORE='+__import__('base64').b64encode(json.dumps(restore).encode()).decode()]
+ return subprocess.check_output([*args,'app','php'],cwd=live,input=php).decode().strip()
+snapshot=lambda:json.loads(operation())
 before=snapshot()
+(evidence/'before.private.json').write_text(json.dumps(before))
 with (rollback/'database.dump').open('wb') as f:run(['docker','exec','jakawi-club-db','pg_dump','-U','jakawi_club_admin','-d','jakawi_club','-Fc','--no-owner','--no-privileges'],stdout=f)
 with (rollback/'database.dump').open('rb') as f:run(['docker','exec','-i','jakawi-club-db','pg_restore','--list'],stdin=f,stdout=subprocess.DEVNULL)
 shutil.copy2(live/'app/public/build/manifest.json',rollback/'manifest.json');shutil.copy2(compose,rollback/'compose.yaml')
-(rollback/'release.json').write_text(json.dumps({'previous_sha':baseline,'target_sha':sha,'compose_sha256':compose_digest,'environment_sha256':env_digest,'landings_sha256':before},indent=2))
+(rollback/'release.json').write_text(json.dumps({'previous_sha':baseline,'target_sha':sha,'compose_sha256':compose_digest,'environment_sha256':env_digest,'landings_sha256':hashlib.sha256(json.dumps(before,sort_keys=True).encode()).hexdigest()},indent=2))
 run(['git','cat-file','-e',baseline+'^{commit}'])
+shutil.copy2(source/'scripts/editorial-flow-operation.php',rollback/'operation.php')
 rollback_script=f'''#!/usr/bin/env bash
 set -euo pipefail
 cd /opt/sites/jakawi.club
+if [ -f {rollback}/visual.private.json ]; then
+  restore=$(base64 -w0 {rollback}/visual.private.json)
+  docker compose exec -T --user www-data -e JAKAWI_FLOW_OPERATION=rollback -e JAKAWI_FLOW_RESTORE="$restore" app php < {rollback}/operation.php
+fi
 git switch --detach {baseline}
 cp {rollback}/manifest.json app/public/build/manifest.vsl-rollback.json
 mv app/public/build/manifest.vsl-rollback.json app/public/build/manifest.json
@@ -59,12 +69,26 @@ try:
  run(['git','switch','--detach',sha])
  shutil.copy2(build/'manifest.json',live/'app/public/build/manifest.vsl-next.json');os.replace(live/'app/public/build/manifest.vsl-next.json',live/'app/public/build/manifest.json')
  run(['docker','compose','restart','app'])
- assert snapshot()==before,'Landing configuration changed'
+ visual=json.loads(operation('apply'))
+ (rollback/'visual.private.json').write_text(json.dumps(visual))
+ after=snapshot()
+ def editorial(state):
+  state=__import__('copy').deepcopy(state)
+  for row in state['rows']:
+   if row['id']!=visual['before']['id']:continue
+   row.pop('revision');row.pop('updated_at')
+   for field in ['configuration','published_configuration']:
+    for section in row[field]['presentation']['webinar']['sections']:
+     section.pop('layout',None);section.pop('background',None)
+  return state
+ assert editorial(after)==editorial(before),'Nonvisual content or operating flags changed'
+ assert after['registration_open']==before['registration_open'] and after['mail_ready']==before['mail_ready']
+ (evidence/'after.private.json').write_text(json.dumps(after))
  assert state()==initial and digest(env)==env_digest and digest(compose)==compose_digest
  for url in ['https://jakawi.club/up','https://jakawi.club/']:
   run(['curl','--fail','--silent','--show-error','--retry','5','--retry-delay','1','--output','/dev/null',url])
 except Exception:
  run(['bash',str(rollback/'rollback.sh')]);raise
-(evidence/'deployed.json').write_text(json.dumps({'result':'PASS','sha':sha,'rollback_sha':baseline,'rollback':str(rollback),'manifest_sha256':release['manifest_sha256'],'configuration_unchanged':True,'protected_containers_unchanged':True,'migrations':False},indent=2))
+(evidence/'deployed.json').write_text(json.dumps({'result':'PASS','sha':sha,'rollback_sha':baseline,'rollback':str(rollback),'manifest_sha256':release['manifest_sha256'],'editorial_content_preserved':True,'visual_metadata_applied':True,'operating_flags_preserved':True,'protected_containers_unchanged':True,'migrations':False},indent=2))
 print('CLUB deployed '+sha+'; backup and rollback '+str(rollback))
 PY

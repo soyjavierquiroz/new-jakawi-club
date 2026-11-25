@@ -408,3 +408,35 @@ thead { background: var(--table-header); }
     .webinar-opportunity-with-image[data-image-position="left"] > img { order: -1; }
     [data-webinar-section=opportunity] .webinar-opportunity-with-image[data-image-position="left"] { grid-template-columns: minmax(0, 45fr) minmax(0, 55fr); }
 }
+
+/* Opt-in sales letter composition. Original webinar/lead styles remain available. */
+main[data-landing-template=WEBINAR] [data-editorial-layout] {
+    margin-block: 0; border: 0; border-radius: 0; background: var(--background); color: var(--foreground);
+}
+main[data-landing-template=WEBINAR] [data-editorial-layout] .section-space {
+    padding-block: clamp(2rem, 5vw, 4rem);
+}
+[data-editorial-layout] .section-title { text-wrap: balance; }
+[data-editorial-layout] p { max-width: 65ch; }
+main[data-landing-template=WEBINAR] [data-editorial-layout="flow"] > .shell,
+main[data-landing-template=WEBINAR] [data-editorial-layout="split"] > .shell:not(.webinar-opportunity-with-image) { max-width: 52rem; }
+main[data-landing-template=WEBINAR] [data-editorial-layout]:not([data-editorial-layout="proof"]) .feature-card {
+    border: 0; border-radius: 0; background: transparent; box-shadow: none; padding: 0;
+}
+main[data-landing-template=WEBINAR] [data-editorial-layout="flow"] .grid:has(> .feature-card),
+main[data-landing-template=WEBINAR] [data-editorial-layout="split"] .grid:has(> .feature-card),
+main[data-landing-template=WEBINAR] [data-editorial-layout="flow"] .webinar-steps {
+    display: grid; grid-template-columns: minmax(0, 1fr); gap: 2rem;
+}
+main[data-landing-template=WEBINAR] [data-editorial-layout="flow"] .feature-card + .feature-card { border-top: 1px solid var(--border); padding-top: 1.5rem; }
+[data-editorial-layout="flow"] .webinar-steps > li > svg { display: none; }
+[data-editorial-layout="spotlight"] .section-title { font-size: clamp(2.5rem, 5vw, 4.25rem); line-height: 1.06; }
+[data-editorial-layout="proof"] .feature-card { box-shadow: none; border-radius: .5rem; }
+main[data-landing-template=WEBINAR] [data-editorial-layout] .registration-section { background: var(--background); }
+main[data-landing-template=WEBINAR] [data-editorial-layout] #registro { border: 0; border-radius: 0; background: transparent; box-shadow: none; padding: 0; }
+[data-editorial-layout] .webinar-opportunity-with-image > img { border-radius: 0; }
+main[data-landing-template=WEBINAR] [data-editorial-layout="flow"] .webinar-event-card { padding-block: 0; }
+@media (max-width: 767px) {
+    [data-editorial-layout] .registration-section .shell { padding-block: 2rem; }
+    [data-editorial-layout="spotlight"] .webinar-hero { padding-top: 1.5rem; }
+}

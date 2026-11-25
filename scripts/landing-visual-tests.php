@@ -96,6 +96,7 @@ try {
     check(http('POST','/login',['email'=>$admin->email,'password'=>'PasswordEditor123'])->isRedirect(),'editor login');
     $content=App\Support\LandingContent::webinarDefaults();
     $content['presentation']['webinar']['sections'][3]['background']='dark';
+    $content['presentation']['webinar']['sections'][3]['layout']='flow';
     $data=['title'=>'Visual QA','slug'=>'visual-qa','campaign'=>'visual','configuration'=>$content];
     check(http('POST','/admin/landings',$data)->isRedirect(),'save visual draft');
     $landing=App\Models\MarketingLanding::where('slug','visual-qa')->sole();
@@ -108,10 +109,12 @@ try {
     $landing->update(['configuration'=>$content]);
     $content['webinar']['opportunity']['image']['position']='left';
     $content['presentation']['webinar']['sections'][3]['background']='soft';
+    $content['presentation']['webinar']['sections'][3]['layout']='split';
     check(http('PUT',$base,[...$data,'configuration'=>$content,'revision'=>$landing->revision])->isRedirect(),'edit visual section');
     check(http('POST',$base.'/publicar',['revision'=>$landing->fresh()->revision])->isRedirect(),'publish saved section');
     $public=payload(http('GET','/visual-qa',[],true));
     check($public['props']['landing']['content']['presentation']['webinar']['sections'][3]['background']==='soft','public preset');
+    check($public['props']['landing']['content']['presentation']['webinar']['sections'][3]['layout']==='split','editorial layout saved and published');
     check($public['props']['landing']['content']['webinar']['opportunity']['image']['position']==='left','image position preserved through publish');
     check($public['props']['landing']['content']['hero']==$content['hero'],'hero and CTA preserved');
     $content['presentation']['webinar']['sections'][3]['background']='arbitrary-css';
