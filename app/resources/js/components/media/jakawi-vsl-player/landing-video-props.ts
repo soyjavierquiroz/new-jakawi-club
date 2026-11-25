@@ -8,6 +8,7 @@ export function landingVideoProps(video: LandingContent['video'], url: string, p
         source: { type: 'youtube', url },
         mode: 'vsl',
         autoplay: 'muted',
+        loop: video.loop ?? true,
         framing: {
             kind: vertical ? 'embedded-vertical' : video.source_aspect_ratio === '3:4' ? 'native-vertical' : 'horizontal',
             ...(vertical ? {} : { sourceAspectRatio: video.source_aspect_ratio === '3:4' ? 3 / 4 : 16 / 9 }),

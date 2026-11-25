@@ -118,7 +118,8 @@ class LandingContent
 
     public static function confirmationVideo(array $video = []): array
     {
-        $video = [...self::videoDefaults(), ...$video, 'aspect_ratio' => '3:4'];
+        // Confirmation has an existing completion action; keep that explicit behavior.
+        $video = [...self::videoDefaults(), 'loop' => false, ...$video, 'aspect_ratio' => '3:4'];
         $video['youtube_url'] = LaunchSettings::youtubeUrl($video['youtube_url'])
             ?? LaunchSettings::defaultVideoUrl(config('jakawi.confirmation_video_url'));
         $video['poster'] = LaunchSettings::videoPoster($video['poster']);
@@ -377,7 +378,8 @@ class LandingContent
             $rules[$card.'.'.$key] = ['sometimes', 'nullable', 'string', 'max:320', 'not_regex:/[<>]/u'];
         }
         foreach (['video', 'confirmation_video'] as $section) {
-            $rules['content.'.$section] = [$presence, 'array:youtube_url,poster,aspect_ratio,source_type,source_aspect_ratio,focal_x,focal_y'];
+            $rules['content.'.$section] = [$presence, 'array:youtube_url,poster,aspect_ratio,source_type,source_aspect_ratio,focal_x,focal_y'.($section === 'video' ? ',loop' : '')];
+            if ($section === 'video') $rules['content.video.loop'] = ['sometimes', 'boolean:strict'];
             foreach (['youtube_url', 'poster'] as $key) {
                 $rules['content.'.$section.'.'.$key] = [$partial ? 'sometimes' : 'present', 'nullable', 'string', 'max:500'];
             }

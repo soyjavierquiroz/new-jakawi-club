@@ -53,6 +53,8 @@ export interface JakawiVslPlayerProps {
     source: VslSource;
     /** Local host supports the official marketing VSL contract. */
     mode?: 'vsl';
+    /** Continuous marketing playback unless completion is explicitly selected. */
+    loop?: boolean;
     poster?: string;
     title?: string;
     autoplay?: 'muted' | 'off' | boolean;

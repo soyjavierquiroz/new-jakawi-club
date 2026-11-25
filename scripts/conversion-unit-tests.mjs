@@ -25,7 +25,7 @@ try {
     const events = [];
     const player = { playVideo() { plays++; }, pauseVideo() {}, seekTo() {}, mute() { muted = true; }, unMute() { muted = false; }, isMuted: () => muted, getVolume: () => 100, setVolume() {}, getCurrentTime: () => 4, getDuration: () => 90, destroy() { destroys++; } };
     const api = { Player: class { constructor(element, config) { options = config; return player; } } };
-    const engine = createYoutubeEngine(host, { source: { type: 'youtube', url: 'https://youtu.be/M7lc1UVf-VE' }, origin: 'https://jakawi.club', autoplay: false, onState() {}, onEvent: event => events.push(event.type), loadApi: () => Promise.resolve(api) });
+    const engine = createYoutubeEngine(host, { source: { type: 'youtube', url: 'https://youtu.be/M7lc1UVf-VE' }, origin: 'https://jakawi.club', autoplay: false, loop: false, onState() {}, onEvent: event => events.push(event.type), loadApi: () => Promise.resolve(api) });
     await Promise.resolve();
     options.events.onReady({ target: player });
     check(plays === 0 && engine.getState().status === 'ready', 'Manual playback: ready never plays automatically');
@@ -72,10 +72,10 @@ try {
             check(g.widthPercent>=100 && g.heightPercent>=100 && Math.abs((g.widthPercent*.75)/g.heightPercent-source)<.001, 'Cover fills 3:4 without distorting source');
         }
     }
-    async function fixture(autoplay=true) {
+    async function fixture(autoplay=true,loop=false) {
         let callbacks; const messages=[],calls=[]; let time=6,volume=0,muted=true;
         const p={playVideo(){calls.push('play')},pauseVideo(){calls.push('pause')},seekTo(value){time=value;calls.push('seek:'+value)},mute(){muted=true;calls.push('mute')},unMute(){muted=false;calls.push('unmute')},isMuted:()=>muted,getVolume:()=>volume,setVolume(value){volume=value},getCurrentTime:()=>time,getDuration:()=>90,destroy(){calls.push('dispose')}};
-        const e=createYoutubeEngine(host,{source:{type:'youtube',url:config.youtube_url},origin:'https://jakawi.club',autoplay,onState(){},onEvent:event=>messages.push(event),loadApi:()=>Promise.resolve({Player:class{constructor(_mount,options){callbacks=options.events;return p}}})});
+        const e=createYoutubeEngine(host,{source:{type:'youtube',url:config.youtube_url},origin:'https://jakawi.club',autoplay,loop,onState(){},onEvent:event=>messages.push(event),loadApi:()=>Promise.resolve({Player:class{constructor(_mount,options){callbacks=options.events;return p}}})});
         await Promise.resolve();
         return {e,p,calls,messages,get callbacks(){return callbacks}};
     }

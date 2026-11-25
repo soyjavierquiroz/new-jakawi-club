@@ -4,7 +4,7 @@ import { createYoutubeEngine } from './youtube-engine';
 import { initialPlaybackState, shouldAutoplay, type JakawiVslPlayerProps, type YoutubeEngine } from './types';
 
 /** Official VSL lifecycle, restricted to the provider supported by this host. */
-export function useVslPlayback({ source, autoplay, onEvent, framing }: JakawiVslPlayerProps) {
+export function useVslPlayback({ source, autoplay, loop = true, onEvent, framing }: JakawiVslPlayerProps) {
     framing = typeof framing === 'string' ? { kind: framing } : framing;
     const youtubeRef = useRef<HTMLDivElement>(null);
     const engineRef = useRef<YoutubeEngine | null>(null);
@@ -20,6 +20,7 @@ export function useVslPlayback({ source, autoplay, onEvent, framing }: JakawiVsl
         }).connection;
         const engine = createYoutubeEngine(youtubeRef.current, {
             source,
+            loop,
             origin: window.location.origin,
             autoplay: shouldAutoplay({
                 autoplay: autoplay === 'muted' ? true : autoplay === 'off' ? false : autoplay ?? true,
@@ -42,6 +43,6 @@ export function useVslPlayback({ source, autoplay, onEvent, framing }: JakawiVsl
             engineRef.current = null;
             engine.dispose();
         };
-    }, [source.type, source.url, autoplay, attempt]);
+    }, [source.type, source.url, autoplay, loop, attempt]);
     return { state, youtubeRef, engineRef, retry: () => setAttempt(value => value + 1) };
 }

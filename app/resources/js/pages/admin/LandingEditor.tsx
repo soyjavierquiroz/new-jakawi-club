@@ -73,6 +73,7 @@ function WhatsAppFields({ path, mode, url, options, onMode, onUrl }: {
 function VideoFields({ video, path, onChange, defaultUrl = null }: { video: LandingContent['video']; path: string; onChange: (video: LandingContent['video']) => void; defaultUrl?: string | null }) {
     const patch = (value: Partial<LandingContent['video']>) => onChange({ ...video, ...value });
     return <div className="space-y-5">
+        {path === 'content.video' && <div><label className="label" htmlFor={`${path}.loop`}>Al finalizar</label><select className="input" id={`${path}.loop`} value={video.loop === false ? 'manual' : 'loop'} onChange={event => patch({ loop: event.target.value === 'loop' })}><option value="loop">Bucle continuo (predeterminado)</option><option value="manual">Finalización manual · Volver a ver</option></select></div>}
         <p className="text-sm font-semibold">Marco fijo vertical 3:4 · desktop y móvil</p>
         <div><label className="label" htmlFor={`${path}.source_type`}>Fuente compatible</label><select className="input" id={`${path}.source_type`} value="youtube" onChange={() => patch({ source_type: 'youtube' })}><option value="youtube">YouTube · reproductor VSL oficial</option></select></div>
         <Fields value={video.youtube_url} path={`${path}.youtube_url`} onChange={value => patch({ youtube_url: value as string | null })} />

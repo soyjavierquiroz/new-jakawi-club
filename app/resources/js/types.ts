@@ -9,7 +9,7 @@ export type Launch = {
 };
 export type Member = { name: string; email: string; phone: string | null; city: string | null };
 export type LandingTemplate = 'LEAD_VSL' | 'WEBINAR' | 'WAITLIST';
-export type LandingVideoSettings = { youtube_url: string | null; poster: string | null; aspect_ratio: '3:4'; source_type: 'youtube'; source_aspect_ratio: '9:16' | '3:4' | '16:9'; focal_x: number; focal_y: number };
+export type LandingVideoSettings = { loop?: boolean; youtube_url: string | null; poster: string | null; aspect_ratio: '3:4'; source_type: 'youtube'; source_aspect_ratio: '9:16' | '3:4' | '16:9'; focal_x: number; focal_y: number };
 
 export type TitleStyle = 'normal' | 'bold' | 'coral' | 'underline-coral' | 'amarillo-acento';
 export type TitleSegment = { text: string; style: TitleStyle };
