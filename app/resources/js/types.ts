@@ -21,8 +21,8 @@ type WebinarBlock = EditorialTitle & { title: string; description: string; items
 export type LandingContent = {
     testimonials?: { name: string; quote: string; authorized: boolean }[];
     commercial?: { image: string | null; description: string | null; public_name?: string | null };
-    presentation: { template: LandingTemplate; show_video: boolean; show_faq: boolean; show_confirmation_video: boolean; webinar?: { title: string; starts_at: string | null; sections: { id: WebinarSection; visible: boolean }[] } };
-    webinar?: { opportunity: EditorialTitle & { title: string; description: string; image?: { asset_id: string; alt: string; position: 'right'; fit: 'contain' } | null }; early: WebinarBlock; steps: Omit<WebinarBlock, 'description'> };
+    presentation: { template: LandingTemplate; show_video: boolean; show_faq: boolean; show_confirmation_video: boolean; webinar?: { title: string; starts_at: string | null; sections: { id: WebinarSection; visible: boolean; background?: 'light'|'soft'|'dark' }[] } };
+    webinar?: { opportunity: EditorialTitle & { title: string; description: string; image?: { asset_id: string; alt: string; position: 'left'|'right'; fit: 'contain' } | null }; early: WebinarBlock; steps: Omit<WebinarBlock, 'description'> };
     whatsapp_group: { mode: 'default' | 'custom' | 'none'; url: string | null };
     confirmation_whatsapp_group: { mode: 'inherit' | 'default' | 'custom' | 'none'; url: string | null };
     after_registration: { title: string; message: string; instructions: string; cta_label: string };

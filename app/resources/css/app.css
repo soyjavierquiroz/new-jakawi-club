@@ -387,3 +387,24 @@ thead { background: var(--table-header); }
 .checkbox { accent-color: var(--primary); }
 
 .btn:disabled { background: var(--surface-subtle); color: var(--text-secondary); border-color: var(--border-strong); }
+
+/* Shared finite editorial vocabulary, leaving original webinar styling as default. */
+[data-webinar-section][data-section-preset] { color: var(--foreground); background: var(--background); }
+[data-section-preset="light"], [data-section-preset="soft"] {
+    --background: var(--palette-light-surface-raised); --surface: var(--palette-light-surface);
+    --surface-raised: var(--palette-light-surface-raised); --surface-subtle: var(--palette-light-surface-subtle);
+    --foreground: var(--ink); --text-secondary: var(--palette-light-text-secondary);
+    --border: var(--palette-light-border); --border-strong: var(--palette-light-border-strong);
+}
+[data-section-preset="soft"] { --background: var(--palette-light-surface-subtle); }
+[data-section-preset="dark"] {
+    --background: var(--palette-dark-surface); --surface: var(--palette-dark-surface-raised);
+    --surface-raised: var(--palette-dark-surface-raised); --surface-subtle: var(--palette-dark-surface-subtle);
+    --foreground: var(--cream); --text-secondary: var(--palette-dark-text-secondary);
+    --border: var(--palette-dark-border); --border-strong: var(--palette-dark-border-strong);
+}
+[data-section-preset] .registration-section, [data-section-preset] .final-cta { background: var(--background); color: var(--foreground); }
+@media (min-width: 1024px) {
+    .webinar-opportunity-with-image[data-image-position="left"] > img { order: -1; }
+    [data-webinar-section=opportunity] .webinar-opportunity-with-image[data-image-position="left"] { grid-template-columns: minmax(0, 45fr) minmax(0, 55fr); }
+}

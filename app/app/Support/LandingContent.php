@@ -287,7 +287,8 @@ class LandingContent
         $rules['content.presentation.webinar.title'] = [...($partial ? ['sometimes', 'required'] : ['required_with:content.presentation.webinar']), 'string', 'max:1200', 'not_regex:/[<>]/u'];
         $rules['content.presentation.webinar.starts_at'] = [$partial ? 'sometimes' : 'present_with:content.presentation.webinar', 'nullable', 'date_format:Y-m-d\\TH:i:sP', 'regex:/-04:00$/D'];
         $rules['content.presentation.webinar.sections'] = [$partial ? 'sometimes' : 'required_with:content.presentation.webinar', 'array', 'list', 'size:9'];
-        $rules['content.presentation.webinar.sections.*'] = ['required', 'array:id,visible'];
+        $rules['content.presentation.webinar.sections.*'] = ['required', 'array:id,visible,background'];
+        $rules['content.presentation.webinar.sections.*.background'] = ['sometimes', Rule::in(['light', 'soft', 'dark'])];
         $rules['content.presentation.webinar.sections.*.id'] = ['required', 'distinct:strict', Rule::in(self::WEBINAR_SECTIONS)];
         $rules['content.presentation.webinar.sections.*.visible'] = ['required', 'boolean:strict'];
         $rules['content.webinar'] = ['sometimes', 'required', 'array:opportunity,early,steps'];
@@ -311,7 +312,7 @@ class LandingContent
         if (is_array($content['webinar']['opportunity']['image'] ?? null)) {
             $rules[$imagePath.'.asset_id'] = ['required', 'string', 'max:500'];
             $rules[$imagePath.'.alt'] = ['present', 'nullable', 'string', 'max:320', 'not_regex:/[<>]/u'];
-            $rules[$imagePath.'.position'] = ['required', Rule::in(['right'])];
+            $rules[$imagePath.'.position'] = ['required', Rule::in(['left', 'right'])];
             $rules[$imagePath.'.fit'] = ['required', Rule::in(['contain'])];
         }
         foreach (['show_video', 'show_faq', 'show_confirmation_video'] as $key) {

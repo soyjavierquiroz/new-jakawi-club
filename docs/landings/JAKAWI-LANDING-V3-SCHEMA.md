@@ -104,6 +104,7 @@ se conserva pero no se muestra como párrafo adicional en la confirmación.
 | `webinar.sections` | Lista de exactamente 9 objetos completos `{ "id": ..., "visible": ... }` |
 | `webinar.sections[].id` | Uno de los nueve IDs siguientes, sin repeticiones |
 | `webinar.sections[].visible` | Booleano; para `registration` debe ser `true` |
+| `webinar.sections[].background` | Opcional: `light`, `soft` o `dark`. Omitir conserva la composición original |
 
 Los nueve IDs son `hero`, `event`, `benefits`, `opportunity`, `early`, `steps`,
 `registration`, `faq`, `final`. Cada uno debe aparecer una sola vez. **El orden del
@@ -283,7 +284,7 @@ nombres técnicos, destinos, endpoints, validaciones ni acciones adicionales.
 {"asset_id":"club/landings/ID/cover/UUID.webp","alt":"JAKAWI conectando negocios y consumidores","position":"right","fit":"contain"}
 ```
 
-`asset_id` reutiliza el identificador de objeto único del sistema media existente; no es una URL. El ejemplo de identificador es conceptual: se requiere una clave real de CLUB, existente en MinIO y referenciada por una landing o snapshot autorizado. No se aceptan URLs, temporales, SVG ni base64. `alt` es texto plano de hasta 320 caracteres; vacío identifica una imagen decorativa. `position` y `fit` admiten exclusivamente `right` y `contain`.
+`asset_id` reutiliza el identificador de objeto único del sistema media existente; no es una URL. El ejemplo de identificador es conceptual: se requiere una clave real de CLUB, existente en MinIO y referenciada por una landing o snapshot autorizado. No se aceptan URLs, temporales, SVG ni base64. `alt` es texto plano de hasta 320 caracteres; vacío identifica una imagen decorativa. `position` admite `left` o `right`; `fit` conserva `contain`. En móvil se apilan texto e imagen.
 
 La subida administrativa acepta JPEG/PNG/WebP, MIME real, hasta 5 MiB. Reutiliza tokens cifrados ligados al usuario, staging temporal de 24 horas, promoción al guardar y GC existente. WebP optimizado hasta 1600 px, sin ampliar ni recortar y conservando alfa. La entrega usa imgproxy firmado con fit y WebP, sin fondo ni aplanado. No hay migración, buckets o credenciales nuevos. Quitar/reemplazar desvincula sin borrar recursos compartidos.
 

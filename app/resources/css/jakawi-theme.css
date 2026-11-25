@@ -4,6 +4,12 @@
  * Keep palette literals here only; components consume semantic tokens.
  */
 :root {
+    --palette-dark-surface: #191919;
+    --palette-dark-surface-raised: #202020;
+    --palette-dark-surface-subtle: #272727;
+    --palette-dark-text-secondary: #c8c2bd;
+    --palette-dark-border: #49433f;
+    --palette-dark-border-strong: #81766e;
     --palette-light-surface: #fffdf9;
     --palette-light-surface-raised: #ffffff;
     --palette-light-surface-subtle: #f6eee8;

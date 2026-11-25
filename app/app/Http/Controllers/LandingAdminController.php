@@ -174,7 +174,7 @@ class LandingAdminController extends Controller
             } catch (ValidationException) {
                 throw ValidationException::withMessages(['opportunity_image_upload' => 'La subida caducó, no te pertenece o no está disponible. Selecciona la imagen de nuevo.']);
             }
-            $configuration['webinar']['opportunity']['image'] = ['asset_id' => $key, 'alt' => $request->input('opportunity_image_alt') ?? '', 'position' => 'right', 'fit' => 'contain'];
+            $configuration['webinar']['opportunity']['image'] = ['asset_id' => $key, 'alt' => $request->input('opportunity_image_alt') ?? '', 'position' => $configuration['webinar']['opportunity']['image']['position'] ?? 'right', 'fit' => 'contain'];
         } elseif ($request->boolean('opportunity_image_remove') && isset($configuration['webinar']['opportunity'])) {
             // Detach only: shared references and publication snapshots remain protected by MediaGc.
             $configuration['webinar']['opportunity']['image'] = null;
